@@ -127,8 +127,7 @@ def test_memory_filesystem_mkdir_parents():
     assert fs.is_dir("/a") is True
     assert fs.is_dir("/a/b") is True
     assert fs.is_dir("/a/b/c") is True
-<<<<<<< HEAD
 
 
-=======
->>>>>>> origin/main
+
+

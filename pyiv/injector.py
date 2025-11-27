@@ -1,68 +1,6 @@
 """Injector implementation for dependency injection."""
 
-<<<<<<< HEAD
 from typing import Any, Dict, Type, Optional, Callable, Union
-=======
->>>>>>> origin/main
-import inspect
-from typing import Any, Callable, Dict, Optional, Type
-
-from pyiv.config import Config
-from pyiv.singleton import SingletonType, GlobalSingletonRegistry
-
-
-class Injector:
-    """Dependency injector that creates instances based on configuration."""
-
-    def __init__(self, config: Config):
-        """Initialize the injector with a configuration.
-
-        Args:
-            config: The configuration object that defines dependencies
-        """
-        self._config = config
-        self._singletons: Dict[Type, Any] = {}
-
-    def inject(self, cls: Type, **kwargs) -> Any:
-        """Inject and create an instance of the given class.
-
-        Args:
-            cls: The class to instantiate (can be abstract or concrete)
-            **kwargs: Additional keyword arguments to pass to the constructor
-
-        Returns:
-            An instance of the class (or registered concrete implementation)
-
-        Raises:
-            ValueError: If no registration exists for an abstract class
-            TypeError: If the registered concrete is not instantiable
-        """
-        # Check singleton type
-        singleton_type = self._config.get_singleton_type(cls)
-        
-        # Handle global singleton
-        if singleton_type == SingletonType.GLOBAL_SINGLETON:
-            instance = GlobalSingletonRegistry.get(cls)
-            if instance is not None:
-                return instance
-            # Create new instance and store globally
-            instance = self._create_instance(cls, **kwargs)
-            GlobalSingletonRegistry.set(cls, instance)
-            return instance
-        
-        # Check if we have a registered singleton instance
-        instance = self._config.get_instance(cls)
-        if instance is not None:
-            return instance
-<<<<<<< HEAD
-        
-        # Check if we have a cached per-injector singleton
-        if singleton_type == SingletonType.SINGLETON and cls in self._singletons:
-=======
-
-        # Check if we have a cached singleton
-        if cls in self._singletons:
->>>>>>> origin/main
             return self._singletons[cls]
 
         # Get the concrete implementation
@@ -71,7 +9,6 @@ class Injector:
         if concrete is None:
             # No registration, try to instantiate the class directly
             # (useful for concrete classes that don't need registration)
-<<<<<<< HEAD
             instance = self._instantiate(cls, **kwargs)
             # Store as singleton if configured
             if singleton_type == SingletonType.SINGLETON:
@@ -79,11 +16,6 @@ class Injector:
             return instance
         
         # Check if it's a lazy singleton registration (old style)
-=======
-            return self._instantiate(cls, **kwargs)
-
-        # Check if it's a singleton registration
->>>>>>> origin/main
         if cls in self._config._instances and self._config._instances[cls] is None:
             # Lazy singleton creation
             instance = self._instantiate(concrete, **kwargs)
@@ -93,22 +25,15 @@ class Injector:
 
         # Instantiate the concrete implementation
         instance = self._instantiate(concrete, **kwargs)
-<<<<<<< HEAD
         
         # Store as singleton if configured
         if singleton_type == SingletonType.SINGLETON:
             self._singletons[cls] = instance
         elif cls in self._config._instances:
             # Old-style singleton caching
-=======
-
-        # Cache singleton if configured
-        if cls in self._config._instances:
->>>>>>> origin/main
             self._singletons[cls] = instance
 
         return instance
-<<<<<<< HEAD
     
     def _create_instance(self, cls: Type, **kwargs) -> Any:
         """Create an instance, handling registration lookup.
@@ -125,9 +50,6 @@ class Injector:
             return self._instantiate(cls, **kwargs)
         return self._instantiate(concrete, **kwargs)
     
-=======
-
->>>>>>> origin/main
     def _instantiate(self, concrete: Type, **kwargs) -> Any:
         """Instantiate a class or call a factory function.
 
@@ -171,7 +93,6 @@ class Injector:
         for param_name, param in sig.parameters.items():
             if param_name == "self":
                 continue
-<<<<<<< HEAD
             
             # Skip varargs and varkwargs - they're handled separately
             if param.kind == inspect.Parameter.VAR_POSITIONAL:  # *args
@@ -179,9 +100,6 @@ class Injector:
             if param.kind == inspect.Parameter.VAR_KEYWORD:  # **kwargs
                 continue
             
-=======
-
->>>>>>> origin/main
             # If explicitly provided, use that
             if param_name in provided_kwargs:
                 resolved[param_name] = provided_kwargs[param_name]
@@ -195,7 +113,6 @@ class Injector:
                 if param_name == 'injector' and annotation == Injector:
                     resolved[param_name] = self
                     continue
-<<<<<<< HEAD
                 
                 # Only try to inject if it's a registered type (not built-in types)
                 # Built-in types like str, int, etc. should use their defaults
@@ -211,12 +128,6 @@ class Injector:
                         # Can't inject, will use default if available
                         pass
             
-=======
-                except (ValueError, TypeError):
-                    # Can't inject, will use default if available
-                    pass
-
->>>>>>> origin/main
             # Use default value if available
             if param.default != inspect.Parameter.empty:
                 resolved[param_name] = param.default
@@ -227,21 +138,12 @@ class Injector:
         return resolved
 
 
-<<<<<<< HEAD
 def get_injector(config: Union[Type[Config], Config]) -> Injector:
     """Create an injector from a configuration class or instance.
     
     Args:
         config: A Config subclass or Config instance that defines dependencies
         
-=======
-def get_injector(config_class: Type[Config]) -> Injector:
-    """Create an injector from a configuration class.
-
-    Args:
-        config_class: A subclass of Config that defines dependencies
-
->>>>>>> origin/main
     Returns:
         An Injector instance configured with the given config
 
@@ -259,7 +161,6 @@ def get_injector(config_class: Type[Config]) -> Injector:
         injector = get_injector(test_config)
         db = injector.inject(Database)
     """
-<<<<<<< HEAD
     if isinstance(config, Config):
         # Already an instance, use it directly
         return Injector(config)
@@ -273,10 +174,3 @@ def get_injector(config_class: Type[Config]) -> Injector:
         )
 
 
-=======
-    if not issubclass(config_class, Config):
-        raise TypeError(f"config_class must be a subclass of Config, got {config_class}")
-
-    config = config_class()
-    return Injector(config)
->>>>>>> origin/main
