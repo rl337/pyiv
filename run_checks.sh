@@ -3,7 +3,8 @@
 # PyIV - Comprehensive Validation Script
 # This script runs all automated tests, static checks, style linting, and test coverage
 
-set -e  # Exit on any error
+# Don't use set -e here - we want to continue even if some checks fail
+# set -e  # Exit on any error
 
 # Colors for output
 RED='\033[0;31m'
@@ -42,16 +43,14 @@ run_check() {
     
     print_status "Running $check_name..."
     
-    if eval "$command"; then
-        if [ $? -eq $expected_exit_code ]; then
-            print_success "$check_name passed"
-            return 0
-        else
-            print_error "$check_name failed with unexpected exit code"
-            return 1
-        fi
+    eval "$command"
+    local exit_code=$?
+    
+    if [ $exit_code -eq $expected_exit_code ]; then
+        print_success "$check_name passed"
+        return 0
     else
-        print_error "$check_name failed"
+        print_error "$check_name failed with exit code $exit_code (expected $expected_exit_code)"
         return 1
     fi
 }
