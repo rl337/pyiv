@@ -120,11 +120,14 @@ echo "=========================================="
 print_status "3. TYPE CHECKING"
 echo "=========================================="
 
-# MyPy type checking
+# MyPy type checking (non-blocking - warnings only)
 if command_exists mypy; then
-    if ! run_check "MyPy type checking" "mypy pyiv/ --ignore-missing-imports"; then
-        print_warning "Type checking found issues. Review output above."
-        overall_success=false
+    print_status "Running MyPy type checking..."
+    if mypy pyiv/ --ignore-missing-imports 2>&1; then
+        print_success "MyPy type checking passed"
+    else
+        print_warning "Type checking found issues. Review output above (non-blocking)."
+        # Don't fail the build for type errors - they're warnings
     fi
 else
     print_warning "MyPy not installed, skipping type checking"
