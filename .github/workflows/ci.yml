@@ -39,8 +39,8 @@ jobs:
       - name: Install project dependencies
         run: |
           pip install -e ".[dev]" || pip install -e .
-          # Install optional dev dependencies if not in [dev]
-          pip install pytest pytest-cov black isort mypy bandit || true
+          # Install required dev dependencies for CI
+          pip install pytest pytest-cov black isort mypy bandit
 
       - name: Run validation checks
         run: |

@@ -158,9 +158,20 @@ echo "=========================================="
 
 # Run tests with coverage
 if command_exists pytest; then
-    if ! run_check "Pytest with coverage" "pytest --cov=pyiv --cov-report=xml --cov-report=html --cov-report=term-missing tests/"; then
-        print_error "Tests failed. Review output above."
-        overall_success=false
+    # Check if pytest-cov is available
+    if python -c "import pytest_cov" 2>/dev/null; then
+        # Run with coverage
+        if ! run_check "Pytest with coverage" "pytest --cov=pyiv --cov-report=xml --cov-report=html --cov-report=term-missing tests/"; then
+            print_error "Tests failed. Review output above."
+            overall_success=false
+        fi
+    else
+        # Run without coverage
+        print_warning "pytest-cov not installed, running tests without coverage"
+        if ! run_check "Pytest" "pytest tests/"; then
+            print_error "Tests failed. Review output above."
+            overall_success=false
+        fi
     fi
 else
     print_error "Pytest not installed. Install with: pip install pytest pytest-cov"
