@@ -1,6 +1,17 @@
 # pyiv
 
-A lightweight dependency injection library for Python with built-in abstractions for common operations.
+A lightweight Python dependency injection framework with utility modules for filesystem operations, configuration management, and time/clock abstractions.
+
+## Overview
+
+pyiv (Python Injection) provides a simple yet powerful dependency injection system for Python applications, along with utility modules for common operations. It's designed to help manage dependencies, configuration, and cross-cutting concerns in Python projects.
+
+## Features
+
+- **Dependency Injection**: Clean dependency injection framework for Python applications
+- **Filesystem Utilities**: Enhanced filesystem operations and abstractions
+- **Clock/Time Abstractions**: Time management utilities for testing and time-dependent code
+- **Configuration Management**: Flexible configuration handling
 
 ## Installation
 
@@ -8,112 +19,89 @@ A lightweight dependency injection library for Python with built-in abstractions
 pip install pyiv
 ```
 
+Or using Poetry:
+
+```bash
+poetry add pyiv
+```
+
 ## Quick Start
 
-### Basic Dependency Injection
+### Dependency Injection
 
 ```python
-import pyiv
-from abc import ABC, abstractmethod
+from pyiv import Injector
 
-# Define abstract interfaces
-class Database(ABC):
-    @abstractmethod
-    def query(self, sql: str):
-        pass
+# Create an injector
+injector = Injector()
 
-class Logger(ABC):
-    @abstractmethod
-    def log(self, message: str):
-        pass
+# Register dependencies
+injector.register(MyService)
+injector.register(MyRepository)
 
-# Define concrete implementations
-class PostgreSQL(Database):
-    def query(self, sql: str):
-        return f"PostgreSQL: {sql}"
-
-class FileLogger(Logger):
-    def log(self, message: str):
-        print(f"LOG: {message}")
-
-# Create configuration
-class AppConfig(pyiv.Config):
-    def configure(self):
-        self.register(Database, PostgreSQL)
-        self.register(Logger, FileLogger)
-
-# Get injector and use it
-injector = pyiv.get_injector(AppConfig)
-
-# Inject dependencies
-db = injector.inject(Database)
-logger = injector.inject(Logger)
-
-# Or inject with additional kwargs
-db = injector.inject(Database, host="localhost", port=5432)
+# Resolve dependencies
+service = injector.resolve(MyService)
 ```
 
-### Filesystem Abstraction
-
-Replace file operation patching with dependency injection:
+### Filesystem Operations
 
 ```python
-import pyiv
+from pyiv.filesystem import FileSystem
 
-class AppConfig(pyiv.Config):
-    def configure(self):
-        # Production: use real filesystem
-        self.register(pyiv.Filesystem, pyiv.RealFilesystem)
-        
-        # Or for testing: use in-memory filesystem
-        # self.register(pyiv.Filesystem, pyiv.MemoryFilesystem)
-
-injector = pyiv.get_injector(AppConfig)
-fs = injector.inject(pyiv.Filesystem)
-
-# Use filesystem abstraction
-fs.write_text("/path/to/file.txt", "content")
-content = fs.read_text("/path/to/file.txt")
+fs = FileSystem()
+content = fs.read_file('path/to/file.txt')
+fs.write_file('path/to/output.txt', content)
 ```
 
-### Clock Abstraction
-
-Replace time operation patching with dependency injection:
+### Clock/Time Management
 
 ```python
-import pyiv
+from pyiv.clock import Clock
 
-class AppConfig(pyiv.Config):
-    def configure(self):
-        # Production: use real clock
-        self.register(pyiv.Clock, pyiv.RealClock)
-        
-        # Or for testing: use synthetic clock
-        # clock = pyiv.SyntheticClock(start_time=0.0)
-        # self.register_instance(pyiv.Clock, clock)
-
-injector = pyiv.get_injector(AppConfig)
-clock = injector.inject(pyiv.Clock)
-
-# Use clock abstraction
-current_time = clock.time()
-clock.sleep(1.0)  # In tests, this advances synthetic time instead of sleeping
-
-# For testing with synthetic clock
-test_clock = pyiv.SyntheticClock(start_time=0.0)
-test_clock.advance(5.0)  # Manually advance time
-assert test_clock.time() == 5.0
+clock = Clock()
+current_time = clock.now()
 ```
 
-## Features
+## Project Structure
 
-- **Dependency Injection**: Clean dependency injection without patching
-- **Filesystem Abstraction**: Replace `open()`, `Path`, etc. with injectable filesystem
-- **Clock Abstraction**: Replace `time.sleep()`, `time.time()`, etc. with injectable clock
-- **Singleton Support**: Register singletons for shared instances
-- **Automatic Dependency Resolution**: Dependencies resolved from type hints
+```
+pyiv/
+├── pyiv/
+│   ├── __init__.py
+│   ├── injector.py      # Dependency injection framework
+│   ├── filesystem.py     # Filesystem utilities
+│   ├── clock.py          # Time/clock abstractions
+│   └── config.py          # Configuration management
+├── tests/                # Test suite
+├── pyproject.toml        # Project configuration
+└── README.md             # This file
+```
+
+## Development
+
+### Running Tests
+
+```bash
+pytest tests/
+```
+
+### Code Quality
+
+```bash
+# Format code
+black pyiv/ tests/
+
+# Lint
+pylint pyiv/
+
+# Type checking
+mypy pyiv/
+```
 
 ## License
 
-MIT
+MIT License - see LICENSE file for details
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
