@@ -88,13 +88,9 @@ class Injector:
             bound_kwargs = self._resolve_dependencies(sig, kwargs)
             return concrete(**bound_kwargs)
         else:
-            raise TypeError(
-                f"Cannot instantiate {concrete}, must be a class or callable"
-            )
+            raise TypeError(f"Cannot instantiate {concrete}, must be a class or callable")
 
-    def _resolve_dependencies(
-        self, sig: inspect.Signature, provided_kwargs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _resolve_dependencies(self, sig: inspect.Signature, provided_kwargs: Dict[str, Any]) -> Dict[str, Any]:
         """Resolve dependencies from function signature using the injector.
 
         Args:
@@ -153,9 +149,7 @@ def get_injector(config_class: Type[Config]) -> Injector:
         db = injector.inject(Database)
     """
     if not issubclass(config_class, Config):
-        raise TypeError(
-            f"config_class must be a subclass of Config, got {config_class}"
-        )
+        raise TypeError(f"config_class must be a subclass of Config, got {config_class}")
 
     config = config_class()
     return Injector(config)

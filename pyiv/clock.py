@@ -46,9 +46,7 @@ class Clock(ABC):
         pass
 
     @abstractmethod
-    def start_timer(
-        self, interval: float, callback: Callable[[], None], repeat: bool = False
-    ) -> "Timer":
+    def start_timer(self, interval: float, callback: Callable[[], None], repeat: bool = False) -> "Timer":
         """Start a timer that calls callback after interval.
 
         Args:
@@ -99,9 +97,7 @@ class RealClock(Clock):
         """Sleep in current thread."""
         threading.Event().wait(seconds)
 
-    def start_timer(
-        self, interval: float, callback: Callable[[], None], repeat: bool = False
-    ) -> "Timer":
+    def start_timer(self, interval: float, callback: Callable[[], None], repeat: bool = False) -> "Timer":
         """Start a timer using threading.Timer."""
         timer = threading.Timer(interval, callback)
         if repeat:
@@ -194,9 +190,7 @@ class SyntheticClock(Clock):
             self._time = time_value
             self._monotonic = time_value
 
-    def start_timer(
-        self, interval: float, callback: Callable[[], None], repeat: bool = False
-    ) -> "SyntheticTimer":
+    def start_timer(self, interval: float, callback: Callable[[], None], repeat: bool = False) -> "SyntheticTimer":
         """Start a synthetic timer."""
         timer = SyntheticTimer(self, interval, callback, repeat, self._time)
         with self._lock:
