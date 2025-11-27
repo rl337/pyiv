@@ -1,11 +1,8 @@
 """Configuration base class for dependency injection."""
 
-<<<<<<< HEAD
-from typing import Any, Dict, Type, Union, Callable, Optional
-from pyiv.singleton import SingletonType
-=======
 from typing import Any, Callable, Dict, Optional, Type, Union
->>>>>>> origin/main
+
+from pyiv.singleton import SingletonType
 
 
 class Config:
