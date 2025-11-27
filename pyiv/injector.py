@@ -115,11 +115,12 @@ class Injector:
         if callable(concrete) and not isinstance(concrete, type):
             # It's a factory function
             sig = inspect.signature(concrete)
+            # Special case: if factory function accepts 'injector' parameter, pass self
+            # Do this before resolving dependencies so it's available
+            if 'injector' in sig.parameters:
+                kwargs['injector'] = self
             # Try to inject dependencies from the function signature
             bound_kwargs = self._resolve_dependencies(sig, kwargs)
-            # Special case: if factory function accepts 'injector' parameter, pass self
-            if 'injector' in sig.parameters and 'injector' not in bound_kwargs:
-                bound_kwargs['injector'] = self
             return concrete(**bound_kwargs)
         elif isinstance(concrete, type):
             # It's a class
@@ -158,13 +159,26 @@ class Injector:
             
             # Check if there's a type annotation
             if param.annotation != inspect.Parameter.empty:
-                # Try to inject this dependency
-                try:
-                    resolved[param_name] = self.inject(param.annotation)
+                annotation = param.annotation
+                
+                # Special case: if parameter is named 'injector' and type is Injector, use self
+                if param_name == 'injector' and annotation == Injector:
+                    resolved[param_name] = self
                     continue
-                except (ValueError, TypeError):
-                    # Can't inject, will use default if available
-                    pass
+                
+                # Only try to inject if it's a registered type (not built-in types)
+                # Built-in types like str, int, etc. should use their defaults
+                is_builtin = annotation in (str, int, float, bool, bytes, list, dict, tuple, set, frozenset)
+                is_registered = not is_builtin and self._config.has_registration(annotation)
+                
+                if is_registered:
+                    # Try to inject this dependency
+                    try:
+                        resolved[param_name] = self.inject(annotation)
+                        continue
+                    except (ValueError, TypeError):
+                        # Can't inject, will use default if available
+                        pass
             
             # Use default value if available
             if param.default != inspect.Parameter.empty:
