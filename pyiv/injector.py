@@ -1,9 +1,10 @@
 """Injector implementation for dependency injection."""
 
-from typing import Any, Dict, Type, Optional, Callable
+from typing import Any, Dict, Type, Optional, Callable, Union
 import inspect
 
 from pyiv.config import Config
+from pyiv.singleton import SingletonType, GlobalSingletonRegistry
 
 
 class Injector:
@@ -32,13 +33,26 @@ class Injector:
             ValueError: If no registration exists for an abstract class
             TypeError: If the registered concrete is not instantiable
         """
+        # Check singleton type
+        singleton_type = self._config.get_singleton_type(cls)
+        
+        # Handle global singleton
+        if singleton_type == SingletonType.GLOBAL_SINGLETON:
+            instance = GlobalSingletonRegistry.get(cls)
+            if instance is not None:
+                return instance
+            # Create new instance and store globally
+            instance = self._create_instance(cls, **kwargs)
+            GlobalSingletonRegistry.set(cls, instance)
+            return instance
+        
         # Check if we have a registered singleton instance
         instance = self._config.get_instance(cls)
         if instance is not None:
             return instance
         
-        # Check if we have a cached singleton
-        if cls in self._singletons:
+        # Check if we have a cached per-injector singleton
+        if singleton_type == SingletonType.SINGLETON and cls in self._singletons:
             return self._singletons[cls]
         
         # Get the concrete implementation
@@ -47,9 +61,13 @@ class Injector:
         if concrete is None:
             # No registration, try to instantiate the class directly
             # (useful for concrete classes that don't need registration)
-            return self._instantiate(cls, **kwargs)
+            instance = self._instantiate(cls, **kwargs)
+            # Store as singleton if configured
+            if singleton_type == SingletonType.SINGLETON:
+                self._singletons[cls] = instance
+            return instance
         
-        # Check if it's a singleton registration
+        # Check if it's a lazy singleton registration (old style)
         if cls in self._config._instances and self._config._instances[cls] is None:
             # Lazy singleton creation
             instance = self._instantiate(concrete, **kwargs)
@@ -60,11 +78,29 @@ class Injector:
         # Instantiate the concrete implementation
         instance = self._instantiate(concrete, **kwargs)
         
-        # Cache singleton if configured
-        if cls in self._config._instances:
+        # Store as singleton if configured
+        if singleton_type == SingletonType.SINGLETON:
+            self._singletons[cls] = instance
+        elif cls in self._config._instances:
+            # Old-style singleton caching
             self._singletons[cls] = instance
         
         return instance
+    
+    def _create_instance(self, cls: Type, **kwargs) -> Any:
+        """Create an instance, handling registration lookup.
+        
+        Args:
+            cls: The class to instantiate
+            **kwargs: Keyword arguments for the constructor
+            
+        Returns:
+            An instance of the class
+        """
+        concrete = self._config.get_registration(cls)
+        if concrete is None:
+            return self._instantiate(cls, **kwargs)
+        return self._instantiate(concrete, **kwargs)
     
     def _instantiate(self, concrete: Type, **kwargs) -> Any:
         """Instantiate a class or call a factory function.
@@ -81,6 +117,9 @@ class Injector:
             sig = inspect.signature(concrete)
             # Try to inject dependencies from the function signature
             bound_kwargs = self._resolve_dependencies(sig, kwargs)
+            # Special case: if factory function accepts 'injector' parameter, pass self
+            if 'injector' in sig.parameters and 'injector' not in bound_kwargs:
+                bound_kwargs['injector'] = self
             return concrete(**bound_kwargs)
         elif isinstance(concrete, type):
             # It's a class
@@ -104,6 +143,12 @@ class Injector:
         
         for param_name, param in sig.parameters.items():
             if param_name == 'self':
+                continue
+            
+            # Skip varargs and varkwargs - they're handled separately
+            if param.kind == inspect.Parameter.VAR_POSITIONAL:  # *args
+                continue
+            if param.kind == inspect.Parameter.VAR_KEYWORD:  # **kwargs
                 continue
             
             # If explicitly provided, use that
@@ -131,26 +176,39 @@ class Injector:
         return resolved
 
 
-def get_injector(config_class: Type[Config]) -> Injector:
-    """Create an injector from a configuration class.
+def get_injector(config: Union[Type[Config], Config]) -> Injector:
+    """Create an injector from a configuration class or instance.
     
     Args:
-        config_class: A subclass of Config that defines dependencies
+        config: A Config subclass or Config instance that defines dependencies
         
     Returns:
         An Injector instance configured with the given config
         
     Example:
+        # Using a Config class
         class MyConfig(Config):
             def configure(self):
                 self.register(Database, PostgreSQL)
         
         injector = get_injector(MyConfig)
         db = injector.inject(Database)
+        
+        # Using a Config instance (useful for test configs with parameters)
+        test_config = MyTestConfig(mock_db=my_mock)
+        injector = get_injector(test_config)
+        db = injector.inject(Database)
     """
-    if not issubclass(config_class, Config):
-        raise TypeError(f"config_class must be a subclass of Config, got {config_class}")
-    
-    config = config_class()
-    return Injector(config)
+    if isinstance(config, Config):
+        # Already an instance, use it directly
+        return Injector(config)
+    elif isinstance(config, type) and issubclass(config, Config):
+        # It's a class, instantiate it
+        config_instance = config()
+        return Injector(config_instance)
+    else:
+        raise TypeError(
+            f"config must be a Config subclass or Config instance, got {type(config)}"
+        )
+
 

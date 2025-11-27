@@ -230,3 +230,4 @@ class SyntheticTimer(Timer):
         """Check if timer is active."""
         return self._active
 
+

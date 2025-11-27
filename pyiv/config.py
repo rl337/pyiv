@@ -1,6 +1,7 @@
 """Configuration base class for dependency injection."""
 
 from typing import Any, Dict, Type, Union, Callable, Optional
+from pyiv.singleton import SingletonType
 
 
 class Config:
@@ -13,6 +14,7 @@ class Config:
         """Initialize the configuration."""
         self._registrations: Dict[Type, Union[Type, Any, Callable]] = {}
         self._instances: Dict[Type, Any] = {}
+        self._singleton_types: Dict[Type, SingletonType] = {}
         self.configure()
     
     def configure(self):
@@ -25,18 +27,40 @@ class Config:
         """
         pass
     
-    def register(self, abstract: Type, concrete: Union[Type, Callable], *, singleton: bool = False):
+    def register(
+        self,
+        abstract: Type,
+        concrete: Union[Type, Callable],
+        *,
+        singleton: bool = False,
+        singleton_type: SingletonType = SingletonType.NONE
+    ):
         """Register a concrete implementation for an abstract type.
         
         Args:
             abstract: The abstract class or interface to register
             concrete: The concrete class, instance, or factory function
-            singleton: If True, the same instance will be returned on each injection
+            singleton: If True, uses SINGLETON type (deprecated, use singleton_type instead)
+            singleton_type: Type of singleton behavior (NONE, SINGLETON, or GLOBAL_SINGLETON)
+            
+        Raises:
+            TypeError: If abstract is not a type
+            ValueError: If both singleton=True and singleton_type is specified
         """
         if not isinstance(abstract, type):
             raise TypeError(f"abstract must be a type, got {type(abstract)}")
         
-        if singleton and isinstance(concrete, type):
+        # Handle deprecated singleton parameter
+        if singleton and singleton_type != SingletonType.NONE:
+            raise ValueError("Cannot specify both singleton=True and singleton_type")
+        if singleton:
+            singleton_type = SingletonType.SINGLETON
+        
+        # Store singleton type
+        if singleton_type != SingletonType.NONE:
+            self._singleton_types[abstract] = singleton_type
+        
+        if singleton_type == SingletonType.SINGLETON and isinstance(concrete, type):
             # For singleton classes, we'll create an instance on first injection
             self._instances[abstract] = None  # Placeholder, will be created lazily
             self._registrations[abstract] = concrete
@@ -90,4 +114,16 @@ class Config:
             True if registered, False otherwise
         """
         return abstract in self._registrations
+    
+    def get_singleton_type(self, abstract: Type) -> SingletonType:
+        """Get the singleton type for a registered abstract type.
+        
+        Args:
+            abstract: The abstract class or interface
+            
+        Returns:
+            The singleton type, or SingletonType.NONE if not registered or not a singleton
+        """
+        return self._singleton_types.get(abstract, SingletonType.NONE)
+
 
