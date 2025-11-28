@@ -11,6 +11,7 @@ pyiv (Python Injection) provides a simple yet powerful dependency injection syst
 - **Dependency Injection**: Clean dependency injection framework for Python applications
 - **Filesystem Utilities**: Enhanced filesystem operations and abstractions
 - **Clock/Time Abstractions**: Time management utilities for testing and time-dependent code
+- **DateTime Service**: Abstract datetime service for dependency injection and testing
 - **Configuration Management**: Flexible configuration handling
 
 ## Installation
@@ -62,6 +63,24 @@ clock = Clock()
 current_time = clock.now()
 ```
 
+### DateTime Service
+
+```python
+from pyiv.datetime_service import DateTimeService, PythonDateTimeService
+
+# Production: use Python's datetime module
+service = PythonDateTimeService()
+utc_time = service.now_utc()
+iso_string = service.now_utc_iso()
+
+# Testing: use mock service with fixed time
+from pyiv.datetime_service import MockDateTimeService
+from datetime import datetime, timezone
+
+mock_service = MockDateTimeService(datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc))
+fixed_time = mock_service.now_utc()  # Returns the fixed time
+```
+
 ## Project Structure
 
 ```
@@ -71,6 +90,7 @@ pyiv/
 │   ├── injector.py      # Dependency injection framework
 │   ├── filesystem.py     # Filesystem utilities
 │   ├── clock.py          # Time/clock abstractions
+│   ├── datetime_service.py  # DateTime service abstraction
 │   └── config.py          # Configuration management
 ├── tests/                # Test suite
 ├── pyproject.toml        # Project configuration

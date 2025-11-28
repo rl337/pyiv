@@ -267,3 +267,5 @@ class TestGlobalSingletonRegistry:
         assert not GlobalSingletonRegistry.has(TestClass)
         assert GlobalSingletonRegistry.get(TestClass) is None
 
+
+

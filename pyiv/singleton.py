@@ -71,3 +71,5 @@ class GlobalSingletonRegistry:
         with cls._lock:
             cls._instances.clear()
 
+
+
