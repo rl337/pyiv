@@ -1,7 +1,7 @@
 """Injector implementation for dependency injection."""
 
 import inspect
-from typing import Any, Callable, Dict, Optional, Type
+from typing import Any, Callable, Dict, Optional, Type, Union
 
 from pyiv.config import Config
 
@@ -66,7 +66,7 @@ class Injector:
 
         return instance
 
-    def _instantiate(self, concrete: Type, **kwargs) -> Any:
+    def _instantiate(self, concrete: Union[Type, Callable[..., Any]], **kwargs) -> Any:
         """Instantiate a class or call a factory function.
 
         Args:
@@ -84,7 +84,7 @@ class Injector:
             return concrete(**bound_kwargs)
         elif isinstance(concrete, type):
             # It's a class
-            sig = inspect.signature(concrete.__init__)
+            sig = inspect.signature(concrete.__init__)  # type: ignore[misc]
             bound_kwargs = self._resolve_dependencies(sig, kwargs)
             return concrete(**bound_kwargs)
         else:
