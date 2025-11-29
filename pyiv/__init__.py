@@ -6,11 +6,13 @@ from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDa
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
+from pyiv.reflection import ReflectionConfig
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 __version__ = "0.2.0"
 __all__ = [
     "Config",
+    "ReflectionConfig",
     "Injector",
     "get_injector",
     "Filesystem",

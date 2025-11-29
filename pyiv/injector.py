@@ -188,6 +188,59 @@ class Injector:
                 raise ValueError(f"Missing required parameter '{param_name}' for {sig}")
 
         return resolved
+    
+    def inject_by_name(
+        self,
+        interface: Type,
+        name: str
+    ) -> Type:
+        """Inject a specific implementation by name.
+        
+        This method is used with reflection-based discovery to get a specific
+        implementation class by its discovered name. The class is returned
+        (not instantiated) - use inject() to get an instance.
+        
+        Args:
+            interface: The interface type
+            name: Implementation name (e.g., "CreateFactHandler" or "handlers.CreateFactHandler")
+            
+        Returns:
+            The implementation class
+            
+        Raises:
+            ValueError: If no implementation with the given name is found
+            TypeError: If interface is not a type
+            
+        Example:
+            # Get handler class by name
+            handler_class = injector.inject_by_name(IMcpToolHandler, "CreateFactHandler")
+            
+            # Get instance (respects singleton configuration)
+            handler_instance = injector.inject(handler_class)
+        """
+        if not isinstance(interface, type):
+            raise TypeError(f"interface must be a type, got {type(interface)}")
+        
+        # Check if config supports reflection-based discovery
+        if not hasattr(self._config, 'discover_implementations'):
+            raise ValueError(
+                f"Config {type(self._config).__name__} does not support reflection-based discovery. "
+                "Use ReflectionConfig for inject_by_name() support."
+            )
+        
+        # Get discovered implementations
+        implementations = self._config.discover_implementations(interface)
+        
+        if name not in implementations:
+            available = ", ".join(sorted(implementations.keys())) or "none"
+            raise ValueError(
+                f"No implementation '{name}' found for {interface.__name__}. "
+                f"Available implementations: {available}"
+            )
+        
+        # Return the class (not instance)
+        # The caller will use inject() which respects singleton configuration
+        return implementations[name]
 
 
 def get_injector(config: Union[Type[Config], Config]) -> Injector:
