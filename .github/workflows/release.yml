@@ -32,8 +32,8 @@ jobs:
     # The workflow_run trigger already filters by branches: [main, master]
     # So we just need to check that CI succeeded
     if: |
-      github.event.workflow_run.conclusion == 'success' ||
-      github.event_name == 'workflow_dispatch'
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
 
     steps:
       - uses: actions/checkout@v4
