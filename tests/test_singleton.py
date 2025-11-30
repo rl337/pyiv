@@ -5,8 +5,7 @@ from abc import ABC, abstractmethod
 
 import pytest
 
-from pyiv import (Config, GlobalSingletonRegistry, Injector, SingletonType,
-                  get_injector)
+from pyiv import Config, GlobalSingletonRegistry, Injector, SingletonType, get_injector
 
 
 class Database(ABC):

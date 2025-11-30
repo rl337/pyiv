@@ -4,8 +4,12 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from pyiv.datetime_service import (DateTimeService, MockDateTimeService,
-                                   PythonDateTimeService)
+    DateTimeService,
+    MockDateTimeService,
+    PythonDateTimeService,
+    DateTimeService,
+    MockDateTimeService,
+    PythonDateTimeService,
 
 
 def test_datetime_service_now_utc():
