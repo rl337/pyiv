@@ -28,10 +28,13 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    # Only run if CI workflow succeeded
+    # Only run if CI workflow succeeded on main/master branch
+    # The workflow_run trigger doesn't filter by the triggering workflow's branch,
+    # so we must explicitly check head_branch to prevent releases from PRs/develop
     if: |
-      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') ||
-      github.event_name == 'workflow_dispatch'
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'master'))
 
     steps:
       - uses: actions/checkout@v4

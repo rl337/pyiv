@@ -34,7 +34,7 @@ class Config:
         concrete: Union[Type, Callable],
         *,
         singleton: bool = False,
-        singleton_type: SingletonType = SingletonType.NONE
+        singleton_type: SingletonType = SingletonType.NONE,
     ):
         """Register a concrete implementation for an abstract type.
 

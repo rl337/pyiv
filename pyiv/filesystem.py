@@ -200,8 +200,8 @@ class RealFilesystem(Filesystem):
     def open(self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None) -> Union[TextIO, BinaryIO]:
         """Open a file using built-in open()."""
         if encoding is not None and "b" not in mode:
-            return open(file, mode, encoding=encoding)
-        return open(file, mode)
+            return open(file, mode, encoding=encoding)  # type: ignore[return-value]
+        return open(file, mode)  # type: ignore[return-value]
 
     def exists(self, path: Union[str, Path]) -> bool:
         """Check if path exists."""
@@ -311,7 +311,7 @@ class MemoryFilesystem(Filesystem):
             self._ensure_parent_dir(path)
 
             if "b" in mode:
-                stream = _MemoryBytesIO(existing, path, self)
+                stream: Union[_MemoryBytesIO, _MemoryTextIO] = _MemoryBytesIO(existing, path, self)
             else:
                 text = existing.decode(encoding or "utf-8")
                 stream = _MemoryTextIO(text, path, self, encoding or "utf-8")
@@ -533,174 +533,3 @@ class _MemoryTextIO(io.StringIO):
             content = self.read()
             self._pyiv_filesystem._files[self._pyiv_path] = content.encode(self._pyiv_encoding)
         super().close()
-
-    def exists(self, path: Union[str, Path]) -> bool:
-        """Check if path exists."""
-        path_str = self._normalize_path(path)
-        return path_str in self._files or path_str in self._dirs
-
-    def is_file(self, path: Union[str, Path]) -> bool:
-        """Check if path is a file."""
-        path_str = self._normalize_path(path)
-        return path_str in self._files
-
-    def is_dir(self, path: Union[str, Path]) -> bool:
-        """Check if path is a directory."""
-        path_str = self._normalize_path(path)
-        return path_str in self._dirs
-
-    def mkdir(self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False) -> None:
-        """Create a directory."""
-        path_str = self._normalize_path(path)
-        if path_str in self._dirs and not exist_ok:
-            raise FileExistsError(f"Directory already exists: {path}")
-        if path_str in self._files:
-            raise FileExistsError(f"File exists at path: {path}")
-
-        if parents:
-            parts = path_str.split("/")
-            for i in range(1, len(parts) + 1):
-                parent = "/".join(parts[:i]) or "/"
-                self._dirs.add(parent)
-        else:
-            parent = "/".join(path_str.split("/")[:-1]) or "/"
-            if parent not in self._dirs:
-                raise FileNotFoundError(f"Parent directory does not exist: {parent}")
-            self._dirs.add(path_str)
-
-    def rmdir(self, path: Union[str, Path]) -> None:
-        """Remove a directory."""
-        path_str = self._normalize_path(path)
-        if path_str not in self._dirs:
-            raise FileNotFoundError(f"Directory does not exist: {path}")
-        if path_str == "/":
-            raise ValueError("Cannot remove root directory")
-
-        # Check if directory has children
-        for file_path in self._files:
-            if file_path.startswith(path_str + "/"):
-                raise OSError(f"Directory not empty: {path}")
-        for dir_path in self._dirs:
-            if dir_path != path_str and dir_path.startswith(path_str + "/"):
-                raise OSError(f"Directory not empty: {path}")
-
-        self._dirs.remove(path_str)
-
-    def unlink(self, path: Union[str, Path], missing_ok: bool = False) -> None:
-        """Remove a file."""
-        path_str = self._normalize_path(path)
-        if path_str not in self._files:
-            if not missing_ok:
-                raise FileNotFoundError(f"No such file: {path}")
-            return
-        del self._files[path_str]
-
-    def read_text(self, path: Union[str, Path], encoding: str = "utf-8") -> str:
-        """Read text from a file."""
-        path_str = self._normalize_path(path)
-        if path_str not in self._files:
-            raise FileNotFoundError(f"No such file: {path}")
-        return self._files[path_str].decode(encoding)
-
-    def write_text(self, path: Union[str, Path], content: str, encoding: str = "utf-8") -> None:
-        """Write text to a file."""
-        path_str = self._normalize_path(path)
-        self._ensure_parent_dir(path_str)
-        self._files[path_str] = content.encode(encoding)
-
-    def read_bytes(self, path: Union[str, Path]) -> bytes:
-        """Read bytes from a file."""
-        path_str = self._normalize_path(path)
-        if path_str not in self._files:
-            raise FileNotFoundError(f"No such file: {path}")
-        return self._files[path_str]
-
-    def write_bytes(self, path: Union[str, Path], content: bytes) -> None:
-        """Write bytes to a file."""
-        path_str = self._normalize_path(path)
-        self._ensure_parent_dir(path_str)
-        self._files[path_str] = content
-
-    def listdir(self, path: Union[str, Path]) -> Iterator[str]:
-        """List directory contents."""
-        path_str = self._normalize_path(path)
-        if path_str not in self._dirs:
-            raise FileNotFoundError(f"No such directory: {path}")
-
-        # Find direct children
-        children = set()
-        prefix = path_str if path_str == "/" else path_str + "/"
-
-        for file_path in self._files:
-            if file_path.startswith(prefix):
-                rel_path = file_path[len(prefix) :]
-                name = rel_path.split("/")[0]
-                children.add(name)
-
-        for dir_path in self._dirs:
-            if dir_path != path_str and dir_path.startswith(prefix):
-                rel_path = dir_path[len(prefix) :]
-                name = rel_path.split("/")[0]
-                children.add(name)
-
-        return iter(sorted(children))
-
-    def glob(self, pattern: Union[str, Path]) -> Iterator[Path]:
-        """Glob pattern matching (simplified)."""
-        import fnmatch
-
-        pattern_str = str(pattern)
-
-        # Simple glob implementation
-        for file_path in self._files:
-            if fnmatch.fnmatch(file_path, pattern_str):
-                yield Path(file_path)
-
-    def copy(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
-        """Copy a file."""
-        src_str = self._normalize_path(src)
-        dst_str = self._normalize_path(dst)
-
-        if src_str not in self._files:
-            raise FileNotFoundError(f"No such file: {src}")
-
-        self._ensure_parent_dir(dst_str)
-        self._files[dst_str] = self._files[src_str]
-
-    def move(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
-        """Move/rename a file or directory."""
-        src_str = self._normalize_path(src)
-        dst_str = self._normalize_path(dst)
-
-        if src_str in self._files:
-            self._ensure_parent_dir(dst_str)
-            self._files[dst_str] = self._files[src_str]
-            del self._files[src_str]
-        elif src_str in self._dirs:
-            # Move directory and all children
-            self._ensure_parent_dir(dst_str)
-            self._dirs.add(dst_str)
-            self._dirs.remove(src_str)
-
-            # Move all files in directory
-            files_to_move = [f for f in self._files if f.startswith(src_str + "/")]
-            for file_path in files_to_move:
-                new_path = file_path.replace(src_str, dst_str, 1)
-                self._files[new_path] = self._files[file_path]
-                del self._files[file_path]
-
-            # Move all subdirectories
-            dirs_to_move = [d for d in self._dirs if d.startswith(src_str + "/")]
-            for dir_path in dirs_to_move:
-                new_path = dir_path.replace(src_str, dst_str, 1)
-                self._dirs.add(new_path)
-                self._dirs.remove(dir_path)
-        else:
-            raise FileNotFoundError(f"No such file or directory: {src}")
-
-    def get_size(self, path: Union[str, Path]) -> int:
-        """Get file size in bytes."""
-        path_str = self._normalize_path(path)
-        if path_str not in self._files:
-            raise FileNotFoundError(f"No such file: {path}")
-        return len(self._files[path_str])

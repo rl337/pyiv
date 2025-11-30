@@ -153,18 +153,19 @@ def test_factory_function():
 
 def test_get_injector_with_config_instance():
     """Test get_injector with a Config instance."""
+
     class TestConfig(Config):
         def __init__(self, value: str):
             self.value = value
             super().__init__()
-        
+
         def configure(self):
             self.register_instance(str, self.value)
-    
+
     # Create instance with parameter
     config_instance = TestConfig("test-value")
     injector = get_injector(config_instance)
-    
+
     # Should use the instance directly
     value = injector.inject(str)
     assert value == "test-value"
@@ -172,10 +173,11 @@ def test_get_injector_with_config_instance():
 
 def test_get_injector_with_config_class():
     """Test get_injector with a Config class (original behavior)."""
+
     class TestConfig(Config):
         def configure(self):
             self.register_instance(str, "default-value")
-    
+
     injector = get_injector(TestConfig)
     value = injector.inject(str)
     assert value == "default-value"
