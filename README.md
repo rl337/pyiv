@@ -2,6 +2,16 @@
 
 A lightweight Python dependency injection framework with utility modules for filesystem operations, configuration management, and time/clock abstractions.
 
+## Versioning
+
+This project uses **automatic semantic versioning**:
+
+- **Regular commits to main**: Automatically bumps patch version (0.1.0 → 0.1.1)
+- **Merge commits to main**: Automatically bumps minor version (0.1.0 → 0.2.0)
+- **Major versions**: Must be bumped manually using `poetry version major`
+
+Version bumps happen automatically via GitHub Actions on every push to main. Both `pyproject.toml` and `pyiv/__init__.py` are updated automatically.
+
 ## Overview
 
 pyiv (Python Injection) provides a simple yet powerful dependency injection system for Python applications, along with utility modules for common operations. It's designed to help manage dependencies, configuration, and cross-cutting concerns in Python projects.
