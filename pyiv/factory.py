@@ -3,7 +3,7 @@
 from typing import Protocol, TypeVar, Generic, Any, Callable, Optional
 from abc import ABC, abstractmethod
 
-T = TypeVar('T')
+T = TypeVar('T', covariant=True)
 
 
 class Factory(Protocol, Generic[T]):

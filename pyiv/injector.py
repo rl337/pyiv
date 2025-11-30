@@ -102,7 +102,7 @@ class Injector:
             return self._instantiate(cls, **kwargs)
         return self._instantiate(concrete, **kwargs)
     
-    def _instantiate(self, concrete: Type, **kwargs) -> Any:
+    def _instantiate(self, concrete: Union[Type, Callable[..., Any]], **kwargs) -> Any:
         """Instantiate a class or call a factory function.
         
         Args:
