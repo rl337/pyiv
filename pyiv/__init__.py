@@ -1,12 +1,12 @@
 """pyiv - A lightweight dependency injection library for Python."""
 
-from pyiv.config import Config
-from pyiv.injector import Injector, get_injector
-from pyiv.filesystem import Filesystem, RealFilesystem, MemoryFilesystem
 from pyiv.clock import Clock, RealClock, SyntheticClock, Timer
-from pyiv.datetime_service import DateTimeService, PythonDateTimeService, MockDateTimeService
-from pyiv.factory import Factory, BaseFactory, SimpleFactory
-from pyiv.singleton import SingletonType, GlobalSingletonRegistry
+from pyiv.config import Config
+from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
+from pyiv.factory import BaseFactory, Factory, SimpleFactory
+from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
+from pyiv.injector import Injector, get_injector
+from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 __version__ = "0.2.0"
 __all__ = [
