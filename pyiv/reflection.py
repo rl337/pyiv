@@ -130,7 +130,7 @@ class ReflectionConfig(Config):
         
         # Scan the main module for implementations
         for name, obj in inspect.getmembers(package):
-            if self._is_implementation(obj, interface, reg["pattern"]):
+            if self._is_implementation(obj, interface, reg["pattern"], package_path):
                 implementations[name] = obj
         
         # Recursively scan submodules if requested

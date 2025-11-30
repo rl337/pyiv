@@ -117,3 +117,4 @@ class TestFactoryProtocol:
 
         user = use_factory(factory)
         assert isinstance(user, User)
+

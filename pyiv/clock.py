@@ -236,3 +236,4 @@ class SyntheticTimer(Timer):
     def is_active(self) -> bool:
         """Check if timer is active."""
         return self._active
+
