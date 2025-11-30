@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+# Create a non-root user to avoid permission issues
+RUN useradd -m -u 1000 pyivuser && chown -R pyivuser:pyivuser /app
+
 # Copy project files
 COPY pyproject.toml ./
 COPY README.md ./
@@ -19,6 +22,9 @@ COPY tests/ ./tests/
 
 # Install the project and dev dependencies
 RUN pip install --no-cache-dir -e ".[dev]"
+
+# Switch to non-root user
+USER pyivuser
 
 # Set default command to run tests
 CMD ["pytest", "tests/", "-v"]
