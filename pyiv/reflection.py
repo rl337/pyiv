@@ -167,7 +167,8 @@ class ReflectionConfig(Config):
         self,
         obj: Any,
         interface: Type,
-        pattern: Optional[str]
+        pattern: Optional[str],
+        current_module_path: Optional[str] = None
     ) -> bool:
         """Check if an object implements the interface.
         
@@ -175,6 +176,7 @@ class ReflectionConfig(Config):
             obj: The object to check (class, function, etc.)
             interface: The interface to check against
             pattern: Optional name pattern to match
+            current_module_path: The module path currently being scanned (for validation)
             
         Returns:
             True if the object is a valid implementation, False otherwise
@@ -192,38 +194,53 @@ class ReflectionConfig(Config):
             if not self._matches_pattern(obj.__name__, pattern):
                 return False
         
-        # Must be defined in the registered package (not imported from elsewhere)
-        # This ensures we only discover implementations within the specified module
-        if not self._is_in_package(obj, interface):
+        # Must be defined in the current module being scanned (not imported from elsewhere)
+        # This ensures we only discover implementations that are actually defined in
+        # the module being scanned, preventing duplicates when classes are re-exported
+        if not self._is_in_module(obj, current_module_path, interface):
             return False
         
         return True
     
-    def _is_in_package(self, obj: Any, interface: Type) -> bool:
-        """Check if an object is defined within the registered package.
+    def _is_in_module(
+        self,
+        obj: Any,
+        current_module_path: Optional[str],
+        interface: Type
+    ) -> bool:
+        """Check if an object is defined in the specific module being scanned.
         
-        This prevents discovering classes that are imported from other packages.
-        We only want to discover classes that are actually defined in the
-        registered package.
+        This prevents discovering classes that are imported from other modules,
+        even within the same package. When a class is imported and re-exported
+        in multiple modules, we only want to discover it once from the module
+        where it's actually defined.
         
         Args:
             obj: The class to check
+            current_module_path: The module path currently being scanned
             interface: The interface (used to get the registered package path)
             
         Returns:
-            True if the object is defined in the registered package, False otherwise
+            True if the object is defined in the current module, False otherwise
         """
+        # Get the module where the class is actually defined
+        obj_module = getattr(obj, "__module__", None)
+        if obj_module is None:
+            return False
+        
+        # If we have a current module path, verify exact match
+        # This ensures we only discover classes defined in the specific module
+        # being scanned, not classes imported from other modules
+        if current_module_path is not None:
+            return obj_module == current_module_path
+        
+        # Fallback: check if it's in the registered package (for backward compatibility)
         if interface not in self._module_registrations:
             return False
         
         reg = self._module_registrations[interface]
         package_path = reg["package"]
         recursive = reg.get("recursive", True)
-        
-        # Get the module where the class is defined
-        obj_module = getattr(obj, "__module__", None)
-        if obj_module is None:
-            return False
         
         # Exact match: class is in the registered package
         if obj_module == package_path:
@@ -270,7 +287,7 @@ class ReflectionConfig(Config):
             
             # Scan this submodule for implementations
             for name, obj in inspect.getmembers(submodule):
-                if self._is_implementation(obj, interface, reg["pattern"]):
+                if self._is_implementation(obj, interface, reg["pattern"], full_submodule_path):
                     # Use full path from root package to avoid collisions
                     # e.g., "pkg.mod.ClassA" vs "pkg.sub.mod.ClassA"
                     full_name = f"{relative_path}.{name}" if relative_path else name
