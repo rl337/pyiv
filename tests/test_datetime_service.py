@@ -4,7 +4,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
+from pyiv.datetime_service import (DateTimeService, MockDateTimeService,
+                                   PythonDateTimeService)
 
 
 def test_datetime_service_now_utc():
@@ -128,7 +129,10 @@ def test_mock_datetime_service_iso_format():
 
     iso_str = service.now_utc_iso()
     assert iso_str == fixed_time.isoformat()
-    assert "2024-01-15T10:30:45.123456+00:00" in iso_str or "2024-01-15T10:30:45.123456Z" in iso_str
+    assert (
+        "2024-01-15T10:30:45.123456+00:00" in iso_str
+        or "2024-01-15T10:30:45.123456Z" in iso_str
+    )
 
 
 def test_datetime_service_timezone_aware():

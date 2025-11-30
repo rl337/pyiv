@@ -71,4 +71,3 @@ class GlobalSingletonRegistry:
         """Clear all global singletons (useful for testing)."""
         with cls._lock:
             cls._instances.clear()
-

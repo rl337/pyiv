@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 
 import pytest
 
-from pyiv import Config, GlobalSingletonRegistry, Injector, SingletonType, get_injector
+from pyiv import (Config, GlobalSingletonRegistry, Injector, SingletonType,
+                  get_injector)
 
 
 class Database(ABC):
@@ -56,7 +57,9 @@ class TestPerInjectorSingleton:
 
         class SingletonConfig(Config):
             def configure(self):
-                self.register(Database, PostgreSQL, singleton_type=SingletonType.SINGLETON)
+                self.register(
+                    Database, PostgreSQL, singleton_type=SingletonType.SINGLETON
+                )
 
         injector = get_injector(SingletonConfig)
 
@@ -74,7 +77,9 @@ class TestPerInjectorSingleton:
 
         class SingletonConfig(Config):
             def configure(self):
-                self.register(Database, PostgreSQL, singleton_type=SingletonType.SINGLETON)
+                self.register(
+                    Database, PostgreSQL, singleton_type=SingletonType.SINGLETON
+                )
 
         injector1 = get_injector(SingletonConfig)
         injector2 = get_injector(SingletonConfig)
@@ -91,7 +96,9 @@ class TestPerInjectorSingleton:
 
         class SingletonConfig(Config):
             def configure(self):
-                self.register(Database, PostgreSQL, singleton_type=SingletonType.SINGLETON)
+                self.register(
+                    Database, PostgreSQL, singleton_type=SingletonType.SINGLETON
+                )
 
         injector = get_injector(SingletonConfig)
 
@@ -117,7 +124,9 @@ class TestGlobalSingleton:
 
         class GlobalSingletonConfig(Config):
             def configure(self):
-                self.register(Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON)
+                self.register(
+                    Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON
+                )
 
         injector1 = get_injector(GlobalSingletonConfig)
         injector2 = get_injector(GlobalSingletonConfig)
@@ -135,7 +144,9 @@ class TestGlobalSingleton:
 
         class GlobalSingletonConfig(Config):
             def configure(self):
-                self.register(Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON)
+                self.register(
+                    Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON
+                )
 
         instances = []
         lock = threading.Lock()
@@ -166,7 +177,9 @@ class TestGlobalSingleton:
 
         class GlobalSingletonConfig(Config):
             def configure(self):
-                self.register(Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON)
+                self.register(
+                    Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON
+                )
 
         # First injector
         injector1 = get_injector(GlobalSingletonConfig)
@@ -229,7 +242,12 @@ class TestSingletonBackwardCompatibility:
         class ConflictConfig(Config):
             def configure(self):
                 with pytest.raises(ValueError):
-                    self.register(Database, PostgreSQL, singleton=True, singleton_type=SingletonType.GLOBAL_SINGLETON)
+                    self.register(
+                        Database,
+                        PostgreSQL,
+                        singleton=True,
+                        singleton_type=SingletonType.GLOBAL_SINGLETON,
+                    )
 
 
 class TestGlobalSingletonRegistry:
@@ -268,4 +286,3 @@ class TestGlobalSingletonRegistry:
         GlobalSingletonRegistry.clear()
         assert not GlobalSingletonRegistry.has(TestClass)
         assert GlobalSingletonRegistry.get(TestClass) is None
-

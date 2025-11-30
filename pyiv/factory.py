@@ -99,4 +99,3 @@ class SimpleFactory(Generic[T]):
             An instance created by the callable
         """
         return self._callable(*args, **kwargs)
-

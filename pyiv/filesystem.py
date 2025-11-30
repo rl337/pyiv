@@ -12,7 +12,9 @@ class Filesystem(ABC):
     """Abstract filesystem interface for file operations."""
 
     @abstractmethod
-    def open(self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None) -> Union[TextIO, BinaryIO]:
+    def open(
+        self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
+    ) -> Union[TextIO, BinaryIO]:
         """Open a file.
 
         Args:
@@ -62,7 +64,9 @@ class Filesystem(ABC):
         pass
 
     @abstractmethod
-    def mkdir(self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False) -> None:
+    def mkdir(
+        self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False
+    ) -> None:
         """Create a directory.
 
         Args:
@@ -105,7 +109,9 @@ class Filesystem(ABC):
         pass
 
     @abstractmethod
-    def write_text(self, path: Union[str, Path], content: str, encoding: str = "utf-8") -> None:
+    def write_text(
+        self, path: Union[str, Path], content: str, encoding: str = "utf-8"
+    ) -> None:
         """Write text to a file.
 
         Args:
@@ -197,7 +203,9 @@ class Filesystem(ABC):
 class RealFilesystem(Filesystem):
     """Real filesystem implementation using standard library."""
 
-    def open(self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None) -> Union[TextIO, BinaryIO]:
+    def open(
+        self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
+    ) -> Union[TextIO, BinaryIO]:
         """Open a file using built-in open()."""
         if encoding is not None and "b" not in mode:
             return open(file, mode, encoding=encoding)  # type: ignore[return-value]
@@ -215,7 +223,9 @@ class RealFilesystem(Filesystem):
         """Check if path is a directory."""
         return Path(path).is_dir()
 
-    def mkdir(self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False) -> None:
+    def mkdir(
+        self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False
+    ) -> None:
         """Create a directory."""
         Path(path).mkdir(parents=parents, exist_ok=exist_ok)
 
@@ -231,7 +241,9 @@ class RealFilesystem(Filesystem):
         """Read text from a file."""
         return Path(path).read_text(encoding=encoding)
 
-    def write_text(self, path: Union[str, Path], content: str, encoding: str = "utf-8") -> None:
+    def write_text(
+        self, path: Union[str, Path], content: str, encoding: str = "utf-8"
+    ) -> None:
         """Write text to a file."""
         Path(path).write_text(content, encoding=encoding)
 
@@ -289,7 +301,9 @@ class MemoryFilesystem(Filesystem):
         if parent not in self._dirs:
             self._dirs.add(parent)
 
-    def open(self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None) -> Union[TextIO, BinaryIO]:
+    def open(
+        self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
+    ) -> Union[TextIO, BinaryIO]:
         """Open a file in memory."""
         path = self._normalize_path(file)
 
@@ -311,7 +325,9 @@ class MemoryFilesystem(Filesystem):
             self._ensure_parent_dir(path)
 
             if "b" in mode:
-                stream: Union[_MemoryBytesIO, _MemoryTextIO] = _MemoryBytesIO(existing, path, self)
+                stream: Union[_MemoryBytesIO, _MemoryTextIO] = _MemoryBytesIO(
+                    existing, path, self
+                )
             else:
                 text = existing.decode(encoding or "utf-8")
                 stream = _MemoryTextIO(text, path, self, encoding or "utf-8")
@@ -335,7 +351,9 @@ class MemoryFilesystem(Filesystem):
         path_str = self._normalize_path(path)
         return path_str in self._dirs
 
-    def mkdir(self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False) -> None:
+    def mkdir(
+        self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False
+    ) -> None:
         """Create a directory."""
         path_str = self._normalize_path(path)
         if path_str in self._dirs and not exist_ok:
@@ -388,7 +406,9 @@ class MemoryFilesystem(Filesystem):
             raise FileNotFoundError(f"No such file: {path}")
         return self._files[path_str].decode(encoding)
 
-    def write_text(self, path: Union[str, Path], content: str, encoding: str = "utf-8") -> None:
+    def write_text(
+        self, path: Union[str, Path], content: str, encoding: str = "utf-8"
+    ) -> None:
         """Write text to a file."""
         path_str = self._normalize_path(path)
         self._ensure_parent_dir(path_str)
@@ -531,5 +551,7 @@ class _MemoryTextIO(io.StringIO):
         if not self.closed:
             self.seek(0)
             content = self.read()
-            self._pyiv_filesystem._files[self._pyiv_path] = content.encode(self._pyiv_encoding)
+            self._pyiv_filesystem._files[self._pyiv_path] = content.encode(
+                self._pyiv_encoding
+            )
         super().close()
