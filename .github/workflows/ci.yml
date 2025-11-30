@@ -38,9 +38,10 @@ jobs:
 
       - name: Install project dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -e ".[dev]" || pip install -e .
-          # Ensure we have compatible versions (isort 7.0.0 not available, use latest 5.x)
-          pip install pytest pytest-cov black==25.11.0 "isort>=5.12.0,<6.0" mypy bandit
+          # Pin versions for consistency (isort 7.0.0 may not be available on all Python versions)
+          pip install pytest pytest-cov black==25.11.0 isort==5.13.2 mypy bandit
 
       - name: Run validation checks
         run: |
