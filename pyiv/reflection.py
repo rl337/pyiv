@@ -283,7 +283,10 @@ class ReflectionConfig(Config):
             # Build full path from root for this submodule
             full_submodule_path = f"{package_path}.{submodule_name}"
             # Build relative path from root package for naming
-            relative_path = full_submodule_path[len(root_package_path) + 1:] if full_submodule_path.startswith(root_package_path) else submodule_name
+            if full_submodule_path.startswith(root_package_path):
+                relative_path = full_submodule_path[len(root_package_path) + 1 :]
+            else:
+                relative_path = submodule_name
             
             # Scan this submodule for implementations
             for name, obj in inspect.getmembers(submodule):
