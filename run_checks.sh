@@ -2,7 +2,8 @@
 # Run all validation checks for pyiv
 # This script is used by CI and can be run locally or in Docker
 
-set -e  # Exit on any error
+# Don't use set -e here - we want to track failures manually
+# set -e  # Exit on any error
 
 echo "=========================================="
 echo "Running pyiv validation checks"
