@@ -261,7 +261,7 @@ class RealFilesystem(Filesystem):
 
     def move(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
         """Move/rename a file or directory."""
-        shutil.move(src, dst)
+        shutil.move(src, dst)  # type: ignore[arg-type]
 
     def get_size(self, path: Union[str, Path]) -> int:
         """Get file size in bytes."""

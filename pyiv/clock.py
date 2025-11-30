@@ -1,5 +1,7 @@
 """Clock abstraction for dependency injection."""
 
+from __future__ import annotations
+
 import threading
 import time
 from abc import ABC, abstractmethod
