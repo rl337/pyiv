@@ -43,10 +43,11 @@ jobs:
           # Pin versions for consistency across Python versions
           # black 25.x requires Python 3.9+, use 24.8.0 for Python 3.8 compatibility
           # isort 7.0.0 may not be available, use 5.13.2 for compatibility
+          # mypy 1.8+ requires Python 3.9+, use 1.7.1 for Python 3.8 compatibility
           if python -c "import sys; exit(0 if sys.version_info >= (3, 9) else 1)"; then
             pip install pytest pytest-cov black==25.11.0 isort==5.13.2 mypy bandit
           else
-            pip install pytest pytest-cov black==24.8.0 isort==5.13.2 mypy bandit
+            pip install pytest pytest-cov black==24.8.0 isort==5.13.2 "mypy<1.8" bandit
           fi
 
       - name: Run validation checks
