@@ -12,7 +12,9 @@ class Filesystem(ABC):
     """Abstract filesystem interface for file operations."""
 
     @abstractmethod
-    def open(self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None) -> Union[TextIO, BinaryIO]:
+    def open(
+        self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
+    ) -> Union[TextIO, BinaryIO]:
         """Open a file.
 
         Args:
@@ -197,7 +199,9 @@ class Filesystem(ABC):
 class RealFilesystem(Filesystem):
     """Real filesystem implementation using standard library."""
 
-    def open(self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None) -> Union[TextIO, BinaryIO]:
+    def open(
+        self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
+    ) -> Union[TextIO, BinaryIO]:
         """Open a file using built-in open()."""
         if encoding is not None and "b" not in mode:
             return open(file, mode, encoding=encoding)  # type: ignore[return-value]
@@ -257,7 +261,7 @@ class RealFilesystem(Filesystem):
 
     def move(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
         """Move/rename a file or directory."""
-        shutil.move(src, dst)
+        shutil.move(src, dst)  # type: ignore[arg-type]
 
     def get_size(self, path: Union[str, Path]) -> int:
         """Get file size in bytes."""
@@ -289,7 +293,9 @@ class MemoryFilesystem(Filesystem):
         if parent not in self._dirs:
             self._dirs.add(parent)
 
-    def open(self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None) -> Union[TextIO, BinaryIO]:
+    def open(
+        self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
+    ) -> Union[TextIO, BinaryIO]:
         """Open a file in memory."""
         path = self._normalize_path(file)
 

@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/.pytest_cache
+    command: pytest tests/ -v
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  format:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    user: "${UID:-1000}:${GID:-1000}"
+    command: sh -c "black pyiv/ tests/ && isort pyiv/ tests/"
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  check-format:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    user: "${UID:-1000}:${GID:-1000}"
+    command: sh -c "black --check pyiv/ tests/ && isort --check-only pyiv/ tests/"
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  lint:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    command: sh -c "mypy pyiv/ || true"
+    environment:
+      - PYTHONUNBUFFERED=1
+

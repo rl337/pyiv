@@ -229,7 +229,12 @@ class TestSingletonBackwardCompatibility:
         class ConflictConfig(Config):
             def configure(self):
                 with pytest.raises(ValueError):
-                    self.register(Database, PostgreSQL, singleton=True, singleton_type=SingletonType.GLOBAL_SINGLETON)
+                    self.register(
+                        Database,
+                        PostgreSQL,
+                        singleton=True,
+                        singleton_type=SingletonType.GLOBAL_SINGLETON,
+                    )
 
 
 class TestGlobalSingletonRegistry:
