@@ -25,10 +25,12 @@ run_check() {
     echo ""
     echo -e "${YELLOW}Running: $name${NC}"
     echo "Command: $@"
-    if "$@"; then
+    # Capture both stdout and stderr, and exit code
+    if "$@" 2>&1; then
         echo -e "${GREEN}✓ $name passed${NC}"
     else
-        echo -e "${RED}✗ $name failed${NC}"
+        local exit_code=$?
+        echo -e "${RED}✗ $name failed (exit code: $exit_code)${NC}"
         FAILED=1
     fi
 }
