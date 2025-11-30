@@ -65,4 +65,10 @@ Thumbs.db
 # Project specific
 *.log
 
+<<<<<<< HEAD
+
+=======
 bandit-report.json
+>>>>>>> origin/main
+
+

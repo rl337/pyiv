@@ -162,4 +162,6 @@ def test_real_clock_timer():
     assert call_count[0] == 1
     assert timer.is_active() is False
 
-    timer.cancel()
+
+
+
