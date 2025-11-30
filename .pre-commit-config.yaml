@@ -20,8 +20,9 @@ repos:
     hooks:
       - id: run-checks
         name: Run all validation checks
-        entry: ./run_checks.sh
+        entry: bash -c './run_checks.sh'
         language: system
         pass_filenames: false
         always_run: true
+        stages: [pre-commit]
 

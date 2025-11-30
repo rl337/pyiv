@@ -42,7 +42,7 @@ run_check "isort import sorting" isort --check-only pyiv/ tests/
 run_check "Pytest with coverage" pytest --cov=pyiv --cov-report=xml --cov-report=html --cov-report=term-missing tests/
 
 # 4. mypy type checking
-run_check "mypy type checking" mypy pyiv/ || true  # Don't fail on mypy errors for now
+run_check "mypy type checking" mypy pyiv/
 
 # 5. Bandit security check
 run_check "Bandit security check" bandit -r pyiv/ -f json -o bandit-report.json || true  # Don't fail on bandit warnings
