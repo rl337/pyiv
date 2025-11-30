@@ -20,6 +20,9 @@ COPY tests/ ./tests/
 # Install the project and dev dependencies
 RUN pip install --no-cache-dir -e ".[dev]"
 
+# Install pre-commit if not already installed
+RUN pip install --no-cache-dir pre-commit || true
+
 # Create a non-root user and fix ownership
 # Note: When using volumes, the host user should be used via --user flag
 # This user is mainly for running commands without volumes
@@ -28,6 +31,10 @@ RUN useradd -m -u 1000 pyivuser && chown -R pyivuser:pyivuser /app
 # Switch to non-root user
 USER pyivuser
 
-# Set default command to run tests
-CMD ["pytest", "tests/", "-v"]
+# Copy run_checks.sh script
+COPY run_checks.sh ./
+RUN chmod +x run_checks.sh
+
+# Set default command to run checks
+CMD ["./run_checks.sh"]
 
