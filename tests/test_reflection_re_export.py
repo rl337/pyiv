@@ -1,9 +1,10 @@
 """Tests for re-exported classes to ensure they're only discovered once."""
 
-import pytest
+import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
-import sys
+
+import pytest
 
 from pyiv import ReflectionConfig
 

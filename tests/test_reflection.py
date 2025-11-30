@@ -1,12 +1,13 @@
 """Tests for reflection-based discovery in pyiv."""
 
-import pytest
 from abc import ABC, abstractmethod
 from typing import Any
 
+import pytest
+
 from pyiv import ReflectionConfig, get_injector, SingletonType
-from pyiv.filesystem import Filesystem, RealFilesystem, MemoryFilesystem
-from pyiv.datetime_service import DateTimeService, PythonDateTimeService, MockDateTimeService
+from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
+from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 
 
 # Test interfaces

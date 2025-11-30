@@ -1,10 +1,11 @@
 """Tests for nested submodule path handling in reflection discovery."""
 
-import pytest
+import sys
+import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
-import tempfile
-import sys
+
+import pytest
 
 from pyiv import ReflectionConfig
 
