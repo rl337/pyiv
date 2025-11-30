@@ -284,7 +284,7 @@ class ReflectionConfig(Config):
             full_submodule_path = f"{package_path}.{submodule_name}"
             # Build relative path from root package for naming
             if full_submodule_path.startswith(root_package_path):
-                relative_path = full_submodule_path[len(root_package_path) + 1 :]
+                relative_path = full_submodule_path[len(root_package_path) + 1:]
             else:
                 relative_path = submodule_name
             
