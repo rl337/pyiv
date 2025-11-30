@@ -128,9 +128,7 @@ class Injector:
             bound_kwargs = self._resolve_dependencies(sig, kwargs)
             return concrete(**bound_kwargs)
         else:
-            raise TypeError(
-                f"Cannot instantiate {concrete}, must be a class or callable"
-            )
+            raise TypeError(f"Cannot instantiate {concrete}, must be a class or callable")
 
     def _resolve_dependencies(
         self, sig: inspect.Signature, provided_kwargs: Dict[str, Any]
@@ -184,9 +182,7 @@ class Injector:
                     set,
                     frozenset,
                 )
-                is_registered = not is_builtin and self._config.has_registration(
-                    annotation
-                )
+                is_registered = not is_builtin and self._config.has_registration(annotation)
 
                 if is_registered:
                     # Try to inject this dependency
@@ -287,6 +283,4 @@ def get_injector(config: Union[Type[Config], Config]) -> Injector:
         config_instance = config()
         return Injector(config_instance)
     else:
-        raise TypeError(
-            f"config must be a Config subclass or Config instance, got {type(config)}"
-        )
+        raise TypeError(f"config must be a Config subclass or Config instance, got {type(config)}")

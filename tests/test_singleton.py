@@ -56,9 +56,7 @@ class TestPerInjectorSingleton:
 
         class SingletonConfig(Config):
             def configure(self):
-                self.register(
-                    Database, PostgreSQL, singleton_type=SingletonType.SINGLETON
-                )
+                self.register(Database, PostgreSQL, singleton_type=SingletonType.SINGLETON)
 
         injector = get_injector(SingletonConfig)
 
@@ -76,9 +74,7 @@ class TestPerInjectorSingleton:
 
         class SingletonConfig(Config):
             def configure(self):
-                self.register(
-                    Database, PostgreSQL, singleton_type=SingletonType.SINGLETON
-                )
+                self.register(Database, PostgreSQL, singleton_type=SingletonType.SINGLETON)
 
         injector1 = get_injector(SingletonConfig)
         injector2 = get_injector(SingletonConfig)
@@ -95,9 +91,7 @@ class TestPerInjectorSingleton:
 
         class SingletonConfig(Config):
             def configure(self):
-                self.register(
-                    Database, PostgreSQL, singleton_type=SingletonType.SINGLETON
-                )
+                self.register(Database, PostgreSQL, singleton_type=SingletonType.SINGLETON)
 
         injector = get_injector(SingletonConfig)
 
@@ -123,9 +117,7 @@ class TestGlobalSingleton:
 
         class GlobalSingletonConfig(Config):
             def configure(self):
-                self.register(
-                    Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON
-                )
+                self.register(Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON)
 
         injector1 = get_injector(GlobalSingletonConfig)
         injector2 = get_injector(GlobalSingletonConfig)
@@ -143,9 +135,7 @@ class TestGlobalSingleton:
 
         class GlobalSingletonConfig(Config):
             def configure(self):
-                self.register(
-                    Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON
-                )
+                self.register(Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON)
 
         instances = []
         lock = threading.Lock()
@@ -176,9 +166,7 @@ class TestGlobalSingleton:
 
         class GlobalSingletonConfig(Config):
             def configure(self):
-                self.register(
-                    Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON
-                )
+                self.register(Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON)
 
         # First injector
         injector1 = get_injector(GlobalSingletonConfig)

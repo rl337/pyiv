@@ -195,9 +195,7 @@ class ReflectionConfig(Config):
 
         return True
 
-    def _is_in_module(
-        self, obj: Any, current_module_path: Optional[str], interface: Type
-    ) -> bool:
+    def _is_in_module(self, obj: Any, current_module_path: Optional[str], interface: Type) -> bool:
         """Check if an object is defined in the specific module being scanned.
 
         This prevents discovering classes that are imported from other modules,
@@ -280,9 +278,7 @@ class ReflectionConfig(Config):
 
             # Scan this submodule for implementations
             for name, obj in inspect.getmembers(submodule):
-                if self._is_implementation(
-                    obj, interface, reg["pattern"], full_submodule_path
-                ):
+                if self._is_implementation(obj, interface, reg["pattern"], full_submodule_path):
                     # Use full path from root package to avoid collisions
                     # e.g., "pkg.mod.ClassA" vs "pkg.sub.mod.ClassA"
                     full_name = f"{relative_path}.{name}" if relative_path else name
