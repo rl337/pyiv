@@ -9,7 +9,7 @@ from pyiv.injector import Injector, get_injector
 from pyiv.reflection import ReflectionConfig
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __all__ = [
     "Config",
     "ReflectionConfig",
