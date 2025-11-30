@@ -39,8 +39,8 @@ docker-test:
 	docker run --rm -v $(PWD):/app pyiv:latest pytest tests/ -v
 
 docker-format:
-	docker run --rm -v $(PWD):/app pyiv:latest sh -c "black pyiv/ tests/ && isort pyiv/ tests/"
+	docker run --rm -v $(PWD):/app -w /app --user $(shell id -u):$(shell id -g) pyiv:latest sh -c "black pyiv/ tests/ && isort pyiv/ tests/"
 
 docker-check-format:
-	docker run --rm -v $(PWD):/app pyiv:latest sh -c "black --check pyiv/ tests/ && isort --check-only pyiv/ tests/"
+	docker run --rm -v $(PWD):/app -w /app --user $(shell id -u):$(shell id -g) pyiv:latest sh -c "black --check pyiv/ tests/ && isort --check-only pyiv/ tests/"
 
