@@ -126,4 +126,6 @@ jobs:
           git add pyproject.toml pyiv/__init__.py
           git commit -m "chore: auto-bump version to ${NEW_VERSION} (${BUMP_TYPE}) [skip ci]"
           git push origin ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
