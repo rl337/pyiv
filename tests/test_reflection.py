@@ -6,11 +6,7 @@ from typing import Any
 import pytest
 
 from pyiv import ReflectionConfig, SingletonType, get_injector
-from pyiv.datetime_service import (
-    DateTimeService,
-    MockDateTimeService,
-    PythonDateTimeService,
-)
+from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 
 
