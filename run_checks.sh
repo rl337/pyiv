@@ -36,7 +36,7 @@ run_check() {
 }
 
 # 1. Black formatting check
-run_check "Black formatting" black --check pyiv/ tests/
+run_check "Black formatting" black --check --diff pyiv/ tests/
 
 # 2. isort import sorting check
 run_check "isort import sorting" isort --check-only pyiv/ tests/
