@@ -304,7 +304,7 @@ class ReflectionConfig(Config):
         Returns:
             Dictionary mapping submodule names to module objects
         """
-        submodules = {}
+        submodules: Dict[str, Any] = {}
 
         # Get the package's directory path
         package_file = getattr(package, "__file__", None)
