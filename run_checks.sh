@@ -42,9 +42,11 @@ run_check "Black formatting" black --check --diff pyiv/ tests/
 run_check "isort import sorting" isort --check-only pyiv/ tests/
 
 # 3. Pytest with coverage
+# Create build directory if it doesn't exist
+mkdir -p build
 # Skip html report to avoid permission issues with htmlcov directory
 # Exit code 2 from pytest-cov is acceptable (coverage collection succeeded, html report may fail)
-pytest --cov=pyiv --cov-report=xml --cov-report=term-missing tests/ 2>&1
+pytest --cov=pyiv --cov-report=xml:build/coverage.xml --cov-report=term-missing tests/ 2>&1
 PYTEST_EXIT=$?
 if [ $PYTEST_EXIT -eq 0 ] || [ $PYTEST_EXIT -eq 2 ]; then
     echo -e "${GREEN}✓ Pytest with coverage passed${NC}"
@@ -57,7 +59,9 @@ fi
 run_check "mypy type checking" mypy pyiv/
 
 # 5. Bandit security check (don't fail on warnings)
-bandit -r pyiv/ -f json -o bandit-report.json || true
+# Create build directory if it doesn't exist
+mkdir -p build
+bandit -r pyiv/ -f json -o build/bandit-report.json || true
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Bandit security check passed${NC}"
 else

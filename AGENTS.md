@@ -61,6 +61,43 @@ poetry version major
 - Use `mypy` for type checking
 - Run `./run_checks.sh` to verify all checks pass
 
+## Build Artifacts
+
+**IMPORTANT**: All build artifacts should be placed in a `build/` directory that is in `.gitignore`.
+
+### Build Directory Structure
+
+All projects should have a `build/` directory (separate from Python's `build/` for distribution) where build artifacts are stored:
+
+- **Security reports**: `build/bandit-report.json`
+- **Coverage reports**: `build/coverage.xml`, `build/htmlcov/` (if needed)
+- **Test reports**: `build/test-results.xml`
+- **Any other generated files**: All build outputs go in `build/`
+
+### Why This Matters
+
+- Keeps the repository clean
+- Prevents accidentally committing generated files
+- Makes it clear what files are build artifacts vs source code
+- Allows easy cleanup with `rm -rf build/`
+
+### Implementation
+
+1. Add `build/` to `.gitignore` (if not already present)
+2. Update scripts to output to `build/` directory
+3. Create `build/` directory structure as needed
+4. Never commit files from `build/` directory
+
+Example:
+```bash
+# Create build directory if it doesn't exist
+mkdir -p build
+
+# Output artifacts to build/
+bandit -r pyiv/ -f json -o build/bandit-report.json
+pytest --cov-report=xml --cov-report=term-missing --cov-report=html:build/htmlcov
+```
+
 ## Key Files
 
 - `pyproject.toml`: Project configuration and dependencies

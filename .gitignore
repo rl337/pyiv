@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+build/  # Python build directory (for setuptools)
 develop-eggs/
 dist/
 downloads/
@@ -26,6 +26,11 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Build artifacts directory (for generated reports, coverage, etc.)
+# Note: This is separate from Python's build/ directory above
+# We use a build/ directory at the project root for all build artifacts
+build/
 
 # PyInstaller
 *.manifest
@@ -64,7 +69,7 @@ Thumbs.db
 
 # Project specific
 *.log
-bandit-report.json
+# bandit-report.json is now in build/ directory
 
 
 
