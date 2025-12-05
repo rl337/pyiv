@@ -1,6 +1,6 @@
 {
   "errors": [],
-  "generated_at": "2025-12-05T08:11:43Z",
+  "generated_at": "2025-12-05T08:15:39Z",
   "metrics": {
     "_totals": {
       "CONFIDENCE.HIGH": 1,
@@ -164,7 +164,7 @@
         549,
         550
       ],
-      "more_info": "https://bandit.readthedocs.io/en/1.7.10/plugins/b110_try_except_pass.html",
+      "more_info": "https://bandit.readthedocs.io/en/1.9.2/plugins/b110_try_except_pass.html",
       "test_id": "B110",
       "test_name": "try_except_pass"
     }
