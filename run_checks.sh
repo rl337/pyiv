@@ -36,19 +36,19 @@ run_check() {
 }
 
 # 1. Black formatting check
-run_check "Black formatting" black --check --diff pyiv/ tests/
+run_check "Black formatting" poetry run black --check --diff pyiv/ tests/
 
 # 2. isort import sorting check
-run_check "isort import sorting" isort --check-only pyiv/ tests/
+run_check "isort import sorting" poetry run isort --check-only pyiv/ tests/
 
 # 3. Pytest with coverage
-run_check "Pytest with coverage" pytest --cov=pyiv --cov-report=xml --cov-report=html --cov-report=term-missing tests/
+run_check "Pytest with coverage" poetry run pytest --cov=pyiv --cov-report=xml --cov-report=html --cov-report=term-missing tests/
 
 # 4. mypy type checking
-run_check "mypy type checking" mypy pyiv/
+run_check "mypy type checking" poetry run mypy pyiv/
 
 # 5. Bandit security check
-run_check "Bandit security check" bandit -r pyiv/ -f json -o bandit-report.json || true  # Don't fail on bandit warnings
+run_check "Bandit security check" poetry run bandit -r pyiv/ -f json -o bandit-report.json || true  # Don't fail on bandit warnings
 
 echo ""
 echo "=========================================="

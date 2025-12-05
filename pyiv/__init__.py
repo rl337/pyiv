@@ -11,7 +11,8 @@ from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 # Command interface (optional import)
 try:
-    from pyiv.command import Command, ServiceCommand, CLICommand, CommandRunner
+    from pyiv.command import CLICommand, Command, CommandRunner, ServiceCommand
+
     _has_commands = True
 except ImportError:
     _has_commands = False

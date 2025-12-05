@@ -6,11 +6,7 @@ from typing import Any
 import pytest
 
 from pyiv import ReflectionConfig, SingletonType, get_injector
-from pyiv.datetime_service import (
-    DateTimeService,
-    MockDateTimeService,
-    PythonDateTimeService,
-)
+from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 
 
@@ -95,9 +91,7 @@ class UpdateHandler(Handler):
         try:
             # Register and discover
             config = ReflectionConfig()
-            config.register_module(
-                Handler, "test_package.handlers", pattern="*Handler"
-            )
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
             implementations = config.discover_implementations(Handler)
 
@@ -107,9 +101,7 @@ class UpdateHandler(Handler):
         finally:
             sys.path.remove(str(tmp_path))
             # Clean up module cache
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -144,9 +136,7 @@ class NotAHandler:
 
         try:
             config = ReflectionConfig()
-            config.register_module(
-                Handler, "test_package.handlers", pattern="*Handler"
-            )
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
             implementations = config.discover_implementations(Handler)
 
@@ -156,9 +146,7 @@ class NotAHandler:
             assert "NotAHandler" not in implementations
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -200,31 +188,21 @@ class SubHandler(Handler):
 
         try:
             config = ReflectionConfig()
-            config.register_module(
-                Handler, "test_package", pattern="*Handler", recursive=True
-            )
+            config.register_module(Handler, "test_package", pattern="*Handler", recursive=True)
 
             implementations = config.discover_implementations(Handler)
 
             # When registering at package level, submodules get prefixed
             # Check for MainHandler (could be "MainHandler" or "handlers.MainHandler")
             main_found = any("MainHandler" in name for name in implementations.keys())
-            assert (
-                main_found
-            ), f"MainHandler not found in {list(implementations.keys())}"
+            assert main_found, f"MainHandler not found in {list(implementations.keys())}"
 
             # Submodule class should be discovered - check for any name containing SubHandler
-            submodule_found = any(
-                "SubHandler" in name for name in implementations.keys()
-            )
-            assert (
-                submodule_found
-            ), f"SubHandler not found in {list(implementations.keys())}"
+            submodule_found = any("SubHandler" in name for name in implementations.keys())
+            assert submodule_found, f"SubHandler not found in {list(implementations.keys())}"
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -278,9 +256,7 @@ class SubHandler(Handler):
             assert "submodule.handlers.SubHandler" not in implementations
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -313,9 +289,7 @@ ImportedHandler = RealFilesystem
 
         try:
             config = ReflectionConfig()
-            config.register_module(
-                Handler, "test_package.handlers", pattern="*Handler"
-            )
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
             implementations = config.discover_implementations(Handler)
 
@@ -324,9 +298,7 @@ ImportedHandler = RealFilesystem
             assert len(implementations) == 1
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -363,9 +335,7 @@ class CreateHandler(Handler):
             assert "Handler" not in implementations
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -421,9 +391,7 @@ class CustomFilesystem(Filesystem):
 
         try:
             config = ReflectionConfig()
-            config.register_module(
-                Filesystem, "test_package.filesystems", pattern="*Filesystem"
-            )
+            config.register_module(Filesystem, "test_package.filesystems", pattern="*Filesystem")
 
             implementations = config.discover_implementations(Filesystem)
 
@@ -431,9 +399,7 @@ class CustomFilesystem(Filesystem):
             assert len(implementations) == 1
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -477,9 +443,7 @@ class CustomDateTimeService(DateTimeService):
             assert len(implementations) == 1
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -544,9 +508,7 @@ class LocalFilesystem(Filesystem):
 
         try:
             config = ReflectionConfig()
-            config.register_module(
-                Filesystem, "test_package.handlers", pattern="*Filesystem"
-            )
+            config.register_module(Filesystem, "test_package.handlers", pattern="*Filesystem")
 
             implementations = config.discover_implementations(Filesystem)
 
@@ -557,9 +519,7 @@ class LocalFilesystem(Filesystem):
             assert "MemoryFilesystem" not in implementations
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -591,9 +551,7 @@ class CreateHandler(Handler):
 
         try:
             config = ReflectionConfig()
-            config.register_module(
-                Handler, "test_package.handlers", pattern="*Handler"
-            )
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
             injector = get_injector(config)
 
@@ -604,9 +562,7 @@ class CreateHandler(Handler):
             assert issubclass(handler_class, Handler)
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -634,21 +590,15 @@ class CreateHandler(Handler):
 
         try:
             config = ReflectionConfig()
-            config.register_module(
-                Handler, "test_package.handlers", pattern="*Handler"
-            )
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
             injector = get_injector(config)
 
-            with pytest.raises(
-                ValueError, match="No implementation 'UnknownHandler' found"
-            ):
+            with pytest.raises(ValueError, match="No implementation 'UnknownHandler' found"):
                 injector.inject_by_name(Handler, "UnknownHandler")
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
 
@@ -662,9 +612,7 @@ class CreateHandler(Handler):
 
         injector = get_injector(RegularConfig)
 
-        with pytest.raises(
-            ValueError, match="does not support reflection-based discovery"
-        ):
+        with pytest.raises(ValueError, match="does not support reflection-based discovery"):
             injector.inject_by_name(Service, "SomeService")
 
     def test_inject_by_name_with_singleton(self, tmp_path):
@@ -723,8 +671,6 @@ class CreateHandler(Handler):
             assert instance2.calls == 1  # Same instance
         finally:
             sys.path.remove(str(tmp_path))
-            modules_to_remove = [
-                m for m in sys.modules.keys() if m.startswith("test_package")
-            ]
+            modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]

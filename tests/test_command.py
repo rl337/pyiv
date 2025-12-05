@@ -434,7 +434,9 @@ class TestCommand(Command):
     def test_discover_commands_with_reflection(self):
         """Test command discovery with reflection."""
         config = ReflectionConfig()
-        config.register_module(Command, "tests.test_command", pattern="Sample*Command", recursive=False)
+        config.register_module(
+            Command, "tests.test_command", pattern="Sample*Command", recursive=False
+        )
 
         runner = CommandRunner(config=config)
         commands = runner.discover_commands("tests.test_command", recursive=False)
@@ -606,9 +608,7 @@ class TestCommand(CLICommand):
         runner = CommandRunner()
 
         commands = {"test": SampleCommand}
-        parser = runner.create_parser(
-            prog="test", description="Test CLI", commands=commands
-        )
+        parser = runner.create_parser(prog="test", description="Test CLI", commands=commands)
 
         # Should be able to parse test command
         args = parser.parse_args(["test", "--value", "hello"])
@@ -630,7 +630,9 @@ class TestCommandWithDI:
     def test_command_runner_passes_injector(self):
         """Test CommandRunner passes injector to commands."""
         config = ReflectionConfig()
-        config.register_module(Command, "tests.test_command", pattern="SampleCommand", recursive=False)
+        config.register_module(
+            Command, "tests.test_command", pattern="SampleCommand", recursive=False
+        )
 
         injector = MagicMock()
         with patch("pyiv.command.get_injector", return_value=injector):
@@ -696,4 +698,3 @@ class TestCommandAliases:
         # Original name should also work
         args = parser.parse_args(["test-alias"])
         assert args.command == "test-alias"
-
