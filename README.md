@@ -66,7 +66,7 @@ from pyiv import ReflectionConfig, get_injector, SingletonType
 from abc import ABC, abstractmethod
 
 # Define interface
-class IHandler(ABC):
+class Handler(ABC):
     @abstractmethod
     def handle(self, data: str) -> str:
         pass
@@ -76,7 +76,7 @@ class MyConfig(ReflectionConfig):
     def configure(self):
         # Automatically discover all *Handler classes in my_service.handlers
         self.register_module(
-            IHandler,
+            Handler,
             "my_service.handlers",
             pattern="*Handler",
             singleton_type=SingletonType.SINGLETON
@@ -86,7 +86,7 @@ class MyConfig(ReflectionConfig):
 injector = get_injector(MyConfig)
 
 # Get handler by name
-handler_class = injector.inject_by_name(IHandler, "CreateHandler")
+handler_class = injector.inject_by_name(Handler, "CreateHandler")
 
 # Get instance (respects singleton configuration)
 handler = injector.inject(handler_class)

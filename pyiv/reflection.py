@@ -27,7 +27,7 @@ class ReflectionConfig(Config):
             def configure(self):
                 # Register module for handler discovery
                 self.register_module(
-                    IHandler,
+                    Handler,
                     "my_service.handlers",
                     pattern="*Handler",
                     singleton_type=SingletonType.SINGLETON
@@ -62,16 +62,16 @@ class ReflectionConfig(Config):
             ImportError: If the package cannot be imported
 
         Example:
-            # Discover all classes ending in "Handler" that implement IHandler
+            # Discover all classes ending in "Handler" that implement Handler
             self.register_module(
-                IHandler,
+                Handler,
                 "my_service.handlers",
                 pattern="*Handler"
             )
 
             # Discover all implementations recursively
             self.register_module(
-                IService,
+                Service,
                 "my_service.services",
                 recursive=True
             )

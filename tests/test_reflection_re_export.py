@@ -9,7 +9,7 @@ import pytest
 from pyiv import ReflectionConfig
 
 
-class IService(ABC):
+class Service(ABC):
     """Test service interface."""
 
     @abstractmethod
@@ -35,9 +35,9 @@ def test_re_exported_class_only_discovered_once(tmp_path):
     (handlers_dir / "__init__.py").write_text("")
     (handlers_dir / "local.py").write_text(
         """
-from tests.test_reflection_re_export import IService
+from tests.test_reflection_re_export import Service
 
-class LocalHandler(IService):
+class LocalHandler(Service):
     def do_something(self) -> str:
         return "local"
 """
@@ -46,7 +46,7 @@ class LocalHandler(IService):
     # exports.py - imports and re-exports LocalHandler
     (test_package_dir / "exports.py").write_text(
         """
-from tests.test_reflection_re_export import IService
+from tests.test_reflection_re_export import Service
 from test_pkg.handlers.local import LocalHandler
 
 # Re-export
@@ -58,9 +58,9 @@ __all__ = ["LocalHandler"]
 
     try:
         config = ReflectionConfig()
-        config.register_module(IService, "test_pkg", recursive=True)
+        config.register_module(Service, "test_pkg", recursive=True)
 
-        implementations = config.discover_implementations(IService)
+        implementations = config.discover_implementations(Service)
 
         # Should only discover LocalHandler once, from handlers.local where it's defined
         # Not from exports.py where it's re-exported
@@ -101,9 +101,9 @@ def test_multiple_re_exports_only_discovered_once(tmp_path):
     (core_dir / "__init__.py").write_text("")
     (core_dir / "service.py").write_text(
         """
-from tests.test_reflection_re_export import IService
+from tests.test_reflection_re_export import Service
 
-class Service(IService):
+class Service(Service):
     def do_something(self) -> str:
         return "service"
 """
@@ -135,9 +135,9 @@ __all__ = ["Service"]
 
     try:
         config = ReflectionConfig()
-        config.register_module(IService, "test_pkg", recursive=True)
+        config.register_module(Service, "test_pkg", recursive=True)
 
-        implementations = config.discover_implementations(IService)
+        implementations = config.discover_implementations(Service)
 
         # Should only discover Service once, from core.service where it's defined
         assert len(implementations) == 1
