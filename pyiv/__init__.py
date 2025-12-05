@@ -9,6 +9,14 @@ from pyiv.injector import Injector, get_injector
 from pyiv.reflection import ReflectionConfig
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
+# Command interface (optional import)
+try:
+    from pyiv.command import CLICommand, Command, CommandRunner, ServiceCommand
+
+    _has_commands = True
+except ImportError:
+    _has_commands = False
+
 __version__ = "0.2.2"
 __all__ = [
     "Config",
@@ -31,3 +39,6 @@ __all__ = [
     "SingletonType",
     "GlobalSingletonRegistry",
 ]
+
+if _has_commands:
+    __all__.extend(["Command", "ServiceCommand", "CLICommand", "CommandRunner"])

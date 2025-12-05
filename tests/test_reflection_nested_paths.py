@@ -10,7 +10,7 @@ import pytest
 from pyiv import ReflectionConfig
 
 
-class IService(ABC):
+class Service(ABC):
     """Test service interface."""
 
     @abstractmethod
@@ -33,9 +33,9 @@ def test_nested_submodules_preserve_full_path(tmp_path):
     # Top-level mod.py
     (test_package_dir / "mod.py").write_text(
         """
-from tests.test_reflection_nested_paths import IService
+from tests.test_reflection_nested_paths import Service
 
-class ClassA(IService):
+class ClassA(Service):
     def do_something(self) -> str:
         return "top_level"
 """
@@ -47,9 +47,9 @@ class ClassA(IService):
     (sub_dir / "__init__.py").write_text("")
     (sub_dir / "mod.py").write_text(
         """
-from tests.test_reflection_nested_paths import IService
+from tests.test_reflection_nested_paths import Service
 
-class ClassA(IService):
+class ClassA(Service):
     def do_something(self) -> str:
         return "nested"
 """
@@ -59,9 +59,9 @@ class ClassA(IService):
 
     try:
         config = ReflectionConfig()
-        config.register_module(IService, "test_pkg", recursive=True)
+        config.register_module(Service, "test_pkg", recursive=True)
 
-        implementations = config.discover_implementations(IService)
+        implementations = config.discover_implementations(Service)
 
         # Should have both ClassA implementations with different paths
         assert len(implementations) == 2
@@ -111,9 +111,9 @@ def test_deeply_nested_submodules(tmp_path):
     (b_dir / "__init__.py").write_text("")
     (b_dir / "handler.py").write_text(
         """
-from tests.test_reflection_nested_paths import IService
+from tests.test_reflection_nested_paths import Service
 
-class Handler(IService):
+class Handler(Service):
     def do_something(self) -> str:
         return "deep"
 """
@@ -123,9 +123,9 @@ class Handler(IService):
 
     try:
         config = ReflectionConfig()
-        config.register_module(IService, "test_pkg", recursive=True)
+        config.register_module(Service, "test_pkg", recursive=True)
 
-        implementations = config.discover_implementations(IService)
+        implementations = config.discover_implementations(Service)
 
         # Should find Handler with full path
         assert "a.b.handler.Handler" in implementations
@@ -161,9 +161,9 @@ def test_same_class_name_different_paths(tmp_path):
     (handlers1_dir / "__init__.py").write_text("")
     (handlers1_dir / "create.py").write_text(
         """
-from tests.test_reflection_nested_paths import IService
+from tests.test_reflection_nested_paths import Service
 
-class CreateHandler(IService):
+class CreateHandler(Service):
     def do_something(self) -> str:
         return "handlers_create"
 """
@@ -179,9 +179,9 @@ class CreateHandler(IService):
     (handlers2_dir / "__init__.py").write_text("")
     (handlers2_dir / "create.py").write_text(
         """
-from tests.test_reflection_nested_paths import IService
+from tests.test_reflection_nested_paths import Service
 
-class CreateHandler(IService):
+class CreateHandler(Service):
     def do_something(self) -> str:
         return "api_handlers_create"
 """
@@ -191,9 +191,9 @@ class CreateHandler(IService):
 
     try:
         config = ReflectionConfig()
-        config.register_module(IService, "test_pkg", recursive=True)
+        config.register_module(Service, "test_pkg", recursive=True)
 
-        implementations = config.discover_implementations(IService)
+        implementations = config.discover_implementations(Service)
 
         # Should have both CreateHandler implementations with different paths
         assert len(implementations) == 2

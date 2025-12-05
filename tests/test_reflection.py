@@ -11,7 +11,7 @@ from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 
 
 # Test interfaces
-class IService(ABC):
+class Service(ABC):
     """Test service interface."""
 
     @abstractmethod
@@ -19,7 +19,7 @@ class IService(ABC):
         pass
 
 
-class IHandler(ABC):
+class Handler(ABC):
     """Test handler interface."""
 
     @abstractmethod
@@ -46,13 +46,13 @@ class TestReflectionConfig:
         config = ReflectionConfig()
 
         with pytest.raises(ImportError):
-            config.register_module(IService, "nonexistent.package.that.does.not.exist")
+            config.register_module(Service, "nonexistent.package.that.does.not.exist")
 
     def test_discover_implementations_no_registration(self):
         """Test that discover_implementations returns empty dict if not registered."""
         config = ReflectionConfig()
 
-        result = config.discover_implementations(IService)
+        result = config.discover_implementations(Service)
         assert result == {}
 
 
@@ -70,13 +70,13 @@ class TestReflectionDiscovery:
         handler_module = test_package_dir / "handlers.py"
         handler_module.write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class CreateHandler(IHandler):
+class CreateHandler(Handler):
     def handle(self, data: str) -> str:
         return f"created: {data}"
 
-class UpdateHandler(IHandler):
+class UpdateHandler(Handler):
     def handle(self, data: str) -> str:
         return f"updated: {data}"
 """
@@ -91,9 +91,9 @@ class UpdateHandler(IHandler):
         try:
             # Register and discover
             config = ReflectionConfig()
-            config.register_module(IHandler, "test_package.handlers", pattern="*Handler")
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
-            implementations = config.discover_implementations(IHandler)
+            implementations = config.discover_implementations(Handler)
 
             assert "CreateHandler" in implementations
             assert "UpdateHandler" in implementations
@@ -115,13 +115,13 @@ class UpdateHandler(IHandler):
         handler_module = test_package_dir / "handlers.py"
         handler_module.write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class CreateHandler(IHandler):
+class CreateHandler(Handler):
     def handle(self, data: str) -> str:
         return "create"
 
-class UpdateHandler(IHandler):
+class UpdateHandler(Handler):
     def handle(self, data: str) -> str:
         return "update"
 
@@ -136,9 +136,9 @@ class NotAHandler:
 
         try:
             config = ReflectionConfig()
-            config.register_module(IHandler, "test_package.handlers", pattern="*Handler")
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
-            implementations = config.discover_implementations(IHandler)
+            implementations = config.discover_implementations(Handler)
 
             # Should only find classes matching *Handler pattern
             assert "CreateHandler" in implementations
@@ -160,9 +160,9 @@ class NotAHandler:
         # Main module
         (test_package_dir / "handlers.py").write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class MainHandler(IHandler):
+class MainHandler(Handler):
     def handle(self, data: str) -> str:
         return "main"
 """
@@ -174,9 +174,9 @@ class MainHandler(IHandler):
         (submodule_dir / "__init__.py").write_text("")
         (submodule_dir / "handlers.py").write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class SubHandler(IHandler):
+class SubHandler(Handler):
     def handle(self, data: str) -> str:
         return "sub"
 """
@@ -188,9 +188,9 @@ class SubHandler(IHandler):
 
         try:
             config = ReflectionConfig()
-            config.register_module(IHandler, "test_package", pattern="*Handler", recursive=True)
+            config.register_module(Handler, "test_package", pattern="*Handler", recursive=True)
 
-            implementations = config.discover_implementations(IHandler)
+            implementations = config.discover_implementations(Handler)
 
             # When registering at package level, submodules get prefixed
             # Check for MainHandler (could be "MainHandler" or "handlers.MainHandler")
@@ -216,9 +216,9 @@ class SubHandler(IHandler):
         # Main module
         (test_package_dir / "handlers.py").write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class MainHandler(IHandler):
+class MainHandler(Handler):
     def handle(self, data: str) -> str:
         return "main"
 """
@@ -230,9 +230,9 @@ class MainHandler(IHandler):
         (submodule_dir / "__init__.py").write_text("")
         (submodule_dir / "handlers.py").write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class SubHandler(IHandler):
+class SubHandler(Handler):
     def handle(self, data: str) -> str:
         return "sub"
 """
@@ -245,10 +245,10 @@ class SubHandler(IHandler):
         try:
             config = ReflectionConfig()
             config.register_module(
-                IHandler, "test_package.handlers", pattern="*Handler", recursive=False
+                Handler, "test_package.handlers", pattern="*Handler", recursive=False
             )
 
-            implementations = config.discover_implementations(IHandler)
+            implementations = config.discover_implementations(Handler)
 
             assert "MainHandler" in implementations
             # Submodule should not be discovered
@@ -270,11 +270,11 @@ class SubHandler(IHandler):
         handler_module = test_package_dir / "handlers.py"
         handler_module.write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 from pyiv.filesystem import RealFilesystem  # Import from another package
 
 # This should be discovered (defined in this module)
-class LocalHandler(IHandler):
+class LocalHandler(Handler):
     def handle(self, data: str) -> str:
         return "local"
 
@@ -289,9 +289,9 @@ ImportedHandler = RealFilesystem
 
         try:
             config = ReflectionConfig()
-            config.register_module(IHandler, "test_package.handlers", pattern="*Handler")
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
-            implementations = config.discover_implementations(IHandler)
+            implementations = config.discover_implementations(Handler)
 
             # Should only find LocalHandler, not RealFilesystem
             assert "LocalHandler" in implementations
@@ -312,9 +312,9 @@ ImportedHandler = RealFilesystem
         handler_module = test_package_dir / "handlers.py"
         handler_module.write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class CreateHandler(IHandler):
+class CreateHandler(Handler):
     def handle(self, data: str) -> str:
         return "create"
 """
@@ -326,13 +326,13 @@ class CreateHandler(IHandler):
 
         try:
             config = ReflectionConfig()
-            config.register_module(IHandler, "test_package.handlers")
+            config.register_module(Handler, "test_package.handlers")
 
-            implementations = config.discover_implementations(IHandler)
+            implementations = config.discover_implementations(Handler)
 
-            # IHandler itself should not be in the results
-            assert IHandler not in implementations.values()
-            assert "IHandler" not in implementations
+            # Handler itself should not be in the results
+            assert Handler not in implementations.values()
+            assert "Handler" not in implementations
         finally:
             sys.path.remove(str(tmp_path))
             modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
@@ -537,9 +537,9 @@ class TestInjectByName:
         handler_module = test_package_dir / "handlers.py"
         handler_module.write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class CreateHandler(IHandler):
+class CreateHandler(Handler):
     def handle(self, data: str) -> str:
         return f"created: {data}"
 """
@@ -551,15 +551,15 @@ class CreateHandler(IHandler):
 
         try:
             config = ReflectionConfig()
-            config.register_module(IHandler, "test_package.handlers", pattern="*Handler")
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
             injector = get_injector(config)
 
             # Get handler class by name
-            handler_class = injector.inject_by_name(IHandler, "CreateHandler")
+            handler_class = injector.inject_by_name(Handler, "CreateHandler")
 
             assert handler_class.__name__ == "CreateHandler"
-            assert issubclass(handler_class, IHandler)
+            assert issubclass(handler_class, Handler)
         finally:
             sys.path.remove(str(tmp_path))
             modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
@@ -576,9 +576,9 @@ class CreateHandler(IHandler):
         handler_module = test_package_dir / "handlers.py"
         handler_module.write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class CreateHandler(IHandler):
+class CreateHandler(Handler):
     def handle(self, data: str) -> str:
         return "create"
 """
@@ -590,12 +590,12 @@ class CreateHandler(IHandler):
 
         try:
             config = ReflectionConfig()
-            config.register_module(IHandler, "test_package.handlers", pattern="*Handler")
+            config.register_module(Handler, "test_package.handlers", pattern="*Handler")
 
             injector = get_injector(config)
 
             with pytest.raises(ValueError, match="No implementation 'UnknownHandler' found"):
-                injector.inject_by_name(IHandler, "UnknownHandler")
+                injector.inject_by_name(Handler, "UnknownHandler")
         finally:
             sys.path.remove(str(tmp_path))
             modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
@@ -613,7 +613,7 @@ class CreateHandler(IHandler):
         injector = get_injector(RegularConfig)
 
         with pytest.raises(ValueError, match="does not support reflection-based discovery"):
-            injector.inject_by_name(IService, "SomeService")
+            injector.inject_by_name(Service, "SomeService")
 
     def test_inject_by_name_with_singleton(self, tmp_path):
         """Test that inject_by_name works with singleton configuration."""
@@ -625,9 +625,9 @@ class CreateHandler(IHandler):
         handler_module = test_package_dir / "handlers.py"
         handler_module.write_text(
             """
-from tests.test_reflection import IHandler
+from tests.test_reflection import Handler
 
-class CreateHandler(IHandler):
+class CreateHandler(Handler):
     def __init__(self):
         self.calls = 0
     
@@ -644,7 +644,7 @@ class CreateHandler(IHandler):
         try:
             config = ReflectionConfig()
             config.register_module(
-                IHandler,
+                Handler,
                 "test_package.handlers",
                 pattern="*Handler",
                 singleton_type=SingletonType.SINGLETON,
@@ -653,12 +653,12 @@ class CreateHandler(IHandler):
             injector = get_injector(config)
 
             # Get handler class
-            handler_class = injector.inject_by_name(IHandler, "CreateHandler")
+            handler_class = injector.inject_by_name(Handler, "CreateHandler")
 
             # Get instances via interface (should be singleton)
             # When registered via reflection, injecting the interface should return the singleton
-            instance1 = injector.inject(IHandler)
-            instance2 = injector.inject(IHandler)
+            instance1 = injector.inject(Handler)
+            instance2 = injector.inject(Handler)
 
             # Should be the same instance
             assert instance1 is instance2
