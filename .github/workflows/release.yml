@@ -31,9 +31,12 @@ jobs:
     # Only run if CI workflow succeeded on main/master branch
     # The workflow_run trigger doesn't filter by the triggering workflow's branch,
     # so we must explicitly check head_branch to prevent releases from PRs/develop
+    # Also handle null workflow_run for workflow_dispatch events
     if: |
       github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
+      (github.event_name == 'workflow_run' && 
+       github.event.workflow_run != null &&
+       github.event.workflow_run.conclusion == 'success' &&
        (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'master'))
 
     steps:

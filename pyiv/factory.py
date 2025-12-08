@@ -1,31 +1,4 @@
-"""Factory pattern support for dependency injection.
-
-This module provides factory interfaces and implementations for creating
-objects with dependencies. Factories are useful when object creation
-requires complex logic or when you need to create multiple instances
-with different configurations.
-
-Architecture:
-    - Factory: Protocol defining the factory interface (generic)
-    - BaseFactory: Abstract base class for factory implementations
-    - SimpleFactory: Concrete factory wrapping a callable
-
-Usage:
-    Use Factory protocol for type hints, BaseFactory for class-based
-    factories, or SimpleFactory for quick function-based factories.
-
-    Example:
-        >>> from pyiv.factory import SimpleFactory, BaseFactory
-        >>> # Simple factory from a function
-        >>> def create_user(name: str) -> User:
-        ...     return User(name=name)
-        >>> factory = SimpleFactory(create_user)
-        >>> user = factory.create("Alice")
-        >>> # Class-based factory
-        >>> class UserFactory(BaseFactory[User]):
-        ...     def create(self, name: str) -> User:
-        ...         return User(name=name)
-"""
+"""Factory pattern support for dependency injection."""
 
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Generic, Optional, Protocol, TypeVar
