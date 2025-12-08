@@ -37,6 +37,9 @@ class Command(ABC):
     def get_name(cls) -> str:
         """Get the command name.
 
+        Args:
+            cls: The class (implicit in classmethod)
+
         Returns:
             Command name (e.g., "switchboard", "start", "create")
         """
@@ -46,6 +49,9 @@ class Command(ABC):
     def get_description(cls) -> str:
         """Get the command description.
 
+        Args:
+            cls: The class (implicit in classmethod)
+
         Returns:
             Command description for help text
         """
@@ -54,6 +60,9 @@ class Command(ABC):
     @classmethod
     def get_aliases(cls) -> List[str]:
         """Get command aliases.
+
+        Args:
+            cls: The class (implicit in classmethod)
 
         Returns:
             List of alternative names for this command
@@ -65,6 +74,7 @@ class Command(ABC):
         """Add arguments to the command's argument parser.
 
         Args:
+            cls: The class (implicit in classmethod)
             parser: Argument parser to add arguments to
         """
         pass
@@ -72,6 +82,9 @@ class Command(ABC):
     @classmethod
     def get_subcommands(cls) -> List[Type["Command"]]:
         """Get subcommands of this command.
+
+        Args:
+            cls: The class (implicit in classmethod)
 
         Returns:
             List of command classes that are subcommands of this command

@@ -1,4 +1,36 @@
-"""pyiv - A lightweight dependency injection library for Python."""
+"""pyiv - A lightweight dependency injection library for Python.
+
+PyIV (Python Injection and Validation) is a lightweight, type-aware dependency
+injection library designed for Python applications. It provides a simple yet
+powerful way to manage dependencies, improve testability, and reduce coupling.
+
+Key Features:
+    - Type-based dependency resolution using annotations
+    - Singleton lifecycle management (per-injector or global)
+    - Factory pattern support for complex object creation
+    - Built-in abstractions for common dependencies (Clock, Filesystem, etc.)
+    - Zero external dependencies (pure Python)
+
+Architecture:
+    The library is organized into modules:
+    - config: Configuration base class for registering dependencies
+    - injector: Core dependency injection engine
+    - singleton: Singleton lifecycle management
+    - factory: Factory pattern support
+    - clock: Time abstraction for testing
+    - filesystem: File I/O abstraction for testing
+    - datetime_service: DateTime abstraction for testing
+
+Quick Start:
+    >>> from pyiv import Config, get_injector
+    >>> class MyConfig(Config):
+    ...     def configure(self):
+    ...         self.register(Database, PostgreSQL)
+    >>> injector = get_injector(MyConfig)
+    >>> db = injector.inject(Database)
+
+For more information, see the individual module documentation.
+"""
 
 from pyiv.clock import Clock, RealClock, SyntheticClock, Timer
 from pyiv.config import Config

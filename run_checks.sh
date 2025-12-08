@@ -68,6 +68,9 @@ else
     echo -e "${YELLOW}⚠ Bandit security check completed with warnings (non-fatal)${NC}"
 fi
 
+# 6. Documentation quality check
+run_check "Documentation quality" python3 check_docs_quality.py
+
 echo ""
 echo "=========================================="
 if [ $FAILED -eq 0 ]; then
