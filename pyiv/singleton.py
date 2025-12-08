@@ -1,4 +1,31 @@
-"""Singleton management for dependency injection."""
+"""Singleton management for dependency injection.
+
+This module provides singleton lifecycle management for the dependency
+injection system. It supports both per-injector singletons and global
+thread-safe singletons shared across all injector instances.
+
+Architecture:
+    - SingletonType: Enum defining singleton behavior types
+    - GlobalSingletonRegistry: Thread-safe registry for global singletons
+
+Singleton Types:
+    - NONE: No singleton - new instance created each time
+    - SINGLETON: Per-injector singleton - one instance per Injector
+    - GLOBAL_SINGLETON: Global singleton - shared across all injectors
+
+Usage:
+    Configure singleton behavior when registering dependencies in Config:
+
+    Example:
+        >>> from pyiv import Config
+        >>> from pyiv.singleton import SingletonType
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         # Per-injector singleton
+        ...         self.register(Logger, FileLogger, singleton_type=SingletonType.SINGLETON)
+        ...         # Global singleton (shared across all injectors)
+        ...         self.register(Cache, RedisCache, singleton_type=SingletonType.GLOBAL_SINGLETON)
+"""
 
 import threading
 from enum import Enum
@@ -34,6 +61,7 @@ class GlobalSingletonRegistry:
         """Get a global singleton instance.
 
         Args:
+            cls: The class (implicit in classmethod)
             abstract: The abstract type to retrieve
 
         Returns:
@@ -47,6 +75,7 @@ class GlobalSingletonRegistry:
         """Set a global singleton instance.
 
         Args:
+            cls: The class (implicit in classmethod)
             abstract: The abstract type
             instance: The instance to store
         """

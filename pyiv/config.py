@@ -1,4 +1,33 @@
-"""Configuration base class for dependency injection."""
+"""Configuration base class for dependency injection.
+
+This module provides the Config base class that defines how dependencies
+are registered and configured for the dependency injection system.
+
+Architecture:
+    - Config: Base class for dependency configuration
+    - Subclasses override configure() to register dependencies
+
+The Config class manages:
+    - Type registrations (abstract -> concrete mappings)
+    - Instance registrations (pre-created singletons)
+    - Singleton lifecycle configuration
+    - Factory function registrations
+
+Usage:
+    Create a Config subclass and override configure() to register dependencies:
+
+    Example:
+        >>> from pyiv import Config
+        >>> from pyiv.singleton import SingletonType
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         # Register concrete implementation
+        ...         self.register(Database, PostgreSQL)
+        ...         # Register with singleton lifecycle
+        ...         self.register(Logger, FileLogger, singleton_type=SingletonType.SINGLETON)
+        ...         # Register pre-created instance
+        ...         self.register_instance(Cache, my_cache_instance)
+"""
 
 from typing import Any, Callable, Dict, Optional, Type, Union
 
