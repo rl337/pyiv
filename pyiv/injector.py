@@ -1,4 +1,33 @@
-"""Injector implementation for dependency injection."""
+"""Injector implementation for dependency injection.
+
+This module contains the core dependency injection engine. The Injector
+class is responsible for creating instances, resolving dependencies,
+and managing singleton lifecycles based on configuration.
+
+Architecture:
+    - Injector: Main dependency injection engine
+    - get_injector(): Factory function for creating injectors from Config
+
+The injector uses type annotations and Config registrations to automatically
+resolve dependencies. It supports:
+    - Constructor injection via type annotations
+    - Singleton lifecycle management
+    - Factory functions for complex object creation
+    - Circular dependency detection
+
+Usage:
+    Create a Config subclass, register dependencies, then create an injector:
+
+    Example:
+        >>> from pyiv import Config, Injector, get_injector
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Database, PostgreSQL)
+        ...         self.register(Logger, FileLogger, singleton=True)
+        >>> injector = get_injector(MyConfig)
+        >>> db = injector.inject(Database)
+        >>> logger = injector.inject(Logger)
+"""
 
 import inspect
 from typing import Any, Callable, Dict, Optional, Type, Union
@@ -42,7 +71,11 @@ class Injector:
             if instance is not None:
                 return instance
             # Create new instance and store globally
-            instance = self._create_instance(cls, **kwargs)
+            concrete = self._config.get_registration(cls)
+            if concrete is None:
+                instance = self._instantiate(cls, **kwargs)
+            else:
+                instance = self._instantiate(concrete, **kwargs)
             GlobalSingletonRegistry.set(cls, instance)
             return instance
 

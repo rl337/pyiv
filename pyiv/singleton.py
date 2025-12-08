@@ -87,6 +87,7 @@ class GlobalSingletonRegistry:
         """Check if a global singleton exists.
 
         Args:
+            cls: The class (implicit in classmethod)
             abstract: The abstract type to check
 
         Returns:
@@ -97,6 +98,10 @@ class GlobalSingletonRegistry:
 
     @classmethod
     def clear(cls) -> None:
-        """Clear all global singletons (useful for testing)."""
+        """Clear all global singletons (useful for testing).
+
+        Args:
+            cls: The class (implicit in classmethod)
+        """
         with cls._lock:
             cls._instances.clear()

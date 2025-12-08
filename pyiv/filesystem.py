@@ -1,4 +1,30 @@
-"""Filesystem abstraction for dependency injection."""
+"""Filesystem abstraction for dependency injection.
+
+This module provides abstract interfaces and implementations for file system
+operations, enabling dependency injection of file I/O for easier testing
+and platform abstraction.
+
+Architecture:
+    - Filesystem: Abstract base class defining file operations
+    - RealFilesystem: Production implementation using Python's pathlib/os
+    - MemoryFilesystem: Test implementation with in-memory file storage
+
+Usage:
+    For production code, use RealFilesystem which performs actual file
+    operations. For testing, use MemoryFilesystem which stores files
+    in memory without touching the disk.
+
+    Example:
+        >>> from pyiv.filesystem import RealFilesystem, MemoryFilesystem
+        >>> # Production
+        >>> fs = RealFilesystem()
+        >>> fs.write_text("file.txt", "content")
+        >>> content = fs.read_text("file.txt")
+        >>> # Testing
+        >>> test_fs = MemoryFilesystem()
+        >>> test_fs.write_text("test.txt", "test content")
+        >>> assert test_fs.read_text("test.txt") == "test content"
+"""
 
 import io
 import os
@@ -202,69 +228,171 @@ class RealFilesystem(Filesystem):
     def open(
         self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
     ) -> Union[TextIO, BinaryIO]:
-        """Open a file using built-in open()."""
+        """Open a file using built-in open().
+
+        Args:
+            file: File path to open
+            mode: File mode (r, w, a, rb, wb, etc.)
+            encoding: Text encoding (for text modes, ignored for binary modes)
+
+        Returns:
+            File handle (TextIO for text modes, BinaryIO for binary modes)
+        """
         if encoding is not None and "b" not in mode:
             return open(file, mode, encoding=encoding)  # type: ignore[return-value]
         return open(file, mode)  # type: ignore[return-value]
 
     def exists(self, path: Union[str, Path]) -> bool:
-        """Check if path exists."""
+        """Check if path exists.
+
+        Args:
+            path: Path to check
+
+        Returns:
+            True if path exists, False otherwise
+        """
         return Path(path).exists()
 
     def is_file(self, path: Union[str, Path]) -> bool:
-        """Check if path is a file."""
+        """Check if path is a file.
+
+        Args:
+            path: Path to check
+
+        Returns:
+            True if path is a file, False otherwise
+        """
         return Path(path).is_file()
 
     def is_dir(self, path: Union[str, Path]) -> bool:
-        """Check if path is a directory."""
+        """Check if path is a directory.
+
+        Args:
+            path: Path to check
+
+        Returns:
+            True if path is a directory, False otherwise
+        """
         return Path(path).is_dir()
 
     def mkdir(self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False) -> None:
-        """Create a directory."""
+        """Create a directory.
+
+        Args:
+            path: Directory path to create
+            parents: Create parent directories if needed
+            exist_ok: Don't raise error if directory already exists
+        """
         Path(path).mkdir(parents=parents, exist_ok=exist_ok)
 
     def rmdir(self, path: Union[str, Path]) -> None:
-        """Remove a directory."""
+        """Remove a directory.
+
+        Args:
+            path: Directory path to remove (must be empty)
+        """
         Path(path).rmdir()
 
     def unlink(self, path: Union[str, Path], missing_ok: bool = False) -> None:
-        """Remove a file."""
+        """Remove a file.
+
+        Args:
+            path: File path to remove
+            missing_ok: Don't raise error if file doesn't exist
+        """
         Path(path).unlink(missing_ok=missing_ok)
 
     def read_text(self, path: Union[str, Path], encoding: str = "utf-8") -> str:
-        """Read text from a file."""
+        """Read text from a file.
+
+        Args:
+            path: File path to read
+            encoding: Text encoding (default: utf-8)
+
+        Returns:
+            File contents as string
+        """
         return Path(path).read_text(encoding=encoding)
 
     def write_text(self, path: Union[str, Path], content: str, encoding: str = "utf-8") -> None:
-        """Write text to a file."""
+        """Write text to a file.
+
+        Args:
+            path: File path to write
+            content: Text content to write
+            encoding: Text encoding (default: utf-8)
+        """
         Path(path).write_text(content, encoding=encoding)
 
     def read_bytes(self, path: Union[str, Path]) -> bytes:
-        """Read bytes from a file."""
+        """Read bytes from a file.
+
+        Args:
+            path: File path to read
+
+        Returns:
+            File contents as bytes
+        """
         return Path(path).read_bytes()
 
     def write_bytes(self, path: Union[str, Path], content: bytes) -> None:
-        """Write bytes to a file."""
+        """Write bytes to a file.
+
+        Args:
+            path: File path to write
+            content: Bytes content to write
+        """
         Path(path).write_bytes(content)
 
     def listdir(self, path: Union[str, Path]) -> Iterator[str]:
-        """List directory contents."""
+        """List directory contents.
+
+        Args:
+            path: Directory path to list
+
+        Yields:
+            Directory entry names
+        """
         return iter(os.listdir(path))
 
     def glob(self, pattern: Union[str, Path]) -> Iterator[Path]:
-        """Glob pattern matching."""
+        """Glob pattern matching.
+
+        Args:
+            pattern: Glob pattern to match
+
+        Yields:
+            Matching paths
+        """
         return Path(".").glob(str(pattern))
 
     def copy(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
-        """Copy a file."""
+        """Copy a file.
+
+        Args:
+            src: Source file path
+            dst: Destination file path
+        """
         shutil.copy(src, dst)
 
     def move(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
-        """Move/rename a file or directory."""
+        """Move/rename a file or directory.
+
+        Args:
+            src: Source path
+            dst: Destination path
+        """
         shutil.move(src, dst)  # type: ignore[arg-type]
 
     def get_size(self, path: Union[str, Path]) -> int:
-        """Get file size in bytes."""
+        """Get file size in bytes.
+
+        Args:
+            path: File path
+
+        Returns:
+            File size in bytes
+        """
         return Path(path).stat().st_size
 
 
@@ -296,7 +424,20 @@ class MemoryFilesystem(Filesystem):
     def open(
         self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
     ) -> Union[TextIO, BinaryIO]:
-        """Open a file in memory."""
+        """Open a file in memory.
+
+        Args:
+            file: File path to open
+            mode: File mode (r, w, a, rb, wb, etc.)
+            encoding: Text encoding (for text modes, ignored for binary modes)
+
+        Returns:
+            File handle (TextIO for text modes, BinaryIO for binary modes)
+
+        Raises:
+            FileNotFoundError: If file doesn't exist in read mode
+            ValueError: If mode is unsupported
+        """
         path = self._normalize_path(file)
 
         if "r" in mode:
@@ -327,22 +468,53 @@ class MemoryFilesystem(Filesystem):
             raise ValueError(f"Unsupported mode: {mode}")
 
     def exists(self, path: Union[str, Path]) -> bool:
-        """Check if path exists."""
+        """Check if path exists.
+
+        Args:
+            path: Path to check
+
+        Returns:
+            True if path exists (as file or directory), False otherwise
+        """
         path_str = self._normalize_path(path)
         return path_str in self._files or path_str in self._dirs
 
     def is_file(self, path: Union[str, Path]) -> bool:
-        """Check if path is a file."""
+        """Check if path is a file.
+
+        Args:
+            path: Path to check
+
+        Returns:
+            True if path is a file, False otherwise
+        """
         path_str = self._normalize_path(path)
         return path_str in self._files
 
     def is_dir(self, path: Union[str, Path]) -> bool:
-        """Check if path is a directory."""
+        """Check if path is a directory.
+
+        Args:
+            path: Path to check
+
+        Returns:
+            True if path is a directory, False otherwise
+        """
         path_str = self._normalize_path(path)
         return path_str in self._dirs
 
     def mkdir(self, path: Union[str, Path], parents: bool = False, exist_ok: bool = False) -> None:
-        """Create a directory."""
+        """Create a directory.
+
+        Args:
+            path: Directory path to create
+            parents: Create parent directories if needed
+            exist_ok: Don't raise error if directory already exists
+
+        Raises:
+            FileExistsError: If directory or file exists at path and exist_ok is False
+            FileNotFoundError: If parent directory doesn't exist and parents is False
+        """
         path_str = self._normalize_path(path)
         if path_str in self._dirs and not exist_ok:
             raise FileExistsError(f"Directory already exists: {path}")
@@ -361,7 +533,16 @@ class MemoryFilesystem(Filesystem):
             self._dirs.add(path_str)
 
     def rmdir(self, path: Union[str, Path]) -> None:
-        """Remove a directory."""
+        """Remove a directory.
+
+        Args:
+            path: Directory path to remove (must be empty)
+
+        Raises:
+            FileNotFoundError: If directory doesn't exist
+            ValueError: If trying to remove root directory
+            OSError: If directory is not empty
+        """
         path_str = self._normalize_path(path)
         if path_str not in self._dirs:
             raise FileNotFoundError(f"Directory does not exist: {path}")
@@ -379,7 +560,15 @@ class MemoryFilesystem(Filesystem):
         self._dirs.remove(path_str)
 
     def unlink(self, path: Union[str, Path], missing_ok: bool = False) -> None:
-        """Remove a file."""
+        """Remove a file.
+
+        Args:
+            path: File path to remove
+            missing_ok: Don't raise error if file doesn't exist
+
+        Raises:
+            FileNotFoundError: If file doesn't exist and missing_ok is False
+        """
         path_str = self._normalize_path(path)
         if path_str not in self._files:
             if not missing_ok:
@@ -388,33 +577,75 @@ class MemoryFilesystem(Filesystem):
         del self._files[path_str]
 
     def read_text(self, path: Union[str, Path], encoding: str = "utf-8") -> str:
-        """Read text from a file."""
+        """Read text from a file.
+
+        Args:
+            path: File path to read
+            encoding: Text encoding (default: utf-8)
+
+        Returns:
+            File contents as string
+
+        Raises:
+            FileNotFoundError: If file doesn't exist
+        """
         path_str = self._normalize_path(path)
         if path_str not in self._files:
             raise FileNotFoundError(f"No such file: {path}")
         return self._files[path_str].decode(encoding)
 
     def write_text(self, path: Union[str, Path], content: str, encoding: str = "utf-8") -> None:
-        """Write text to a file."""
+        """Write text to a file.
+
+        Args:
+            path: File path to write
+            content: Text content to write
+            encoding: Text encoding (default: utf-8)
+        """
         path_str = self._normalize_path(path)
         self._ensure_parent_dir(path_str)
         self._files[path_str] = content.encode(encoding)
 
     def read_bytes(self, path: Union[str, Path]) -> bytes:
-        """Read bytes from a file."""
+        """Read bytes from a file.
+
+        Args:
+            path: File path to read
+
+        Returns:
+            File contents as bytes
+
+        Raises:
+            FileNotFoundError: If file doesn't exist
+        """
         path_str = self._normalize_path(path)
         if path_str not in self._files:
             raise FileNotFoundError(f"No such file: {path}")
         return self._files[path_str]
 
     def write_bytes(self, path: Union[str, Path], content: bytes) -> None:
-        """Write bytes to a file."""
+        """Write bytes to a file.
+
+        Args:
+            path: File path to write
+            content: Bytes content to write
+        """
         path_str = self._normalize_path(path)
         self._ensure_parent_dir(path_str)
         self._files[path_str] = content
 
     def listdir(self, path: Union[str, Path]) -> Iterator[str]:
-        """List directory contents."""
+        """List directory contents.
+
+        Args:
+            path: Directory path to list
+
+        Yields:
+            Directory entry names
+
+        Raises:
+            FileNotFoundError: If directory doesn't exist
+        """
         path_str = self._normalize_path(path)
         if path_str not in self._dirs:
             raise FileNotFoundError(f"No such directory: {path}")
@@ -438,7 +669,14 @@ class MemoryFilesystem(Filesystem):
         return iter(sorted(children))
 
     def glob(self, pattern: Union[str, Path]) -> Iterator[Path]:
-        """Glob pattern matching (simplified)."""
+        """Glob pattern matching (simplified).
+
+        Args:
+            pattern: Glob pattern to match
+
+        Yields:
+            Matching paths
+        """
         import fnmatch
 
         pattern_str = str(pattern)
@@ -449,7 +687,15 @@ class MemoryFilesystem(Filesystem):
                 yield Path(file_path)
 
     def copy(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
-        """Copy a file."""
+        """Copy a file.
+
+        Args:
+            src: Source file path
+            dst: Destination file path
+
+        Raises:
+            FileNotFoundError: If source file doesn't exist
+        """
         src_str = self._normalize_path(src)
         dst_str = self._normalize_path(dst)
 
@@ -460,7 +706,15 @@ class MemoryFilesystem(Filesystem):
         self._files[dst_str] = self._files[src_str]
 
     def move(self, src: Union[str, Path], dst: Union[str, Path]) -> None:
-        """Move/rename a file or directory."""
+        """Move/rename a file or directory.
+
+        Args:
+            src: Source path
+            dst: Destination path
+
+        Raises:
+            FileNotFoundError: If source doesn't exist
+        """
         src_str = self._normalize_path(src)
         dst_str = self._normalize_path(dst)
 
@@ -491,7 +745,17 @@ class MemoryFilesystem(Filesystem):
             raise FileNotFoundError(f"No such file or directory: {src}")
 
     def get_size(self, path: Union[str, Path]) -> int:
-        """Get file size in bytes."""
+        """Get file size in bytes.
+
+        Args:
+            path: File path
+
+        Returns:
+            File size in bytes
+
+        Raises:
+            FileNotFoundError: If file doesn't exist
+        """
         path_str = self._normalize_path(path)
         if path_str not in self._files:
             raise FileNotFoundError(f"No such file: {path}")

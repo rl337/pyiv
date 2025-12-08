@@ -120,7 +120,11 @@ class Timer(ABC):
 
     @abstractmethod
     def cancel(self) -> None:
-        """Cancel the timer."""
+        """Cancel the timer.
+
+        Returns:
+            None
+        """
         pass
 
     @abstractmethod
@@ -183,7 +187,16 @@ class RealClock(Clock):
     def start_timer(
         self, interval: float, callback: Callable[[], None], repeat: bool = False
     ) -> "Timer":
-        """Start a timer using threading.Timer."""
+        """Start a timer using threading.Timer.
+
+        Args:
+            interval: Time interval in seconds before callback is called
+            callback: Function to call when timer fires
+            repeat: If True, timer will repeat after each interval
+
+        Returns:
+            Timer object that can be used to cancel the timer
+        """
         timer = threading.Timer(interval, callback)
         if repeat:
             # For repeat, we need to reschedule
@@ -214,7 +227,11 @@ class RealTimer(Timer):
         self._timer = timer
 
     def cancel(self) -> None:
-        """Cancel the timer."""
+        """Cancel the timer.
+
+        Returns:
+            None
+        """
         self._timer.cancel()
 
     def is_active(self) -> bool:
@@ -315,7 +332,16 @@ class SyntheticClock(Clock):
     def start_timer(
         self, interval: float, callback: Callable[[], None], repeat: bool = False
     ) -> "SyntheticTimer":
-        """Start a synthetic timer."""
+        """Start a synthetic timer.
+
+        Args:
+            interval: Time interval in seconds before callback is called
+            callback: Function to call when timer fires
+            repeat: If True, timer will repeat after each interval
+
+        Returns:
+            SyntheticTimer object that can be used to cancel the timer
+        """
         timer = SyntheticTimer(self, interval, callback, repeat, self._time)
         with self._lock:
             self._timers.append(timer)
@@ -366,7 +392,11 @@ class SyntheticTimer(Timer):
                 self._active = False
 
     def cancel(self) -> None:
-        """Cancel the timer."""
+        """Cancel the timer.
+
+        Returns:
+            None
+        """
         self._active = False
 
     def is_active(self) -> bool:
