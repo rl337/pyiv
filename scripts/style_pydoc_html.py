@@ -276,17 +276,8 @@ def clean_file_paths(html_content, filename):
         html_content
     )
     
-    # Replace absolute paths with relative paths
-    # Pattern: /home/runner/work/pyiv/pyiv/... -> pyiv/...
-    # Pattern: /Users/.../pyiv/pyiv/... -> pyiv/...
-    html_content = re.sub(
-        r'/[^<]*/pyiv/([^<]+)',
-        r'pyiv/\1',
-        html_content
-    )
-    
-    # For __init__.py modules (packages), clean up file path references
-    # Replace both file: URLs and plain text paths
+    # For __init__.py modules (packages), clean up file path references FIRST
+    # This must happen before absolute path replacement
     if '__init__.py' in html_content:
         # Replace the entire <a> tag that contains __init__.py file path
         # Pattern: <a href="file:/path/to/__init__.py">/path/to/__init__.py</a>
@@ -302,6 +293,16 @@ def clean_file_paths(html_content, filename):
             f'<a href="#">{module_name} (package)</a>',
             html_content
         )
+    
+    # Replace absolute paths with relative paths (after __init__.py cleanup)
+    # Pattern: /home/runner/work/pyiv/pyiv/... -> pyiv/...
+    # Pattern: /Users/.../pyiv/pyiv/... -> pyiv/...
+    # Only replace if it's not already been cleaned up
+    html_content = re.sub(
+        r'/[^<]*/pyiv/([^<]+)',
+        r'pyiv/\1',
+        html_content
+    )
     
     return html_content
 
