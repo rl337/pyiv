@@ -186,7 +186,6 @@ def add_navigation(html_content, html_dir):
     nav_html = """    <div class="nav-bar">
         <a href="index.html">← Back to Index</a>
         <a href="https://github.com/rl337/pyiv">GitHub</a>
-        <a href="https://pypi.org/project/pyiv/">PyPI</a>
     </div>
 """
     # Insert navigation after opening body tag
