@@ -290,54 +290,43 @@ logger = injector.inject(Logger)
                   <div class="modules-grid">
           EOF
           # Add module cards with descriptions
-          find docs/html -name "*.html" -type f ! -name "index.html" | sort | while read -r file; do
-              filename=$(basename "$file")
-              modulename=$(echo "$filename" | sed 's|\.html$||')
-              
-              # Map module names to descriptions
-              case "$modulename" in
-                  pyiv)
-                      desc="Main package - Core dependency injection framework"
-                      ;;
-                  pyiv.injector)
-                      desc="Dependency injection engine - Creates and manages instances"
-                      ;;
-                  pyiv.config)
-                      desc="Configuration base class - Register dependencies"
-                      ;;
-                  pyiv.singleton)
-                      desc="Singleton lifecycle management - Per-injector or global"
-                      ;;
-                  pyiv.factory)
-                      desc="Factory pattern support - Create objects with dependencies"
-                      ;;
-                  pyiv.clock)
-                      desc="Time abstraction - RealClock for production, SyntheticClock for testing"
-                      ;;
-                  pyiv.filesystem)
-                      desc="File I/O abstraction - RealFilesystem for production, MemoryFilesystem for testing"
-                      ;;
-                  pyiv.datetime_service)
-                      desc="DateTime abstraction - PythonDateTimeService for production, MockDateTimeService for testing"
-                      ;;
-                  pyiv.reflection)
-                      desc="Reflection-based discovery - Automatically find implementations"
-                      ;;
-                  pyiv.command)
-                      desc="Command interface - Build CLI applications with dependency injection"
-                      ;;
-                  *)
-                      desc="Module documentation"
-                      ;;
-              esac
-              
-              echo "                      <div class=\"module-card\">" >> docs/html/index.html
-              echo "                          <a href=\"$filename\">" >> docs/html/index.html
-              echo "                              <div class=\"module-name\">$modulename</div>" >> docs/html/index.html
-              echo "                              <div class=\"module-desc\">$desc</div>" >> docs/html/index.html
-              echo "                          </a>" >> docs/html/index.html
-              echo "                      </div>" >> docs/html/index.html
-          done
+          python3 << 'PYTHON_EOF'
+import os
+import re
+
+modules = {
+    'pyiv': 'Main package - Core dependency injection framework',
+    'pyiv.injector': 'Dependency injection engine - Creates and manages instances',
+    'pyiv.config': 'Configuration base class - Register dependencies',
+    'pyiv.singleton': 'Singleton lifecycle management - Per-injector or global',
+    'pyiv.factory': 'Factory pattern support - Create objects with dependencies',
+    'pyiv.clock': 'Time abstraction - RealClock for production, SyntheticClock for testing',
+    'pyiv.filesystem': 'File I/O abstraction - RealFilesystem for production, MemoryFilesystem for testing',
+    'pyiv.datetime_service': 'DateTime abstraction - PythonDateTimeService for production, MockDateTimeService for testing',
+    'pyiv.reflection': 'Reflection-based discovery - Automatically find implementations',
+    'pyiv.command': 'Command interface - Build CLI applications with dependency injection'
+}
+
+# Find all HTML files
+html_dir = 'docs/html'
+if os.path.exists(html_dir):
+    html_files = [f for f in os.listdir(html_dir) if f.endswith('.html') and f != 'index.html']
+    for filename in sorted(html_files):
+        modulename = filename.replace('.html', '')
+        # Clean up module name (remove pyiv. prefix for display)
+        display_name = modulename.replace('pyiv.', '')
+        if display_name == 'pyiv':
+            display_name = '__init__'
+        
+        desc = modules.get(modulename, 'Module documentation')
+        
+        print(f'                      <div class="module-card">')
+        print(f'                          <a href="{filename}">')
+        print(f'                              <div class="module-name">{modulename}</div>')
+        print(f'                              <div class="module-desc">{desc}</div>')
+        print(f'                          </a>')
+        print(f'                      </div>')
+PYTHON_EOF
           cat >> docs/html/index.html << 'EOF'
                   </div>
 
