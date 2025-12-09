@@ -73,7 +73,7 @@ jobs:
 
       - name: Create index.html
         run: |
-          python3 generate_index.py docs/html
+          python3 scripts/generate_index.py docs/html
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4

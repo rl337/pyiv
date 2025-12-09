@@ -351,3 +351,4 @@ if __name__ == '__main__':
     html_dir = sys.argv[1] if len(sys.argv) > 1 else 'docs/html'
     generate_index_html(html_dir)
 
+
