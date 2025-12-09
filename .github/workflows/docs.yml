@@ -73,7 +73,11 @@ jobs:
 
       - name: Create index.html
         run: |
-          python3 generate_index.py docs/html
+          python3 scripts/generate_index.py docs/html
+
+      - name: Apply styling to pydoc HTML files
+        run: |
+          python3 scripts/style_pydoc_html.py docs/html
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
