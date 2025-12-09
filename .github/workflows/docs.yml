@@ -5,11 +5,13 @@ on:
     branches: [main, master]
     paths:
       - "pyiv/**"
+      - "scripts/**"
       - ".github/workflows/docs.yml"
   pull_request:
     branches: [main, master]
     paths:
       - "pyiv/**"
+      - "scripts/**"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
