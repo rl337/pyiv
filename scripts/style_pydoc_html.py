@@ -290,22 +290,16 @@ def clean_file_paths(html_content, filename):
     if '__init__.py' in html_content:
         # Replace the entire <a> tag that contains __init__.py file path
         # Pattern: <a href="file:/path/to/__init__.py">/path/to/__init__.py</a>
+        # This handles the most common case in pydoc output
         html_content = re.sub(
-            r'<a href="file:[^"]*__init__\.py">[^<]*__init__\.py</a>',
+            r'<a href="file:[^"]*__init__\.py">[^<]*</a>',
             f'<a href="#">{module_name} (package)</a>',
             html_content
         )
-        # Also handle cases where href and text might be different
+        # Also handle cases where the text content is the file path
         html_content = re.sub(
             r'<a href="file:[^"]*">([^<]*__init__\.py)</a>',
             f'<a href="#">{module_name} (package)</a>',
-            html_content
-        )
-        # Replace standalone __init__.py file paths (not method names like __init__(self))
-        # Only match file paths, not method definitions
-        html_content = re.sub(
-            r'([/>\s"\'=])([^<]*?)(?:pyiv/|/)[^<]*?__init__\.py([<\s"\'/>])',
-            lambda m: m.group(1) + f'{module_name} (package)' + m.group(3),
             html_content
         )
     
