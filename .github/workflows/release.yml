@@ -171,12 +171,19 @@ jobs:
           NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
           
           # Determine which branch we're on (main or master)
-          DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@' || echo "main")
+          # Try to get default branch from remote, fallback to checking which exists
+          DEFAULT_BRANCH="main"
+          if ! git ls-remote --heads origin main | grep -q main; then
+            if git ls-remote --heads origin master | grep -q master; then
+              DEFAULT_BRANCH="master"
+            fi
+          fi
           
-          # Fetch latest changes
-          git fetch origin
+          # Fetch latest changes and tags
+          git fetch origin --tags
           
-          # Pull latest changes to ensure we're up to date
+          # Checkout the default branch and pull latest changes
+          git checkout ${DEFAULT_BRANCH} || git checkout -b ${DEFAULT_BRANCH} origin/${DEFAULT_BRANCH}
           git pull origin ${DEFAULT_BRANCH} --rebase || git pull origin ${DEFAULT_BRANCH}
           
           # Stage, commit, and tag
@@ -184,7 +191,7 @@ jobs:
           git commit -m "chore: bump version to ${NEW_VERSION}" || echo "No changes to commit"
           git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
           
-          # Push to the correct branch
+          # Push to the correct branch with tags
           git push origin ${DEFAULT_BRANCH} --tags
 
       - name: Create GitHub Release
