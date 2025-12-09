@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyiv"
-version = "0.2.7"
+version = "0.2.8"
 description = "A lightweight dependency injection library for Python"
 readme = "README.md"
 requires-python = ">=3.8"
