@@ -169,10 +169,30 @@ jobs:
         if: steps.check_version.outputs.exists == 'false'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
+          
+          # Determine which branch we're on (main or master)
+          # Try to get default branch from remote, fallback to checking which exists
+          DEFAULT_BRANCH="main"
+          if ! git ls-remote --heads origin main | grep -q main; then
+            if git ls-remote --heads origin master | grep -q master; then
+              DEFAULT_BRANCH="master"
+            fi
+          fi
+          
+          # Fetch latest changes and tags
+          git fetch origin --tags
+          
+          # Checkout the default branch and pull latest changes
+          git checkout ${DEFAULT_BRANCH} || git checkout -b ${DEFAULT_BRANCH} origin/${DEFAULT_BRANCH}
+          git pull origin ${DEFAULT_BRANCH} --rebase || git pull origin ${DEFAULT_BRANCH}
+          
+          # Stage, commit, and tag
           git add pyproject.toml
           git commit -m "chore: bump version to ${NEW_VERSION}" || echo "No changes to commit"
           git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
-          git push origin main --tags || git push origin master --tags
+          
+          # Push to the correct branch with tags
+          git push origin ${DEFAULT_BRANCH} --tags
 
       - name: Create GitHub Release
         if: steps.check_version.outputs.exists == 'false'
