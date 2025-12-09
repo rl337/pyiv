@@ -266,34 +266,24 @@ def fix_index_link(html_content, filename):
 
 
 def improve_init_module_display(html_content, filename):
-    """Improve display of __init__.py modules by showing just module name."""
-    # Check if this is an __init__.py module (package)
-    # Pattern: filename like "pyiv.html" or "pyiv.submodule.html" where the module
-    # corresponds to a package's __init__.py
+    """Improve display of modules, especially __init__.py packages."""
     module_name = filename.replace('.html', '')
     
-    # Check if the HTML contains __init__.py in the file path
+    # Clean up all module titles (both "package" and "module")
+    # Change "Python: package/module X" to "X - PyIV Documentation"
+    html_content = re.sub(
+        r'<title>Python: (?:package|module) ([^<]+)</title>',
+        r'<title>\1 - PyIV Documentation</title>',
+        html_content
+    )
+    
+    # For __init__.py modules (packages), clean up file path references
     if '__init__.py' in html_content:
         # Replace file path references to __init__.py with just the module name
-        # Pattern: file:/path/to/module/__init__.py -> module name
+        # Pattern: file:/path/to/module/__init__.py -> module name (package)
         html_content = re.sub(
             r'file:[^<]*__init__\.py',
             f'{module_name} (package)',
-            html_content
-        )
-        
-        # Also update the title if it says "package"
-        # Change "Python: package pyiv" to just "pyiv - PyIV Documentation"
-        html_content = re.sub(
-            r'<title>Python: package ([^<]+)</title>',
-            r'<title>\1 - PyIV Documentation</title>',
-            html_content
-        )
-        
-        # Also handle "Python: module" titles for consistency
-        html_content = re.sub(
-            r'<title>Python: module ([^<]+)</title>',
-            r'<title>\1 - PyIV Documentation</title>',
             html_content
         )
     
