@@ -210,7 +210,6 @@ def generate_index_html(html_dir='docs/html'):
             <strong>Quick Links:</strong>
             <a href="https://github.com/rl337/pyiv">GitHub Repository</a>
             <a href="https://github.com/rl337/pyiv/blob/main/README.md">README</a>
-            <a href="https://pypi.org/project/pyiv/">PyPI Package</a>
         </div>
 
         <h2>Key Features</h2>
@@ -329,8 +328,7 @@ poetry add pyiv
         <div class="footer">
             <p>
                 Generated on {datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")} | 
-                <a href="https://github.com/rl337/pyiv">View on GitHub</a> | 
-                <a href="https://pypi.org/project/pyiv/">View on PyPI</a>
+                <a href="https://github.com/rl337/pyiv">View on GitHub</a>
             </p>
         </div>
     </div>
