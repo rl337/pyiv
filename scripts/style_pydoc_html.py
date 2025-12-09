@@ -264,8 +264,8 @@ def fix_index_link(html_content, filename):
     return html_content
 
 
-def improve_init_module_display(html_content, filename):
-    """Improve display of modules, especially __init__.py packages."""
+def clean_file_paths(html_content, filename):
+    """Clean up absolute file paths and __init__.py references."""
     module_name = filename.replace('.html', '')
     
     # Clean up all module titles (both "package" and "module")
@@ -276,13 +276,36 @@ def improve_init_module_display(html_content, filename):
         html_content
     )
     
+    # Replace absolute paths with relative paths
+    # Pattern: /home/runner/work/pyiv/pyiv/... -> pyiv/...
+    # Pattern: /Users/.../pyiv/pyiv/... -> pyiv/...
+    html_content = re.sub(
+        r'/[^<]*/pyiv/([^<]+)',
+        r'pyiv/\1',
+        html_content
+    )
+    
     # For __init__.py modules (packages), clean up file path references
+    # Replace both file: URLs and plain text paths
     if '__init__.py' in html_content:
-        # Replace file path references to __init__.py with just the module name
-        # Pattern: file:/path/to/module/__init__.py -> module name (package)
+        # Replace the entire <a> tag that contains __init__.py file path
+        # Pattern: <a href="file:/path/to/__init__.py">/path/to/__init__.py</a>
         html_content = re.sub(
-            r'file:[^<]*__init__\.py',
-            f'{module_name} (package)',
+            r'<a href="file:[^"]*__init__\.py">[^<]*__init__\.py</a>',
+            f'<a href="#">{module_name} (package)</a>',
+            html_content
+        )
+        # Also handle cases where href and text might be different
+        html_content = re.sub(
+            r'<a href="file:[^"]*">([^<]*__init__\.py)</a>',
+            f'<a href="#">{module_name} (package)</a>',
+            html_content
+        )
+        # Replace standalone __init__.py file paths (not method names like __init__(self))
+        # Only match file paths, not method definitions
+        html_content = re.sub(
+            r'([/>\s"\'=])([^<]*?)(?:pyiv/|/)[^<]*?__init__\.py([<\s"\'/>])',
+            lambda m: m.group(1) + f'{module_name} (package)' + m.group(3),
             html_content
         )
     
@@ -302,7 +325,7 @@ def style_pydoc_html(html_file_path, html_dir):
         # Apply transformations
         html_content = inject_css(html_content)
         html_content = add_navigation(html_content, html_dir)
-        html_content = improve_init_module_display(html_content, os.path.basename(html_file_path))
+        html_content = clean_file_paths(html_content, os.path.basename(html_file_path))
         html_content = wrap_content(html_content)
         html_content = fix_index_link(html_content, os.path.basename(html_file_path))
         
