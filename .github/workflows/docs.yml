@@ -5,13 +5,13 @@ on:
     branches: [main, master]
     paths:
       - "pyiv/**"
-      - "scripts/**"
+      - "docs/**"
       - ".github/workflows/docs.yml"
   pull_request:
     branches: [main, master]
     paths:
       - "pyiv/**"
-      - "scripts/**"
+      - "docs/**"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -53,43 +53,18 @@ jobs:
       - name: Install project and documentation dependencies
         run: |
           pip install -e ".[dev]"
-          pip install pydoc-markdown sphinx sphinx-rtd-theme || pip install pydoc-markdown
+          pip install sphinx sphinx-rtd-theme
 
-      - name: Generate documentation with pydoc
+      - name: Build documentation with Sphinx
         run: |
-          mkdir -p docs/html
-          # Generate HTML documentation for all modules in pyiv package
-          find pyiv -name "*.py" -type f | while read -r file; do
-            # Convert file path to module path
-            module_path=$(echo "$file" | sed 's|^\./||' | sed 's|/|.|g' | sed 's|\.py$||')
-            echo "Generating docs for: $module_path"
-            python -m pydoc -w "$module_path" || true
-          done
-          # Move generated HTML files to docs/html
-          mv *.html docs/html/ 2>/dev/null || true
-
-      - name: Generate documentation with pydoc-markdown (if available)
-        run: |
-          if command -v pydoc-markdown &> /dev/null; then
-            mkdir -p docs/markdown
-            pydoc-markdown -p pyiv -o docs/markdown/ || true
-          else
-            echo "pydoc-markdown not available, skipping markdown generation"
-          fi
-
-      - name: Create index.html
-        run: |
-          python3 scripts/generate_index.py docs/html
-
-      - name: Apply styling to pydoc HTML files
-        run: |
-          python3 scripts/style_pydoc_html.py docs/html
+          cd docs
+          sphinx-build -b html . _build/html
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
         with:
           name: pyiv-documentation
-          path: docs/
+          path: docs/_build/html
           if-no-files-found: warn
 
       - name: Setup Pages
@@ -100,7 +75,7 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/html
+          path: docs/_build/html
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'

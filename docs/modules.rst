@@ -1,0 +1,78 @@
+.. pyiv modules documentation
+
+PyIV Modules
+===========
+
+This section contains detailed API documentation for all PyIV modules.
+
+Core Modules
+------------
+
+.. autosummary::
+   :toctree: pyiv
+   :recursive:
+
+   pyiv
+   pyiv.config
+   pyiv.injector
+   pyiv.singleton
+   pyiv.factory
+   pyiv.clock
+   pyiv.filesystem
+   pyiv.datetime_service
+   pyiv.reflection
+   pyiv.command
+
+Detailed Module Documentation
+-------------------------------
+
+.. automodule:: pyiv
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.injector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.singleton
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.factory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.clock
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.filesystem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.datetime_service
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.reflection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.command
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

@@ -37,6 +37,10 @@ dev = [
     "bandit>=1.7.5",
     "pre-commit>=3.0.0",
 ]
+docs = [
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/yourusername/pyiv"

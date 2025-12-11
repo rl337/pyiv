@@ -71,5 +71,9 @@ Thumbs.db
 *.log
 # bandit-report.json is now in build/ directory
 
+# Sphinx documentation build
+docs/_build/
+docs/.doctrees/
+
 
 
