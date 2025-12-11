@@ -71,6 +71,46 @@ fi
 # 6. Documentation quality check
 run_check "Documentation quality" python3 check_docs_quality.py
 
+# 7. Sphinx documentation build check
+echo ""
+echo -e "${YELLOW}Running: Sphinx documentation build${NC}"
+echo "Command: Building Sphinx documentation"
+# Check if sphinx-build is available
+if ! command -v sphinx-build &> /dev/null; then
+    echo -e "${YELLOW}⚠ sphinx-build not found, attempting to install Sphinx...${NC}"
+    # Try to install sphinx and sphinx-rtd-theme
+    if python3 -m pip install --quiet sphinx sphinx-rtd-theme 2>&1; then
+        echo -e "${GREEN}✓ Sphinx installed${NC}"
+    else
+        echo -e "${RED}✗ Failed to install Sphinx. Please install it manually: pip install sphinx sphinx-rtd-theme${NC}"
+        FAILED=1
+    fi
+fi
+
+# Build the documentation
+# Note: We don't use -W (warnings as errors) because Sphinx generates many warnings
+# for undocumented members, which is acceptable. We only fail on actual build errors.
+if [ $FAILED -eq 0 ]; then
+    if [ ! -d "docs" ]; then
+        echo -e "${RED}✗ docs/ directory not found${NC}"
+        FAILED=1
+    else
+        cd docs
+        # Build without -W flag to allow warnings but catch actual errors
+        # Use -q for quiet mode to reduce output, but errors will still be shown
+        if sphinx-build -b html -q . _build/html 2>&1; then
+            echo -e "${GREEN}✓ Sphinx documentation build passed${NC}"
+            cd ..
+        else
+            SPHINX_EXIT=$?
+            echo -e "${RED}✗ Sphinx documentation build failed (exit code: $SPHINX_EXIT)${NC}"
+            echo -e "${YELLOW}Note: Warnings are allowed, but build errors will fail the check${NC}"
+            cd ..
+            FAILED=1
+        fi
+    fi
+fi
+
 echo ""
 echo "=========================================="
 if [ $FAILED -eq 0 ]; then

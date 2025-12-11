@@ -1,0 +1,50 @@
+/* Custom CSS for pyiv documentation */
+
+/* Match the color scheme from the original index.html */
+:root {
+    --pyiv-blue: #0066cc;
+    --pyiv-light-blue: #e8f4f8;
+    --pyiv-gray: #f5f5f5;
+    --pyiv-dark-gray: #666;
+}
+
+/* Style the quick links box */
+.rst-content .raw-html {
+    margin: 20px 0;
+}
+
+/* Improve code block styling */
+.rst-content .highlight {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+/* Style feature lists */
+.rst-content ul.simple li {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+/* Improve heading styles */
+.rst-content h1 {
+    border-bottom: 3px solid var(--pyiv-blue);
+    padding-bottom: 10px;
+}
+
+.rst-content h2 {
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 8px;
+    margin-top: 40px;
+}
+
+/* Style links */
+.rst-content a {
+    color: var(--pyiv-blue);
+}
+
+.rst-content a:hover {
+    text-decoration: underline;
+}
+
