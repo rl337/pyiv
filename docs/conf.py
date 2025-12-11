@@ -22,6 +22,9 @@ except ImportError:
     release = "0.2.10"
     version = "0.2"
 
+# Make version available to templates
+html_context["version"] = release
+
 # Sphinx extensions
 extensions = [
     "sphinx.ext.autodoc",
