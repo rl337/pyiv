@@ -33,6 +33,7 @@ import inspect
 from typing import Any, Callable, Dict, Optional, Type, Union
 
 from pyiv.config import Config
+from pyiv.serde.base import SerDe
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 
@@ -47,6 +48,7 @@ class Injector:
         """
         self._config = config
         self._singletons: Dict[Type, Any] = {}
+        self._serde_singletons: Dict[str, SerDe] = {}
 
     def inject(self, cls: Type, **kwargs) -> Any:
         """Inject and create an instance of the given class.
@@ -268,6 +270,132 @@ class Injector:
         # Return the class (not instance)
         # The caller will use inject() which respects singleton configuration
         return implementations[name]
+
+    def inject_serde(self, encoding_type: str) -> SerDe:
+        """Inject a SerDe instance by encoding type.
+
+        Returns the default SerDe implementation for the given encoding type.
+        Respects singleton configuration.
+
+        Args:
+            encoding_type: The encoding type identifier (e.g., "json", "msgpack")
+
+        Returns:
+            A SerDe instance
+
+        Raises:
+            ValueError: If no SerDe is registered for the encoding type
+
+        Example:
+            >>> injector = get_injector(MyConfig)
+            >>> json_serde = injector.inject_serde("json")
+            >>> data = json_serde.serialize({"key": "value"})
+        """
+        # Check for pre-registered instance
+        instance = self._config.get_serde_instance(encoding_type)
+        if instance is not None:
+            return instance
+
+        # Get the registered class
+        serde_class = self._config.get_serde_registration(encoding_type)
+        if serde_class is None:
+            available = ", ".join(sorted(self._config._serde_by_type.keys())) or "none"
+            raise ValueError(
+                f"No SerDe registered for encoding type '{encoding_type}'. "
+                f"Available types: {available}"
+            )
+
+        # Check singleton configuration
+        singleton_type = self._config.get_serde_singleton_type(encoding_type)
+
+        # Handle global singleton
+        if singleton_type == SingletonType.GLOBAL_SINGLETON:
+            # Use encoding_type as the key for global registry
+            key = f"serde:{encoding_type}"
+            instance = GlobalSingletonRegistry.get(key)
+            if instance is not None:
+                return instance
+            # Create new instance
+            instance = self._instantiate(serde_class)
+            GlobalSingletonRegistry.set(key, instance)
+            return instance
+
+        # Check if we have a cached per-injector singleton
+        if singleton_type == SingletonType.SINGLETON and encoding_type in self._serde_singletons:
+            return self._serde_singletons[encoding_type]
+
+        # Create instance
+        instance = self._instantiate(serde_class)
+
+        # Store as singleton if configured
+        if singleton_type == SingletonType.SINGLETON:
+            self._serde_singletons[encoding_type] = instance
+
+        return instance
+
+    def inject_serde_by_name(self, name: str) -> SerDe:
+        """Inject a SerDe instance by name.
+
+        Returns a named SerDe implementation. This allows multiple instances
+        of the same encoding type with different behaviors (e.g., different
+        date formatting, gRPC compatibility, etc.).
+
+        Args:
+            name: The SerDe instance name
+
+        Returns:
+            A SerDe instance
+
+        Raises:
+            ValueError: If no SerDe is registered with the given name
+
+        Example:
+            >>> injector = get_injector(MyConfig)
+            >>> grpc_serde = injector.inject_serde_by_name("json-grpc")
+            >>> input_serde = injector.inject_serde_by_name("json-input")
+            >>> output_serde = injector.inject_serde_by_name("json-output")
+        """
+        # Check for pre-registered instance
+        instance = self._config.get_serde_instance(name)
+        if instance is not None:
+            return instance
+
+        # Get the registered class and encoding type
+        registration = self._config.get_serde_registration_by_name(name)
+        if registration is None:
+            available = ", ".join(sorted(self._config._serde_by_name.keys())) or "none"
+            raise ValueError(
+                f"No SerDe registered with name '{name}'. " f"Available names: {available}"
+            )
+
+        serde_class, encoding_type = registration
+
+        # Check singleton configuration
+        singleton_type = self._config.get_serde_singleton_type(name)
+
+        # Handle global singleton
+        if singleton_type == SingletonType.GLOBAL_SINGLETON:
+            key = f"serde:{name}"
+            instance = GlobalSingletonRegistry.get(key)
+            if instance is not None:
+                return instance
+            # Create new instance
+            instance = self._instantiate(serde_class)
+            GlobalSingletonRegistry.set(key, instance)
+            return instance
+
+        # Check if we have a cached per-injector singleton
+        if singleton_type == SingletonType.SINGLETON and name in self._serde_singletons:
+            return self._serde_singletons[name]
+
+        # Create instance
+        instance = self._instantiate(serde_class)
+
+        # Store as singleton if configured
+        if singleton_type == SingletonType.SINGLETON:
+            self._serde_singletons[name] = instance
+
+        return instance
 
 
 def get_injector(config: Union[Type[Config], Config]) -> Injector:

@@ -20,6 +20,7 @@ pyiv (Python Injection) provides a simple yet powerful dependency injection syst
 
 - **Dependency Injection**: Clean dependency injection framework for Python applications
 - **Reflection-Based Discovery**: Automatically discover interface implementations in packages
+- **SerDe (Serialize/Deserialize)**: Unified interface for serialization with encoding type and name-based injection
 - **Filesystem Utilities**: Enhanced filesystem operations and abstractions
 - **Clock/Time Abstractions**: Time management utilities for testing and time-dependent code
 - **DateTime Service**: Abstract datetime service for dependency injection and testing
@@ -130,6 +131,57 @@ mock_service = MockDateTimeService(datetime(2024, 1, 15, 10, 30, 0, tzinfo=timez
 fixed_time = mock_service.now_utc()  # Returns the fixed time
 ```
 
+### SerDe (Serialize/Deserialize)
+
+pyiv provides a unified SerDe interface for serialization/deserialization with support for multiple encoding types and implementations:
+
+```python
+from pyiv import Config, get_injector
+from pyiv.serde import StandardJSONSerDe, GRPCJSONSerDe
+
+# Register SerDe implementations
+class MyConfig(Config):
+    def configure(self):
+        # Register by encoding type (default implementation)
+        self.register_serde("json", StandardJSONSerDe)
+        
+        # Register by name (allows multiple implementations of same type)
+        self.register_serde_by_name("json-grpc", GRPCJSONSerDe, "json")
+        self.register_serde_by_name("json-input", CustomJSONSerDe, "json")
+        self.register_serde_by_name("json-output", StandardJSONSerDe, "json")
+
+# Create injector
+injector = get_injector(MyConfig)
+
+# Inject by encoding type
+json_serde = injector.inject_serde("json")
+
+# Inject by name (for specific implementations)
+grpc_serde = injector.inject_serde_by_name("json-grpc")
+input_serde = injector.inject_serde_by_name("json-input")
+output_serde = injector.inject_serde_by_name("json-output")
+
+# Use SerDe
+data = {"key": "value", "number": 42}
+serialized = json_serde.serialize(data)
+deserialized = json_serde.deserialize(serialized)
+```
+
+#### Key Features
+
+- **Encoding Type Selection**: Inject SerDe by encoding type (e.g., "json", "msgpack", "toml")
+- **Named Instances**: Register and inject multiple implementations of the same encoding type
+- **Custom Implementations**: Create custom SerDe implementations with different behaviors (e.g., date formatting, null handling)
+- **Singleton Support**: SerDe instances respect singleton configuration
+- **Type Safety**: Type-safe interface with abstract base class
+
+#### Use Cases
+
+1. **Multiple JSON Implementations**: Use different JSON SerDe instances for input/output with different date formatting
+2. **gRPC Compatibility**: Use gRPC-compatible JSON serialization alongside standard JSON
+3. **Encoding Translation**: Translate between different SerDe implementations (e.g., convert dates from one format to another)
+4. **Multiple Encoding Types**: Support JSON, MessagePack, TOML, and other encoding types simultaneously
+
 ## Project Structure
 
 ```
@@ -139,6 +191,10 @@ pyiv/
 │   ├── injector.py      # Dependency injection framework
 │   ├── config.py         # Configuration management
 │   ├── reflection.py     # Reflection-based discovery
+│   ├── serde/            # SerDe (Serialize/Deserialize) module
+│   │   ├── __init__.py
+│   │   ├── base.py       # SerDe base interface
+│   │   └── json.py       # JSON SerDe implementations
 │   ├── filesystem.py     # Filesystem utilities
 │   ├── clock.py          # Time/clock abstractions
 │   ├── datetime_service.py  # DateTime service abstraction

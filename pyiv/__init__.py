@@ -39,6 +39,7 @@ from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
 from pyiv.reflection import ReflectionConfig
+from pyiv.serde import GRPCJSONSerDe, JSONSerDe, SerDe, StandardJSONSerDe
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 # Command interface (optional import)
@@ -68,6 +69,10 @@ __all__ = [
     "Factory",
     "BaseFactory",
     "SimpleFactory",
+    "SerDe",
+    "JSONSerDe",
+    "StandardJSONSerDe",
+    "GRPCJSONSerDe",
     "SingletonType",
     "GlobalSingletonRegistry",
 ]
