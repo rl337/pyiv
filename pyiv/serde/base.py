@@ -7,7 +7,7 @@ deserialize() methods.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, TypeVar
+from typing import Any, Optional, TypeVar, Union
 
 from pyiv.chain import ChainHandler, ChainType
 
@@ -40,7 +40,7 @@ class SerDe(ChainHandler):
         ...         import json
         ...         return json.dumps(obj)
         ...
-        ...     def deserialize(self, data: str, target_type: type[T]) -> T:
+        ...     def deserialize(self, data: str, target_type: Optional[Type[T]]) -> T:
         ...         import json
         ...         return json.loads(data)
     """
@@ -98,7 +98,7 @@ class SerDe(ChainHandler):
         return self.serialize(request)
 
     @abstractmethod
-    def serialize(self, obj: Any) -> str | bytes:
+    def serialize(self, obj: Any) -> Union[str, bytes]:
         """Serialize a Python object to encoded format.
 
         Args:
@@ -110,7 +110,9 @@ class SerDe(ChainHandler):
         pass
 
     @abstractmethod
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize encoded data back to a Python object.
 
         Args:

@@ -19,7 +19,9 @@ Usage:
         ...         # Register by handler type
         ...         self.register_chain_handler(ChainType.ENCODING, "json", JSONSerDe)
         ...         # Register by name (allows multiple implementations)
-        ...         self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", JSONSerDe, handler_type="json")
+        ...         self.register_chain_handler_by_name(
+        ...             ChainType.ENCODING, "json-input", JSONSerDe, handler_type="json"
+        ...         )
         ...         # Register default (no-op or pickle)
         ...         self.register_chain_handler(ChainType.ENCODING, "default", PickleSerDe)
         >>> injector = get_injector(MyConfig)

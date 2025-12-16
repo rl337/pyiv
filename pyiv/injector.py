@@ -30,7 +30,7 @@ Usage:
 """
 
 import inspect
-from typing import Any, Callable, Dict, Optional, Type, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.config import Config
@@ -48,7 +48,7 @@ class Injector:
         """
         self._config = config
         self._singletons: Dict[Type, Any] = {}
-        self._chain_singletons: Dict[tuple[ChainType, str], ChainHandler] = {}
+        self._chain_singletons: Dict[Tuple[ChainType, str], ChainHandler] = {}
 
     def inject(self, cls: Type, **kwargs) -> Any:
         """Inject and create an instance of the given class.

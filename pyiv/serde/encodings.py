@@ -16,18 +16,15 @@ import io
 import json
 import pickle
 import xml.etree.ElementTree as ET
-from typing import Any, TypeVar
+from typing import Any, Optional, Type, TypeVar, Union
 
 # uu is a standard library module, but import it explicitly
 try:
     import uu
+
     UU_AVAILABLE = True
 except ImportError:
     UU_AVAILABLE = False
-
-from pyiv.serde.base import SerDe
-
-T = TypeVar("T")
 
 # Try to import yaml (not in standard library, but commonly available)
 try:
@@ -36,6 +33,10 @@ try:
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
+
+from pyiv.serde.base import SerDe
+
+T = TypeVar("T")
 
 
 class NoOpSerDe(SerDe):
@@ -49,7 +50,7 @@ class NoOpSerDe(SerDe):
         """Return the handler type identifier."""
         return "noop"
 
-    def serialize(self, obj: Any) -> str | bytes:
+    def serialize(self, obj: Any) -> Union[str, bytes]:
         """Pass through the object unchanged.
 
         Args:
@@ -62,7 +63,9 @@ class NoOpSerDe(SerDe):
             return obj
         return str(obj)
 
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Pass through the data unchanged.
 
         Args:
@@ -98,7 +101,9 @@ class PickleSerDe(SerDe):
         """
         return pickle.dumps(obj)
 
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize using pickle.
 
         Args:
@@ -132,7 +137,9 @@ class JSONSerDe(SerDe):
         """
         return json.dumps(obj, default=self._default_serializer)
 
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize JSON string/bytes back to a Python object.
 
         Args:
@@ -189,7 +196,9 @@ class Base64SerDe(SerDe):
             obj = pickle.dumps(obj)  # Fallback to pickle for complex objects
         return base64.b64encode(obj).decode("utf-8")
 
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize base64-encoded data.
 
         Args:
@@ -240,7 +249,9 @@ class UUEncodeSerDe(SerDe):
         uu.encode(input_data, output)
         return output.getvalue()
 
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize UU-encoded data.
 
         Args:
@@ -301,7 +312,9 @@ class XMLSerDe(SerDe):
 
         return ET.tostring(root, encoding="unicode")
 
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize XML string/bytes back to a Python object.
 
         Args:
@@ -375,7 +388,9 @@ class YAMLSerDe(SerDe):
             raise ImportError("PyYAML is not installed. Install it with: pip install pyyaml")
         return yaml.dump(obj, default_flow_style=False)
 
-    def deserialize(self, data: str | bytes, target_type: type[T] | None = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize YAML string/bytes back to a Python object.
 
         Args:

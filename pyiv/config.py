@@ -29,7 +29,7 @@ Usage:
         ...         self.register_instance(Cache, my_cache_instance)
 """
 
-from typing import Any, Callable, Dict, Optional, Type, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.singleton import SingletonType
@@ -47,13 +47,13 @@ class Config:
         self._instances: Dict[Type, Any] = {}
         self._singleton_types: Dict[Type, SingletonType] = {}
         # Chain handler registrations: (chain_type, handler_type) -> implementation class
-        self._chain_by_type: Dict[tuple[ChainType, str], Type[ChainHandler]] = {}
+        self._chain_by_type: Dict[Tuple[ChainType, str], Type[ChainHandler]] = {}
         # Chain handler registrations: (chain_type, name) -> (implementation class, handler_type)
-        self._chain_by_name: Dict[tuple[ChainType, str], tuple[Type[ChainHandler], str]] = {}
+        self._chain_by_name: Dict[Tuple[ChainType, str], Tuple[Type[ChainHandler], str]] = {}
         # Chain handler instances: (chain_type, name) -> instance (for pre-created instances)
-        self._chain_instances: Dict[tuple[ChainType, str], ChainHandler] = {}
+        self._chain_instances: Dict[Tuple[ChainType, str], ChainHandler] = {}
         # Chain handler singleton configuration: (chain_type, name) -> singleton_type
-        self._chain_singleton_types: Dict[tuple[ChainType, str], SingletonType] = {}
+        self._chain_singleton_types: Dict[Tuple[ChainType, str], SingletonType] = {}
         self.configure()
 
     def configure(self):
@@ -278,7 +278,7 @@ class Config:
 
     def get_chain_handler_registration_by_name(
         self, chain_type: ChainType, name: str
-    ) -> Optional[tuple[Type[ChainHandler], str]]:
+    ) -> Optional[Tuple[Type[ChainHandler], str]]:
         """Get the registered chain handler class and handler type for a name.
 
         Args:
