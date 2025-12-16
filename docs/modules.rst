@@ -22,6 +22,8 @@ Core Modules
    pyiv.datetime_service
    pyiv.reflection
    pyiv.command
+   pyiv.chain
+   pyiv.serde
 
 Detailed Module Documentation
 -------------------------------
@@ -72,6 +74,26 @@ Detailed Module Documentation
    :show-inheritance:
 
 .. automodule:: pyiv.command
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.chain
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.serde
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.serde.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.serde.encodings
    :members:
    :undoc-members:
    :show-inheritance:
