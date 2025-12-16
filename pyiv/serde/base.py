@@ -1,34 +1,39 @@
 """Base SerDe interface for serialization/deserialization.
 
 This module defines the abstract base class for all SerDe implementations.
-All serialization implementations must inherit from SerDe and implement
-the serialize() and deserialize() methods.
+SerDe is a chain handler for the ENCODING chain type. All serialization
+implementations must inherit from SerDe and implement the serialize() and
+deserialize() methods.
 """
 
 from abc import ABC, abstractmethod
 from typing import Any, TypeVar
 
+from pyiv.chain import ChainHandler, ChainType
+
 T = TypeVar("T")
 
 
-class SerDe(ABC):
+class SerDe(ChainHandler):
     """Abstract base class for serialization/deserialization operations.
 
-    SerDe (Serialize/Deserialize) provides a unified interface for converting
-    objects to and from various encoding formats (JSON, MessagePack, TOML, etc.).
+    SerDe (Serialize/Deserialize) is a chain handler for the ENCODING chain type.
+    It provides a unified interface for converting objects to and from various
+    encoding formats (JSON, base64, uuencode, YAML, XML, pickle, etc.).
 
     Subclasses must implement:
+        - handler_type: Return the encoding type identifier (e.g., "json", "base64", "pickle")
         - serialize(): Convert a Python object to encoded bytes/string
         - deserialize(): Convert encoded bytes/string back to a Python object
 
-    The encoding_type property identifies the format (e.g., "json", "msgpack", "toml").
-    Multiple implementations of the same encoding_type can exist with different
+    The handler_type property identifies the format (e.g., "json", "base64", "pickle").
+    Multiple implementations of the same handler_type can exist with different
     behaviors (e.g., date formatting, null handling, etc.).
 
     Example:
         >>> class MyJSONSerDe(SerDe):
         ...     @property
-        ...     def encoding_type(self) -> str:
+        ...     def handler_type(self) -> str:
         ...         return "json"
         ...
         ...     def serialize(self, obj: Any) -> str:
@@ -41,14 +46,56 @@ class SerDe(ABC):
     """
 
     @property
+    def chain_type(self) -> ChainType:
+        """Return the chain type (always ENCODING for SerDe).
+
+        Returns:
+            ChainType.ENCODING
+        """
+        return ChainType.ENCODING
+
+    @property
     @abstractmethod
-    def encoding_type(self) -> str:
-        """Return the encoding type identifier (e.g., "json", "msgpack", "toml").
+    def handler_type(self) -> str:
+        """Return the encoding type identifier (e.g., "json", "base64", "pickle").
 
         Returns:
             A string identifying the encoding format
         """
         pass
+
+    def handle(self, request: Any, **kwargs) -> Any:
+        """Handle a serialization/deserialization request.
+
+        This is the chain handler interface. For SerDe, requests can be:
+        - A tuple of ("serialize", obj) -> returns serialized data
+        - A tuple of ("deserialize", data, target_type) -> returns deserialized object
+        - A dict with "action" key -> processes accordingly
+
+        Args:
+            request: The request (can be tuple, dict, or direct object)
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            The result of the operation
+        """
+        if isinstance(request, tuple) and len(request) >= 2:
+            action, *args = request
+            if action == "serialize":
+                return self.serialize(args[0])
+            elif action == "deserialize":
+                target_type = args[1] if len(args) > 1 else None
+                return self.deserialize(args[0], target_type)
+        elif isinstance(request, dict):
+            action = request.get("action")
+            if action == "serialize":
+                return self.serialize(request.get("obj"))
+            elif action == "deserialize":
+                return self.deserialize(
+                    request.get("data"), request.get("target_type")
+                )
+        # Default: treat as serialize request
+        return self.serialize(request)
 
     @abstractmethod
     def serialize(self, obj: Any) -> str | bytes:

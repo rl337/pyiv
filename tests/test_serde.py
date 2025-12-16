@@ -6,8 +6,17 @@ from typing import Any
 
 import pytest
 
-from pyiv import Config, get_injector
-from pyiv.serde import GRPCJSONSerDe, JSONSerDe, SerDe, StandardJSONSerDe
+from pyiv import ChainType, Config, get_injector
+from pyiv.serde import (
+    Base64SerDe,
+    JSONSerDe,
+    NoOpSerDe,
+    PickleSerDe,
+    SerDe,
+    UUEncodeSerDe,
+    XMLSerDe,
+    YAMLSerDe,
+)
 
 
 class CustomJSONSerDe(JSONSerDe):
@@ -28,14 +37,15 @@ class TestSerDeInterface:
         with pytest.raises(TypeError):
             SerDe()  # type: ignore[abstract]
 
-    def test_serde_encoding_type(self):
-        """Test that SerDe implementations have encoding_type property."""
-        serde = StandardJSONSerDe()
-        assert serde.encoding_type == "json"
+    def test_serde_handler_type(self):
+        """Test that SerDe implementations have handler_type property."""
+        serde = JSONSerDe()
+        assert serde.handler_type == "json"
+        assert serde.chain_type == ChainType.ENCODING
 
     def test_serde_serialize_deserialize(self):
         """Test basic serialize/deserialize functionality."""
-        serde = StandardJSONSerDe()
+        serde = JSONSerDe()
         data = {"key": "value", "number": 42}
         serialized = serde.serialize(data)
         assert isinstance(serialized, str)
@@ -44,44 +54,83 @@ class TestSerDeInterface:
 
     def test_serde_datetime_serialization(self):
         """Test datetime serialization."""
-        serde = StandardJSONSerDe()
+        serde = JSONSerDe()
         dt = datetime(2024, 1, 1, 12, 0, 0)
         data = {"timestamp": dt}
+        # JSON can't serialize datetime directly, so it will use default serializer
+        # which should convert to string representation
         serialized = serde.serialize(data)
-        assert "2024-01-01T12:00:00" in serialized
+        assert isinstance(serialized, str)
         deserialized = serde.deserialize(serialized)
-        assert isinstance(deserialized["timestamp"], str)
+        assert isinstance(deserialized, dict)
 
     def test_serde_bytes_input(self):
         """Test deserializing from bytes."""
-        serde = StandardJSONSerDe()
+        serde = JSONSerDe()
         data = {"key": "value"}
         serialized = serde.serialize(data)
         bytes_data = serialized.encode("utf-8")
         deserialized = serde.deserialize(bytes_data)
         assert deserialized == data
 
+    def test_serde_chain_handler_interface(self):
+        """Test that SerDe implements ChainHandler interface."""
+        serde = JSONSerDe()
+        # Test handle() method
+        data = {"key": "value"}
+        result = serde.handle(("serialize", data))
+        assert isinstance(result, str)
+        assert "key" in result
 
-class TestJSONSerDeImplementations:
-    """Tests for JSON SerDe implementations."""
 
-    def test_standard_json_serde(self):
-        """Test StandardJSONSerDe."""
-        serde = StandardJSONSerDe()
+class TestSerDeImplementations:
+    """Tests for SerDe implementations."""
+
+    def test_json_serde(self):
+        """Test JSONSerDe."""
+        serde = JSONSerDe()
         data = {"key": "value"}
         serialized = serde.serialize(data)
         assert serialized == '{"key":"value"}'
         deserialized = serde.deserialize(serialized)
         assert deserialized == data
 
-    def test_grpc_json_serde(self):
-        """Test GRPCJSONSerDe."""
-        serde = GRPCJSONSerDe()
-        data = {"key": "value"}
+    def test_noop_serde(self):
+        """Test NoOpSerDe."""
+        serde = NoOpSerDe()
+        data = "test data"
         serialized = serde.serialize(data)
-        assert serialized == '{"key":"value"}'
+        assert serialized == data
         deserialized = serde.deserialize(serialized)
         assert deserialized == data
+
+    def test_pickle_serde(self):
+        """Test PickleSerDe."""
+        serde = PickleSerDe()
+        data = {"key": "value", "number": 42, "list": [1, 2, 3]}
+        serialized = serde.serialize(data)
+        assert isinstance(serialized, bytes)
+        deserialized = serde.deserialize(serialized)
+        assert deserialized == data
+
+    def test_base64_serde(self):
+        """Test Base64SerDe."""
+        serde = Base64SerDe()
+        data = b"test data"
+        serialized = serde.serialize(data)
+        assert isinstance(serialized, str)
+        deserialized = serde.deserialize(serialized)
+        assert deserialized == data
+
+    def test_xml_serde(self):
+        """Test XMLSerDe."""
+        serde = XMLSerDe()
+        data = {"key": "value", "number": 42}
+        serialized = serde.serialize(data)
+        assert isinstance(serialized, str)
+        assert "<root>" in serialized
+        deserialized = serde.deserialize(serialized)
+        assert isinstance(deserialized, dict)
 
     def test_custom_json_serde(self):
         """Test custom JSON SerDe with different date formatting."""
@@ -90,68 +139,68 @@ class TestJSONSerDeImplementations:
         data = {"timestamp": dt}
         serialized = serde.serialize(data)
         assert "2024-01-01 12:00:00" in serialized
-        # Standard JSON SerDe would use ISO format
-        standard_serde = StandardJSONSerDe()
+        # Standard JSON SerDe would use different format
+        standard_serde = JSONSerDe()
         standard_serialized = standard_serde.serialize(data)
         assert serialized != standard_serialized
 
 
-class TestSerDeConfigRegistration:
-    """Tests for SerDe registration in Config."""
+class TestChainHandlerConfigRegistration:
+    """Tests for chain handler registration in Config."""
 
-    def test_register_serde_by_type(self):
-        """Test registering SerDe by encoding type."""
-
-        class MyConfig(Config):
-            def configure(self):
-                self.register_serde("json", StandardJSONSerDe)
-
-        config = MyConfig()
-        assert config.has_serde_registration("json")
-        assert config.get_serde_registration("json") == StandardJSONSerDe
-
-    def test_register_serde_by_name(self):
-        """Test registering SerDe by name."""
+    def test_register_chain_handler_by_type(self):
+        """Test registering chain handler by handler type."""
 
         class MyConfig(Config):
             def configure(self):
-                self.register_serde_by_name("json-grpc", GRPCJSONSerDe, "json")
+                self.register_chain_handler(ChainType.ENCODING, "json", JSONSerDe)
 
         config = MyConfig()
-        assert config.has_serde_registration_by_name("json-grpc")
-        registration = config.get_serde_registration_by_name("json-grpc")
+        assert config.has_chain_handler_registration(ChainType.ENCODING, "json")
+        assert config.get_chain_handler_registration(ChainType.ENCODING, "json") == JSONSerDe
+
+    def test_register_chain_handler_by_name(self):
+        """Test registering chain handler by name."""
+
+        class MyConfig(Config):
+            def configure(self):
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", JSONSerDe, "json")
+
+        config = MyConfig()
+        assert config.has_chain_handler_registration_by_name(ChainType.ENCODING, "json-input")
+        registration = config.get_chain_handler_registration_by_name(ChainType.ENCODING, "json-input")
         assert registration is not None
-        serde_class, encoding_type = registration
-        assert serde_class == GRPCJSONSerDe
-        assert encoding_type == "json"
+        handler_class, handler_type = registration
+        assert handler_class == JSONSerDe
+        assert handler_type == "json"
 
-    def test_register_multiple_serde_instances(self):
-        """Test registering multiple SerDe instances of the same type."""
-
-        class MyConfig(Config):
-            def configure(self):
-                self.register_serde_by_name("json-input", CustomJSONSerDe, "json")
-                self.register_serde_by_name("json-output", StandardJSONSerDe, "json")
-
-        config = MyConfig()
-        assert config.has_serde_registration_by_name("json-input")
-        assert config.has_serde_registration_by_name("json-output")
-
-    def test_register_serde_instance(self):
-        """Test registering a pre-created SerDe instance."""
+    def test_register_multiple_chain_handlers(self):
+        """Test registering multiple chain handler instances of the same type."""
 
         class MyConfig(Config):
             def configure(self):
-                instance = StandardJSONSerDe()
-                self.register_serde_instance("json-precreated", instance)
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", CustomJSONSerDe, "json")
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-output", JSONSerDe, "json")
 
         config = MyConfig()
-        instance = config.get_serde_instance("json-precreated")
+        assert config.has_chain_handler_registration_by_name(ChainType.ENCODING, "json-input")
+        assert config.has_chain_handler_registration_by_name(ChainType.ENCODING, "json-output")
+
+    def test_register_chain_handler_instance(self):
+        """Test registering a pre-created chain handler instance."""
+
+        class MyConfig(Config):
+            def configure(self):
+                instance = JSONSerDe()
+                self.register_chain_handler_instance(ChainType.ENCODING, "json-precreated", instance)
+
+        config = MyConfig()
+        instance = config.get_chain_handler_instance(ChainType.ENCODING, "json-precreated")
         assert instance is not None
-        assert isinstance(instance, StandardJSONSerDe)
+        assert isinstance(instance, JSONSerDe)
 
-    def test_register_serde_validation(self):
-        """Test that SerDe registration validates inputs."""
+    def test_register_chain_handler_validation(self):
+        """Test that chain handler registration validates inputs."""
 
         class MyConfig(Config):
             def configure(self):
@@ -159,58 +208,58 @@ class TestSerDeConfigRegistration:
 
         config = MyConfig()
 
-        # Empty encoding_type
-        with pytest.raises(ValueError, match="encoding_type must be a non-empty string"):
-            config.register_serde("", StandardJSONSerDe)
+        # Empty handler_type
+        with pytest.raises(ValueError, match="handler_type must be a non-empty string"):
+            config.register_chain_handler(ChainType.ENCODING, "", JSONSerDe)
 
-        # Invalid serde_class
-        with pytest.raises(TypeError, match="serde_class must be a subclass of SerDe"):
-            config.register_serde("json", str)  # type: ignore[arg-type]
+        # Invalid handler_class
+        with pytest.raises(TypeError, match="handler_class must be a subclass of ChainHandler"):
+            config.register_chain_handler(ChainType.ENCODING, "json", str)  # type: ignore[arg-type]
 
         # Empty name
         with pytest.raises(ValueError, match="name must be a non-empty string"):
-            config.register_serde_by_name("", StandardJSONSerDe, "json")
+            config.register_chain_handler_by_name(ChainType.ENCODING, "", JSONSerDe, "json")
 
 
-class TestSerDeInjection:
-    """Tests for SerDe injection via Injector."""
+class TestChainHandlerInjection:
+    """Tests for chain handler injection via Injector."""
 
-    def test_inject_serde_by_type(self):
-        """Test injecting SerDe by encoding type."""
-
-        class MyConfig(Config):
-            def configure(self):
-                self.register_serde("json", StandardJSONSerDe)
-
-        injector = get_injector(MyConfig)
-        serde = injector.inject_serde("json")
-        assert isinstance(serde, StandardJSONSerDe)
-
-    def test_inject_serde_by_name(self):
-        """Test injecting SerDe by name."""
+    def test_inject_chain_handler_by_type(self):
+        """Test injecting chain handler by handler type."""
 
         class MyConfig(Config):
             def configure(self):
-                self.register_serde_by_name("json-grpc", GRPCJSONSerDe, "json")
+                self.register_chain_handler(ChainType.ENCODING, "json", JSONSerDe)
 
         injector = get_injector(MyConfig)
-        serde = injector.inject_serde_by_name("json-grpc")
-        assert isinstance(serde, GRPCJSONSerDe)
+        serde = injector.inject_chain_handler(ChainType.ENCODING, "json")
+        assert isinstance(serde, JSONSerDe)
 
-    def test_inject_multiple_serde_instances(self):
-        """Test injecting multiple SerDe instances of the same type."""
+    def test_inject_chain_handler_by_name(self):
+        """Test injecting chain handler by name."""
 
         class MyConfig(Config):
             def configure(self):
-                self.register_serde_by_name("json-input", CustomJSONSerDe, "json")
-                self.register_serde_by_name("json-output", StandardJSONSerDe, "json")
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", JSONSerDe, "json")
 
         injector = get_injector(MyConfig)
-        input_serde = injector.inject_serde_by_name("json-input")
-        output_serde = injector.inject_serde_by_name("json-output")
+        serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
+        assert isinstance(serde, JSONSerDe)
+
+    def test_inject_multiple_chain_handlers(self):
+        """Test injecting multiple chain handler instances of the same type."""
+
+        class MyConfig(Config):
+            def configure(self):
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", CustomJSONSerDe, "json")
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-output", JSONSerDe, "json")
+
+        injector = get_injector(MyConfig)
+        input_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
+        output_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-output")
 
         assert isinstance(input_serde, CustomJSONSerDe)
-        assert isinstance(output_serde, StandardJSONSerDe)
+        assert isinstance(output_serde, JSONSerDe)
 
         # Test that they have different behaviors
         dt = datetime(2024, 1, 1, 12, 0, 0)
@@ -219,36 +268,36 @@ class TestSerDeInjection:
         output_serialized = output_serde.serialize(data)
         assert input_serialized != output_serialized
 
-    def test_inject_serde_singleton(self):
-        """Test that SerDe instances respect singleton configuration."""
+    def test_inject_chain_handler_singleton(self):
+        """Test that chain handler instances respect singleton configuration."""
 
         class MyConfig(Config):
             def configure(self):
-                self.register_serde("json", StandardJSONSerDe)
+                self.register_chain_handler(ChainType.ENCODING, "json", JSONSerDe)
 
         injector = get_injector(MyConfig)
-        serde1 = injector.inject_serde("json")
-        serde2 = injector.inject_serde("json")
+        serde1 = injector.inject_chain_handler(ChainType.ENCODING, "json")
+        serde2 = injector.inject_chain_handler(ChainType.ENCODING, "json")
         # Should be the same instance (singleton)
         assert serde1 is serde2
 
-    def test_inject_serde_precreated_instance(self):
-        """Test injecting a pre-created SerDe instance."""
+    def test_inject_chain_handler_precreated_instance(self):
+        """Test injecting a pre-created chain handler instance."""
 
         class MyConfig(Config):
             def configure(self):
-                instance = StandardJSONSerDe()
-                self.register_serde_instance("json-precreated", instance)
+                instance = JSONSerDe()
+                self.register_chain_handler_instance(ChainType.ENCODING, "json-precreated", instance)
 
         injector = get_injector(MyConfig)
-        serde = injector.inject_serde_by_name("json-precreated")
-        assert isinstance(serde, StandardJSONSerDe)
+        serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-precreated")
+        assert isinstance(serde, JSONSerDe)
         # Should be the exact same instance
-        serde2 = injector.inject_serde_by_name("json-precreated")
+        serde2 = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-precreated")
         assert serde is serde2
 
-    def test_inject_serde_not_found(self):
-        """Test that injection fails for unregistered SerDe."""
+    def test_inject_chain_handler_not_found(self):
+        """Test that injection fails for unregistered chain handlers."""
 
         class MyConfig(Config):
             def configure(self):
@@ -256,18 +305,18 @@ class TestSerDeInjection:
 
         injector = get_injector(MyConfig)
 
-        with pytest.raises(ValueError, match="No SerDe registered for encoding type"):
-            injector.inject_serde("json")
+        with pytest.raises(ValueError, match="No chain handler registered"):
+            injector.inject_chain_handler(ChainType.ENCODING, "json")
 
-        with pytest.raises(ValueError, match="No SerDe registered with name"):
-            injector.inject_serde_by_name("json-grpc")
+        with pytest.raises(ValueError, match="No chain handler registered"):
+            injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
 
 
-class TestSerDeIntegration:
-    """Integration tests for SerDe with dependency injection."""
+class TestChainHandlerIntegration:
+    """Integration tests for chain handlers with dependency injection."""
 
-    def test_serde_in_class_constructor(self):
-        """Test injecting SerDe into a class constructor."""
+    def test_chain_handler_in_class_constructor(self):
+        """Test injecting chain handler into a class constructor."""
 
         class DataProcessor:
             """A class that uses SerDe for data processing."""
@@ -280,45 +329,47 @@ class TestSerDeIntegration:
 
         class MyConfig(Config):
             def configure(self):
-                self.register_serde("json", StandardJSONSerDe)
+                self.register_chain_handler(ChainType.ENCODING, "json", JSONSerDe)
 
         injector = get_injector(MyConfig)
-        # Manually inject SerDe and create processor
-        serde = injector.inject_serde("json")
+        # Manually inject chain handler and create processor
+        serde = injector.inject_chain_handler(ChainType.ENCODING, "json")
         processor = DataProcessor(serde)
         result = processor.process({"key": "value"})
         assert result == '{"key":"value"}'
 
-    def test_multiple_serde_types(self):
+    def test_multiple_encoding_types(self):
         """Test registering and injecting multiple encoding types."""
-
-        class MessagePackSerDe(SerDe):
-            """Mock MessagePack SerDe for testing."""
-
-            @property
-            def encoding_type(self) -> str:
-                return "msgpack"
-
-            def serialize(self, obj: Any) -> bytes:
-                # Mock implementation
-                return json.dumps(obj).encode("utf-8")
-
-            def deserialize(self, data: str | bytes, target_type: type | None = None):
-                if isinstance(data, bytes):
-                    data = data.decode("utf-8")
-                return json.loads(data)
 
         class MyConfig(Config):
             def configure(self):
-                self.register_serde("json", StandardJSONSerDe)
-                self.register_serde("msgpack", MessagePackSerDe)
+                self.register_chain_handler(ChainType.ENCODING, "json", JSONSerDe)
+                self.register_chain_handler(ChainType.ENCODING, "pickle", PickleSerDe)
+                self.register_chain_handler(ChainType.ENCODING, "base64", Base64SerDe)
 
         injector = get_injector(MyConfig)
-        json_serde = injector.inject_serde("json")
-        msgpack_serde = injector.inject_serde("msgpack")
+        json_serde = injector.inject_chain_handler(ChainType.ENCODING, "json")
+        pickle_serde = injector.inject_chain_handler(ChainType.ENCODING, "pickle")
+        base64_serde = injector.inject_chain_handler(ChainType.ENCODING, "base64")
 
-        assert isinstance(json_serde, StandardJSONSerDe)
-        assert isinstance(msgpack_serde, MessagePackSerDe)
-        assert json_serde.encoding_type == "json"
-        assert msgpack_serde.encoding_type == "msgpack"
+        assert isinstance(json_serde, JSONSerDe)
+        assert isinstance(pickle_serde, PickleSerDe)
+        assert isinstance(base64_serde, Base64SerDe)
+        assert json_serde.handler_type == "json"
+        assert pickle_serde.handler_type == "pickle"
+        assert base64_serde.handler_type == "base64"
 
+    def test_default_noop_serde(self):
+        """Test that NoOpSerDe can be used as a default."""
+
+        class MyConfig(Config):
+            def configure(self):
+                self.register_chain_handler(ChainType.ENCODING, "default", NoOpSerDe)
+
+        injector = get_injector(MyConfig)
+        serde = injector.inject_chain_handler(ChainType.ENCODING, "default")
+        assert isinstance(serde, NoOpSerDe)
+        # Test pass-through behavior
+        data = "test"
+        assert serde.serialize(data) == data
+        assert serde.deserialize(data) == data

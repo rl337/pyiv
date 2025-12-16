@@ -32,8 +32,8 @@ Usage:
 import inspect
 from typing import Any, Callable, Dict, Optional, Type, Union
 
+from pyiv.chain import ChainHandler, ChainType
 from pyiv.config import Config
-from pyiv.serde.base import SerDe
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 
@@ -48,7 +48,7 @@ class Injector:
         """
         self._config = config
         self._singletons: Dict[Type, Any] = {}
-        self._serde_singletons: Dict[str, SerDe] = {}
+        self._chain_singletons: Dict[tuple[ChainType, str], ChainHandler] = {}
 
     def inject(self, cls: Type, **kwargs) -> Any:
         """Inject and create an instance of the given class.
@@ -271,129 +271,145 @@ class Injector:
         # The caller will use inject() which respects singleton configuration
         return implementations[name]
 
-    def inject_serde(self, encoding_type: str) -> SerDe:
-        """Inject a SerDe instance by encoding type.
+    def inject_chain_handler(self, chain_type: ChainType, handler_type: str) -> ChainHandler:
+        """Inject a chain handler instance by handler type.
 
-        Returns the default SerDe implementation for the given encoding type.
+        Returns the default chain handler implementation for the given handler type.
         Respects singleton configuration.
 
         Args:
-            encoding_type: The encoding type identifier (e.g., "json", "msgpack")
+            chain_type: The chain type (e.g., ChainType.ENCODING, ChainType.HASHING)
+            handler_type: The handler type identifier (e.g., "json", "md5", "quicksort")
 
         Returns:
-            A SerDe instance
+            A chain handler instance
 
         Raises:
-            ValueError: If no SerDe is registered for the encoding type
+            ValueError: If no chain handler is registered for the handler type
 
         Example:
             >>> injector = get_injector(MyConfig)
-            >>> json_serde = injector.inject_serde("json")
+            >>> json_serde = injector.inject_chain_handler(ChainType.ENCODING, "json")
             >>> data = json_serde.serialize({"key": "value"})
         """
         # Check for pre-registered instance
-        instance = self._config.get_serde_instance(encoding_type)
+        instance = self._config.get_chain_handler_instance(chain_type, handler_type)
         if instance is not None:
             return instance
 
         # Get the registered class
-        serde_class = self._config.get_serde_registration(encoding_type)
-        if serde_class is None:
-            available = ", ".join(sorted(self._config._serde_by_type.keys())) or "none"
+        handler_class = self._config.get_chain_handler_registration(chain_type, handler_type)
+        if handler_class is None:
+            # Get available handler types for this chain type
+            available = []
+            for (ct, ht), _ in self._config._chain_by_type.items():
+                if ct == chain_type:
+                    available.append(ht)
+            available_str = ", ".join(sorted(available)) or "none"
             raise ValueError(
-                f"No SerDe registered for encoding type '{encoding_type}'. "
-                f"Available types: {available}"
+                f"No chain handler registered for {chain_type.value} type '{handler_type}'. "
+                f"Available types: {available_str}"
             )
 
         # Check singleton configuration
-        singleton_type = self._config.get_serde_singleton_type(encoding_type)
+        singleton_type = self._config.get_chain_handler_singleton_type(chain_type, handler_type)
 
         # Handle global singleton
         if singleton_type == SingletonType.GLOBAL_SINGLETON:
-            # Use encoding_type as the key for global registry
-            key = f"serde:{encoding_type}"
+            key = f"chain:{chain_type.value}:{handler_type}"
             instance = GlobalSingletonRegistry.get(key)
             if instance is not None:
                 return instance
             # Create new instance
-            instance = self._instantiate(serde_class)
+            instance = self._instantiate(handler_class)
             GlobalSingletonRegistry.set(key, instance)
             return instance
 
         # Check if we have a cached per-injector singleton
-        if singleton_type == SingletonType.SINGLETON and encoding_type in self._serde_singletons:
-            return self._serde_singletons[encoding_type]
+        cache_key = (chain_type, handler_type)
+        if singleton_type == SingletonType.SINGLETON and cache_key in self._chain_singletons:
+            return self._chain_singletons[cache_key]
 
         # Create instance
-        instance = self._instantiate(serde_class)
+        instance = self._instantiate(handler_class)
 
         # Store as singleton if configured
         if singleton_type == SingletonType.SINGLETON:
-            self._serde_singletons[encoding_type] = instance
+            self._chain_singletons[cache_key] = instance
 
         return instance
 
-    def inject_serde_by_name(self, name: str) -> SerDe:
-        """Inject a SerDe instance by name.
+    def inject_chain_handler_by_name(self, chain_type: ChainType, name: str) -> ChainHandler:
+        """Inject a chain handler instance by name.
 
-        Returns a named SerDe implementation. This allows multiple instances
-        of the same encoding type with different behaviors (e.g., different
-        date formatting, gRPC compatibility, etc.).
+        Returns a named chain handler implementation. This allows multiple instances
+        of the same handler type with different behaviors (e.g., different
+        date formatting, different hash algorithms, etc.).
 
         Args:
-            name: The SerDe instance name
+            chain_type: The chain type (e.g., ChainType.ENCODING, ChainType.HASHING)
+            name: The handler instance name
 
         Returns:
-            A SerDe instance
+            A chain handler instance
 
         Raises:
-            ValueError: If no SerDe is registered with the given name
+            ValueError: If no chain handler is registered with the given name
 
         Example:
             >>> injector = get_injector(MyConfig)
-            >>> grpc_serde = injector.inject_serde_by_name("json-grpc")
-            >>> input_serde = injector.inject_serde_by_name("json-input")
-            >>> output_serde = injector.inject_serde_by_name("json-output")
+            >>> input_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
+            >>> output_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-output")
         """
         # Check for pre-registered instance
-        instance = self._config.get_serde_instance(name)
+        instance = self._config.get_chain_handler_instance(chain_type, name)
         if instance is not None:
             return instance
 
-        # Get the registered class and encoding type
-        registration = self._config.get_serde_registration_by_name(name)
+        # Get the registered class and handler type
+        registration = self._config.get_chain_handler_registration_by_name(chain_type, name)
         if registration is None:
-            available = ", ".join(sorted(self._config._serde_by_name.keys())) or "none"
+            # Get available names for this chain type
+            available = []
+            for (ct, n), _ in self._config._chain_by_name.items():
+                if ct == chain_type:
+                    available.append(n)
+            for (ct, n) in self._config._chain_instances.keys():
+                if ct == chain_type:
+                    available.append(n)
+            available_str = ", ".join(sorted(set(available))) or "none"
             raise ValueError(
-                f"No SerDe registered with name '{name}'. " f"Available names: {available}"
+                f"No chain handler registered with name '{name}' for {chain_type.value}. "
+                f"Available names: {available_str}"
             )
 
-        serde_class, encoding_type = registration
+        handler_class, handler_type = registration
 
         # Check singleton configuration
-        singleton_type = self._config.get_serde_singleton_type(name)
+        singleton_type = self._config.get_chain_handler_singleton_type(chain_type, name)
 
         # Handle global singleton
         if singleton_type == SingletonType.GLOBAL_SINGLETON:
-            key = f"serde:{name}"
+            key = f"chain:{chain_type.value}:{name}"
             instance = GlobalSingletonRegistry.get(key)
             if instance is not None:
                 return instance
             # Create new instance
-            instance = self._instantiate(serde_class)
+            instance = self._instantiate(handler_class)
             GlobalSingletonRegistry.set(key, instance)
             return instance
 
         # Check if we have a cached per-injector singleton
-        if singleton_type == SingletonType.SINGLETON and name in self._serde_singletons:
-            return self._serde_singletons[name]
+        cache_key = (chain_type, name)
+        if singleton_type == SingletonType.SINGLETON and cache_key in self._chain_singletons:
+            return self._chain_singletons[cache_key]
 
         # Create instance
-        instance = self._instantiate(serde_class)
+        instance = self._instantiate(handler_class)
 
         # Store as singleton if configured
         if singleton_type == SingletonType.SINGLETON:
-            self._serde_singletons[name] = instance
+            self._chain_singletons[cache_key] = instance
 
         return instance
 
