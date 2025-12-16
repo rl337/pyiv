@@ -112,7 +112,9 @@ class SerDe(ChainHandler):
         pass
 
     @abstractmethod
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize encoded data back to a Python object.
 
         Args:
@@ -123,3 +125,4 @@ class SerDe(ChainHandler):
             Deserialized Python object
         """
         pass
+

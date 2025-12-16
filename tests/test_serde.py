@@ -166,15 +166,11 @@ class TestChainHandlerConfigRegistration:
 
         class MyConfig(Config):
             def configure(self):
-                self.register_chain_handler_by_name(
-                    ChainType.ENCODING, "json-input", JSONSerDe, "json"
-                )
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", JSONSerDe, "json")
 
         config = MyConfig()
         assert config.has_chain_handler_registration_by_name(ChainType.ENCODING, "json-input")
-        registration = config.get_chain_handler_registration_by_name(
-            ChainType.ENCODING, "json-input"
-        )
+        registration = config.get_chain_handler_registration_by_name(ChainType.ENCODING, "json-input")
         assert registration is not None
         handler_class, handler_type = registration
         assert handler_class == JSONSerDe
@@ -185,12 +181,8 @@ class TestChainHandlerConfigRegistration:
 
         class MyConfig(Config):
             def configure(self):
-                self.register_chain_handler_by_name(
-                    ChainType.ENCODING, "json-input", CustomJSONSerDe, "json"
-                )
-                self.register_chain_handler_by_name(
-                    ChainType.ENCODING, "json-output", JSONSerDe, "json"
-                )
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", CustomJSONSerDe, "json")
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-output", JSONSerDe, "json")
 
         config = MyConfig()
         assert config.has_chain_handler_registration_by_name(ChainType.ENCODING, "json-input")
@@ -202,9 +194,7 @@ class TestChainHandlerConfigRegistration:
         class MyConfig(Config):
             def configure(self):
                 instance = JSONSerDe()
-                self.register_chain_handler_instance(
-                    ChainType.ENCODING, "json-precreated", instance
-                )
+                self.register_chain_handler_instance(ChainType.ENCODING, "json-precreated", instance)
 
         config = MyConfig()
         instance = config.get_chain_handler_instance(ChainType.ENCODING, "json-precreated")
@@ -252,9 +242,7 @@ class TestChainHandlerInjection:
 
         class MyConfig(Config):
             def configure(self):
-                self.register_chain_handler_by_name(
-                    ChainType.ENCODING, "json-input", JSONSerDe, "json"
-                )
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", JSONSerDe, "json")
 
         injector = get_injector(MyConfig)
         serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
@@ -265,12 +253,8 @@ class TestChainHandlerInjection:
 
         class MyConfig(Config):
             def configure(self):
-                self.register_chain_handler_by_name(
-                    ChainType.ENCODING, "json-input", CustomJSONSerDe, "json"
-                )
-                self.register_chain_handler_by_name(
-                    ChainType.ENCODING, "json-output", JSONSerDe, "json"
-                )
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-input", CustomJSONSerDe, "json")
+                self.register_chain_handler_by_name(ChainType.ENCODING, "json-output", JSONSerDe, "json")
 
         injector = get_injector(MyConfig)
         input_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
@@ -305,9 +289,7 @@ class TestChainHandlerInjection:
         class MyConfig(Config):
             def configure(self):
                 instance = JSONSerDe()
-                self.register_chain_handler_instance(
-                    ChainType.ENCODING, "json-precreated", instance
-                )
+                self.register_chain_handler_instance(ChainType.ENCODING, "json-precreated", instance)
 
         injector = get_injector(MyConfig)
         serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-precreated")

@@ -63,7 +63,9 @@ class NoOpSerDe(SerDe):
             return obj
         return str(obj)
 
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Pass through the data unchanged.
 
         Args:
@@ -99,7 +101,9 @@ class PickleSerDe(SerDe):
         """
         return pickle.dumps(obj)
 
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize using pickle.
 
         Args:
@@ -133,7 +137,9 @@ class JSONSerDe(SerDe):
         """
         return json.dumps(obj, default=self._default_serializer)
 
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize JSON string/bytes back to a Python object.
 
         Args:
@@ -194,7 +200,9 @@ class Base64SerDe(SerDe):
             obj = pickle.dumps(obj)  # Fallback to pickle for complex objects
         return base64.b64encode(obj).decode("utf-8")
 
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize base64-encoded data.
 
         Args:
@@ -245,7 +253,9 @@ class UUEncodeSerDe(SerDe):
         uu.encode(input_data, output)  # type: ignore[arg-type]
         return output.getvalue()
 
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize UU-encoded data.
 
         Args:
@@ -306,7 +316,9 @@ class XMLSerDe(SerDe):
 
         return ET.tostring(root, encoding="unicode")
 
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize XML string/bytes back to a Python object.
 
         Args:
@@ -382,7 +394,9 @@ class YAMLSerDe(SerDe):
             raise ImportError("PyYAML is not installed. Install it with: pip install pyyaml")
         return yaml.dump(obj, default_flow_style=False)
 
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
+    def deserialize(
+        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
+    ) -> T:
         """Deserialize YAML string/bytes back to a Python object.
 
         Args:
@@ -400,3 +414,4 @@ class YAMLSerDe(SerDe):
         if isinstance(data, bytes):
             data = data.decode("utf-8")
         return yaml.safe_load(data)
+
