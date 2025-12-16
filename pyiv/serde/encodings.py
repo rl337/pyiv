@@ -16,7 +16,7 @@ import io
 import json
 import pickle
 import xml.etree.ElementTree as ET
-from typing import Any, Optional, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 
 # uu is a standard library module, but import it explicitly
 try:
@@ -28,7 +28,7 @@ except ImportError:
 
 # Try to import yaml (not in standard library, but commonly available)
 try:
-    import yaml
+    import yaml  # type: ignore[import-untyped]
 
     YAML_AVAILABLE = True
 except ImportError:
@@ -63,9 +63,7 @@ class NoOpSerDe(SerDe):
             return obj
         return str(obj)
 
-    def deserialize(
-        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
-    ) -> T:
+    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
         """Pass through the data unchanged.
 
         Args:
@@ -101,9 +99,7 @@ class PickleSerDe(SerDe):
         """
         return pickle.dumps(obj)
 
-    def deserialize(
-        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
-    ) -> T:
+    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
         """Deserialize using pickle.
 
         Args:
@@ -137,9 +133,7 @@ class JSONSerDe(SerDe):
         """
         return json.dumps(obj, default=self._default_serializer)
 
-    def deserialize(
-        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
-    ) -> T:
+    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
         """Deserialize JSON string/bytes back to a Python object.
 
         Args:
@@ -165,6 +159,10 @@ class JSONSerDe(SerDe):
         Raises:
             TypeError: If object cannot be serialized
         """
+        from datetime import datetime
+
+        if isinstance(obj, datetime):
+            return obj.isoformat()
         if hasattr(obj, "__dict__"):
             return obj.__dict__
         raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
@@ -196,9 +194,7 @@ class Base64SerDe(SerDe):
             obj = pickle.dumps(obj)  # Fallback to pickle for complex objects
         return base64.b64encode(obj).decode("utf-8")
 
-    def deserialize(
-        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
-    ) -> T:
+    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
         """Deserialize base64-encoded data.
 
         Args:
@@ -246,12 +242,10 @@ class UUEncodeSerDe(SerDe):
 
         output = io.StringIO()
         input_data = io.BytesIO(obj)
-        uu.encode(input_data, output)
+        uu.encode(input_data, output)  # type: ignore[arg-type]
         return output.getvalue()
 
-    def deserialize(
-        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
-    ) -> T:
+    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
         """Deserialize UU-encoded data.
 
         Args:
@@ -271,7 +265,7 @@ class UUEncodeSerDe(SerDe):
 
         input_data = io.StringIO(data)
         output = io.BytesIO()
-        uu.decode(input_data, output)
+        uu.decode(input_data, output)  # type: ignore[arg-type]
         return output.getvalue()  # type: ignore[return-value]
 
 
@@ -312,9 +306,7 @@ class XMLSerDe(SerDe):
 
         return ET.tostring(root, encoding="unicode")
 
-    def deserialize(
-        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
-    ) -> T:
+    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
         """Deserialize XML string/bytes back to a Python object.
 
         Args:
@@ -346,16 +338,18 @@ class XMLSerDe(SerDe):
             else:
                 elem.text = str(value)
 
-    def _xml_to_dict(self, elem: ET.Element) -> dict | list | str:
+    def _xml_to_dict(self, elem: ET.Element) -> Union[Dict[str, Any], List[Any], str]:
         """Convert XML element to dict/list."""
         if len(elem) == 0:
             return elem.text or ""
-        result = {}
+        result: Dict[str, Any] = {}
         for child in elem:
             if child.tag == "item":
                 if "items" not in result:
                     result["items"] = []
-                result["items"].append(self._xml_to_dict(child))
+                items_list = result["items"]
+                if isinstance(items_list, list):
+                    items_list.append(self._xml_to_dict(child))
             else:
                 result[child.tag] = self._xml_to_dict(child)
         return result
@@ -388,9 +382,7 @@ class YAMLSerDe(SerDe):
             raise ImportError("PyYAML is not installed. Install it with: pip install pyyaml")
         return yaml.dump(obj, default_flow_style=False)
 
-    def deserialize(
-        self, data: Union[str, bytes], target_type: Optional[Type[T]] = None
-    ) -> T:
+    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
         """Deserialize YAML string/bytes back to a Python object.
 
         Args:
@@ -408,4 +400,3 @@ class YAMLSerDe(SerDe):
         if isinstance(data, bytes):
             data = data.decode("utf-8")
         return yaml.safe_load(data)
-

@@ -75,4 +75,3 @@ class ChainHandler(ABC):
             The result of handling the request
         """
         pass
-

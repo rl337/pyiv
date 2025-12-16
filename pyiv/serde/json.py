@@ -31,4 +31,3 @@ see the pyiv.serde.encodings module.
 from pyiv.serde.encodings import JSONSerDe
 
 __all__ = ["JSONSerDe"]
-

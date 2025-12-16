@@ -374,7 +374,7 @@ class Injector:
             for (ct, n), _ in self._config._chain_by_name.items():
                 if ct == chain_type:
                     available.append(n)
-            for (ct, n) in self._config._chain_instances.keys():
+            for ct, n in self._config._chain_instances.keys():
                 if ct == chain_type:
                     available.append(n)
             available_str = ", ".join(sorted(set(available))) or "none"

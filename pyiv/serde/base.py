@@ -7,7 +7,7 @@ deserialize() methods.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional, TypeVar, Union
+from typing import Any, Optional, Type, TypeVar, Union
 
 from pyiv.chain import ChainHandler, ChainType
 
@@ -91,9 +91,11 @@ class SerDe(ChainHandler):
             if action == "serialize":
                 return self.serialize(request.get("obj"))
             elif action == "deserialize":
-                return self.deserialize(
-                    request.get("data"), request.get("target_type")
-                )
+                data = request.get("data")
+                target_type = request.get("target_type")
+                if data is not None:
+                    return self.deserialize(data, target_type)
+                return None
         # Default: treat as serialize request
         return self.serialize(request)
 

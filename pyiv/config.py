@@ -192,7 +192,9 @@ class Config:
         if not isinstance(handler_type, str) or not handler_type:
             raise ValueError(f"handler_type must be a non-empty string, got {handler_type}")
         if not isinstance(handler_class, type) or not issubclass(handler_class, ChainHandler):
-            raise TypeError(f"handler_class must be a subclass of ChainHandler, got {handler_class}")
+            raise TypeError(
+                f"handler_class must be a subclass of ChainHandler, got {handler_class}"
+            )
 
         key = (chain_type, handler_type)
         self._chain_by_type[key] = handler_class
@@ -230,14 +232,18 @@ class Config:
         if not isinstance(handler_type, str) or not handler_type:
             raise ValueError(f"handler_type must be a non-empty string, got {handler_type}")
         if not isinstance(handler_class, type) or not issubclass(handler_class, ChainHandler):
-            raise TypeError(f"handler_class must be a subclass of ChainHandler, got {handler_class}")
+            raise TypeError(
+                f"handler_class must be a subclass of ChainHandler, got {handler_class}"
+            )
 
         key = (chain_type, name)
         self._chain_by_name[key] = (handler_class, handler_type)
         if singleton_type != SingletonType.NONE:
             self._chain_singleton_types[key] = singleton_type
 
-    def register_chain_handler_instance(self, chain_type: ChainType, name: str, instance: ChainHandler):
+    def register_chain_handler_instance(
+        self, chain_type: ChainType, name: str, instance: ChainHandler
+    ):
         """Register a pre-created chain handler instance.
 
         Args:
@@ -290,7 +296,9 @@ class Config:
         """
         return self._chain_by_name.get((chain_type, name))
 
-    def get_chain_handler_instance(self, chain_type: ChainType, name: str) -> Optional[ChainHandler]:
+    def get_chain_handler_instance(
+        self, chain_type: ChainType, name: str
+    ) -> Optional[ChainHandler]:
         """Get a pre-registered chain handler instance.
 
         Args:
