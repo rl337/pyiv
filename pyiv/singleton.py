@@ -29,7 +29,7 @@ Usage:
 
 import threading
 from enum import Enum
-from typing import Any, Dict, Type
+from typing import Any, Dict, Type, Union
 
 
 class SingletonType(Enum):
@@ -51,50 +51,53 @@ class GlobalSingletonRegistry:
 
     This registry stores singleton instances that are shared across
     all injector instances. Access is thread-safe.
+
+    Supports both Type keys (for standard DI) and string keys (for SerDe
+    and other named instances).
     """
 
     _lock = threading.Lock()
-    _instances: Dict[Type, Any] = {}
+    _instances: Dict[Union[Type, str], Any] = {}
 
     @classmethod
-    def get(cls, abstract: Type) -> Any:
+    def get(cls, key: Union[Type, str]) -> Any:
         """Get a global singleton instance.
 
         Args:
             cls: The class (implicit in classmethod)
-            abstract: The abstract type to retrieve
+            key: The abstract type or string key to retrieve
 
         Returns:
             The singleton instance or None if not registered
         """
         with cls._lock:
-            return cls._instances.get(abstract)
+            return cls._instances.get(key)
 
     @classmethod
-    def set(cls, abstract: Type, instance: Any) -> None:
+    def set(cls, key: Union[Type, str], instance: Any) -> None:
         """Set a global singleton instance.
 
         Args:
             cls: The class (implicit in classmethod)
-            abstract: The abstract type
+            key: The abstract type or string key
             instance: The instance to store
         """
         with cls._lock:
-            cls._instances[abstract] = instance
+            cls._instances[key] = instance
 
     @classmethod
-    def has(cls, abstract: Type) -> bool:
+    def has(cls, key: Union[Type, str]) -> bool:
         """Check if a global singleton exists.
 
         Args:
             cls: The class (implicit in classmethod)
-            abstract: The abstract type to check
+            key: The abstract type or string key to check
 
         Returns:
             True if a singleton exists, False otherwise
         """
         with cls._lock:
-            return abstract in cls._instances
+            return key in cls._instances
 
     @classmethod
     def clear(cls) -> None:

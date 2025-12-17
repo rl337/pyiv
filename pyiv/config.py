@@ -29,8 +29,9 @@ Usage:
         ...         self.register_instance(Cache, my_cache_instance)
 """
 
-from typing import Any, Callable, Dict, Optional, Type, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
+from pyiv.chain import ChainHandler, ChainType
 from pyiv.singleton import SingletonType
 
 
@@ -45,6 +46,14 @@ class Config:
         self._registrations: Dict[Type, Union[Type, Any, Callable]] = {}
         self._instances: Dict[Type, Any] = {}
         self._singleton_types: Dict[Type, SingletonType] = {}
+        # Chain handler registrations: (chain_type, handler_type) -> implementation class
+        self._chain_by_type: Dict[Tuple[ChainType, str], Type[ChainHandler]] = {}
+        # Chain handler registrations: (chain_type, name) -> (implementation class, handler_type)
+        self._chain_by_name: Dict[Tuple[ChainType, str], Tuple[Type[ChainHandler], str]] = {}
+        # Chain handler instances: (chain_type, name) -> instance (for pre-created instances)
+        self._chain_instances: Dict[Tuple[ChainType, str], ChainHandler] = {}
+        # Chain handler singleton configuration: (chain_type, name) -> singleton_type
+        self._chain_singleton_types: Dict[Tuple[ChainType, str], SingletonType] = {}
         self.configure()
 
     def configure(self):
@@ -155,3 +164,186 @@ class Config:
             The singleton type, or SingletonType.NONE if not registered or not a singleton
         """
         return self._singleton_types.get(abstract, SingletonType.NONE)
+
+    def register_chain_handler(
+        self,
+        chain_type: ChainType,
+        handler_type: str,
+        handler_class: Type[ChainHandler],
+        *,
+        singleton_type: SingletonType = SingletonType.SINGLETON,
+    ):
+        """Register a chain handler implementation for a handler type.
+
+        This registers a default implementation for the handler type.
+        When injecting by handler type (without a specific name), this
+        implementation will be used.
+
+        Args:
+            chain_type: The chain type (e.g., ChainType.ENCODING, ChainType.HASHING)
+            handler_type: The handler type identifier (e.g., "json", "md5", "quicksort")
+            handler_class: The chain handler implementation class
+            singleton_type: Type of singleton behavior (default: SINGLETON)
+
+        Raises:
+            TypeError: If handler_class is not a subclass of ChainHandler
+            ValueError: If handler_type is empty
+        """
+        if not isinstance(handler_type, str) or not handler_type:
+            raise ValueError(f"handler_type must be a non-empty string, got {handler_type}")
+        if not isinstance(handler_class, type) or not issubclass(handler_class, ChainHandler):
+            raise TypeError(
+                f"handler_class must be a subclass of ChainHandler, got {handler_class}"
+            )
+
+        key = (chain_type, handler_type)
+        self._chain_by_type[key] = handler_class
+        if singleton_type != SingletonType.NONE:
+            self._chain_singleton_types[key] = singleton_type
+
+    def register_chain_handler_by_name(
+        self,
+        chain_type: ChainType,
+        name: str,
+        handler_class: Type[ChainHandler],
+        handler_type: str,
+        *,
+        singleton_type: SingletonType = SingletonType.SINGLETON,
+    ):
+        """Register a named chain handler implementation.
+
+        This allows multiple implementations of the same handler type
+        with different behaviors (e.g., "json-input", "json-output",
+        "md5-fast", "md5-secure").
+
+        Args:
+            chain_type: The chain type (e.g., ChainType.ENCODING, ChainType.HASHING)
+            name: Unique name for this handler instance
+            handler_class: The chain handler implementation class
+            handler_type: The handler type identifier (e.g., "json", "md5")
+            singleton_type: Type of singleton behavior (default: SINGLETON)
+
+        Raises:
+            TypeError: If handler_class is not a subclass of ChainHandler
+            ValueError: If name or handler_type is empty
+        """
+        if not isinstance(name, str) or not name:
+            raise ValueError(f"name must be a non-empty string, got {name}")
+        if not isinstance(handler_type, str) or not handler_type:
+            raise ValueError(f"handler_type must be a non-empty string, got {handler_type}")
+        if not isinstance(handler_class, type) or not issubclass(handler_class, ChainHandler):
+            raise TypeError(
+                f"handler_class must be a subclass of ChainHandler, got {handler_class}"
+            )
+
+        key = (chain_type, name)
+        self._chain_by_name[key] = (handler_class, handler_type)
+        if singleton_type != SingletonType.NONE:
+            self._chain_singleton_types[key] = singleton_type
+
+    def register_chain_handler_instance(
+        self, chain_type: ChainType, name: str, instance: ChainHandler
+    ):
+        """Register a pre-created chain handler instance.
+
+        Args:
+            chain_type: The chain type
+            name: Unique name for this handler instance
+            instance: The pre-created chain handler instance
+
+        Raises:
+            TypeError: If instance is not a ChainHandler
+            ValueError: If name is empty
+        """
+        if not isinstance(name, str) or not name:
+            raise ValueError(f"name must be a non-empty string, got {name}")
+        if not isinstance(instance, ChainHandler):
+            raise TypeError(f"instance must be a ChainHandler, got {type(instance)}")
+
+        key = (chain_type, name)
+        self._chain_instances[key] = instance
+        # Also register by handler type if not already registered
+        handler_type = instance.handler_type
+        type_key = (chain_type, handler_type)
+        if type_key not in self._chain_by_type:
+            self._chain_by_type[type_key] = type(instance)
+
+    def get_chain_handler_registration(
+        self, chain_type: ChainType, handler_type: str
+    ) -> Optional[Type[ChainHandler]]:
+        """Get the registered chain handler class for a handler type.
+
+        Args:
+            chain_type: The chain type
+            handler_type: The handler type identifier
+
+        Returns:
+            The registered chain handler class, or None if not found
+        """
+        return self._chain_by_type.get((chain_type, handler_type))
+
+    def get_chain_handler_registration_by_name(
+        self, chain_type: ChainType, name: str
+    ) -> Optional[Tuple[Type[ChainHandler], str]]:
+        """Get the registered chain handler class and handler type for a name.
+
+        Args:
+            chain_type: The chain type
+            name: The handler instance name
+
+        Returns:
+            A tuple of (handler class, handler_type), or None if not found
+        """
+        return self._chain_by_name.get((chain_type, name))
+
+    def get_chain_handler_instance(
+        self, chain_type: ChainType, name: str
+    ) -> Optional[ChainHandler]:
+        """Get a pre-registered chain handler instance.
+
+        Args:
+            chain_type: The chain type
+            name: The handler instance name
+
+        Returns:
+            The chain handler instance, or None if not found
+        """
+        return self._chain_instances.get((chain_type, name))
+
+    def has_chain_handler_registration(self, chain_type: ChainType, handler_type: str) -> bool:
+        """Check if a chain handler is registered for a handler type.
+
+        Args:
+            chain_type: The chain type
+            handler_type: The handler type identifier
+
+        Returns:
+            True if registered, False otherwise
+        """
+        return (chain_type, handler_type) in self._chain_by_type
+
+    def has_chain_handler_registration_by_name(self, chain_type: ChainType, name: str) -> bool:
+        """Check if a chain handler is registered by name.
+
+        Args:
+            chain_type: The chain type
+            name: The handler instance name
+
+        Returns:
+            True if registered, False otherwise
+        """
+        key = (chain_type, name)
+        return key in self._chain_by_name or key in self._chain_instances
+
+    def get_chain_handler_singleton_type(self, chain_type: ChainType, name: str) -> SingletonType:
+        """Get the singleton type for a chain handler registration.
+
+        Args:
+            chain_type: The chain type
+            name: The handler instance name or handler type
+
+        Returns:
+            The singleton type, or SingletonType.NONE if not registered or not a singleton
+        """
+        key = (chain_type, name)
+        return self._chain_singleton_types.get(key, SingletonType.NONE)

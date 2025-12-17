@@ -32,6 +32,7 @@ Quick Start:
 For more information, see the individual module documentation.
 """
 
+from pyiv.chain import ChainHandler, ChainType
 from pyiv.clock import Clock, RealClock, SyntheticClock, Timer
 from pyiv.config import Config
 from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
@@ -39,6 +40,16 @@ from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
 from pyiv.reflection import ReflectionConfig
+from pyiv.serde import (
+    Base64SerDe,
+    JSONSerDe,
+    NoOpSerDe,
+    PickleSerDe,
+    SerDe,
+    UUEncodeSerDe,
+    XMLSerDe,
+    YAMLSerDe,
+)
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 # Command interface (optional import)
@@ -55,6 +66,8 @@ __all__ = [
     "ReflectionConfig",
     "Injector",
     "get_injector",
+    "ChainType",
+    "ChainHandler",
     "Filesystem",
     "RealFilesystem",
     "MemoryFilesystem",
@@ -68,6 +81,14 @@ __all__ = [
     "Factory",
     "BaseFactory",
     "SimpleFactory",
+    "SerDe",
+    "JSONSerDe",
+    "Base64SerDe",
+    "UUEncodeSerDe",
+    "XMLSerDe",
+    "YAMLSerDe",
+    "PickleSerDe",
+    "NoOpSerDe",
     "SingletonType",
     "GlobalSingletonRegistry",
 ]
