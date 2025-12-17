@@ -215,6 +215,38 @@ Before committing:
 - **Maintainability**: Clear problem statements help future maintainers
 - **Onboarding**: New developers can quickly understand the codebase
 
+## Design Principles
+
+When implementing new features, follow these principles:
+
+1. **Zero Dependencies:** All interfaces use only Python stdlib
+2. **Backward Compatible:** New interfaces don't break existing code
+3. **Protocol-Based:** Use `typing.Protocol` for interfaces (Pythonic)
+4. **Type-Safe:** Leverage Python's type system fully
+5. **Extensible:** Allow custom implementations
+
+## Interface Design Guidelines
+
+### Factory vs Provider
+- **Factory**: For general object creation, not DI-specific
+- **Provider**: For DI scenarios where you need injector access or lazy initialization
+- Keep both - they serve different purposes
+
+### SingletonType vs Scope
+- **SingletonType**: Enum-based, simple and convenient (backward compatible)
+- **Scope**: More powerful, extensible, supports custom scopes
+- Scope is the future, but SingletonType remains for compatibility
+
+### ChainHandler vs Multibinder
+- **ChainHandler**: Specialized for chain of responsibility patterns
+- **Multibinder**: General-purpose multiple implementations
+- Both have value - use ChainHandler for chains, Multibinder for general collections
+
+### Config vs Binder
+- **Config**: Direct registration API (simpler, more Pythonic)
+- **Binder**: Fluent API (more readable, better for complex configurations)
+- Config uses Binder internally - both APIs are available
+
 ## Key Files
 
 - `pyproject.toml`: Project configuration and dependencies

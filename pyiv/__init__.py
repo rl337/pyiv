@@ -6,6 +6,13 @@ powerful way to manage dependencies, improve testability, and reduce coupling.
 
 Key Features:
     - Type-based dependency resolution using annotations
+    - Provider interface for lazy initialization and injector access
+    - Scope management for extensible lifecycle control
+    - Qualified bindings with type-safe keys
+    - Fluent configuration API with Binder
+    - Field/method injection with MembersInjector
+    - Optional dependencies with Optional[T] support
+    - Multibindings for multiple implementations
     - Singleton lifecycle management (per-injector or global)
     - Factory pattern support for complex object creation
     - Built-in abstractions for common dependencies (Clock, Filesystem, etc.)
@@ -15,6 +22,13 @@ Architecture:
     The library is organized into modules:
     - config: Configuration base class for registering dependencies
     - injector: Core dependency injection engine
+    - provider: Provider interface for lazy initialization
+    - scope: Scope interface for lifecycle management
+    - key: Key/Qualifier for type-safe qualified bindings
+    - binder: Binder interface for fluent configuration
+    - members: MembersInjector for field/method injection
+    - optional: Optional dependency support
+    - multibinder: Multibinder for multiple implementations
     - chain: Chain of responsibility pattern for extensible handlers
     - serde: Serialization/deserialization implementations
     - network: Network client abstractions (HTTP, HTTPS, etc.)
