@@ -8,8 +8,8 @@ method.
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional, Union
-from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+from urllib.parse import urlparse
 
 from pyiv.chain import ChainHandler, ChainType
 
@@ -135,3 +135,4 @@ class NetworkClient(ChainHandler):
                 - url: Final URL after redirects
         """
         pass
+
