@@ -98,6 +98,123 @@ bandit -r pyiv/ -f json -o build/bandit-report.json
 pytest --cov-report=xml --cov-report=term-missing --cov-report=html:build/htmlcov
 ```
 
+## Documentation Standards
+
+**IMPORTANT**: All modules and interfaces must follow these documentation standards.
+
+### Module Documentation Requirements
+
+Every module must include:
+
+1. **Module-Level Docstring** with:
+   - Clear description of what the module provides
+   - **"What Problem Does This Solve?"** section explaining the real-world problems
+   - **"Real-World Use Cases"** section with concrete examples
+   - Architecture overview
+   - Usage examples with doctest-compatible code
+
+2. **Interface/Class Documentation** with:
+   - Clear description of the interface/class
+   - **Doctest examples** that demonstrate usage
+   - Examples should be runnable and testable
+
+3. **Method Documentation** with:
+   - Clear parameter descriptions
+   - Return value descriptions
+   - Doctest examples where appropriate
+
+### Documentation Format
+
+```python
+"""Module title and brief description.
+
+This module provides [what it provides] for [what purpose].
+
+**What Problem Does This Solve?**
+
+[Clear explanation of the problems this solves, why it exists]
+
+**Real-World Use Cases:**
+- [Use case 1]
+- [Use case 2]
+- [Use case 3]
+
+Architecture:
+    - Component1: Description
+    - Component2: Description
+
+Usage Examples:
+
+    Basic Usage:
+        >>> from pyiv.module import Component
+        >>> # Example code that works
+        >>> result = Component()
+        >>> result.value
+        'expected'
+
+    Advanced Usage:
+        >>> # More complex example
+        >>> # ...
+"""
+```
+
+### Doctest Requirements
+
+1. **All examples must be runnable**: Use `>>>` prompt and ensure code actually works
+2. **Test all examples**: Run `python -m doctest pyiv/module.py` to verify
+3. **Use realistic examples**: Show actual use cases, not contrived examples
+4. **Include assertions**: Show expected results with assertions or comparisons
+
+### Anecdotes and Problem Statements
+
+Every interface/module must explain:
+- **What problem it solves**: Why does this exist? What gap does it fill?
+- **When to use it**: What scenarios call for this interface?
+- **Real-world examples**: Concrete use cases from actual applications
+
+### Example Template
+
+```python
+class MyInterface:
+    """Interface description.
+
+    **What Problem Does This Solve?**
+    
+    This interface solves [specific problem]. It addresses [pain points]
+    by providing [solution approach].
+
+    **Real-World Use Cases:**
+    - [Specific scenario 1]
+    - [Specific scenario 2]
+
+    Example:
+        >>> from pyiv.module import MyInterface
+        >>> 
+        >>> class Implementation(MyInterface):
+        ...     def method(self):
+        ...         return "result"
+        >>> 
+        >>> impl = Implementation()
+        >>> impl.method()
+        'result'
+    """
+```
+
+### Verification
+
+Before committing:
+1. Run doctests: `python -m doctest pyiv/module.py -v`
+2. Verify examples work: Actually run the code in examples
+3. Check for typos and clarity
+4. Ensure all public interfaces have examples
+
+### Why These Standards Matter
+
+- **Discoverability**: Developers can understand what each interface does
+- **Testability**: Doctests serve as both documentation and tests
+- **Maintainability**: Clear problem statements help future maintainers
+- **Onboarding**: New developers can quickly understand the codebase
+
 ## Key Files
 
 - `pyproject.toml`: Project configuration and dependencies

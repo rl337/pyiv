@@ -29,10 +29,17 @@ Usage:
         ...         self.register_instance(Cache, my_cache_instance)
 """
 
-from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar, Union
 
+from pyiv.binder import Binder, BindingBuilder
 from pyiv.chain import ChainHandler, ChainType
+from pyiv.key import Key, Qualifier
+from pyiv.multibinder import ListMultibinder, Multibinder, SetMultibinder
+from pyiv.provider import Provider
+from pyiv.scope import NoScope, Scope
 from pyiv.singleton import SingletonType
+
+T = TypeVar("T")
 
 
 class Config:
@@ -46,6 +53,14 @@ class Config:
         self._registrations: Dict[Type, Union[Type, Any, Callable]] = {}
         self._instances: Dict[Type, Any] = {}
         self._singleton_types: Dict[Type, SingletonType] = {}
+        # Scope registrations: Type -> Scope
+        self._scopes: Dict[Type, Scope] = {}
+        # Provider registrations: Type -> Provider
+        self._providers: Dict[Type, Provider[Any]] = {}
+        # Qualified bindings: Key -> (Type, Provider, Scope)
+        self._qualified_bindings: Dict[Key[Any], Tuple[Type, Optional[Provider[Any]], Optional[Scope]]] = {}
+        # Multibindings: Type -> (Set[Type], List[Type], Set[Any], List[Any])
+        self._multibindings: Dict[Type, Tuple[Set[Type], List[Type], Set[Any], List[Any]]] = {}
         # Chain handler registrations: (chain_type, handler_type) -> implementation class
         self._chain_by_type: Dict[Tuple[ChainType, str], Type[ChainHandler]] = {}
         # Chain handler registrations: (chain_type, name) -> (implementation class, handler_type)
@@ -73,18 +88,22 @@ class Config:
         *,
         singleton: bool = False,
         singleton_type: SingletonType = SingletonType.NONE,
+        scope: Optional[Scope] = None,
+        provider: Optional[Provider[Any]] = None,
     ):
         """Register a concrete implementation for an abstract type.
 
         Args:
             abstract: The abstract class or interface to register
             concrete: The concrete class, instance, or factory function
-            singleton: If True, uses SINGLETON type (deprecated, use singleton_type instead)
+            singleton: If True, uses SINGLETON type (deprecated, use singleton_type or scope instead)
             singleton_type: Type of singleton behavior (NONE, SINGLETON, or GLOBAL_SINGLETON)
+            scope: Scope for lifecycle management (takes precedence over singleton_type)
+            provider: Provider to use for instance creation (takes precedence over concrete)
 
         Raises:
             TypeError: If abstract is not a type
-            ValueError: If both singleton=True and singleton_type is specified
+            ValueError: If conflicting parameters are specified
         """
         if not isinstance(abstract, type):
             raise TypeError(f"abstract must be a type, got {type(abstract)}")
@@ -95,7 +114,28 @@ class Config:
         if singleton:
             singleton_type = SingletonType.SINGLETON
 
-        # Store singleton type
+        # Convert singleton_type to scope if scope not provided
+        if scope is None and singleton_type != SingletonType.NONE:
+            from pyiv.scope import GlobalSingletonScope, SingletonScope
+
+            if singleton_type == SingletonType.GLOBAL_SINGLETON:
+                scope = GlobalSingletonScope()
+            elif singleton_type == SingletonType.SINGLETON:
+                scope = SingletonScope()
+
+        # Store scope
+        if scope is not None:
+            self._scopes[abstract] = scope
+
+        # Store provider
+        if provider is not None:
+            self._providers[abstract] = provider
+            # Provider takes precedence, but we still store the concrete for reference
+            if isinstance(concrete, type):
+                self._registrations[abstract] = concrete
+            return
+
+        # Store singleton type (for backward compatibility)
         if singleton_type != SingletonType.NONE:
             self._singleton_types[abstract] = singleton_type
 
@@ -347,3 +387,124 @@ class Config:
         """
         key = (chain_type, name)
         return self._chain_singleton_types.get(key, SingletonType.NONE)
+
+    def get_scope(self, abstract: Type) -> Optional[Scope]:
+        """Get the scope for a registered type.
+
+        Args:
+            abstract: The abstract class or interface
+
+        Returns:
+            The scope, or None if not registered or no scope
+        """
+        return self._scopes.get(abstract)
+
+    def get_provider(self, abstract: Type) -> Optional[Provider[Any]]:
+        """Get the provider for a registered type.
+
+        Args:
+            abstract: The abstract class or interface
+
+        Returns:
+            The provider, or None if not registered or no provider
+        """
+        return self._providers.get(abstract)
+
+    def register_provider(self, abstract: Type, provider: Provider[Any]) -> None:
+        """Register a provider for a type.
+
+        Args:
+            abstract: The abstract class or interface
+            provider: The provider to use for instance creation
+        """
+        if not isinstance(abstract, type):
+            raise TypeError(f"abstract must be a type, got {type(abstract)}")
+        self._providers[abstract] = provider
+
+    def register_key(
+        self,
+        key: Key[Any],
+        implementation: Union[Type, Provider[Any]],
+        *,
+        scope: Optional[Scope] = None,
+    ) -> None:
+        """Register a qualified binding using a Key.
+
+        Args:
+            key: The qualified key
+            implementation: The implementation class or provider
+            scope: Optional scope for lifecycle management
+        """
+        provider: Optional[Provider[Any]] = None
+        if isinstance(implementation, Provider):
+            provider = implementation
+        self._qualified_bindings[key] = (key.type, provider, scope)
+
+    def get_key_binding(self, key: Key[Any]) -> Optional[Tuple[Type, Optional[Provider[Any]], Optional[Scope]]]:
+        """Get a qualified binding for a key.
+
+        Args:
+            key: The qualified key
+
+        Returns:
+            Tuple of (type, provider, scope) or None if not found
+        """
+        return self._qualified_bindings.get(key)
+
+    def multibinder(self, interface: Type[T], as_set: bool = True) -> Multibinder[T]:
+        """Create a multibinder for multiple implementations.
+
+        Args:
+            interface: The interface type
+            as_set: If True, creates SetMultibinder, else ListMultibinder
+
+        Returns:
+            A multibinder instance
+        """
+        if as_set:
+            return SetMultibinder(interface, self)
+        else:
+            return ListMultibinder(interface, self)
+
+    def register_multibinding(
+        self,
+        interface: Type[T],
+        implementation: Type[T],
+        *,
+        as_set: bool = True,
+    ) -> None:
+        """Register an implementation in a multibinding.
+
+        Args:
+            interface: The interface type
+            implementation: The implementation class
+            as_set: If True, adds to set, else to list
+        """
+        if interface not in self._multibindings:
+            self._multibindings[interface] = (set(), [], set(), [])
+        set_impls, list_impls, set_instances, list_instances = self._multibindings[interface]
+        if as_set:
+            set_impls.add(implementation)
+        else:
+            list_impls.append(implementation)
+
+    def get_multibinding(self, interface: Type[T]) -> Optional[Tuple[Set[Type], List[Type], Set[Any], List[Any]]]:
+        """Get multibinding implementations for an interface.
+
+        Args:
+            interface: The interface type
+
+        Returns:
+            Tuple of (set_impls, list_impls, set_instances, list_instances) or None
+        """
+        return self._multibindings.get(interface)
+
+    def get_binder(self) -> Binder:
+        """Get a binder for fluent configuration.
+
+        Returns:
+            A binder instance
+        """
+        from pyiv.binder_impl import ConfigBinder
+
+        return ConfigBinder(self)

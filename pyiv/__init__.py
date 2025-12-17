@@ -35,6 +35,7 @@ Quick Start:
 For more information, see the individual module documentation.
 """
 
+from pyiv.binder import Binder, BindingBuilder
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.clock import Clock, RealClock, SyntheticClock, Timer
 from pyiv.config import Config
@@ -42,8 +43,25 @@ from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDa
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
+from pyiv.key import Key, Named, Qualifier
+from pyiv.members import InjectorMembersInjector, MembersInjector
+from pyiv.multibinder import ListMultibinder, Multibinder, SetMultibinder
 from pyiv.network import HTTPClient, HTTPSClient, NetworkClient
+from pyiv.optional import get_optional_type, is_optional_type
+from pyiv.provider import (
+    BaseProvider,
+    FactoryProvider,
+    InjectorProvider,
+    InstanceProvider,
+    Provider,
+)
 from pyiv.reflection import ReflectionConfig
+from pyiv.scope import (
+    GlobalSingletonScope,
+    NoScope,
+    Scope,
+    SingletonScope,
+)
 from pyiv.serde import (
     Base64SerDe,
     JSONSerDe,
@@ -98,6 +116,28 @@ __all__ = [
     "HTTPSClient",
     "SingletonType",
     "GlobalSingletonRegistry",
+    # New interfaces
+    "Provider",
+    "BaseProvider",
+    "InjectorProvider",
+    "InstanceProvider",
+    "FactoryProvider",
+    "Scope",
+    "NoScope",
+    "SingletonScope",
+    "GlobalSingletonScope",
+    "Key",
+    "Named",
+    "Qualifier",
+    "Binder",
+    "BindingBuilder",
+    "MembersInjector",
+    "InjectorMembersInjector",
+    "Multibinder",
+    "SetMultibinder",
+    "ListMultibinder",
+    "is_optional_type",
+    "get_optional_type",
 ]
 
 if _has_commands:
