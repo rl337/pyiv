@@ -4,7 +4,7 @@ This module provides the ConfigBinder implementation that works with Config
 to provide a fluent configuration API.
 """
 
-from typing import Any, Generic, Optional, Type, TypeVar
+from typing import Any, Generic, List, Optional, Type, TypeVar
 
 from pyiv.binder import Binder, BindingBuilder
 from pyiv.config import Config
@@ -122,7 +122,7 @@ class ConfigBinder(Binder):
             config: The config to register bindings with
         """
         self._config = config
-        self._builders: list[ConfigBindingBuilder[Any]] = []
+        self._builders: List[ConfigBindingBuilder[Any]] = []
 
     def bind(self, abstract: Type[T]) -> BindingBuilder[T]:
         """Start a binding configuration.

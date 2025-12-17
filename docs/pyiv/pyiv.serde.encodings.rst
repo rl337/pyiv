@@ -1,4 +1,4 @@
-pyiv.serde.encodings
+﻿pyiv.serde.encodings
 ====================
 
 .. automodule:: pyiv.serde.encodings
@@ -12,7 +12,6 @@ pyiv.serde.encodings
       JSONSerDe
       NoOpSerDe
       PickleSerDe
-      UUEncodeSerDe
       XMLSerDe
       YAMLSerDe
    

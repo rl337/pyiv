@@ -181,11 +181,12 @@ class Key(Generic[T]):
         Raises:
             TypeError: If type is not a type
         """
-        if not isinstance(type, type):
+        # Use built-in type() function explicitly to avoid shadowing
+        if not isinstance(type, type):  # type: ignore[arg-type]
             type_name = type.__class__.__name__ if hasattr(type, "__class__") else str(type)
             raise TypeError(f"type must be a type, got {type_name}")
-        self.type = type
-        self.qualifier = qualifier
+        self.type: Type[T] = type
+        self.qualifier: Optional[Qualifier] = qualifier
 
     def __eq__(self, other: Any) -> bool:
         """Check equality with another Key.
