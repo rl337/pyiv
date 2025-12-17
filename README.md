@@ -19,6 +19,13 @@ pyiv (Python Injection) provides a simple yet powerful dependency injection syst
 ## Features
 
 - **Dependency Injection**: Clean dependency injection framework for Python applications
+- **Provider Interface**: Lazy initialization and injector access for DI scenarios
+- **Scope Management**: Extensible lifecycle management (singleton, request-scoped, custom scopes)
+- **Qualified Bindings**: Type-safe keys and qualifiers for multiple implementations
+- **Fluent Configuration**: Binder API for readable, chainable configuration
+- **Field/Method Injection**: MembersInjector for framework integration and legacy code
+- **Optional Dependencies**: Support for Optional[T] type hints with graceful degradation
+- **Multibindings**: Multiple implementations of the same type (Set/List)
 - **Reflection-Based Discovery**: Automatically discover interface implementations in packages
 - **SerDe (Serialize/Deserialize)**: Unified interface for serialization with encoding type and name-based injection
 - **Filesystem Utilities**: Enhanced filesystem operations and abstractions
@@ -190,6 +197,14 @@ pyiv/
 │   ├── __init__.py
 │   ├── injector.py      # Dependency injection framework
 │   ├── config.py         # Configuration management
+│   ├── provider.py       # Provider interface for lazy initialization
+│   ├── scope.py          # Scope interface for lifecycle management
+│   ├── key.py            # Key/Qualifier for qualified bindings
+│   ├── binder.py         # Binder interface for fluent configuration
+│   ├── binder_impl.py    # Binder implementation
+│   ├── members.py        # MembersInjector for field/method injection
+│   ├── optional.py       # Optional dependency support
+│   ├── multibinder.py   # Multibinder for multiple implementations
 │   ├── reflection.py     # Reflection-based discovery
 │   ├── serde/            # SerDe (Serialize/Deserialize) module
 │   │   ├── __init__.py
@@ -205,6 +220,149 @@ pyiv/
 ```
 
 ## Advanced Usage
+
+### Provider Interface
+
+Providers enable lazy initialization and injector access:
+
+```python
+from pyiv import Config, get_injector
+from pyiv.provider import Provider, InjectorProvider
+
+class Database:
+    def __init__(self, connection_string: str):
+        self.connection_string = connection_string
+
+class Service:
+    def __init__(self, db_provider: Provider[Database]):
+        self._db_provider = db_provider
+    
+    def do_work(self):
+        # Create database connection only when needed
+        db = self._db_provider.get()
+        return db.connection_string
+
+class MyConfig(Config):
+    def configure(self):
+        self.register(Database, lambda: Database("postgresql://localhost/db"))
+        self.register(Service, Service)
+
+injector = get_injector(MyConfig)
+service = injector.inject(Service)
+service.do_work()  # Database created lazily
+```
+
+### Scope Management
+
+Scopes control object lifecycle beyond simple singletons:
+
+```python
+from pyiv import Config, get_injector
+from pyiv.scope import SingletonScope, GlobalSingletonScope
+
+class MyConfig(Config):
+    def configure(self):
+        # Per-injector singleton
+        self.register(Database, PostgreSQL, scope=SingletonScope())
+        # Global singleton (shared across all injectors)
+        self.register(Cache, RedisCache, scope=GlobalSingletonScope())
+```
+
+### Qualified Bindings with Keys
+
+Use type-safe keys for multiple implementations:
+
+```python
+from pyiv import Config, get_injector
+from pyiv.key import Key, Named
+
+class MyConfig(Config):
+    def configure(self):
+        # Bind with qualifiers
+        self.register_key(Key(Database, Named("primary")), PostgreSQL)
+        self.register_key(Key(Database, Named("replica")), MySQL)
+
+injector = get_injector(MyConfig)
+primary_db = injector.inject(Key(Database, Named("primary")))
+replica_db = injector.inject(Key(Database, Named("replica")))
+```
+
+### Fluent Configuration with Binder
+
+Use the fluent Binder API for readable configuration:
+
+```python
+from pyiv import Config, get_injector
+from pyiv.scope import SingletonScope
+
+class MyConfig(Config):
+    def configure(self):
+        binder = self.get_binder()
+        # Fluent API - easy to read and chain
+        binder.bind(Database).to(PostgreSQL)
+        binder.bind(Logger).to(FileLogger).in_scope(SingletonScope())
+```
+
+### Field Injection with MembersInjector
+
+Inject dependencies into existing instances:
+
+```python
+from dataclasses import dataclass, field
+from pyiv import Config, get_injector
+
+@dataclass
+class Service:
+    db: Database = field(default=None)  # Will be injected
+
+class MyConfig(Config):
+    def configure(self):
+        self.register(Database, PostgreSQL)
+
+injector = get_injector(MyConfig)
+service = Service()  # Created without dependencies
+injector.inject_members(service)  # Inject dependencies
+```
+
+### Optional Dependencies
+
+Use Optional[T] for graceful degradation:
+
+```python
+from typing import Optional
+from pyiv import Config, get_injector
+
+class Service:
+    def __init__(self, db: Database, cache: Optional[Cache] = None):
+        self.db = db
+        self.cache = cache  # Will be None if Cache not registered
+
+class MyConfig(Config):
+    def configure(self):
+        self.register(Database, PostgreSQL)
+        # Cache is optional - will be None if not registered
+```
+
+### Multibindings
+
+Register multiple implementations of the same type:
+
+```python
+from typing import Set, List
+from pyiv import Config, get_injector
+
+class MyConfig(Config):
+    def configure(self):
+        # Register multiple event handlers
+        multibinder = self.multibinder(EventHandler, as_set=True)
+        multibinder.add(EmailEventHandler)
+        multibinder.add(SMSEventHandler)
+        multibinder.add(PushEventHandler)
+
+injector = get_injector(MyConfig)
+# Inject all handlers as a Set
+handlers = injector.inject(Set[EventHandler])
+```
 
 ### Reflection-Based Discovery
 

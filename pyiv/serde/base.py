@@ -19,7 +19,7 @@ class SerDe(ChainHandler):
 
     SerDe (Serialize/Deserialize) is a chain handler for the ENCODING chain type.
     It provides a unified interface for converting objects to and from various
-    encoding formats (JSON, base64, uuencode, YAML, XML, pickle, etc.).
+    encoding formats (JSON, base64, YAML, XML, pickle, etc.).
 
     Subclasses must implement:
         - handler_type: Return the encoding type identifier (e.g., "json", "base64", "pickle")

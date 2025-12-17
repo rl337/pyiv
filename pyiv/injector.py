@@ -30,10 +30,27 @@ Usage:
 """
 
 import inspect
-from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    get_args,
+    get_origin,
+)
 
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.config import Config
+from pyiv.key import Key
+from pyiv.members import InjectorMembersInjector, MembersInjector
+from pyiv.optional import get_optional_type, is_optional_type
+from pyiv.provider import InjectorProvider, Provider
+from pyiv.scope import GlobalSingletonScope, NoScope, Scope, SingletonScope
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 
@@ -49,12 +66,13 @@ class Injector:
         self._config = config
         self._singletons: Dict[Type, Any] = {}
         self._chain_singletons: Dict[Tuple[ChainType, str], ChainHandler] = {}
+        self._scoped_instances: Dict[Scope, Dict[Any, Any]] = {}
 
-    def inject(self, cls: Type, **kwargs) -> Any:
-        """Inject and create an instance of the given class.
+    def inject(self, cls_or_key: Union[Type, Key[Any]], **kwargs) -> Any:
+        """Inject and create an instance of the given class or key.
 
         Args:
-            cls: The class to instantiate (can be abstract or concrete)
+            cls_or_key: The class to instantiate (can be abstract or concrete) or a Key
             **kwargs: Additional keyword arguments to pass to the constructor
 
         Returns:
@@ -64,7 +82,23 @@ class Injector:
             ValueError: If no registration exists for an abstract class
             TypeError: If the registered concrete is not instantiable
         """
-        # Check singleton type
+        # Handle Key-based injection
+        if isinstance(cls_or_key, Key):
+            return self._inject_key(cls_or_key, **kwargs)
+
+        cls = cls_or_key
+
+        # Check for Provider registration
+        provider = self._config.get_provider(cls)
+        if provider is not None:
+            return provider.get()
+
+        # Check for Scope
+        scope = self._config.get_scope(cls)
+        if scope is not None and not isinstance(scope, NoScope):
+            return self._inject_scoped(cls, scope, **kwargs)
+
+        # Fall back to singleton type (backward compatibility)
         singleton_type = self._config.get_singleton_type(cls)
 
         # Handle global singleton
@@ -119,6 +153,73 @@ class Injector:
         elif cls in self._config._instances:
             # Old-style singleton caching
             self._singletons[cls] = instance
+
+        return instance
+
+    def _inject_key(self, key: Key[Any], **kwargs) -> Any:
+        """Inject using a qualified key.
+
+        Args:
+            key: The qualified key
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            An instance for the key
+        """
+        binding = self._config.get_key_binding(key)
+        if binding is None:
+            raise ValueError(f"No binding found for key {key}")
+
+        type_, provider, scope = binding
+
+        # Use provider if available
+        if provider is not None:
+            if scope is not None:
+                # Convert Key to the type expected by scope
+                scope_key: Union[Type, str, tuple] = key.type if isinstance(key, Key) else key
+                scoped_provider = scope.scope(scope_key, provider)
+                return scoped_provider.get()
+            return provider.get()
+
+        # Otherwise use standard injection
+        if scope is not None:
+            return self._inject_scoped(type_, scope, **kwargs)
+        return self.inject(type_, **kwargs)
+
+    def _inject_scoped(self, cls: Type, scope: Scope, **kwargs) -> Any:
+        """Inject with a specific scope.
+
+        Args:
+            cls: The class to inject
+            scope: The scope to use
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            A scoped instance
+        """
+        # Get or create scope cache
+        if scope not in self._scoped_instances:
+            self._scoped_instances[scope] = {}
+
+        scope_cache = self._scoped_instances[scope]
+
+        # Check cache
+        if cls in scope_cache:
+            return scope_cache[cls]
+
+        # Create provider
+        provider = InjectorProvider(cls, self)
+
+        # Apply scope - convert cls to Key type for scope
+        scope_key: Union[Type, str, tuple] = cls
+        scoped_provider = scope.scope(scope_key, provider)
+
+        # Get instance
+        instance = scoped_provider.get()
+
+        # Cache if scope supports it (for per-injector scopes)
+        if isinstance(scope, (SingletonScope, GlobalSingletonScope)):
+            scope_cache[cls] = instance
 
         return instance
 
@@ -187,6 +288,59 @@ class Injector:
                 if param_name == "injector" and annotation == Injector:
                     resolved[param_name] = self
                     continue
+
+                # Check for Provider[T]
+                if self._is_provider_type(annotation):
+                    provider_type = self._extract_provider_type(annotation)
+                    if provider_type:
+                        try:
+                            provider = InjectorProvider(provider_type, self)
+                            resolved[param_name] = provider
+                            continue
+                        except (ValueError, TypeError):
+                            pass
+
+                # Check for Optional[T]
+                if is_optional_type(annotation):
+                    optional_type = get_optional_type(annotation)
+                    if optional_type:
+                        try:
+                            resolved[param_name] = self.inject(optional_type)
+                            continue
+                        except (ValueError, TypeError):
+                            # Optional - use None if can't inject
+                            resolved[param_name] = None
+                            continue
+
+                # Check for Set[T] or List[T] (multibindings)
+                origin = get_origin(annotation)
+                if origin in (set, Set, list, List):
+                    args = get_args(annotation)
+                    if args:
+                        element_type = args[0]
+                        multibinding = self._config.get_multibinding(element_type)
+                        if multibinding:
+                            set_impls, list_impls, set_instances, list_instances = multibinding
+                            if origin in (set, Set):
+                                # Create set of instances
+                                instances: Set[Any] = set(list_instances)
+                                for impl in set_impls:
+                                    try:
+                                        instances.add(self.inject(impl))
+                                    except (ValueError, TypeError):
+                                        pass
+                                resolved[param_name] = instances
+                                continue
+                            else:  # list, List
+                                # Create list of instances (preserve order)
+                                list_instances_result: List[Any] = list(list_instances)
+                                for impl in list_impls:
+                                    try:
+                                        list_instances_result.append(self.inject(impl))
+                                    except (ValueError, TypeError):
+                                        pass
+                                resolved[param_name] = list_instances_result
+                                continue
 
                 # Only try to inject if it's a registered type (not built-in types)
                 # Built-in types like str, int, etc. should use their defaults
@@ -412,6 +566,82 @@ class Injector:
             self._chain_singletons[cache_key] = instance
 
         return instance
+
+    def inject_members(self, instance: Any) -> None:
+        """Inject dependencies into an existing instance.
+
+        This method uses MembersInjector to inject dependencies into fields
+        and methods of an existing instance. Useful for framework integration
+        and legacy code.
+
+        Args:
+            instance: The instance to inject dependencies into
+
+        Example:
+            >>> from dataclasses import dataclass, field
+            >>> @dataclass
+            ... class Service:
+            ...     db: Database = field(default=None)
+            >>>
+            >>> service = Service()
+            >>> injector.inject_members(service)  # Injects db
+        """
+        cls = type(instance)
+        members_injector = InjectorMembersInjector(cls, self)
+        members_injector.inject_members(instance)
+
+    def _is_provider_type(self, annotation: Any) -> bool:
+        """Check if annotation is Provider[T].
+
+        Args:
+            annotation: The type annotation
+
+        Returns:
+            True if it's a Provider type
+        """
+        origin = get_origin(annotation)
+        if origin is None:
+            # Check if it's the Provider protocol directly
+            try:
+                from pyiv.provider import Provider as ProviderProtocol
+
+                if annotation == ProviderProtocol:
+                    return True
+            except ImportError:
+                pass
+            return False
+
+        # Check if origin is Provider
+        try:
+            from pyiv.provider import Provider as ProviderProtocol
+
+            # This is a bit tricky - we need to check if origin matches Provider
+            # For now, we'll check the name
+            return hasattr(origin, "__name__") and "Provider" in str(origin)
+        except ImportError:
+            return False
+
+    def _extract_provider_type(self, annotation: Any) -> Optional[Type]:
+        """Extract the type parameter from Provider[T].
+
+        Args:
+            annotation: The Provider[T] annotation
+
+        Returns:
+            The inner type T, or None if not a Provider
+        """
+        if not self._is_provider_type(annotation):
+            return None
+
+        origin = get_origin(annotation)
+        if origin is None:
+            # It's Provider without type parameter
+            return None
+
+        args = get_args(annotation)
+        if args:
+            return args[0]
+        return None
 
 
 def get_injector(config: Union[Type[Config], Config]) -> Injector:

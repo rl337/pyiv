@@ -35,18 +35,36 @@ run_check() {
     fi
 }
 
+# Check if we're in a poetry environment or need to use python -m
+# This allows the script to work both locally (with poetry) and in CI (with pip)
+if command -v poetry &> /dev/null && [ -f "pyproject.toml" ]; then
+    # Use poetry run if available
+    BLACK_CMD="poetry run black"
+    ISORT_CMD="poetry run isort"
+    MYPY_CMD="poetry run mypy"
+    PYTEST_CMD="poetry run pytest"
+    PYTHON_CMD="poetry run python"
+else
+    # Use direct commands (CI environment)
+    BLACK_CMD="black"
+    ISORT_CMD="isort"
+    MYPY_CMD="mypy"
+    PYTEST_CMD="pytest"
+    PYTHON_CMD="python3"
+fi
+
 # 1. Black formatting check
-run_check "Black formatting" black --check --diff pyiv/ tests/
+run_check "Black formatting" $BLACK_CMD --check --diff pyiv/ tests/
 
 # 2. isort import sorting check
-run_check "isort import sorting" isort --check-only pyiv/ tests/
+run_check "isort import sorting" $ISORT_CMD --check-only pyiv/ tests/
 
 # 3. Pytest with coverage
 # Create build directory if it doesn't exist
 mkdir -p build
 # Skip html report to avoid permission issues with htmlcov directory
 # Exit code 2 from pytest-cov is acceptable (coverage collection succeeded, html report may fail)
-pytest --cov=pyiv --cov-report=xml:build/coverage.xml --cov-report=term-missing tests/ 2>&1
+$PYTEST_CMD --cov=pyiv --cov-report=xml:build/coverage.xml --cov-report=term-missing tests/ 2>&1
 PYTEST_EXIT=$?
 if [ $PYTEST_EXIT -eq 0 ] || [ $PYTEST_EXIT -eq 2 ]; then
     echo -e "${GREEN}✓ Pytest with coverage passed${NC}"
@@ -56,7 +74,7 @@ else
 fi
 
 # 4. mypy type checking
-run_check "mypy type checking" mypy pyiv/
+run_check "mypy type checking" $MYPY_CMD pyiv/
 
 # 5. Bandit security check (don't fail on warnings)
 # Create build directory if it doesn't exist
@@ -69,18 +87,24 @@ else
 fi
 
 # 6. Documentation quality check
-run_check "Documentation quality" python3 check_docs_quality.py
+run_check "Documentation quality" $PYTHON_CMD check_docs_quality.py
 
 # 7. Sphinx documentation build check
 echo ""
 echo -e "${YELLOW}Running: Sphinx documentation build${NC}"
 echo "Command: Building Sphinx documentation"
 # Check if sphinx-build is available
+SPHINX_BUILD="sphinx-build"
 if ! command -v sphinx-build &> /dev/null; then
     echo -e "${YELLOW}⚠ sphinx-build not found, attempting to install Sphinx...${NC}"
     # Try to install sphinx and sphinx-rtd-theme
-    if python3 -m pip install --quiet sphinx sphinx-rtd-theme 2>&1; then
+    if $PYTHON_CMD -m pip install --quiet --user sphinx sphinx-rtd-theme 2>&1; then
         echo -e "${GREEN}✓ Sphinx installed${NC}"
+        # Add user local bin to PATH if sphinx was installed there
+        if [ -d "$HOME/.local/bin" ]; then
+            export PATH="$HOME/.local/bin:$PATH"
+            SPHINX_BUILD="$HOME/.local/bin/sphinx-build"
+        fi
     else
         echo -e "${RED}✗ Failed to install Sphinx. Please install it manually: pip install sphinx sphinx-rtd-theme${NC}"
         FAILED=1
@@ -98,7 +122,7 @@ if [ $FAILED -eq 0 ]; then
         cd docs
         # Build without -W flag to allow warnings but catch actual errors
         # Use -q for quiet mode to reduce output, but errors will still be shown
-        if sphinx-build -b html -q . _build/html 2>&1; then
+        if $SPHINX_BUILD -b html -q . _build/html 2>&1; then
             echo -e "${GREEN}✓ Sphinx documentation build passed${NC}"
             cd ..
         else

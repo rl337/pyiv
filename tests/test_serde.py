@@ -7,16 +7,7 @@ from typing import Any
 import pytest
 
 from pyiv import ChainType, Config, get_injector
-from pyiv.serde import (
-    Base64SerDe,
-    JSONSerDe,
-    NoOpSerDe,
-    PickleSerDe,
-    SerDe,
-    UUEncodeSerDe,
-    XMLSerDe,
-    YAMLSerDe,
-)
+from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XMLSerDe, YAMLSerDe
 
 
 class CustomJSONSerDe(JSONSerDe):
