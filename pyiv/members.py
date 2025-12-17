@@ -30,22 +30,22 @@ Usage Examples:
     Field Injection with Dataclasses:
         >>> from dataclasses import dataclass, field
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Database:
         ...     def query(self, sql: str):
         ...         return f"Executing: {sql}"
-        >>> 
+        >>>
         >>> @dataclass
         ... class Service:
         ...     db: Database = field(default=None)  # Will be injected
-        ...     
+        ...
         ...     def do_work(self):
         ...         return self.db.query("SELECT * FROM users")
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, Database)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> service = Service()  # Created without dependencies
         >>> injector.inject_members(service)  # Inject dependencies
@@ -54,21 +54,21 @@ Usage Examples:
 
     Field Injection with Regular Classes:
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Logger:
         ...     def log(self, message: str):
         ...         print(f"LOG: {message}")
-        >>> 
+        >>>
         >>> class Service:
         ...     logger: Logger = None  # Type annotation for injection
-        ...     
+        ...
         ...     def process(self):
         ...         self.logger.log("Processing...")
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Logger, Logger)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> service = Service()
         >>> injector.inject_members(service)
@@ -79,7 +79,7 @@ Usage Examples:
 import inspect
 from typing import Any, Dict, Generic, Protocol, Type, TypeVar
 
-T = TypeVar("T")
+T = TypeVar("T", contravariant=True)
 
 
 class MembersInjector(Protocol, Generic[T]):
@@ -118,11 +118,11 @@ class InjectorMembersInjector(Generic[T]):
     Example:
         >>> from pyiv.members import InjectorMembersInjector
         >>> from dataclasses import dataclass, field
-        >>> 
+        >>>
         >>> @dataclass
         ... class Service:
         ...     db: Database = field(default=None)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> members_injector = InjectorMembersInjector(Service, injector)
         >>> service = Service()
@@ -222,4 +222,3 @@ class InjectorMembersInjector(Generic[T]):
         # Method injection can be implemented here if needed
         # For now, we focus on field injection
         pass
-

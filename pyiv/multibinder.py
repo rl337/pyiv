@@ -30,25 +30,25 @@ Usage Examples:
     Using SetMultibinder (No Order, No Duplicates):
         >>> from typing import Set
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class EventHandler:
         ...     def handle(self, event: str):
         ...         pass
-        >>> 
+        >>>
         >>> class EmailHandler(EventHandler):
         ...     def handle(self, event: str):
         ...         return f"Email: {event}"
-        >>> 
+        >>>
         >>> class SMSHandler(EventHandler):
         ...     def handle(self, event: str):
         ...         return f"SMS: {event}"
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         multibinder = self.multibinder(EventHandler, as_set=True)
         ...         multibinder.add(EmailHandler)
         ...         multibinder.add(SMSHandler)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> handlers = injector.inject(Set[EventHandler])
         >>> len(handlers)
@@ -62,23 +62,23 @@ Usage Examples:
 
     Using ListMultibinder (Preserves Order):
         >>> from typing import List
-        >>> 
+        >>>
         >>> class Validator:
         ...     def validate(self, data: str):
         ...         return True
-        >>> 
+        >>>
         >>> class EmailValidator(Validator):
         ...     pass
-        >>> 
+        >>>
         >>> class PhoneValidator(Validator):
         ...     pass
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         multibinder = self.multibinder(Validator, as_set=False)
         ...         multibinder.add(EmailValidator)  # First
         ...         multibinder.add(PhoneValidator)  # Second
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> validators = injector.inject(List[Validator])
         >>> len(validators)
@@ -92,7 +92,7 @@ Usage Examples:
 
 from typing import Any, Generic, List, Protocol, Set, Type, TypeVar
 
-T = TypeVar("T")
+T = TypeVar("T", contravariant=True)
 
 
 class Multibinder(Protocol, Generic[T]):
@@ -133,7 +133,7 @@ class SetMultibinder(Generic[T]):
 
     Example:
         >>> from pyiv.multibinder import SetMultibinder
-        >>> 
+        >>>
         >>> multibinder = SetMultibinder(EventHandler, config)
         >>> multibinder.add(EmailEventHandler)
         >>> multibinder.add(SMSEventHandler)
@@ -204,7 +204,7 @@ class ListMultibinder(Generic[T]):
 
     Example:
         >>> from pyiv.multibinder import ListMultibinder
-        >>> 
+        >>>
         >>> multibinder = ListMultibinder(Validator, config)
         >>> multibinder.add(EmailValidator)  # First
         >>> multibinder.add(PhoneValidator)  # Second
@@ -265,4 +265,3 @@ class ListMultibinder(Generic[T]):
             List of instances (order preserved)
         """
         return self._instances.copy()
-

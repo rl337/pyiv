@@ -28,15 +28,15 @@ Usage Examples:
     Basic Provider Usage:
         >>> from pyiv.provider import Provider, InjectorProvider
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Database:
         ...     def __init__(self, connection_string: str):
         ...         self.connection_string = connection_string
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, lambda: Database("postgresql://localhost/db"))
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> # Create a provider for lazy initialization
         >>> db_provider = InjectorProvider(Database, injector)
@@ -47,21 +47,21 @@ Usage Examples:
 
     Injecting Providers:
         >>> from pyiv.provider import Provider
-        >>> 
+        >>>
         >>> class Service:
         ...     def __init__(self, db_provider: Provider[Database]):
         ...         self._db_provider = db_provider
-        ...     
+        ...
         ...     def do_work(self):
         ...         # Create database connection only when needed
         ...         db = self._db_provider.get()
         ...         return db.connection_string
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, lambda: Database("postgresql://localhost/db"))
         ...         self.register(Service, Service)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> service = injector.inject(Service)
         >>> service.do_work()
@@ -69,7 +69,7 @@ Usage Examples:
 
     Using InstanceProvider for Pre-Created Instances:
         >>> from pyiv.provider import InstanceProvider
-        >>> 
+        >>>
         >>> logger = FileLogger()  # Pre-created instance
         >>> logger_provider = InstanceProvider(logger)
         >>> logger_provider.get() is logger
@@ -79,7 +79,7 @@ Usage Examples:
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Generic, Protocol, Type, TypeVar
 
-T = TypeVar("T")
+T = TypeVar("T", covariant=True)
 
 
 class Provider(Protocol, Generic[T]):
@@ -95,19 +95,19 @@ class Provider(Protocol, Generic[T]):
     Example:
         >>> from pyiv.provider import Provider
         >>> from pyiv import Injector
-        >>> 
+        >>>
         >>> class DatabaseProvider(Provider[Database]):
         ...     def __init__(self, injector: Injector):
         ...         self._injector = injector
-        ...     
+        ...
         ...     def get(self) -> Database:
         ...         return self._injector.inject(Database)
-        >>> 
+        >>>
         >>> # Provider can be injected into other classes
         >>> class Service:
         ...     def __init__(self, db_provider: Provider[Database]):
         ...         self._db_provider = db_provider
-        ...     
+        ...
         ...     def connect(self):
         ...         db = self._db_provider.get()  # Lazy initialization
         ...         return db
@@ -130,14 +130,14 @@ class BaseProvider(ABC, Generic[T]):
 
     Example:
         >>> from pyiv.provider import BaseProvider
-        >>> 
+        >>>
         >>> class UserProvider(BaseProvider[User]):
         ...     def __init__(self, db: Database):
         ...         self._db = db
-        ... 
+        ...
         ...     def get(self) -> User:
         ...         return User(db=self._db)
-        >>> 
+        >>>
         >>> # Use in configuration
         >>> class MyConfig(Config):
         ...     def configure(self):
@@ -165,14 +165,14 @@ class InjectorProvider(Generic[T]):
     Example:
         >>> from pyiv import Config, get_injector
         >>> from pyiv.provider import InjectorProvider
-        >>> 
+        >>>
         >>> class Database:
         ...     pass
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, Database)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> db_provider = InjectorProvider(Database, injector)
         >>> db = db_provider.get()  # Uses injector.inject(Database)
@@ -207,11 +207,11 @@ class InstanceProvider(Generic[T]):
 
     Example:
         >>> from pyiv.provider import InstanceProvider
-        >>> 
+        >>>
         >>> class Logger:
         ...     def __init__(self, name: str):
         ...         self.name = name
-        >>> 
+        >>>
         >>> my_logger = Logger("app")
         >>> logger_provider = InstanceProvider(my_logger)
         >>> logger = logger_provider.get()  # Returns my_logger
@@ -246,14 +246,14 @@ class FactoryProvider(Generic[T]):
 
     Example:
         >>> from pyiv.provider import FactoryProvider
-        >>> 
+        >>>
         >>> class User:
         ...     def __init__(self, name: str = "default"):
         ...         self.name = name
-        >>> 
+        >>>
         >>> def create_user() -> User:
         ...     return User(name="default")
-        >>> 
+        >>>
         >>> user_provider = FactoryProvider(create_user)
         >>> user = user_provider.get()  # Calls create_user()
         >>> user.name
@@ -279,4 +279,3 @@ class FactoryProvider(Generic[T]):
             An instance created by the factory function
         """
         return self._factory()
-

@@ -32,23 +32,23 @@ Usage Examples:
     Using SingletonScope (Per-Injector):
         >>> from pyiv.scope import SingletonScope
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Database:
         ...     def __init__(self):
         ...         self.connections = []
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         # Per-injector singleton - each injector gets its own instance
         ...         self.register(Database, Database, scope=SingletonScope())
-        >>> 
+        >>>
         >>> injector1 = get_injector(MyConfig)
         >>> injector2 = get_injector(MyConfig)
-        >>> 
+        >>>
         >>> db1 = injector1.inject(Database)
         >>> db2 = injector1.inject(Database)
         >>> db3 = injector2.inject(Database)
-        >>> 
+        >>>
         >>> # Same injector returns same instance
         >>> db1 is db2
         True
@@ -59,22 +59,22 @@ Usage Examples:
     Using GlobalSingletonScope (Shared Across All Injectors):
         >>> from pyiv.scope import GlobalSingletonScope
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Cache:
         ...     def __init__(self):
         ...         self.data = {}
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         # Global singleton - shared across all injectors
         ...         self.register(Cache, Cache, scope=GlobalSingletonScope())
-        >>> 
+        >>>
         >>> injector1 = get_injector(MyConfig)
         >>> injector2 = get_injector(MyConfig)
-        >>> 
+        >>>
         >>> cache1 = injector1.inject(Cache)
         >>> cache2 = injector2.inject(Cache)
-        >>> 
+        >>>
         >>> # All injectors share the same instance
         >>> cache1 is cache2
         True
@@ -82,20 +82,20 @@ Usage Examples:
     Using NoScope (New Instance Every Time):
         >>> from pyiv.scope import NoScope
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Logger:
         ...     def __init__(self):
         ...         self.messages = []
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         # No caching - new instance every time
         ...         self.register(Logger, Logger, scope=NoScope())
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> logger1 = injector.inject(Logger)
         >>> logger2 = injector.inject(Logger)
-        >>> 
+        >>>
         >>> # Each injection creates a new instance
         >>> logger1 is not logger2
         True
@@ -124,7 +124,7 @@ class Scope(Protocol):
         class RequestScope(Scope):
             def __init__(self):
                 self._request_cache = {}
-            
+
             def scope(self, key, provider):
                 request_id = get_current_request_id()
                 cache_key = (key, request_id)
@@ -155,7 +155,7 @@ class NoScope:
     Example:
         >>> from pyiv.scope import NoScope
         >>> from pyiv import Config
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         # No caching - new instance every time
@@ -185,7 +185,7 @@ class SingletonScope:
     Example:
         >>> from pyiv.scope import SingletonScope
         >>> from pyiv import Config
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         # Per-injector singleton
@@ -206,12 +206,19 @@ class SingletonScope:
         Returns:
             A provider that returns the same instance for this scope
         """
-        def scoped_provider() -> Any:
-            if key not in self._instances:
-                self._instances[key] = provider.get()
-            return self._instances[key]
 
-        return scoped_provider
+        class ScopedProvider:
+            def __init__(self, instances: Dict[Key, Any], key: Key, provider: Provider[Any]):
+                self._instances = instances
+                self._key = key
+                self._provider = provider
+
+            def get(self) -> Any:
+                if self._key not in self._instances:
+                    self._instances[self._key] = self._provider.get()
+                return self._instances[self._key]
+
+        return ScopedProvider(self._instances, key, provider)
 
 
 class GlobalSingletonScope:
@@ -226,7 +233,7 @@ class GlobalSingletonScope:
     Example:
         >>> from pyiv.scope import GlobalSingletonScope
         >>> from pyiv import Config
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         # Global singleton (shared across all injectors)
@@ -246,13 +253,19 @@ class GlobalSingletonScope:
         Returns:
             A provider that returns the same global instance (thread-safe)
         """
-        def scoped_provider() -> Any:
-            with GlobalSingletonScope._lock:
-                if key not in GlobalSingletonScope._instances:
-                    GlobalSingletonScope._instances[key] = provider.get()
-                return GlobalSingletonScope._instances[key]
 
-        return scoped_provider
+        class ScopedProvider:
+            def __init__(self, key: Key, provider: Provider[Any]):
+                self._key = key
+                self._provider = provider
+
+            def get(self) -> Any:
+                with GlobalSingletonScope._lock:
+                    if self._key not in GlobalSingletonScope._instances:
+                        GlobalSingletonScope._instances[self._key] = self._provider.get()
+                    return GlobalSingletonScope._instances[self._key]
+
+        return ScopedProvider(key, provider)
 
     @classmethod
     def clear(cls) -> None:
@@ -277,4 +290,3 @@ class GlobalSingletonScope:
         """
         with cls._lock:
             return key in cls._instances
-

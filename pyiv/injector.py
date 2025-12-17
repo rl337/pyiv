@@ -30,7 +30,19 @@ Usage:
 """
 
 import inspect
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union, get_args, get_origin
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    get_args,
+    get_origin,
+)
 
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.config import Config
@@ -163,7 +175,9 @@ class Injector:
         # Use provider if available
         if provider is not None:
             if scope is not None:
-                scoped_provider = scope.scope(key, provider)
+                # Convert Key to the type expected by scope
+                scope_key: Union[Type, str, tuple] = key.type if isinstance(key, Key) else key
+                scoped_provider = scope.scope(scope_key, provider)
                 return scoped_provider.get()
             return provider.get()
 
@@ -196,8 +210,9 @@ class Injector:
         # Create provider
         provider = InjectorProvider(cls, self)
 
-        # Apply scope
-        scoped_provider = scope.scope(cls, provider)
+        # Apply scope - convert cls to Key type for scope
+        scope_key: Union[Type, str, tuple] = cls
+        scoped_provider = scope.scope(scope_key, provider)
 
         # Get instance
         instance = scoped_provider.get()
@@ -308,7 +323,7 @@ class Injector:
                             set_impls, list_impls, set_instances, list_instances = multibinding
                             if origin in (set, Set):
                                 # Create set of instances
-                                instances = set(list_instances)
+                                instances: Set[Any] = set(list_instances)
                                 for impl in set_impls:
                                     try:
                                         instances.add(self.inject(impl))
@@ -318,13 +333,13 @@ class Injector:
                                 continue
                             else:  # list, List
                                 # Create list of instances (preserve order)
-                                instances = list(list_instances)
+                                list_instances_result: List[Any] = list(list_instances)
                                 for impl in list_impls:
                                     try:
-                                        instances.append(self.inject(impl))
+                                        list_instances_result.append(self.inject(impl))
                                     except (ValueError, TypeError):
                                         pass
-                                resolved[param_name] = instances
+                                resolved[param_name] = list_instances_result
                                 continue
 
                 # Only try to inject if it's a registered type (not built-in types)
@@ -567,7 +582,7 @@ class Injector:
             >>> @dataclass
             ... class Service:
             ...     db: Database = field(default=None)
-            >>> 
+            >>>
             >>> service = Service()
             >>> injector.inject_members(service)  # Injects db
         """

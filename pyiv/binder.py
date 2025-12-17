@@ -31,26 +31,26 @@ Usage Examples:
         >>> from pyiv.binder import Binder
         >>> from pyiv.scope import SingletonScope
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Database:
         ...     pass
-        >>> 
+        >>>
         >>> class PostgreSQL(Database):
         ...     pass
-        >>> 
+        >>>
         >>> class Logger:
         ...     pass
-        >>> 
+        >>>
         >>> class FileLogger(Logger):
         ...     pass
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         binder = self.get_binder()
         ...         # Fluent API - easy to read and chain
         ...         binder.bind(Database).to(PostgreSQL)
         ...         binder.bind(Logger).to(FileLogger).in_scope(SingletonScope())
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> db = injector.inject(Database)
         >>> isinstance(db, PostgreSQL)
@@ -59,11 +59,11 @@ Usage Examples:
     Binding to Instances and Providers:
         >>> from pyiv.provider import InstanceProvider
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Cache:
         ...     def __init__(self):
         ...         self.data = {}
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         binder = self.get_binder()
@@ -72,7 +72,7 @@ Usage Examples:
         ...         binder.bind_instance(Cache, cache)
         ...         # Or use fluent API
         ...         binder.bind(Cache).to_instance(cache)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> injected_cache = injector.inject(Cache)
         >>> injected_cache is cache
@@ -88,7 +88,7 @@ from pyiv.scope import Scope
 T = TypeVar("T")
 
 
-class BindingBuilder(Generic[T]):
+class BindingBuilder(Protocol, Generic[T]):
     """Fluent builder for configuring bindings.
 
     This builder provides a fluent API for configuring how a type should
@@ -194,4 +194,3 @@ class Binder(Protocol):
             config: Another Config instance to install
         """
         ...
-

@@ -58,7 +58,9 @@ class Config:
         # Provider registrations: Type -> Provider
         self._providers: Dict[Type, Provider[Any]] = {}
         # Qualified bindings: Key -> (Type, Provider, Scope)
-        self._qualified_bindings: Dict[Key[Any], Tuple[Type, Optional[Provider[Any]], Optional[Scope]]] = {}
+        self._qualified_bindings: Dict[
+            Key[Any], Tuple[Type, Optional[Provider[Any]], Optional[Scope]]
+        ] = {}
         # Multibindings: Type -> (Set[Type], List[Type], Set[Any], List[Any])
         self._multibindings: Dict[Type, Tuple[Set[Type], List[Type], Set[Any], List[Any]]] = {}
         # Chain handler registrations: (chain_type, handler_type) -> implementation class
@@ -436,11 +438,14 @@ class Config:
             scope: Optional scope for lifecycle management
         """
         provider: Optional[Provider[Any]] = None
-        if isinstance(implementation, Provider):
-            provider = implementation
+        # Check if it has a get method (Provider protocol)
+        if hasattr(implementation, "get") and callable(getattr(implementation, "get")):
+            provider = implementation  # type: ignore[assignment]
         self._qualified_bindings[key] = (key.type, provider, scope)
 
-    def get_key_binding(self, key: Key[Any]) -> Optional[Tuple[Type, Optional[Provider[Any]], Optional[Scope]]]:
+    def get_key_binding(
+        self, key: Key[Any]
+    ) -> Optional[Tuple[Type, Optional[Provider[Any]], Optional[Scope]]]:
         """Get a qualified binding for a key.
 
         Args:
@@ -488,7 +493,9 @@ class Config:
         else:
             list_impls.append(implementation)
 
-    def get_multibinding(self, interface: Type[T]) -> Optional[Tuple[Set[Type], List[Type], Set[Any], List[Any]]]:
+    def get_multibinding(
+        self, interface: Type[T]
+    ) -> Optional[Tuple[Set[Type], List[Type], Set[Any], List[Any]]]:
         """Get multibinding implementations for an interface.
 
         Args:

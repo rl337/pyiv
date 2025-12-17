@@ -82,13 +82,13 @@ class ConfigBindingBuilder(BindingBuilder[T]):
         """
         self._scope = scope
         # Update scope if already finalized
-        if hasattr(self, "_finalized") and self._finalized:
+        if hasattr(self, "_finalized") and getattr(self, "_finalized", False):
             self._config._scopes[self._abstract] = scope
         return self
 
     def _finalize(self) -> None:
         """Finalize the binding registration."""
-        if hasattr(self, "_finalized") and self._finalized:
+        if hasattr(self, "_finalized") and getattr(self, "_finalized", False):
             return
 
         if self._instance is not None:
@@ -147,8 +147,8 @@ class ConfigBinder(Binder):
             A binding builder for fluent configuration
         """
         # For qualified keys, we need a special builder
-        builder = ConfigBindingBuilder(self._config, key.type)
-        builder._key = key  # Store the key
+        builder: ConfigBindingBuilder[Any] = ConfigBindingBuilder(self._config, key.type)  # type: ignore[arg-type]
+        builder._key = key  # type: ignore[attr-defined]  # Store the key
         self._builders.append(builder)
         return builder
 
@@ -176,4 +176,3 @@ class ConfigBinder(Binder):
         for builder in self._builders:
             builder._finalize()
         self._builders.clear()
-

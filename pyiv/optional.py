@@ -28,29 +28,29 @@ Usage Examples:
     Basic Optional Dependency:
         >>> from typing import Optional
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Database:
         ...     pass
-        >>> 
+        >>>
         >>> class Cache:
         ...     def get(self, key: str):
         ...         return f"cached:{key}"
-        >>> 
+        >>>
         >>> class Service:
         ...     def __init__(self, db: Database, cache: Optional[Cache] = None):
         ...         self.db = db
         ...         self.cache = cache  # Will be None if Cache not registered
-        ...     
+        ...
         ...     def process(self, key: str):
         ...         if self.cache:
         ...             return self.cache.get(key)
         ...         return f"no-cache:{key}"
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, Database)
         ...         # Cache is optional - not registered, so will be None
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> service = injector.inject(Service)
         >>> service.cache is None
@@ -63,7 +63,7 @@ Usage Examples:
         ...     def configure(self):
         ...         self.register(Database, Database)
         ...         self.register(Cache, Cache)  # Now cache is available
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfigWithCache)
         >>> service = injector.inject(Service)
         >>> service.cache is not None
@@ -88,7 +88,7 @@ class OptionalProvider(Generic[T]):
     Example:
         >>> from pyiv.optional import OptionalProvider
         >>> from pyiv.provider import InjectorProvider
-        >>> 
+        >>>
         >>> cache_provider = OptionalProvider(InjectorProvider(Cache, injector))
         >>> cache = cache_provider.get()  # Returns Cache instance or None
     """
@@ -152,4 +152,3 @@ def get_optional_type(annotation: Any) -> Optional[Type]:
             if arg is not type(None):
                 return arg
     return None
-

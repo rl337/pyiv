@@ -29,29 +29,29 @@ Usage Examples:
     Basic Qualified Binding:
         >>> from pyiv.key import Key, Named
         >>> from pyiv import Config, get_injector
-        >>> 
+        >>>
         >>> class Database:
         ...     def __init__(self, name: str):
         ...         self.name = name
-        >>> 
+        >>>
         >>> class PostgreSQL(Database):
         ...     def __init__(self):
         ...         super().__init__("postgresql")
-        >>> 
+        >>>
         >>> class MySQL(Database):
         ...     def __init__(self):
         ...         super().__init__("mysql")
-        >>> 
+        >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         # Bind with qualifiers
         ...         self.register_key(Key(Database, Named("primary")), PostgreSQL)
         ...         self.register_key(Key(Database, Named("replica")), MySQL)
-        >>> 
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> primary_db = injector.inject(Key(Database, Named("primary")))
         >>> replica_db = injector.inject(Key(Database, Named("replica")))
-        >>> 
+        >>>
         >>> primary_db.name
         'postgresql'
         >>> replica_db.name
@@ -59,20 +59,20 @@ Usage Examples:
 
     Using Keys for Different Implementations:
         >>> from pyiv.key import Key, Named
-        >>> 
+        >>>
         >>> class Logger:
         ...     pass
-        >>> 
+        >>>
         >>> class FileLogger(Logger):
         ...     pass
-        >>> 
+        >>>
         >>> class ConsoleLogger(Logger):
         ...     pass
-        >>> 
+        >>>
         >>> # Create keys for different logger implementations
         >>> file_key = Key(Logger, Named("file"))
         >>> console_key = Key(Logger, Named("console"))
-        >>> 
+        >>>
         >>> # Keys are hashable and can be used in dictionaries
         >>> bindings = {
         ...     file_key: FileLogger,
@@ -98,6 +98,7 @@ class Qualifier(Protocol):
             def __init__(self, name: str):
                 self.name = name
     """
+
     pass
 
 
@@ -109,7 +110,7 @@ class Named:
 
     Example:
         >>> from pyiv.key import Named
-        >>> 
+        >>>
         >>> primary = Named("primary")
         >>> replica = Named("replica")
     """
@@ -161,10 +162,10 @@ class Key(Generic[T]):
 
     Example:
         >>> from pyiv.key import Key, Named
-        >>> 
+        >>>
         >>> # Key without qualifier (default binding)
         >>> default_key = Key(Database)
-        >>> 
+        >>>
         >>> # Key with qualifier
         >>> primary_key = Key(Database, Named("primary"))
         >>> replica_key = Key(Database, Named("replica"))
@@ -181,7 +182,8 @@ class Key(Generic[T]):
             TypeError: If type is not a type
         """
         if not isinstance(type, type):
-            raise TypeError(f"type must be a type, got {type(type)}")
+            type_name = type.__class__.__name__ if hasattr(type, "__class__") else str(type)
+            raise TypeError(f"type must be a type, got {type_name}")
         self.type = type
         self.qualifier = qualifier
 
@@ -212,7 +214,7 @@ class Key(Generic[T]):
         Returns:
             String representation of the key
         """
+        type_name = getattr(self.type, "__name__", str(self.type))
         if self.qualifier:
-            return f"Key({self.type.__name__}, {self.qualifier!r})"
-        return f"Key({self.type.__name__})"
-
+            return f"Key({type_name}, {self.qualifier!r})"
+        return f"Key({type_name})"
