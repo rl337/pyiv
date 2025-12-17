@@ -47,7 +47,11 @@ class NoOpSerDe(SerDe):
 
     @property
     def handler_type(self) -> str:
-        """Return the handler type identifier."""
+        """Return the handler type identifier.
+
+        Returns:
+            The handler type identifier ("noop")
+        """
         return "noop"
 
     def serialize(self, obj: Any) -> Union[str, bytes]:
@@ -85,7 +89,11 @@ class PickleSerDe(SerDe):
 
     @property
     def handler_type(self) -> str:
-        """Return the handler type identifier."""
+        """Return the handler type identifier.
+
+        Returns:
+            The handler type identifier ("pickle")
+        """
         return "pickle"
 
     def serialize(self, obj: Any) -> bytes:
@@ -119,7 +127,11 @@ class JSONSerDe(SerDe):
 
     @property
     def handler_type(self) -> str:
-        """Return the handler type identifier."""
+        """Return the handler type identifier.
+
+        Returns:
+            The handler type identifier ("json")
+        """
         return "json"
 
     def serialize(self, obj: Any) -> str:
@@ -176,7 +188,11 @@ class Base64SerDe(SerDe):
 
     @property
     def handler_type(self) -> str:
-        """Return the handler type identifier."""
+        """Return the handler type identifier.
+
+        Returns:
+            The handler type identifier ("base64")
+        """
         return "base64"
 
     def serialize(self, obj: Any) -> str:
@@ -218,7 +234,11 @@ class UUEncodeSerDe(SerDe):
 
     @property
     def handler_type(self) -> str:
-        """Return the handler type identifier."""
+        """Return the handler type identifier.
+
+        Returns:
+            The handler type identifier ("uuencode")
+        """
         return "uuencode"
 
     def serialize(self, obj: Any) -> str:
@@ -277,7 +297,11 @@ class XMLSerDe(SerDe):
 
     @property
     def handler_type(self) -> str:
-        """Return the handler type identifier."""
+        """Return the handler type identifier.
+
+        Returns:
+            The handler type identifier ("xml")
+        """
         return "xml"
 
     def serialize(self, obj: Any) -> str:
@@ -323,7 +347,15 @@ class XMLSerDe(SerDe):
         return self._xml_to_dict(root)  # type: ignore[return-value]
 
     def _dict_to_xml(self, d: dict, parent: ET.Element) -> None:
-        """Convert dict to XML elements."""
+        """Convert dict to XML elements.
+
+        Args:
+            d: Dictionary to convert
+            parent: Parent XML element to attach to
+
+        Returns:
+            None (modifies parent in place)
+        """
         for key, value in d.items():
             elem = ET.SubElement(parent, str(key))
             if isinstance(value, dict):
@@ -339,7 +371,14 @@ class XMLSerDe(SerDe):
                 elem.text = str(value)
 
     def _xml_to_dict(self, elem: ET.Element) -> Union[Dict[str, Any], List[Any], str]:
-        """Convert XML element to dict/list."""
+        """Convert XML element to dict/list.
+
+        Args:
+            elem: XML element to convert
+
+        Returns:
+            Converted dict, list, or string
+        """
         if len(elem) == 0:
             return elem.text or ""
         result: Dict[str, Any] = {}
@@ -363,7 +402,11 @@ class YAMLSerDe(SerDe):
 
     @property
     def handler_type(self) -> str:
-        """Return the handler type identifier."""
+        """Return the handler type identifier.
+
+        Returns:
+            The handler type identifier ("yaml")
+        """
         return "yaml"
 
     def serialize(self, obj: Any) -> str:
