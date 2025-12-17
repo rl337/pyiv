@@ -18,6 +18,7 @@
    factory
    filesystem
    injector
+   network
    reflection
    serde
    singleton
