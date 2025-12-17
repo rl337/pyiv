@@ -42,8 +42,8 @@ from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDa
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
-from pyiv.reflection import ReflectionConfig
 from pyiv.network import HTTPClient, HTTPSClient, NetworkClient
+from pyiv.reflection import ReflectionConfig
 from pyiv.serde import (
     Base64SerDe,
     JSONSerDe,

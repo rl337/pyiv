@@ -5,9 +5,9 @@ including HTTP and HTTPS clients using urllib.
 """
 
 from typing import Any, Dict, Optional, Union
-from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from pyiv.network.base import NetworkClient
 
@@ -195,4 +195,3 @@ class HTTPSClient(NetworkClient):
             }
         except URLError as e:
             raise URLError(f"Failed to make HTTPS request to {url}: {e}") from e
-
