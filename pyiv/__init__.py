@@ -70,22 +70,8 @@ from pyiv.provider import (
     Provider,
 )
 from pyiv.reflection import ReflectionConfig
-from pyiv.scope import (
-    GlobalSingletonScope,
-    NoScope,
-    Scope,
-    SingletonScope,
-)
-from pyiv.serde import (
-    Base64SerDe,
-    JSONSerDe,
-    NoOpSerDe,
-    PickleSerDe,
-    SerDe,
-    UUEncodeSerDe,
-    XMLSerDe,
-    YAMLSerDe,
-)
+from pyiv.scope import GlobalSingletonScope, NoScope, Scope, SingletonScope
+from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XMLSerDe, YAMLSerDe
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 
 # Command interface (optional import)
@@ -120,7 +106,6 @@ __all__ = [
     "SerDe",
     "JSONSerDe",
     "Base64SerDe",
-    "UUEncodeSerDe",
     "XMLSerDe",
     "YAMLSerDe",
     "PickleSerDe",

@@ -13,7 +13,6 @@ from pyiv.serde import (
     NoOpSerDe,
     PickleSerDe,
     SerDe,
-    UUEncodeSerDe,
     XMLSerDe,
     YAMLSerDe,
 )

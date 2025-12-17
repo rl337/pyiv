@@ -7,7 +7,7 @@ standard library.
 
 Architecture:
     - SerDe: Base abstract class extending ChainHandler for ENCODING chain type
-    - Standard encodings: JSON, Base64, UUEncode, XML, YAML (if available), Pickle, NoOp
+    - Standard encodings: JSON, Base64, XML, YAML (if available), Pickle, NoOp
     - DI Integration: Register and inject SerDe instances via chain system
 
 Usage:
@@ -32,21 +32,12 @@ Usage:
 """
 
 from pyiv.serde.base import SerDe
-from pyiv.serde.encodings import (
-    Base64SerDe,
-    JSONSerDe,
-    NoOpSerDe,
-    PickleSerDe,
-    UUEncodeSerDe,
-    XMLSerDe,
-    YAMLSerDe,
-)
+from pyiv.serde.encodings import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, XMLSerDe, YAMLSerDe
 
 __all__ = [
     "SerDe",
     "JSONSerDe",
     "Base64SerDe",
-    "UUEncodeSerDe",
     "XMLSerDe",
     "YAMLSerDe",
     "PickleSerDe",

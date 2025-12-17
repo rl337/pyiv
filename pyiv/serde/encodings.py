@@ -4,7 +4,6 @@ This module provides SerDe implementations for encoding formats available
 in Python's standard library:
     - JSON: Standard JSON encoding
     - Base64: Base64 encoding
-    - UUEncode: UU encoding
     - YAML: YAML encoding (if available)
     - XML: XML encoding
     - Pickle: Python pickle encoding (default/no-op fallback)
@@ -17,14 +16,6 @@ import json
 import pickle
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
-
-# uu is a standard library module, but import it explicitly
-try:
-    import uu
-
-    UU_AVAILABLE = True
-except ImportError:
-    UU_AVAILABLE = False
 
 # Try to import yaml (not in standard library, but commonly available)
 try:
@@ -223,70 +214,6 @@ class Base64SerDe(SerDe):
         if isinstance(data, str):
             data = data.encode("utf-8")
         return base64.b64decode(data)  # type: ignore[return-value]
-
-
-class UUEncodeSerDe(SerDe):
-    """UU encoding SerDe.
-
-    Encodes/decodes data using UU encoding. Input must be bytes.
-    Requires the uu module from Python's standard library.
-    """
-
-    @property
-    def handler_type(self) -> str:
-        """Return the handler type identifier.
-
-        Returns:
-            The handler type identifier ("uuencode")
-        """
-        return "uuencode"
-
-    def serialize(self, obj: Any) -> str:
-        """Serialize using UU encoding.
-
-        Args:
-            obj: The data to encode (bytes or string)
-
-        Returns:
-            UU-encoded string
-
-        Raises:
-            ImportError: If uu module is not available
-        """
-        if not UU_AVAILABLE:
-            raise ImportError("uu module is not available in this Python installation")
-        if isinstance(obj, str):
-            obj = obj.encode("utf-8")
-        elif not isinstance(obj, bytes):
-            obj = pickle.dumps(obj)  # Fallback to pickle for complex objects
-
-        output = io.StringIO()
-        input_data = io.BytesIO(obj)
-        uu.encode(input_data, output)  # type: ignore[arg-type]
-        return output.getvalue()
-
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
-        """Deserialize UU-encoded data.
-
-        Args:
-            data: The UU-encoded string or bytes
-            target_type: Optional type hint (returns bytes by default)
-
-        Returns:
-            Decoded bytes
-
-        Raises:
-            ImportError: If uu module is not available
-        """
-        if not UU_AVAILABLE:
-            raise ImportError("uu module is not available in this Python installation")
-        if isinstance(data, bytes):
-            data = data.decode("utf-8")
-
-        input_data = io.StringIO(data)
-        output = io.BytesIO()
-        uu.decode(input_data, output)  # type: ignore[arg-type]
-        return output.getvalue()  # type: ignore[return-value]
 
 
 class XMLSerDe(SerDe):

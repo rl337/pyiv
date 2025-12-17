@@ -6,7 +6,7 @@ to provide a fluent configuration API.
 
 from typing import Any, Generic, Optional, Type, TypeVar
 
-from pyiv.binder import BindingBuilder, Binder
+from pyiv.binder import Binder, BindingBuilder
 from pyiv.config import Config
 from pyiv.key import Key
 from pyiv.provider import InjectorProvider, InstanceProvider, Provider
