@@ -178,6 +178,24 @@ Explore the PyIV modules to understand the full capabilities:
    <div style="color: #666; font-size: 0.85em; margin-top: 5px;">Command interface - Build CLI applications with dependency injection</div>
    </a>
    </div>
+   <div style="padding: 15px; background: #f9f9f9; border-radius: 6px; border: 1px solid #e0e0e0; transition: all 0.2s;">
+   <a href="modules.html#pyiv-chain" style="color: #0066cc; text-decoration: none; font-weight: 500; display: block;">
+   <div style="font-family: 'Monaco', 'Courier New', monospace; color: #333; font-size: 0.95em;">pyiv.chain</div>
+   <div style="color: #666; font-size: 0.85em; margin-top: 5px;">Chain of responsibility pattern - Extensible handler system for encoding, hashing, sorting, network clients</div>
+   </a>
+   </div>
+   <div style="padding: 15px; background: #f9f9f9; border-radius: 6px; border: 1px solid #e0e0e0; transition: all 0.2s;">
+   <a href="modules.html#pyiv-serde" style="color: #0066cc; text-decoration: none; font-weight: 500; display: block;">
+   <div style="font-family: 'Monaco', 'Courier New', monospace; color: #333; font-size: 0.95em;">pyiv.serde</div>
+   <div style="color: #666; font-size: 0.85em; margin-top: 5px;">Serialization/deserialization - JSON, Base64, XML, YAML, Pickle, and more</div>
+   </a>
+   </div>
+   <div style="padding: 15px; background: #f9f9f9; border-radius: 6px; border: 1px solid #e0e0e0; transition: all 0.2s;">
+   <a href="modules.html#pyiv-network" style="color: #0066cc; text-decoration: none; font-weight: 500; display: block;">
+   <div style="font-family: 'Monaco', 'Courier New', monospace; color: #333; font-size: 0.95em;">pyiv.network</div>
+   <div style="color: #666; font-size: 0.85em; margin-top: 5px;">Network clients - HTTP, HTTPS, and other protocol clients with dependency injection</div>
+   </a>
+   </div>
    </div>
 
 API Documentation
