@@ -24,6 +24,7 @@ Core Modules
    pyiv.command
    pyiv.chain
    pyiv.serde
+   pyiv.network
 
 Detailed Module Documentation
 -------------------------------
@@ -94,6 +95,21 @@ Detailed Module Documentation
    :show-inheritance:
 
 .. automodule:: pyiv.serde.encodings
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.network
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.network.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.network.clients
    :members:
    :undoc-members:
    :show-inheritance:

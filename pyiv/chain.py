@@ -19,12 +19,14 @@ class ChainType(Enum):
     - ENCODING: Serialization/deserialization (SerDe)
     - HASHING: Hash function implementations
     - SORTING: Sorting algorithm implementations
+    - NETWORK_CLIENT: Network protocol clients (HTTP, HTTPS, etc.)
     - etc.
     """
 
     ENCODING = "encoding"
     HASHING = "hashing"
     SORTING = "sorting"
+    NETWORK_CLIENT = "network_client"
 
 
 class ChainHandler(ABC):

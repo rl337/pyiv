@@ -15,6 +15,9 @@ Architecture:
     The library is organized into modules:
     - config: Configuration base class for registering dependencies
     - injector: Core dependency injection engine
+    - chain: Chain of responsibility pattern for extensible handlers
+    - serde: Serialization/deserialization implementations
+    - network: Network client abstractions (HTTP, HTTPS, etc.)
     - singleton: Singleton lifecycle management
     - factory: Factory pattern support
     - clock: Time abstraction for testing
@@ -39,6 +42,7 @@ from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDa
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
+from pyiv.network import HTTPClient, HTTPSClient, NetworkClient
 from pyiv.reflection import ReflectionConfig
 from pyiv.serde import (
     Base64SerDe,
@@ -89,6 +93,9 @@ __all__ = [
     "YAMLSerDe",
     "PickleSerDe",
     "NoOpSerDe",
+    "NetworkClient",
+    "HTTPClient",
+    "HTTPSClient",
     "SingletonType",
     "GlobalSingletonRegistry",
 ]
