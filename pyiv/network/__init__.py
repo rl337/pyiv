@@ -11,7 +11,10 @@ Example:
 """
 
 from pyiv.network.base import NetworkClient
-from pyiv.network.clients import HTTPClient, HTTPSClient
+from pyiv.network.clients import (
+    HTTPClient,
+    HTTPSClient,
+)
 
 __all__ = [
     "NetworkClient",
