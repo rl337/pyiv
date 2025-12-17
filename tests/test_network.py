@@ -305,4 +305,3 @@ class TestNetworkClientDI:
         assert isinstance(custom_client, CustomHTTPClient)
         assert default_client.handler_type == "http"
         assert custom_client.handler_type == "http"
-
