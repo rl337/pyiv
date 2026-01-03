@@ -19,6 +19,7 @@ Core Modules
    pyiv.factory
    pyiv.clock
    pyiv.filesystem
+   pyiv.console
    pyiv.datetime_service
    pyiv.reflection
    pyiv.command
@@ -60,6 +61,11 @@ Detailed Module Documentation
    :show-inheritance:
 
 .. automodule:: pyiv.filesystem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pyiv.console
    :members:
    :undoc-members:
    :show-inheritance:

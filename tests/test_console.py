@@ -19,7 +19,6 @@ from pyiv.console import (
     PTYConsole,
     RealConsole,
     ScreenClearEvent,
-    Terminal,
 )
 
 

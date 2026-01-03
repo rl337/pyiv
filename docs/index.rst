@@ -161,6 +161,12 @@ Explore the PyIV modules to understand the full capabilities:
    </a>
    </div>
    <div style="padding: 15px; background: #f9f9f9; border-radius: 6px; border: 1px solid #e0e0e0; transition: all 0.2s;">
+   <a href="modules.html#pyiv-console" style="color: #0066cc; text-decoration: none; font-weight: 500; display: block;">
+   <div style="font-family: 'Monaco', 'Courier New', monospace; color: #333; font-size: 0.95em;">pyiv.console</div>
+   <div style="color: #666; font-size: 0.85em; margin-top: 5px;">Console output abstraction - RealConsole for production, MemoryConsole/PTYConsole/MockConsole for testing</div>
+   </a>
+   </div>
+   <div style="padding: 15px; background: #f9f9f9; border-radius: 6px; border: 1px solid #e0e0e0; transition: all 0.2s;">
    <a href="modules.html#pyiv-datetime-service" style="color: #0066cc; text-decoration: none; font-weight: 500; display: block;">
    <div style="font-family: 'Monaco', 'Courier New', monospace; color: #333; font-size: 0.95em;">pyiv.datetime_service</div>
    <div style="color: #666; font-size: 0.85em; margin-top: 5px;">DateTime abstraction - PythonDateTimeService for production, MockDateTimeService for testing</div>
