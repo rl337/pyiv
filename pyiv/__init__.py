@@ -36,6 +36,7 @@ Architecture:
     - factory: Factory pattern support
     - clock: Time abstraction for testing
     - filesystem: File I/O abstraction for testing
+    - console: Console output abstraction for testing
     - datetime_service: DateTime abstraction for testing
 
 Quick Start:
@@ -53,6 +54,16 @@ from pyiv.binder import Binder, BindingBuilder
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.clock import Clock, RealClock, SyntheticClock, Timer
 from pyiv.config import Config
+from pyiv.console import (
+    BaseConsole,
+    Console,
+    FileConsole,
+    MemoryConsole,
+    MockConsole,
+    PTYConsole,
+    RealConsole,
+    Terminal,
+)
 from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
@@ -93,6 +104,14 @@ __all__ = [
     "Filesystem",
     "RealFilesystem",
     "MemoryFilesystem",
+    "Console",
+    "BaseConsole",
+    "RealConsole",
+    "MemoryConsole",
+    "FileConsole",
+    "Terminal",
+    "PTYConsole",
+    "MockConsole",
     "Clock",
     "RealClock",
     "SyntheticClock",

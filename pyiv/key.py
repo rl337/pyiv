@@ -185,7 +185,8 @@ class Key(Generic[T]):
         if not isinstance(type, type):  # type: ignore[arg-type]
             type_name = type.__class__.__name__ if hasattr(type, "__class__") else str(type)
             raise TypeError(f"type must be a type, got {type_name}")
-        self.type: Type[T] = type
+        # Cast to Type[T] to satisfy mypy (we've already validated it's a type)
+        self.type: Type[T] = type  # type: ignore[assignment]
         self.qualifier: Optional[Qualifier] = qualifier
 
     def __eq__(self, other: Any) -> bool:
