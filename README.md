@@ -30,6 +30,7 @@ pyiv (Python Injection) provides a simple yet powerful dependency injection syst
 - **SerDe (Serialize/Deserialize)**: Unified interface for serialization with encoding type and name-based injection
 - **Filesystem Utilities**: Enhanced filesystem operations and abstractions
 - **Clock/Time Abstractions**: Time management utilities for testing and time-dependent code
+- **Console Output**: File-like console interface for testable print() statements
 - **DateTime Service**: Abstract datetime service for dependency injection and testing
 - **Configuration Management**: Flexible configuration handling
 
@@ -138,6 +139,41 @@ mock_service = MockDateTimeService(datetime(2024, 1, 15, 10, 30, 0, tzinfo=timez
 fixed_time = mock_service.now_utc()  # Returns the fixed time
 ```
 
+### Console Output
+
+Replace `print()` with injectable console for testable output:
+
+```python
+from pyiv import Config, get_injector
+from pyiv.console import Console, RealConsole, MemoryConsole
+
+class Service:
+    def __init__(self, console: Console):
+        self.console = console
+    
+    def greet(self, name: str):
+        print(f"Hello, {name}!", file=self.console)
+
+# Production: Use RealConsole (writes to stdout)
+class MyConfig(Config):
+    def configure(self):
+        self.register(Console, RealConsole)
+
+injector = get_injector(MyConfig)
+service = injector.inject(Service)
+service.greet("Alice")  # Prints to stdout
+
+# Testing: Use MemoryConsole (captures output)
+class TestConfig(Config):
+    def configure(self):
+        self.register(Console, MemoryConsole)
+
+injector = get_injector(TestConfig)
+service = injector.inject(Service)
+service.greet("Bob")
+assert "Hello, Bob!" in service.console.getvalue()
+```
+
 ### SerDe (Serialize/Deserialize)
 
 pyiv provides a unified SerDe interface for serialization/deserialization with support for multiple encoding types and implementations:
@@ -212,6 +248,7 @@ pyiv/
 │   │   └── json.py       # JSON SerDe implementations
 │   ├── filesystem.py     # Filesystem utilities
 │   ├── clock.py          # Time/clock abstractions
+│   ├── console.py        # Console output abstraction
 │   ├── datetime_service.py  # DateTime service abstraction
 │   └── singleton.py      # Singleton support
 ├── tests/                # Test suite
