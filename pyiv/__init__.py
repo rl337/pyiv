@@ -62,7 +62,6 @@ from pyiv.console import (
     MockConsole,
     PTYConsole,
     RealConsole,
-    Terminal,
 )
 from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
@@ -109,7 +108,6 @@ __all__ = [
     "RealConsole",
     "MemoryConsole",
     "FileConsole",
-    "Terminal",
     "PTYConsole",
     "MockConsole",
     "Clock",

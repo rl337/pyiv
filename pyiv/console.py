@@ -184,14 +184,27 @@ class Console(Protocol):
     Console implementations should be file-like objects that support
     the standard file interface (write, flush, etc.) used by print().
 
+    Console also includes terminal functionality (TTY operations) for
+    advanced features like spinners, animations, password prompts, and
+    progress bars. Implementations that don't support terminal features
+    should provide no-op implementations that return safe defaults.
+
     Example:
         >>> from pyiv.console import RealConsole
         >>>
         >>> console = RealConsole()
         >>> print("Hello, World!", file=console)
         >>> console.flush()
+        >>>
+        >>> # Terminal features available when TTY is present
+        >>> if console.is_tty():
+        ...     console.clear()
+        ...     console.set_color(fg=31)  # Red
+        ...     console.write("Error message")
+        ...     console.reset_color()
     """
 
+    # Basic file-like interface
     def write(self, s: str) -> int:
         """Write string to console.
 
@@ -218,93 +231,12 @@ class Console(Protocol):
         """
         ...
 
-
-class BaseConsole(ABC):
-    """Abstract base class for console implementations.
-
-    Provides a concrete base class for console implementations.
-    Subclasses should implement the file-like interface methods.
-
-    Example:
-        >>> from pyiv.console import BaseConsole
-        >>>
-        >>> class CustomConsole(BaseConsole):
-        ...     def write(self, s: str) -> int:
-        ...         # Custom write logic
-        ...         return len(s)
-        ...
-        ...     def flush(self) -> None:
-        ...         pass
-        ...
-        ...     def writable(self) -> bool:
-        ...         return True
-    """
-
-    @abstractmethod
-    def write(self, s: str) -> int:
-        """Write string to console.
-
-        Args:
-            s: String to write
-
-        Returns:
-            Number of characters written
-        """
-        pass
-
-    @abstractmethod
-    def flush(self) -> None:
-        """Flush any buffered output."""
-        pass
-
-    @abstractmethod
-    def writable(self) -> bool:
-        """Check if console is writable.
-
-        Returns:
-            True if console supports writing
-        """
-        pass
-
-
-class Terminal(Protocol):
-    """Protocol for terminal implementations extending Console.
-
-    Terminal provides TTY-specific functionality including cursor control,
-    colors, screen clearing, and input control. This enables spinners,
-    animations, password prompts, progress bars, and interactive CLI features.
-
-    Example:
-        >>> from pyiv.console import RealConsole
-        >>>
-        >>> terminal = RealConsole()
-        >>> if terminal.is_tty():
-        ...     terminal.clear()
-        ...     terminal.move_cursor(10, 5)
-        ...     terminal.set_color(fg=31)  # Red
-        ...     terminal.write("Hello")
-        ...     terminal.reset_color()
-    """
-
-    # Console interface (inherited)
-    def write(self, s: str) -> int:
-        """Write string to console."""
-        ...
-
-    def flush(self) -> None:
-        """Flush any buffered output."""
-        ...
-
-    def writable(self) -> bool:
-        """Check if console is writable."""
-        ...
-
     # TTY Queries
     def is_tty(self) -> bool:
         """Check if output is a real terminal.
 
         Returns:
-            True if output is connected to a TTY
+            True if output is connected to a TTY, False otherwise
         """
         ...
 
@@ -312,7 +244,7 @@ class Terminal(Protocol):
         """Get terminal size.
 
         Returns:
-            Tuple of (columns, rows)
+            Tuple of (columns, rows). Defaults to (80, 24) if not available.
         """
         ...
 
@@ -421,16 +353,22 @@ class Terminal(Protocol):
         """
         ...
 
-    def read_char(self) -> Optional[str]:
+    def read_char(self, timeout: Optional[float] = None) -> Optional[str]:
         """Read a single character (requires raw mode).
+
+        Args:
+            timeout: Optional timeout in seconds
 
         Returns:
             Character string or None if no input available
         """
         ...
 
-    def read_line(self) -> str:
+    def read_line(self, prompt: str = "") -> str:
         """Read a line of input.
+
+        Args:
+            prompt: Optional prompt string to display
 
         Returns:
             Line of text (without newline)
@@ -441,14 +379,14 @@ class Terminal(Protocol):
         """Read password with echo disabled.
 
         Args:
-            prompt: Optional prompt to display
+            prompt: Prompt string to display
 
         Returns:
             Password string
         """
         ...
 
-    # State Queries (for MockConsole)
+    # State Queries (for inspection/testing)
     def get_cursor(self) -> Tuple[int, int]:
         """Get current cursor position (for state inspection).
 
@@ -465,11 +403,42 @@ class Terminal(Protocol):
         """
         ...
 
+    def get_screen_line(self, y: int) -> str:
+        """Get specific line from screen buffer.
+
+        Args:
+            y: Line number (0-based)
+
+        Returns:
+            Line contents as string
+        """
+        ...
+
+    def get_screen_char(self, x: int, y: int) -> str:
+        """Get character at position from screen buffer.
+
+        Args:
+            x: Column (0-based)
+            y: Row (0-based)
+
+        Returns:
+            Character at position
+        """
+        ...
+
     def get_color(self) -> Tuple[Optional[int], Optional[int]]:
         """Get current color state (for state inspection).
 
         Returns:
             Tuple of (fg, bg)
+        """
+        ...
+
+    def get_style(self) -> Dict[str, bool]:
+        """Get text style state (for state inspection).
+
+        Returns:
+            Dictionary of style flags (bold, underline, etc.)
         """
         ...
 
@@ -496,6 +465,228 @@ class Terminal(Protocol):
             List of terminal events
         """
         ...
+
+    def clear_state(self) -> None:
+        """Clear all state (for test setup).
+
+        Resets terminal state including screen buffer, cursor position,
+        colors, styles, and event history.
+        """
+        ...
+
+
+class BaseConsole(ABC):
+    """Abstract base class for console implementations.
+
+    Provides a concrete base class for console implementations.
+    Subclasses should implement the file-like interface methods.
+    Terminal methods have default no-op implementations that can be
+    overridden by subclasses that support terminal features.
+
+    Example:
+        >>> from pyiv.console import BaseConsole
+        >>>
+        >>> class CustomConsole(BaseConsole):
+        ...     def write(self, s: str) -> int:
+        ...         # Custom write logic
+        ...         return len(s)
+        ...
+        ...     def flush(self) -> None:
+        ...         pass
+        ...
+        ...     def writable(self) -> bool:
+        ...         return True
+    """
+
+    @abstractmethod
+    def write(self, s: str) -> int:
+        """Write string to console.
+
+        Args:
+            s: String to write
+
+        Returns:
+            Number of characters written
+        """
+        pass
+
+    @abstractmethod
+    def flush(self) -> None:
+        """Flush any buffered output."""
+        pass
+
+    @abstractmethod
+    def writable(self) -> bool:
+        """Check if console is writable.
+
+        Returns:
+            True if console supports writing
+        """
+        pass
+
+    # TTY Queries - default implementations
+    def is_tty(self) -> bool:
+        """Check if output is a real terminal (default: False)."""
+        return False
+
+    def get_size(self) -> Tuple[int, int]:
+        """Get terminal size (default: 80x24)."""
+        return (80, 24)
+
+    def get_cursor_position(self) -> Optional[Tuple[int, int]]:
+        """Get current cursor position (default: None)."""
+        return None
+
+    # Output Control - default no-op implementations
+    def clear(self) -> None:
+        """Clear the entire screen (no-op by default)."""
+        pass
+
+    def clear_line(self) -> None:
+        """Clear the current line (no-op by default)."""
+        pass
+
+    def clear_to_end_of_line(self) -> None:
+        """Clear from cursor to end of line (no-op by default)."""
+        pass
+
+    def move_cursor(self, x: int, y: int) -> None:
+        """Move cursor to position (no-op by default)."""
+        pass
+
+    def move_cursor_home(self) -> None:
+        """Move cursor to home position (no-op by default)."""
+        pass
+
+    def move_cursor_up(self, n: int = 1) -> None:
+        """Move cursor up n lines (no-op by default)."""
+        pass
+
+    def move_cursor_down(self, n: int = 1) -> None:
+        """Move cursor down n lines (no-op by default)."""
+        pass
+
+    def move_cursor_left(self, n: int = 1) -> None:
+        """Move cursor left n columns (no-op by default)."""
+        pass
+
+    def move_cursor_right(self, n: int = 1) -> None:
+        """Move cursor right n columns (no-op by default)."""
+        pass
+
+    def hide_cursor(self) -> None:
+        """Hide the cursor (no-op by default)."""
+        pass
+
+    def show_cursor(self) -> None:
+        """Show the cursor (no-op by default)."""
+        pass
+
+    def save_cursor(self) -> None:
+        """Save current cursor position (no-op by default)."""
+        pass
+
+    def restore_cursor(self) -> None:
+        """Restore saved cursor position (no-op by default)."""
+        pass
+
+    # Color and Style - default no-op implementations
+    def set_color(self, fg: Optional[int] = None, bg: Optional[int] = None) -> None:
+        """Set foreground and/or background color (no-op by default)."""
+        pass
+
+    def reset_color(self) -> None:
+        """Reset colors to default (no-op by default)."""
+        pass
+
+    def bold(self, enabled: bool = True) -> None:
+        """Enable or disable bold text (no-op by default)."""
+        pass
+
+    def underline(self, enabled: bool = True) -> None:
+        """Enable or disable underline (no-op by default)."""
+        pass
+
+    # Input Control - default no-op implementations
+    def set_echo(self, enabled: bool) -> None:
+        """Turn echo on/off (no-op by default)."""
+        pass
+
+    def set_raw_mode(self, enabled: bool) -> None:
+        """Enable/disable raw mode (no-op by default)."""
+        pass
+
+    def read_char(self, timeout: Optional[float] = None) -> Optional[str]:
+        """Read a single character (default: None)."""
+        return None
+
+    def read_line(self, prompt: str = "") -> str:
+        """Read a line of input (default: empty string)."""
+        return ""
+
+    def read_password(self, prompt: str = "") -> str:
+        """Read password with echo disabled (default: empty string)."""
+        return ""
+
+    # State Queries - default implementations (for MockConsole)
+    def get_cursor(self) -> Tuple[int, int]:
+        """Get current cursor position (default: 0, 0)."""
+        return (0, 0)
+
+    def get_screen(self) -> List[List[str]]:
+        """Get screen buffer (default: empty)."""
+        return []
+
+    def get_color(self) -> Tuple[Optional[int], Optional[int]]:
+        """Get current color state (default: None, None)."""
+        return (None, None)
+
+    def get_echo_enabled(self) -> bool:
+        """Get echo state (default: True)."""
+        return True
+
+    def get_raw_mode(self) -> bool:
+        """Get raw mode state (default: False)."""
+        return False
+
+    def get_events(self) -> List[TerminalEvent]:
+        """Get event history (default: empty list)."""
+        return []
+
+    def get_screen_line(self, y: int) -> str:
+        """Get specific line from screen buffer (default: empty string).
+
+        Args:
+            y: Line number (0-based)
+
+        Returns:
+            Line contents as string
+        """
+        return ""
+
+    def get_screen_char(self, x: int, y: int) -> str:
+        """Get character at position from screen buffer (default: space).
+
+        Args:
+            x: Column (0-based)
+            y: Row (0-based)
+
+        Returns:
+            Character at position
+        """
+        return " "
+
+    def get_style(self) -> Dict[str, bool]:
+        """Get text style state (default: all False).
+
+        Returns:
+            Dictionary of style flags
+        """
+        return {"bold": False, "underline": False}
+
+    def clear_state(self) -> None:
+        """Clear all state (default: no-op)."""
+        pass
 
 
 class RealConsole(BaseConsole):
@@ -791,8 +982,11 @@ class RealConsole(BaseConsole):
             # termios/tty not available or not a TTY
             pass
 
-    def read_char(self) -> Optional[str]:
+    def read_char(self, timeout: Optional[float] = None) -> Optional[str]:
         """Read a single character (requires raw mode).
+
+        Args:
+            timeout: Optional timeout in seconds
 
         Returns:
             Character string or None if no input available
@@ -814,12 +1008,18 @@ class RealConsole(BaseConsole):
         except (ImportError, OSError, AttributeError):
             return None
 
-    def read_line(self) -> str:
+    def read_line(self, prompt: str = "") -> str:
         """Read a line of input.
+
+        Args:
+            prompt: Optional prompt string to display
 
         Returns:
             Line of text (without newline)
         """
+        if prompt:
+            self.write(prompt)
+            self.flush()
         line = self._stdin.readline()
         return line.rstrip("\n\r")
 
@@ -893,6 +1093,41 @@ class RealConsole(BaseConsole):
             Empty list as placeholder
         """
         return []
+
+    def get_screen_line(self, y: int) -> str:
+        """Get specific line from screen (not available for RealConsole).
+
+        Args:
+            y: Line number (0-based)
+
+        Returns:
+            Empty string as placeholder
+        """
+        return ""
+
+    def get_screen_char(self, x: int, y: int) -> str:
+        """Get character at position (not available for RealConsole).
+
+        Args:
+            x: Column (0-based)
+            y: Row (0-based)
+
+        Returns:
+            Space character as placeholder
+        """
+        return " "
+
+    def get_style(self) -> Dict[str, bool]:
+        """Get text style state (not available for RealConsole).
+
+        Returns:
+            Dictionary with all styles False
+        """
+        return {"bold": False, "underline": False}
+
+    def clear_state(self) -> None:
+        """Clear all state (no-op for RealConsole)."""
+        pass
 
 
 class MemoryConsole(BaseConsole):
@@ -1260,20 +1495,38 @@ class PTYConsole(BaseConsole):
         # PTY raw mode would require termios on slave_fd
         pass
 
-    def read_char(self) -> Optional[str]:
-        """Read a single character."""
+    def read_char(self, timeout: Optional[float] = None) -> Optional[str]:
+        """Read a single character.
+
+        Args:
+            timeout: Optional timeout in seconds (not fully implemented for PTY)
+
+        Returns:
+            Character string or None if no input available
+        """
         try:
             import select
 
             # Read from master_fd (what was written to pty)
-            if select.select([self.master_fd], [], [], 0)[0]:
+            timeout_val = timeout if timeout is not None else 0
+            if select.select([self.master_fd], [], [], timeout_val)[0]:
                 return os.read(self.master_fd, 1).decode("utf-8", errors="ignore")
             return None
         except (ImportError, OSError):
             return None
 
-    def read_line(self) -> str:
-        """Read a line of input."""
+    def read_line(self, prompt: str = "") -> str:
+        """Read a line of input.
+
+        Args:
+            prompt: Optional prompt string to display
+
+        Returns:
+            Line of text (without newline)
+        """
+        if prompt:
+            self.write(prompt)
+            self.flush()
         # For PTY, read from stdin (slave end)
         line = self._stdin.readline()
         return line.rstrip("\n\r")
@@ -1308,6 +1561,41 @@ class PTYConsole(BaseConsole):
     def get_events(self) -> List[TerminalEvent]:
         """Get event history (not available)."""
         return []
+
+    def get_screen_line(self, y: int) -> str:
+        """Get specific line from screen (not available for PTYConsole).
+
+        Args:
+            y: Line number (0-based)
+
+        Returns:
+            Empty string as placeholder
+        """
+        return ""
+
+    def get_screen_char(self, x: int, y: int) -> str:
+        """Get character at position (not available for PTYConsole).
+
+        Args:
+            x: Column (0-based)
+            y: Row (0-based)
+
+        Returns:
+            Space character as placeholder
+        """
+        return " "
+
+    def get_style(self) -> Dict[str, bool]:
+        """Get text style state (not available for PTYConsole).
+
+        Returns:
+            Dictionary with all styles False
+        """
+        return {"bold": False, "underline": False}
+
+    def clear_state(self) -> None:
+        """Clear all state (no-op for PTYConsole)."""
+        pass
 
     def close(self) -> None:
         """Close the pty."""
@@ -1696,8 +1984,15 @@ class MockConsole(BaseConsole):
         self.raw_mode = enabled
         self._add_event(RawModeChangeEvent(time.time(), "raw_mode_change", enabled, old_state))
 
-    def read_char(self) -> Optional[str]:
-        """Read a single character from input buffer."""
+    def read_char(self, timeout: Optional[float] = None) -> Optional[str]:
+        """Read a single character from input buffer.
+
+        Args:
+            timeout: Optional timeout in seconds (ignored for MockConsole)
+
+        Returns:
+            Character string or None if no input available
+        """
         if self.input_buffer:
             char = self.input_buffer[0]
             self.input_buffer = self.input_buffer[1:]
@@ -1705,8 +2000,18 @@ class MockConsole(BaseConsole):
             return char
         return None
 
-    def read_line(self) -> str:
-        """Read a line from input buffer."""
+    def read_line(self, prompt: str = "") -> str:
+        """Read a line from input buffer.
+
+        Args:
+            prompt: Optional prompt string to display
+
+        Returns:
+            Line of text (without newline)
+        """
+        if prompt:
+            self.write(prompt)
+            self.flush()
         if "\n" in self.input_buffer:
             idx = self.input_buffer.index("\n")
             line = self.input_buffer[:idx]
