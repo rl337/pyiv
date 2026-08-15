@@ -184,6 +184,24 @@ class TestGlobalSingleton:
         db3 = injector2.inject(Database)
         assert db3 is db2
 
+    def test_global_singleton_can_depend_on_another(self):
+        """Global singletons must not deadlock when one depends on another."""
+
+        class App:
+            def __init__(self, db: Database):
+                self.db = db
+
+        class DepConfig(Config):
+            def configure(self):
+                self.register(Database, PostgreSQL, singleton_type=SingletonType.GLOBAL_SINGLETON)
+                self.register(App, App, singleton_type=SingletonType.GLOBAL_SINGLETON)
+
+        injector = get_injector(DepConfig)
+        app = injector.inject(App)
+        db = injector.inject(Database)
+        assert isinstance(app, App)
+        assert app.db is db
+
 
 class TestNoSingleton:
     """Test NONE singleton type (default behavior)."""

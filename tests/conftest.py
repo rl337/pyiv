@@ -1,4 +1,4 @@
-"""Pytest configuration and fixtures for console tests."""
+"""Pytest configuration and fixtures."""
 
 import os
 import pty
@@ -11,6 +11,19 @@ def pytest_configure(config):
     """Configure pytest markers."""
     config.addinivalue_line("markers", "tty: mark test as requiring TTY (will use PTY for testing)")
     config.addinivalue_line("markers", "integration: mark test as integration test")
+
+
+@pytest.fixture(autouse=True)
+def _clear_global_singletons():
+    """Reset process-wide singleton caches between tests."""
+    from pyiv.scope import GlobalSingletonScope
+    from pyiv.singleton import GlobalSingletonRegistry
+
+    GlobalSingletonRegistry.clear()
+    GlobalSingletonScope.clear()
+    yield
+    GlobalSingletonRegistry.clear()
+    GlobalSingletonScope.clear()
 
 
 @pytest.fixture(scope="session")
