@@ -1,19 +1,19 @@
 ---
-description: README vs Sphinx site split, homepage features, and RTD sidebar toctrees.
+description: README vs Sphinx split, install story, homepage features, and RTD sidebar.
 globs: docs/**/*.rst,docs/**/*.md,docs/conf.py,README.md
 alwaysApply: false
 ---
 
 # Website and README
 
-**README.md** is the GitHub landing page only: what pyiv is, git install, a short quick start, link to https://rl337.org/pyiv/. Do not duplicate the API reference here.
+README is the GitHub **and** PyPI long description: what pyiv is, honest install, short quick start, link to https://rl337.org/pyiv/. Do not duplicate the API reference.
 
-**docs/** is the product site. Homepage Key Features must stay: type-based injection, scopes, keys/binder, reflection, test doubles, zero dependencies. Do not headline Factory. Do not claim PyPI or Poetry.
+**docs/** is the product site. Key Features: type-based injection, scopes, keys/binder, reflection, test doubles, zero dependencies. Do not headline Factory.
 
-Install instructions: `pip install git+https://github.com/rl337/pyiv.git` until a PyPI release exists.
+Install must match README and release notes. Until PyPI exists: `pip install git+https://github.com/rl337/pyiv.git`. No `pip install pyiv`, no PyPI project link, no Poetry.
 
-API navigation lives on `docs/index.rst` as grouped `toctree` directives (Core DI, Bindings, Discovery, Test doubles, Integrations) pointing at `docs/pyiv/pyiv.*.rst`. Do not rely on `modules.rst` alone—RTD leaves that sidebar empty until the page is opened. Keep `collapse_navigation: False` and `titles_only: True` in `conf.py`. Omit `binder_impl` from the sidebar.
+API nav: grouped `toctree`s on `docs/index.rst` (Core DI, Bindings, Discovery, Test doubles, Integrations). Keep `collapse_navigation: False` and `titles_only: True`. Omit `binder_impl`. New public modules need `docs/pyiv/pyiv.<name>.rst` and a toctree entry.
 
-New public modules need a `docs/pyiv/pyiv.<name>.rst` automodule page **and** a toctree entry on `index.rst`.
+Production is https://rl337.org/pyiv/ from `main`. PR previews are `/branch/<branch>/` only.
 
-Production site is https://rl337.org/pyiv/ from `main`. PR previews go to `/branch/<branch>/`; they must not deploy over the site root.
+If a changelog page exists, link it from the site and from `project.urls`.

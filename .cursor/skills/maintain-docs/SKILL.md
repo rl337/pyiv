@@ -1,29 +1,38 @@
 ---
 name: maintain-docs
-description: Keep pyiv's README, Sphinx site, and module doctests aligned. Use when editing pyiv public APIs, docs/, README.md, Sphinx pages, Key Features, or install instructions; when adding modules to the API nav; or when the user mentions the website, documentation, or doctests.
+description: Keep pyiv's PyPI listing, Sphinx site, and release notes in sync. Use when editing README.md, docs/, pyproject.toml metadata or URLs, CHANGELOG, GitHub releases, install instructions, Key Features, public APIs, or doctests; when adding modules to the API nav; or when the user mentions the website, PyPI, documentation, or changelog.
 ---
 
 # Maintain pyiv docs
 
-## Split
+Three public surfaces must agree. Docstrings feed the site; they are not a fourth landing page.
 
-| Surface | Job |
-| --- | --- |
-| `README.md` | GitHub landing: one-paragraph what/why, honest install, short quick start, link to https://rl337.org/pyiv/. Not a second API manual. |
-| `docs/` (Sphinx) | Product docs: features, install, examples, API from autodoc. |
-| `pyiv/**/*.py` docstrings | Source of truth for API pages. Examples are doctests and run in CI. |
+| Pillar | Files | Job |
+| --- | --- | --- |
+| PyPI listing | `README.md`, `[project]` in `pyproject.toml` | README is GitHub **and** Warehouse long_description. Metadata (author, URLs, description) is the sidebar. Not a second API manual. |
+| Website | `docs/`, `pyiv/**/*.py` docstrings | Product manual at https://rl337.org/pyiv/. Features, install, guide, autodoc. Production is `main` only; PRs go to `/branch/<name>/`. |
+| Release notes | `CHANGELOG.md` (when present), GitHub Releases, `RELEASE.md`, `.github/workflows/release.yml` | Why this version shipped. Same install command as README. Not a squash-commit dump that tells people to `pip install` a version that is not on PyPI. |
 
-Do not claim `pip install pyiv` or link PyPI until the package is published. Install copy is `pip install git+https://github.com/rl337/pyiv.git`. Do not mention Poetry.
+## Install story (must match all three)
+
+Until a production PyPI upload exists:
+
+- Install: `pip install git+https://github.com/rl337/pyiv.git`
+- Do not write `pip install pyiv`, do not link https://pypi.org/project/pyiv/, do not mention Poetry.
+- First public version is **0.3.0**, not a 0.2.x tag.
+
+After that upload, flip README, `docs/index.rst`, changelog/release templates, and `project.urls` together in the same change.
+
+Canonical URLs (also `[project.urls]`): Homepage/Repository `https://github.com/rl337/pyiv`, Documentation `https://rl337.org/pyiv/`. No `yourusername` placeholders.
 
 ## After a public API change
 
-1. Update the module docstring with a **runnable** doctest (self-contained stubs, no network, no real sleeps, no writing cwd files).
-2. If you added a public module, add `docs/pyiv/pyiv.<module>.rst` and list it in the matching toctree on `docs/index.rst` (not only `modules.rst`). Do not put `binder_impl` in the sidebar.
-3. Keep homepage **Key Features** as: type injection, scopes, keys/binder, reflection, test doubles, zero deps. Do not promote Factory as a headline feature.
-4. Run `pytest --doctest-modules pyiv` and `sphinx-build -b html docs docs/_build/html`.
-
-Production docs are https://rl337.org/pyiv/ (main only). PR previews publish to `https://rl337.org/pyiv/branch/<branch>/`.
+1. Runnable module doctest (self-contained; no network, real sleeps, or cwd writes).
+2. New public module: `docs/pyiv/pyiv.<module>.rst` **and** the matching toctree on `docs/index.rst`. Omit `binder_impl`.
+3. Homepage Key Features stay: type injection, scopes, keys/binder, reflection, test doubles, zero deps. Not Factory-first.
+4. If the change is user-visible, add a changelog bullet the release notes can use.
+5. `pytest --doctest-modules pyiv` and `sphinx-build -b html docs docs/_build/html`.
 
 ## Sidebar UX
 
-RTD only shows nested toctrees from **the current page**. Put grouped `.. toctree::` directives on `docs/index.rst` so Core DI / Bindings / Discovery / Test doubles / Integrations are populated on first visit. Keep `collapse_navigation: False` and `titles_only: True` in `docs/conf.py` so the homepage sidebar lists module pages without dumping every method.
+RTD only expands nested toctrees from the current page. Grouped `.. toctree::` directives live on `docs/index.rst`. Keep `collapse_navigation: False` and `titles_only: True` in `docs/conf.py`.
