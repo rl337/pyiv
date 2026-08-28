@@ -5,12 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "pyiv"
 version = "0.2.21"
-description = "A lightweight dependency injection library for Python"
+description = "Guice-style dependency injection for Python, with scopes, qualified keys, and test doubles"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"},
+    {name = "Richard Lee", email = "rlee@tokyo3.com"},
 ]
 keywords = ["dependency-injection", "di", "injector", "ioc"]
 classifiers = [
@@ -43,10 +43,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/pyiv"
-Documentation = "https://github.com/yourusername/pyiv#readme"
-Repository = "https://github.com/yourusername/pyiv"
-Issues = "https://github.com/yourusername/pyiv/issues"
+Homepage = "https://github.com/rl337/pyiv"
+Documentation = "https://rl337.org/pyiv/"
+Repository = "https://github.com/rl337/pyiv"
+Issues = "https://github.com/rl337/pyiv/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pyiv"]
