@@ -97,7 +97,7 @@ try:
 except ImportError:
     _has_commands = False
 
-__version__ = "0.2.20"
+__version__ = "0.2.21"
 __all__ = [
     "Config",
     "ReflectionConfig",
