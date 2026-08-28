@@ -229,11 +229,14 @@ class CLICommand(Command):
 
     Provides a simplified lifecycle for commands that execute and exit:
     1. init() - Optional initialization
-    2. execute() - Main command logic (subclasses override this)
+    2. run() - Main command logic (subclasses override this)
     3. cleanup() - Optional cleanup
 
-    Subclasses should override execute() to implement command logic.
-    For commands that need init/run/cleanup, override those methods instead.
+    Subclasses should override run() (and optionally init()/cleanup()).
+    Set self._exit_code in run() to return a non-zero status.
+
+    Do not override execute() — it implements the lifecycle, KeyboardInterrupt
+    handling (exit 130), and SystemExit handling.
     """
 
     def __init__(self, args: argparse.Namespace, injector: Optional[Any] = None):
@@ -248,7 +251,8 @@ class CLICommand(Command):
     def run(self) -> None:
         """Run the CLI command (no-op by default).
 
-        For CLI commands, implement execute() directly instead of run().
+        Override this method to implement command logic. Set self._exit_code
+        to return a non-zero status from execute().
         """
         self._exit_code = 0
 

@@ -14,6 +14,17 @@ from pyiv.command import CLICommand, Command, CommandRunner, ServiceCommand
 from pyiv.reflection import ReflectionConfig
 
 
+def _cleanup_imported_package(tmpdir: str, package_name: str = "test_package") -> None:
+    """Remove a temp package from sys.path and sys.modules after discovery tests."""
+    if tmpdir in sys.path:
+        sys.path.remove(tmpdir)
+    modules_to_remove = [
+        m for m in sys.modules if m == package_name or m.startswith(package_name + ".")
+    ]
+    for name in modules_to_remove:
+        del sys.modules[name]
+
+
 # Test command implementations (prefixed with Sample to avoid pytest collection)
 class SampleCommand(Command):
     """Sample command implementation."""
@@ -331,7 +342,7 @@ class TestCLICommand:
             def get_name(cls) -> str:
                 return "interrupt-cli"
 
-            def execute(self) -> int:
+            def run(self) -> None:
                 raise KeyboardInterrupt()
 
         args = argparse.Namespace()
@@ -347,7 +358,7 @@ class TestCLICommand:
             def get_name(cls) -> str:
                 return "system-exit-cli"
 
-            def execute(self) -> int:
+            def run(self) -> None:
                 raise SystemExit(99)
 
         args = argparse.Namespace()
@@ -363,14 +374,12 @@ class TestCLICommand:
             def get_name(cls) -> str:
                 return "default-exit"
 
-            def execute(self) -> int:
-                # Don't set _exit_code, should default to 0
-                return super().execute()
+            def run(self) -> None:
+                # Default _exit_code path via CLICommand.run()
+                super().run()
 
         args = argparse.Namespace()
         cmd = DefaultExitCLI(args)
-        # Override execute to not call super
-        cmd.run()  # This sets _exit_code to 0
         exit_code = cmd.execute()
         assert exit_code == 0
 
@@ -429,7 +438,7 @@ class TestCommand(Command):
                 assert "test" in commands
                 assert commands["test"].__name__ == "TestCommand"
             finally:
-                sys.path.remove(str(tmpdir))
+                _cleanup_imported_package(str(tmpdir))
 
     def test_discover_commands_with_reflection(self):
         """Test command discovery with reflection."""
@@ -494,7 +503,7 @@ class TestCommand(CLICommand):
                 )
                 assert exit_code == 0
             finally:
-                sys.path.remove(str(tmpdir))
+                _cleanup_imported_package(str(tmpdir))
 
     def test_run_command_not_found(self):
         """Test running a non-existent command."""
@@ -537,7 +546,7 @@ class TestCommand(CLICommand):
                         args=["unknown"],
                     )
             finally:
-                sys.path.remove(str(tmpdir))
+                _cleanup_imported_package(str(tmpdir))
 
     def test_run_command_keyboard_interrupt(self):
         """Test running a command that raises KeyboardInterrupt."""
@@ -563,7 +572,7 @@ class TestCommand(CLICommand):
     def get_description(cls) -> str:
         return "Test command"
     
-    def execute(self) -> int:
+    def run(self) -> None:
         raise KeyboardInterrupt()
 """
             )
@@ -579,7 +588,7 @@ class TestCommand(CLICommand):
                 )
                 assert exit_code == 130
             finally:
-                sys.path.remove(str(tmpdir))
+                _cleanup_imported_package(str(tmpdir))
 
     def test_register_commands_with_subcommands(self):
         """Test registering commands with subcommands."""
@@ -591,9 +600,10 @@ class TestCommand(CLICommand):
         commands = {"parent": SampleCommandWithSubcommands}
         runner._register_commands(subparsers, commands)
 
-        # Should be able to parse parent command
-        args = parser.parse_args(["parent"])
+        # Parent requires its subcommand ("test")
+        args = parser.parse_args(["parent", "test"])
         assert args.command == "parent"
+        assert args.subcommand == "test"
 
     def test_create_parser(self):
         """Test create_parser method."""
@@ -635,7 +645,7 @@ class TestCommandWithDI:
         )
 
         injector = MagicMock()
-        with patch("pyiv.command.get_injector", return_value=injector):
+        with patch("pyiv.get_injector", return_value=injector):
             runner = CommandRunner(config=config)
 
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -676,7 +686,7 @@ class TestCommand(CLICommand):
                     )
                     assert exit_code == 0
                 finally:
-                    sys.path.remove(str(tmpdir))
+                    _cleanup_imported_package(str(tmpdir))
 
 
 class TestCommandAliases:

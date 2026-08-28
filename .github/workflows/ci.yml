@@ -67,7 +67,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          file: ./coverage.xml
+          file: ./build/coverage.xml
           flags: pyiv
           name: codecov-pyiv-${{ matrix.python-version }}
           fail_ci_if_error: false
@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bandit-security-report-${{ matrix.python-version }}
-          path: bandit-report.json
+          path: build/bandit-report.json
           if-no-files-found: ignore
 
       - name: Upload coverage HTML report
@@ -85,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-html-report-${{ matrix.python-version }}
-          path: htmlcov/
+          path: build/htmlcov/
           if-no-files-found: ignore
 
       - name: Build distribution packages (verify build)

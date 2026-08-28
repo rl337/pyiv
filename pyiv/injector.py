@@ -93,68 +93,12 @@ class Injector:
         if provider is not None:
             return provider.get()
 
-        # Check for Scope
+        # Check for Scope (singleton=True / singleton_type also install a Scope)
         scope = self._config.get_scope(cls)
         if scope is not None and not isinstance(scope, NoScope):
             return self._inject_scoped(cls, scope, **kwargs)
 
-        # Fall back to singleton type (backward compatibility)
-        singleton_type = self._config.get_singleton_type(cls)
-
-        # Handle global singleton
-        if singleton_type == SingletonType.GLOBAL_SINGLETON:
-            instance = GlobalSingletonRegistry.get(cls)
-            if instance is not None:
-                return instance
-            # Create new instance and store globally
-            concrete = self._config.get_registration(cls)
-            if concrete is None:
-                instance = self._instantiate(cls, **kwargs)
-            else:
-                instance = self._instantiate(concrete, **kwargs)
-            GlobalSingletonRegistry.set(cls, instance)
-            return instance
-
-        # Check if we have a registered singleton instance
-        instance = self._config.get_instance(cls)
-        if instance is not None:
-            return instance
-
-        # Check if we have a cached per-injector singleton
-        if singleton_type == SingletonType.SINGLETON and cls in self._singletons:
-            return self._singletons[cls]
-
-        # Get the concrete implementation
-        concrete = self._config.get_registration(cls)
-
-        if concrete is None:
-            # No registration, try to instantiate the class directly
-            # (useful for concrete classes that don't need registration)
-            instance = self._instantiate(cls, **kwargs)
-            # Store as singleton if configured
-            if singleton_type == SingletonType.SINGLETON:
-                self._singletons[cls] = instance
-            return instance
-
-        # Check if it's a lazy singleton registration (old style)
-        if cls in self._config._instances and self._config._instances[cls] is None:
-            # Lazy singleton creation
-            instance = self._instantiate(concrete, **kwargs)
-            self._singletons[cls] = instance
-            self._config._instances[cls] = instance
-            return instance
-
-        # Instantiate the concrete implementation
-        instance = self._instantiate(concrete, **kwargs)
-
-        # Store as singleton if configured
-        if singleton_type == SingletonType.SINGLETON:
-            self._singletons[cls] = instance
-        elif cls in self._config._instances:
-            # Old-style singleton caching
-            self._singletons[cls] = instance
-
-        return instance
+        return self._create_unscoped(cls, **kwargs)
 
     def _inject_key(self, key: Key[Any], **kwargs) -> Any:
         """Inject using a qualified key.
@@ -207,14 +151,12 @@ class Injector:
         if cls in scope_cache:
             return scope_cache[cls]
 
-        # Create provider
-        provider = InjectorProvider(cls, self)
+        # Instantiate without calling inject() again. InjectorProvider.get()
+        # calls inject(), which re-enters this method and recurses/deadlocks.
+        unscoped = _UnscopedProvider(lambda: self._instantiate_registered(cls, **kwargs))
 
-        # Apply scope - convert cls to Key type for scope
         scope_key: Union[Type, str, tuple] = cls
-        scoped_provider = scope.scope(scope_key, provider)
-
-        # Get instance
+        scoped_provider = scope.scope(scope_key, unscoped)
         instance = scoped_provider.get()
 
         # Cache if scope supports it (for per-injector scopes)
@@ -222,6 +164,55 @@ class Injector:
             scope_cache[cls] = instance
 
         return instance
+
+    def _create_unscoped(self, cls: Type, **kwargs) -> Any:
+        """Create an instance when no Scope applies.
+
+        Honors singleton_type / GlobalSingletonRegistry for registrations that
+        did not install a Scope. Constructor dependencies still go through
+        `inject()` via `_instantiate`.
+        """
+        singleton_type = self._config.get_singleton_type(cls)
+
+        # Handle global singleton (when no Scope was installed)
+        if singleton_type == SingletonType.GLOBAL_SINGLETON:
+            instance = GlobalSingletonRegistry.get(cls)
+            if instance is not None:
+                return instance
+            concrete = self._config.get_registration(cls)
+            if concrete is None:
+                instance = self._instantiate(cls, **kwargs)
+            else:
+                instance = self._instantiate(concrete, **kwargs)
+            GlobalSingletonRegistry.set(cls, instance)
+            return instance
+
+        instance = self._config.get_instance(cls)
+        if instance is not None:
+            return instance
+
+        if singleton_type == SingletonType.SINGLETON and cls in self._singletons:
+            return self._singletons[cls]
+
+        instance = self._instantiate_registered(cls, **kwargs)
+
+        if singleton_type == SingletonType.SINGLETON:
+            self._singletons[cls] = instance
+        elif cls in self._config._instances:
+            self._singletons[cls] = instance
+
+        return instance
+
+    def _instantiate_registered(self, cls: Type, **kwargs) -> Any:
+        """Instantiate the registered concrete (or `cls`) with no lifecycle caching."""
+        instance = self._config.get_instance(cls)
+        if instance is not None:
+            return instance
+
+        concrete = self._config.get_registration(cls)
+        if concrete is None:
+            return self._instantiate(cls, **kwargs)
+        return self._instantiate(concrete, **kwargs)
 
     def _instantiate(self, concrete: Union[Type, Callable[..., Any]], **kwargs) -> Any:
         """Instantiate a class or call a factory function.
@@ -642,6 +633,16 @@ class Injector:
         if args:
             return args[0]
         return None
+
+
+class _UnscopedProvider:
+    """Provider that calls a factory once without going through `inject()`."""
+
+    def __init__(self, factory: Callable[[], Any]):
+        self._factory = factory
+
+    def get(self) -> Any:
+        return self._factory()
 
 
 def get_injector(config: Union[Type[Config], Config]) -> Injector:

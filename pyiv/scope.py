@@ -194,7 +194,7 @@ class SingletonScope:
 
     def __init__(self):
         """Initialize the singleton scope."""
-        self._instances: Dict[Key, Any] = {}
+        self._instances: Dict[Any, Any] = {}
 
     def scope(self, key: Key, provider: Provider[Any]) -> Provider[Any]:
         """Scope provider to per-injector singleton.
@@ -241,7 +241,7 @@ class GlobalSingletonScope:
     """
 
     _lock = threading.Lock()
-    _instances: Dict[Key, Any] = {}
+    _instances: Dict[Any, Any] = {}
 
     def scope(self, key: Key, provider: Provider[Any]) -> Provider[Any]:
         """Scope provider to global singleton.
@@ -260,10 +260,18 @@ class GlobalSingletonScope:
                 self._provider = provider
 
             def get(self) -> Any:
+                # Look up under the lock, but construct outside it. Holding the
+                # lock during provider.get() deadlocks when a global singleton
+                # depends on another global singleton (same class-level lock).
                 with GlobalSingletonScope._lock:
-                    if self._key not in GlobalSingletonScope._instances:
-                        GlobalSingletonScope._instances[self._key] = self._provider.get()
-                    return GlobalSingletonScope._instances[self._key]
+                    if self._key in GlobalSingletonScope._instances:
+                        return GlobalSingletonScope._instances[self._key]
+                instance = self._provider.get()
+                with GlobalSingletonScope._lock:
+                    if self._key in GlobalSingletonScope._instances:
+                        return GlobalSingletonScope._instances[self._key]
+                    GlobalSingletonScope._instances[self._key] = instance
+                    return instance
 
         return ScopedProvider(key, provider)
 
