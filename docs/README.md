@@ -24,5 +24,8 @@ Open `docs/_build/html/index.html`.
 
 ## Publishing
 
-GitHub Actions builds and deploys to GitHub Pages on pushes to `main` that touch `pyiv/` or `docs/`.
-The custom domain https://rl337.org/pyiv/ sits in front of that deploy.
+GitHub Actions builds Sphinx on docs changes.
+
+- **main** deploys production: https://rl337.org/pyiv/
+- **pull requests** deploy a preview at `https://rl337.org/pyiv/branch/<branch>/` and comment the URL on the PR. Closing the PR removes that folder.
+- Production is never replaced by a PR; previews live only under `/branch/`.

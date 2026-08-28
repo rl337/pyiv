@@ -271,5 +271,5 @@ When implementing new features, follow these principles:
 - `README.md`: GitHub landing page (not the API manual)
 - `.github/workflows/version-bump.yml`: Automatic version bumping workflow
 - `.github/workflows/ci.yml`: CI/CD pipeline
-- `.github/workflows/docs.yml`: Sphinx build and GitHub Pages deploy
+- `.github/workflows/docs.yml`: Sphinx build; production Pages from `main`, PR previews under `/branch/<name>/`
 

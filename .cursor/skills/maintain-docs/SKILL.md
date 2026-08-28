@@ -22,6 +22,8 @@ Do not claim `pip install pyiv` or link PyPI until the package is published. Ins
 3. Keep homepage **Key Features** as: type injection, scopes, keys/binder, reflection, test doubles, zero deps. Do not promote Factory as a headline feature.
 4. Run `pytest --doctest-modules pyiv` and `sphinx-build -b html docs docs/_build/html`.
 
+Production docs are https://rl337.org/pyiv/ (main only). PR previews publish to `https://rl337.org/pyiv/branch/<branch>/`.
+
 ## Sidebar UX
 
 RTD only shows nested toctrees from **the current page**. Put grouped `.. toctree::` directives on `docs/index.rst` so Core DI / Bindings / Discovery / Test doubles / Integrations are populated on first visit. Keep `collapse_navigation: False` and `titles_only: True` in `docs/conf.py` so the homepage sidebar lists module pages without dumping every method.

@@ -15,3 +15,5 @@ Install instructions: `pip install git+https://github.com/rl337/pyiv.git` until 
 API navigation lives on `docs/index.rst` as grouped `toctree` directives (Core DI, Bindings, Discovery, Test doubles, Integrations) pointing at `docs/pyiv/pyiv.*.rst`. Do not rely on `modules.rst` alone—RTD leaves that sidebar empty until the page is opened. Keep `collapse_navigation: False` and `titles_only: True` in `conf.py`. Omit `binder_impl` from the sidebar.
 
 New public modules need a `docs/pyiv/pyiv.<name>.rst` automodule page **and** a toctree entry on `index.rst`.
+
+Production site is https://rl337.org/pyiv/ from `main`. PR previews go to `/branch/<branch>/`; they must not deploy over the site root.
