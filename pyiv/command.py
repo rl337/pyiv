@@ -314,7 +314,7 @@ class CommandRunner:
 
         Args:
             package_path: Python package path (e.g., "agenticness.commands")
-            pattern: Optional name pattern for filtering (e.g., "*Command")
+            pattern: Optional name pattern for filtering (e.g. ``*Command``)
             recursive: Whether to scan submodules recursively
 
         Returns:

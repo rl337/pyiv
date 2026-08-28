@@ -44,7 +44,8 @@ class Factory(Protocol, Generic[T]):
     dependencies that need to be injected. This protocol defines the
     interface that factories should implement.
 
-    Example:
+    Example::
+
         class DatabaseFactory(Factory[Database]):
             def create(self, connection_string: str) -> Database:
                 return PostgreSQL(connection_string)
@@ -69,7 +70,8 @@ class BaseFactory(ABC, Generic[T]):
     Provides a concrete base class for factories that need to be
     instantiated. Subclasses should implement the `create()` method.
 
-    Example:
+    Example::
+
         class UserFactory(BaseFactory[User]):
             def __init__(self, db: Database):
                 self._db = db
@@ -99,16 +101,15 @@ class SimpleFactory(Generic[T]):
     without needing to define a full class.
 
     Example:
-        # Factory from a function
-        def create_user(name: str) -> User:
-            return User(name=name)
-
-        factory = SimpleFactory(create_user)
-        user = factory.create("Alice")
-
-        # Factory from a class constructor
-        factory = SimpleFactory(PostgreSQL)
-        db = factory.create(connection_string="postgresql://...")
+        >>> class User:
+        ...     def __init__(self, name: str):
+        ...         self.name = name
+        >>> def create_user(name: str) -> User:
+        ...     return User(name=name)
+        >>> from pyiv.factory import SimpleFactory
+        >>> factory = SimpleFactory(create_user)
+        >>> factory.create("Alice").name
+        'Alice'
     """
 
     def __init__(self, callable_factory: Callable[..., T]):

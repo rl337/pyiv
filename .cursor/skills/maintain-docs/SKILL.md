@@ -35,4 +35,4 @@ Canonical URLs (also `[project.urls]`): Homepage/Repository `https://github.com/
 
 ## Sidebar UX
 
-RTD only expands nested toctrees from the current page. Grouped `.. toctree::` directives live on `docs/index.rst`. Keep `collapse_navigation: False` and `titles_only: True` in `docs/conf.py`.
+RTD only expands nested toctrees from the current page. Grouped `.. toctree::` directives live on `docs/index.rst` (User guide in `docs/guide/`, then API groups). Keep `collapse_navigation: False` and `titles_only: True` in `docs/conf.py`.

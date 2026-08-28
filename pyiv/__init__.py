@@ -1,45 +1,19 @@
-"""pyiv - A lightweight dependency injection library for Python.
+"""Guice-style dependency injection for Python.
 
-PyIV (Python Injection and Validation) is a lightweight, type-aware dependency
-injection library designed for Python applications. It provides a simple yet
-powerful way to manage dependencies, improve testability, and reduce coupling.
+pyiv provides type-based constructor injection, scopes, qualified keys, and
+built-in test doubles. Runtime has zero third-party dependencies. Python 3.8+.
 
 Key Features:
-    - Type-based dependency resolution using annotations
-    - Provider interface for lazy initialization and injector access
-    - Scope management for extensible lifecycle control
-    - Qualified bindings with type-safe keys
-    - Fluent configuration API with Binder
-    - Field/method injection with MembersInjector
-    - Optional dependencies with Optional[T] support
-    - Multibindings for multiple implementations
-    - Singleton lifecycle management (per-injector or global)
-    - Factory pattern support for complex object creation
-    - Built-in abstractions for common dependencies (Clock, Filesystem, etc.)
-    - Zero external dependencies (pure Python)
 
-Architecture:
-    The library is organized into modules:
-    - config: Configuration base class for registering dependencies
-    - injector: Core dependency injection engine
-    - provider: Provider interface for lazy initialization
-    - scope: Scope interface for lifecycle management
-    - key: Key/Qualifier for type-safe qualified bindings
-    - binder: Binder interface for fluent configuration
-    - members: MembersInjector for field/method injection
-    - optional: Optional dependency support
-    - multibinder: Multibinder for multiple implementations
-    - chain: Chain of responsibility pattern for extensible handlers
-    - serde: Serialization/deserialization implementations
-    - network: Network client abstractions (HTTP, HTTPS, etc.)
-    - singleton: Singleton lifecycle management
-    - factory: Factory pattern support
-    - clock: Time abstraction for testing
-    - filesystem: File I/O abstraction for testing
-    - console: Console output abstraction for testing
-    - datetime_service: DateTime abstraction for testing
+- Type-based constructor injection from annotations
+- Scopes (per-injector and process-wide singletons, plus custom Scope)
+- Qualified keys and a fluent Binder API
+- Reflection to discover implementations in a package
+- Test doubles for Clock, Filesystem, Console, and DateTimeService
+- Zero runtime dependencies
 
 Quick Start:
+
     >>> from pyiv import Config, get_injector
     >>> class Database:
     ...     pass
@@ -51,8 +25,6 @@ Quick Start:
     >>> injector = get_injector(MyConfig)
     >>> isinstance(injector.inject(Database), PostgreSQL)
     True
-
-For more information, see the individual module documentation.
 """
 
 from pyiv.binder import Binder, BindingBuilder

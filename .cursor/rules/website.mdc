@@ -12,7 +12,7 @@ README is the GitHub **and** PyPI long description: what pyiv is, honest install
 
 Install must match README and release notes. Until PyPI exists: `pip install git+https://github.com/rl337/pyiv.git`. No `pip install pyiv`, no PyPI project link, no Poetry.
 
-API nav: grouped `toctree`s on `docs/index.rst` (Core DI, Bindings, Discovery, Test doubles, Integrations). Keep `collapse_navigation: False` and `titles_only: True`. Omit `binder_impl`. New public modules need `docs/pyiv/pyiv.<name>.rst` and a toctree entry.
+API nav: grouped `toctree`s on `docs/index.rst` (User guide, Core DI, Bindings, Discovery, Test doubles, Integrations). User guide pages live in `docs/guide/` with human titles. Keep `collapse_navigation: False` and `titles_only: True`. Omit `binder_impl`. New public modules need `docs/pyiv/pyiv.<name>.rst` and a toctree entry.
 
 Production is https://rl337.org/pyiv/ from `main`. PR previews are `/branch/<branch>/` only.
 

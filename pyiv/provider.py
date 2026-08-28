@@ -7,12 +7,14 @@ lazy initialization, injector access, and deferred creation.
 **What Problem Does This Solve?**
 
 Providers solve several common DI scenarios:
+
 - **Lazy Initialization**: Create instances only when needed, not at injection time
 - **Multiple Instances**: Get multiple instances of the same type (unlike singletons)
 - **Injector Access**: Access the injector during instance creation for complex logic
 - **Deferred Creation**: Delay expensive object creation until actually needed
 
 **Real-World Use Cases:**
+
 - Database connections that should be created on-demand, not at startup
 - Services that need to create multiple instances (e.g., user sessions)
 - Objects that require the injector to resolve their own dependencies dynamically

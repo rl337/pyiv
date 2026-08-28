@@ -7,12 +7,15 @@ A Guice-style dependency injection library for Python. Register bindings,
 inject by type, and swap production implementations for test doubles without
 mocking the world.
 
-.. raw:: html
+.. container:: hero-meta
 
-   <p style="margin: 12px 0 20px 0;">
-   <span style="display: inline-block; padding: 4px 8px; background: #0066cc; color: white; border-radius: 4px; font-size: 0.85em; font-weight: 500; margin-right: 10px;">v|release|</span>
+   .. container:: version-badge
+
+      |release|
+
    Zero runtime dependencies. Python 3.8+.
-   </p>
+
+.. raw:: html
 
    <div style="margin: 20px 0; padding: 15px; background: #e8f4f8; border-left: 4px solid #0066cc; border-radius: 4px;">
    <strong>Quick Links:</strong>
@@ -91,35 +94,20 @@ Quick Start
    db = injector.inject(Database)       # PostgreSQL
    logger = injector.inject(Logger)     # shared per injector
 
-Fluent Binder and qualified keys are documented on :doc:`pyiv/pyiv.binder`
-and :doc:`pyiv/pyiv.key`.
+User Guide
+----------
 
-Testing with Abstractions
--------------------------
+Binder vs ``register``, scopes, qualified keys, and swapping Clock /
+Filesystem / Console / DateTimeService in tests:
 
-Swap production types for in-memory doubles in a test config:
+.. toctree::
+   :maxdepth: 1
+   :caption: User guide
 
-.. code-block:: python
-
-   from pyiv import Config, get_injector
-   from pyiv.clock import Clock, RealClock, SyntheticClock
-   from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
-
-   class ProdConfig(Config):
-       def configure(self):
-           self.register(Clock, RealClock)
-           self.register(Filesystem, RealFilesystem)
-
-   class TestConfig(Config):
-       def configure(self):
-           self.register(Clock, lambda: SyntheticClock(start_time=100.0), singleton=True)
-           self.register(Filesystem, MemoryFilesystem)
-
-   injector = get_injector(TestConfig)
-   clock = injector.inject(Clock)
-   clock.advance(5.0)
-   fs = injector.inject(Filesystem)
-   fs.write_text("test.txt", "content")
+   Binding <guide/binding>
+   Scopes <guide/scopes>
+   Keys and collections <guide/keys>
+   Testing with doubles <guide/testing>
 
 API Reference
 -------------

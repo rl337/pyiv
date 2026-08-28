@@ -7,13 +7,14 @@ to be distinguished using qualifiers (like @Named in Guice).
 **What Problem Does This Solve?**
 
 Keys solve the "multiple implementations" problem:
-- **Type Safety**: Distinguish between multiple implementations of the same type
-  without using string-based names (which are error-prone)
+
+- **Type Safety**: Distinguish implementations of one type without string names
 - **IDE Support**: Better autocomplete and type checking than string qualifiers
 - **Compile-Time Safety**: Catch binding errors at configuration time, not runtime
 - **Clear Intent**: Makes it explicit which implementation is being used
 
 **Real-World Use Cases:**
+
 - **Multiple Database Connections**: Primary vs replica databases
 - **Different Logger Implementations**: File logger vs console logger vs remote logger
 - **Environment-Specific Configs**: Development vs production vs test configurations

@@ -10,10 +10,11 @@ Architecture:
 
 The injector uses type annotations and Config registrations to automatically
 resolve dependencies. It supports:
-    - Constructor injection via type annotations
-    - Singleton lifecycle management
-    - Factory functions for complex object creation
-    - Circular dependency detection
+
+- Constructor injection via type annotations
+- Singleton lifecycle management
+- Factory functions for complex object creation
+- Circular dependency detection
 
 Usage:
     Create a Config subclass, register dependencies, then create an injector:
@@ -684,18 +685,16 @@ def get_injector(config: Union[Type[Config], Config]) -> Injector:
         An Injector instance configured with the given config
 
     Example:
-        # Using a Config class
-        class MyConfig(Config):
-            def configure(self):
-                self.register(Database, PostgreSQL)
-
-        injector = get_injector(MyConfig)
-        db = injector.inject(Database)
-
-        # Using a Config instance (useful for test configs with parameters)
-        test_config = MyTestConfig(mock_db=my_mock)
-        injector = get_injector(test_config)
-        db = injector.inject(Database)
+        >>> from pyiv import Config, get_injector
+        >>> class Database:
+        ...     pass
+        >>> class PostgreSQL(Database):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Database, PostgreSQL)
+        >>> isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)
+        True
     """
     if isinstance(config, Config):
         # Already an instance, use it directly

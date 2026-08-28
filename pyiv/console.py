@@ -8,6 +8,7 @@ to stdout.
 **What Problem Does This Solve?**
 
 Console output solves the "print() testing" problem:
+
 - **Testability**: Capture print() output in tests without mocking sys.stdout
 - **Flexibility**: Redirect console output to files, memory, or custom handlers
 - **Dependency Injection**: Make console output injectable like other dependencies
@@ -15,6 +16,7 @@ Console output solves the "print() testing" problem:
 - **Test Isolation**: Each test can have its own console instance
 
 **Real-World Use Cases:**
+
 - **CLI Applications**: Capture command output for testing
 - **Interactive Programs**: Test user prompts and responses
 - **Progress Indicators**: Test progress bars and status messages

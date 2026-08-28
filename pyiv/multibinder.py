@@ -8,6 +8,7 @@ with multiple strategies.
 **What Problem Does This Solve?**
 
 Multibinders solve the "multiple implementations" problem:
+
 - **Plugin Systems**: Register and inject multiple plugins of the same type
 - **Event Handlers**: Multiple event handlers that all need to be notified
 - **Chain of Responsibility**: Multiple handlers that process requests in sequence
@@ -15,6 +16,7 @@ Multibinders solve the "multiple implementations" problem:
 - **Validation Chains**: Multiple validators that all need to run
 
 **Real-World Use Cases:**
+
 - **Event System**: Multiple event listeners for the same event type
 - **Validation Pipeline**: Multiple validators that all need to run
 - **Middleware Stack**: Multiple middleware components in a web framework

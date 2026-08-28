@@ -33,8 +33,8 @@ injector = get_injector(MyConfig)
 db = injector.inject(Database)  # PostgreSQL
 ```
 
-The website covers Binder, Keys, scopes, reflection, multibindings, and the
-Clock / Filesystem / Console / DateTimeService test doubles.
+The [user guide](https://rl337.org/pyiv/) covers Binder, Keys, scopes,
+and the Clock / Filesystem / Console / DateTimeService test doubles.
 
 ## Development
 

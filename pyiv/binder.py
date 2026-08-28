@@ -8,13 +8,15 @@ configuration.
 **What Problem Does This Solve?**
 
 Binders solve the configuration API design problem:
+
 - **Fluent API**: Method chaining for readable, expressive configuration
 - **Separation of Concerns**: Configuration API separated from implementation
 - **Testability**: Mock binders for testing configuration logic
 - **Programmatic Configuration**: Build configurations dynamically
-- **Better Readability**: `binder.bind(X).to(Y).in_scope(Z)` is clearer than nested calls
+- **Better Readability**: ``binder.bind(X).to(Y).in_scope(Z)`` is clearer than nested calls
 
 **Real-World Use Cases:**
+
 - **Dynamic Configuration**: Build configurations based on environment variables
 - **Configuration Testing**: Mock binders to test configuration logic
 - **Modular Configuration**: Compose configurations from multiple sources
@@ -154,7 +156,8 @@ class Binder(Protocol):
     They separate the configuration API from the implementation, making
     Config more testable and enabling programmatic configuration.
 
-    Example:
+    Example::
+
         class MyBinder(Binder):
             def bind(self, abstract):
                 return BindingBuilder(...)

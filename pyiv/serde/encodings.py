@@ -2,12 +2,13 @@
 
 This module provides SerDe implementations for encoding formats available
 in Python's standard library:
-    - JSON: Standard JSON encoding
-    - Base64: Base64 encoding
-    - YAML: YAML encoding (if available)
-    - XML: XML encoding
-    - Pickle: Python pickle encoding (default/no-op fallback)
-    - NoOp: No-op encoding (pass-through)
+
+- JSON: Standard JSON encoding
+- Base64: Base64 encoding
+- YAML: YAML encoding (if available)
+- XML: XML encoding
+- Pickle: Python pickle encoding (default/no-op fallback)
+- NoOp: No-op encoding (pass-through)
 """
 
 import base64
