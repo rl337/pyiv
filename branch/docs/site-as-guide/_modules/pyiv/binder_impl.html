@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyiv.binder_impl &mdash; pyiv 0.2.23 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=75b4fac4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=171860b8"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #0066cc" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyiv
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.html">pyiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.config.html">pyiv.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.injector.html">pyiv.injector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.binder.html">pyiv.binder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.key.html">pyiv.key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Discovery</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.chain.html">pyiv.chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.command.html">pyiv.command</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.network.html">pyiv.network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module listing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #0066cc" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyiv</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyiv.binder_impl</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyiv.binder_impl</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Concrete Binder implementation for Config.</span>
+
+<span class="sd">This module provides the ConfigBinder implementation that works with Config</span>
+<span class="sd">to provide a fluent configuration API.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.binder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Binder</span><span class="p">,</span> <span class="n">BindingBuilder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectorProvider</span><span class="p">,</span> <span class="n">InstanceProvider</span><span class="p">,</span> <span class="n">Provider</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoScope</span><span class="p">,</span> <span class="n">Scope</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ConfigBindingBuilder">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigBindingBuilder</span><span class="p">(</span><span class="n">BindingBuilder</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Binding builder implementation for Config."""</span>
+
+<div class="viewcode-block" id="ConfigBindingBuilder.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">abstract</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">"""Initialize binding builder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: The config to register bindings with</span>
+<span class="sd">            abstract: The abstract type being bound</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abstract</span> <span class="o">=</span> <span class="n">abstract</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_implementation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Provider</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Scope</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ConfigBindingBuilder.to">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.to">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">implementation</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Bind to a concrete implementation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            implementation: The concrete class to bind to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_implementation</span> <span class="o">=</span> <span class="n">implementation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finalize</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ConfigBindingBuilder.to_instance">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.to_instance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Bind to a pre-created instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            instance: The instance to bind to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finalize</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ConfigBindingBuilder.to_provider">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.to_provider">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="n">Provider</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Bind to a provider.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            provider: The provider to use for instance creation</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_provider</span> <span class="o">=</span> <span class="n">provider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finalize</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ConfigBindingBuilder.in_scope">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.in_scope">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">in_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the scope for this binding.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scope: The scope to use</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span> <span class="o">=</span> <span class="n">scope</span>
+        <span class="c1"># Update scope if already finalized</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_finalized"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_finalized"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_scopes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_abstract</span><span class="p">]</span> <span class="o">=</span> <span class="n">scope</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Finalize the binding registration."""</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_finalized"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_finalized"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_abstract</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_scopes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_abstract</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_abstract</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_provider</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_scopes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_abstract</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_implementation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_abstract</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_implementation</span><span class="p">,</span>
+                <span class="n">scope</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_scope</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">NoScope</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Don't raise error - allow chaining</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finalized</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="ConfigBinder">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigBinder</span><span class="p">(</span><span class="n">Binder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Concrete Binder implementation for Config."""</span>
+
+<div class="viewcode-block" id="ConfigBinder.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initialize binder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: The config to register bindings with</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_builders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfigBindingBuilder</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="ConfigBinder.bind">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.bind">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstract</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BindingBuilder</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Start a binding configuration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            abstract: The abstract type to bind</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A binding builder for fluent configuration</span>
+<span class="sd">        """</span>
+        <span class="n">builder</span> <span class="o">=</span> <span class="n">ConfigBindingBuilder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">abstract</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_builders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">builder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">builder</span></div>
+
+
+<div class="viewcode-block" id="ConfigBinder.bind_key">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.bind_key">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Key</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BindingBuilder</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Start a binding configuration with a qualified key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: The qualified key to bind</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A binding builder for fluent configuration</span>
+<span class="sd">        """</span>
+        <span class="c1"># For qualified keys, we need a special builder</span>
+        <span class="n">builder</span><span class="p">:</span> <span class="n">ConfigBindingBuilder</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConfigBindingBuilder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">key</span>  <span class="c1"># type: ignore[attr-defined]  # Store the key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_builders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">builder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">builder</span></div>
+
+
+<div class="viewcode-block" id="ConfigBinder.bind_instance">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.bind_instance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstract</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">instance</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Bind to a pre-created instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            abstract: The abstract type</span>
+<span class="sd">            instance: The pre-created instance</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="n">abstract</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigBinder.install">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.install">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Install another configuration module.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: Another Config instance to install</span>
+<span class="sd">        """</span>
+        <span class="c1"># This would require merging configs, which is complex</span>
+        <span class="c1"># For now, we'll raise NotImplementedError</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Config installation not yet implemented"</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigBinder.finalize">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.finalize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Finalize all pending bindings."""</span>
+        <span class="k">for</span> <span class="n">builder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_builders</span><span class="p">:</span>
+            <span class="n">builder</span><span class="o">.</span><span class="n">_finalize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_builders</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
