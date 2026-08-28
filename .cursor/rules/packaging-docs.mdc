@@ -1,0 +1,18 @@
+---
+description: PyPI metadata, install claims, and GitHub release copy must match README and the docs site.
+globs: pyproject.toml,RELEASE.md,CHANGELOG.md,LICENSE,.github/workflows/release.yml,.github/workflows/version-bump.yml
+alwaysApply: false
+---
+
+# Packaging copy
+
+`[project]` in `pyproject.toml` is the PyPI sidebar. Keep it real:
+
+- Author and URLs must not be `Your Name` / `yourusername`.
+- `Documentation` = `https://rl337.org/pyiv/`
+- Homepage / Repository / Issues = `https://github.com/rl337/pyiv` (and `/issues`)
+- Description should match the README one-liner (Guice-style DI, not factory-first)
+
+Install commands in `RELEASE.md`, release workflow text, and GitHub Release bodies must match README. Until pyiv is on PyPI, that is the git URL, not `pip install pyiv` or `pip install pyiv==<version>`.
+
+Do not add a Changelog URL until `CHANGELOG.md` (or an equivalent site page) exists; then set it in `project.urls` and link it from the docs homepage.

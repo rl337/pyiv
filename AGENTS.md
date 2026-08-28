@@ -11,17 +11,19 @@ third-party dependencies.
 
 ## Documentation
 
-**README.md** is the GitHub landing page: what pyiv is, how to install, a short
-quick start, and a link to the site. Keep it short. Do not duplicate the API
-manual. Do not claim `pip install pyiv` until the package is on PyPI.
+Three surfaces must stay in sync (see `.cursor/skills/maintain-docs/SKILL.md`):
 
-**docs/** (Sphinx, https://rl337.org/pyiv/) is the product manual: features,
-install, quick start, and API pages generated from `pyiv` docstrings. Homepage
-Key Features should match the product (injection, scopes, keys/binder,
+- **README.md + `pyproject.toml`**: GitHub and PyPI listing (short; honest install; real author/URLs)
+- **docs/** (https://rl337.org/pyiv/): product manual; API from `pyiv` docstrings
+- **Changelog / GitHub Releases**: why the version shipped; same install command as README
+
+Do not claim `pip install pyiv` until the package is on PyPI. First public version is 0.3.0.
+
+Homepage Key Features should match the product (injection, scopes, keys/binder,
 reflection, test doubles, zero deps)—not factory-first copy.
 
 When you change a public module, update its docstring (doctest-backed) so the
-website stays accurate. See `.cursor/skills/maintain-docs/SKILL.md`.
+website stays accurate.
 
 ## Versioning
 
