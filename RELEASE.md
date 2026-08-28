@@ -44,9 +44,10 @@ Each release includes:
 - **Source Distribution** (`.tar.gz`): Contains the source code
 - **Wheel Distribution** (`.whl`): Pre-built binary distribution
 
-Both are automatically attached to the GitHub Release and can be installed via:
+Both are attached to the GitHub Release. pyiv is not on PyPI yet; install a tagged revision from git:
+
 ```bash
-pip install pyiv==<version>
+pip install git+https://github.com/rl337/pyiv.git@v<version>
 ```
 
 ## Release Artifacts

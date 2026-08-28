@@ -207,8 +207,9 @@ jobs:
             ${{ github.event.workflow_run.head_commit.message || 'Automated release' }}
             
             ### Installation
+            pyiv is not on PyPI yet. Install this tag from git:
             ```bash
-            pip install pyiv==${{ steps.new_version.outputs.new_version }}
+            pip install git+https://github.com/rl337/pyiv.git@v${{ steps.new_version.outputs.new_version }}
             ```
             
             ### Distribution Files
