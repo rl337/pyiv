@@ -30,7 +30,7 @@ Architecture:
 Usage Examples:
 
     Basic Console Usage:
-        >>> from pyiv.console import RealConsole, MemoryConsole
+        >>> from pyiv.console import Console, MemoryConsole
         >>> from pyiv import Config, get_injector
         >>>
         >>> class Service:
@@ -42,11 +42,13 @@ Usage Examples:
         >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
-        ...         self.register(Console, RealConsole)
+        ...         self.register(Console, MemoryConsole)
         >>>
         >>> injector = get_injector(MyConfig)
         >>> service = injector.inject(Service)
-        >>> service.greet("Alice")  # Prints to stdout
+        >>> service.greet("Alice")
+        >>> "Hello, Alice!" in service.console.getvalue()
+        True
 
     Testing with MemoryConsole:
         >>> from pyiv.console import MemoryConsole
@@ -62,17 +64,20 @@ Usage Examples:
         >>> assert "Test output" in output
 
     Testing with FileConsole:
-        >>> from pyiv.console import FileConsole
+        >>> import os
+        >>> import tempfile
         >>> from pathlib import Path
+        >>> from pyiv.console import FileConsole
         >>>
-        >>> output_file = Path("/tmp/test_output.txt")
-        >>> console = FileConsole(output_file)
+        >>> fd, path = tempfile.mkstemp(suffix=".txt")
+        >>> os.close(fd)
+        >>> os.unlink(path)
+        >>> console = FileConsole(path)
         >>> print("Test message", file=console)
         >>> console.flush()
-        >>>
-        >>> # Read back the output
-        >>> content = output_file.read_text()
-        >>> assert "Test message" in content
+        >>> "Test message" in Path(path).read_text()
+        True
+        >>> os.unlink(path)
 """
 
 import os
@@ -190,18 +195,13 @@ class Console(Protocol):
     should provide no-op implementations that return safe defaults.
 
     Example:
-        >>> from pyiv.console import RealConsole
+        >>> from pyiv.console import MemoryConsole
         >>>
-        >>> console = RealConsole()
+        >>> console = MemoryConsole()
         >>> print("Hello, World!", file=console)
         >>> console.flush()
-        >>>
-        >>> # Terminal features available when TTY is present
-        >>> if console.is_tty():
-        ...     console.clear()
-        ...     console.set_color(fg=31)  # Red
-        ...     console.write("Error message")
-        ...     console.reset_color()
+        >>> "Hello, World!" in console.getvalue()
+        True
     """
 
     # Basic file-like interface
@@ -698,24 +698,14 @@ class RealConsole(BaseConsole):
     and password prompts.
 
     Example:
+        >>> from io import StringIO
         >>> from pyiv.console import RealConsole
-        >>> from pyiv import Config, get_injector
         >>>
-        >>> class MyConfig(Config):
-        ...     def configure(self):
-        ...         self.register(Console, RealConsole)
-        >>>
-        >>> injector = get_injector(MyConfig)
-        >>> console = injector.inject(Console)
-        >>> print("Hello, World!", file=console)  # Prints to stdout
-        >>>
-        >>> # TTY features
-        >>> if console.is_tty():
-        ...     console.clear()
-        ...     console.move_cursor(10, 5)
-        ...     console.set_color(fg=31)  # Red
-        ...     console.write("Hello")
-        ...     console.reset_color()
+        >>> buf = StringIO()
+        >>> console = RealConsole(stream=buf)
+        >>> print("Hello, World!", file=console)
+        >>> "Hello, World!" in buf.getvalue()
+        True
     """
 
     def __init__(self, stream: Optional[TextIO] = None, stdin: Optional[TextIO] = None):
@@ -1150,9 +1140,12 @@ class MemoryConsole(BaseConsole):
         >>>
         >>> # Clear and reuse
         >>> console.seek(0)
+        0
         >>> console.truncate(0)
+        0
         >>> print("New output", file=console)
-        >>> assert console.getvalue() == "New output\n"
+        >>> console.getvalue()
+        'New output\\n'
     """
 
     def __init__(self):
@@ -1229,17 +1222,20 @@ class FileConsole(BaseConsole):
     where you want to verify output was written to a specific file.
 
     Example:
-        >>> from pyiv.console import FileConsole
+        >>> import os
+        >>> import tempfile
         >>> from pathlib import Path
+        >>> from pyiv.console import FileConsole
         >>>
-        >>> output_file = Path("/tmp/test_output.txt")
-        >>> console = FileConsole(output_file)
+        >>> fd, path = tempfile.mkstemp(suffix=".txt")
+        >>> os.close(fd)
+        >>> os.unlink(path)
+        >>> console = FileConsole(path)
         >>> print("Test message", file=console)
         >>> console.flush()
-        >>>
-        >>> # Verify output was written
-        >>> content = output_file.read_text()
-        >>> assert "Test message" in content
+        >>> "Test message" in Path(path).read_text()
+        True
+        >>> os.unlink(path)
     """
 
     def __init__(self, file: Union[str, Path], mode: str = "w", encoding: str = "utf-8"):
@@ -1315,10 +1311,12 @@ class PTYConsole(BaseConsole):
     Example:
         >>> from pyiv.console import PTYConsole
         >>>
-        >>> with PTYConsole() as console:
-        ...     assert console.is_tty() == True  # Always True
-        ...     console.clear()
-        ...     console.write("Test")
+        >>> try:
+        ...     with PTYConsole() as console:
+        ...         assert console.is_tty() is True
+        ...         _ = console.write("Test")
+        ... except (OSError, RuntimeError):
+        ...     pass  # pty may be unavailable in sandbox/CI environments
     """
 
     def __init__(self):
@@ -1633,15 +1631,14 @@ class MockConsole(BaseConsole):
         >>> console.move_cursor(10, 5)
         >>> console.set_color(fg=31)  # Red
         >>> console.write("Hello")
+        5
         >>>
-        >>> # Inspect state
-        >>> assert console.get_cursor() == (15, 5)
-        >>> screen = console.get_screen()
-        >>> assert screen[4][10:15] == "Hello"
-        >>>
-        >>> # Inspect events
-        >>> events = console.get_events()
-        >>> assert len(events) == 4
+        >>> console.get_cursor()
+        (15, 5)
+        >>> console.get_screen_line(5)[10:15]
+        'Hello'
+        >>> len(console.get_events())
+        4
     """
 
     def __init__(self, width: int = 80, height: int = 24):

@@ -1,35 +1,31 @@
 # PyIV Documentation
 
-This directory contains the Sphinx documentation source for PyIV.
+Sphinx sources for https://rl337.org/pyiv/.
 
-## Building Documentation Locally
+The site is the product manual. Module pages are generated from `pyiv` docstrings.
+The GitHub [README](../README.md) is a short landing page and should not duplicate the API.
 
-To build the documentation locally:
+## Building locally
 
-1. Install dependencies:
-   ```bash
-   pip install -e ".[dev,docs]"
-   # Or with Poetry:
-   poetry install --extras "dev docs"
-   ```
+```bash
+pip install -e ".[dev,docs]"
+cd docs
+sphinx-build -b html . _build/html
+```
 
-2. Build the HTML documentation:
-   ```bash
-   cd docs
-   sphinx-build -b html . _build/html
-   ```
+Open `docs/_build/html/index.html`.
 
-3. View the documentation:
-   Open `docs/_build/html/index.html` in your browser.
+## Layout
 
-## Documentation Structure
-
-- `conf.py` - Sphinx configuration
-- `index.rst` - Main documentation page
-- `modules.rst` - API documentation for all modules
-- `_static/` - Custom CSS and static files
+- `conf.py` — Sphinx config (RTD theme, autodoc)
+- `index.rst` — homepage, install, quick start, sidebar toctrees
+- `pyiv/` — per-module autodoc pages
+- `_static/` — custom CSS
 
 ## Publishing
 
-Documentation is automatically built and published to GitHub Pages via GitHub Actions when changes are pushed to the `main` branch.
+GitHub Actions builds Sphinx on docs changes.
 
+- **main** deploys production: https://rl337.org/pyiv/
+- **pull requests** deploy a preview at `https://rl337.org/pyiv/branch/<branch>/` and comment the URL on the PR. Closing the PR removes that folder.
+- Production is never replaced by a PR; previews live only under `/branch/`.

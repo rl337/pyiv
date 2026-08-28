@@ -26,20 +26,22 @@ Architecture:
 Usage Examples:
 
     Basic Optional Dependency:
+        >>> from abc import ABC, abstractmethod
         >>> from typing import Optional
         >>> from pyiv import Config, get_injector
         >>>
         >>> class Database:
         ...     pass
         >>>
-        >>> class Cache:
+        >>> class Cache(ABC):
+        ...     @abstractmethod
         ...     def get(self, key: str):
-        ...         return f"cached:{key}"
+        ...         pass
         >>>
         >>> class Service:
         ...     def __init__(self, db: Database, cache: Optional[Cache] = None):
         ...         self.db = db
-        ...         self.cache = cache  # Will be None if Cache not registered
+        ...         self.cache = cache
         ...
         ...     def process(self, key: str):
         ...         if self.cache:
@@ -49,7 +51,6 @@ Usage Examples:
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, Database)
-        ...         # Cache is optional - not registered, so will be None
         >>>
         >>> injector = get_injector(MyConfig)
         >>> service = injector.inject(Service)
@@ -59,10 +60,14 @@ Usage Examples:
         'no-cache:test'
 
     Optional Dependency with Registration:
+        >>> class MemoryCache(Cache):
+        ...     def get(self, key: str):
+        ...         return f"cached:{key}"
+        >>>
         >>> class MyConfigWithCache(Config):
         ...     def configure(self):
         ...         self.register(Database, Database)
-        ...         self.register(Cache, Cache)  # Now cache is available
+        ...         self.register(Cache, MemoryCache)
         >>>
         >>> injector = get_injector(MyConfigWithCache)
         >>> service = injector.inject(Service)
@@ -86,11 +91,24 @@ class OptionalProvider(Generic[T]):
     provider cannot provide an instance, otherwise returns the instance.
 
     Example:
+        >>> from abc import ABC, abstractmethod
+        >>> from pyiv import Config, get_injector
         >>> from pyiv.optional import OptionalProvider
         >>> from pyiv.provider import InjectorProvider
         >>>
-        >>> cache_provider = OptionalProvider(InjectorProvider(Cache, injector))
-        >>> cache = cache_provider.get()  # Returns Cache instance or None
+        >>> class Cache(ABC):
+        ...     @abstractmethod
+        ...     def get(self, key: str):
+        ...         pass
+        >>>
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         pass
+        >>>
+        >>> injector = get_injector(MyConfig)
+        >>> cache_provider = OptionalProvider(InjectorProvider(Cache, injector), injector)
+        >>> cache_provider.get() is None
+        True
     """
 
     def __init__(self, provider: Provider[T], injector: Any):

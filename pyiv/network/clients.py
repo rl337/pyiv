@@ -20,10 +20,12 @@ class HTTPClient(NetworkClient):
 
     Example:
         >>> client = HTTPClient()
-        >>> response = client.request("GET", "http://example.com")
-        >>> print(response["status"])
-        200
-        >>> print(response["body"].decode("utf-8"))
+        >>> client.handler_type
+        'http'
+        >>> client.request("GET", "ftp://example.com")
+        Traceback (most recent call last):
+            ...
+        ValueError: HTTPClient only supports http:// and https:// URLs, got: ftp://example.com
     """
 
     @property
@@ -113,9 +115,12 @@ class HTTPSClient(NetworkClient):
 
     Example:
         >>> client = HTTPSClient()
-        >>> response = client.request("GET", "https://example.com")
-        >>> print(response["status"])
-        200
+        >>> client.handler_type
+        'https'
+        >>> client.request("GET", "http://example.com")
+        Traceback (most recent call last):
+            ...
+        ValueError: HTTPSClient only supports https:// URLs, got: http://example.com
     """
 
     @property

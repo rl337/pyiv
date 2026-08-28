@@ -50,7 +50,10 @@ Usage Examples:
         ...         multibinder.add(SMSHandler)
         >>>
         >>> injector = get_injector(MyConfig)
-        >>> handlers = injector.inject(Set[EventHandler])
+        >>> class HandlerHost:
+        ...     def __init__(self, handlers: Set[EventHandler]):
+        ...         self.handlers = handlers
+        >>> handlers = injector.inject(HandlerHost).handlers
         >>> len(handlers)
         2
         >>> # All handlers are available
@@ -80,10 +83,12 @@ Usage Examples:
         ...         multibinder.add(PhoneValidator)  # Second
         >>>
         >>> injector = get_injector(MyConfig)
-        >>> validators = injector.inject(List[Validator])
+        >>> class ValidatorHost:
+        ...     def __init__(self, validators: List[Validator]):
+        ...         self.validators = validators
+        >>> validators = injector.inject(ValidatorHost).validators
         >>> len(validators)
         2
-        >>> # Order is preserved
         >>> type(validators[0]).__name__
         'EmailValidator'
         >>> type(validators[1]).__name__
@@ -132,12 +137,18 @@ class SetMultibinder(Generic[T]):
     Order is not preserved.
 
     Example:
-        >>> from pyiv.multibinder import SetMultibinder
-        >>>
-        >>> multibinder = SetMultibinder(EventHandler, config)
+        >>> from pyiv import Config
+        >>> class EventHandler:
+        ...     pass
+        >>> class EmailEventHandler(EventHandler):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         pass
+        >>> multibinder = SetMultibinder(EventHandler, MyConfig())
         >>> multibinder.add(EmailEventHandler)
-        >>> multibinder.add(SMSEventHandler)
-        >>> # Inject as Set[EventHandler]
+        >>> EmailEventHandler in multibinder.get_implementations()
+        True
     """
 
     def __init__(self, interface: Type[T], config: Any):
@@ -165,6 +176,7 @@ class SetMultibinder(Generic[T]):
                 f"{implementation.__name__} must be a subclass of {self._interface.__name__}"
             )
         self._implementations.add(implementation)
+        self._config.register_multibinding(self._interface, implementation, as_set=True)
 
     def add_instance(self, instance: T) -> None:
         """Add a pre-created instance.
@@ -178,6 +190,7 @@ class SetMultibinder(Generic[T]):
                 f"got {type(instance).__name__}"
             )
         self._instances.add(instance)
+        self._config.register_multibinding_instance(self._interface, instance, as_set=True)
 
     def get_implementations(self) -> Set[Type[T]]:
         """Get all registered implementation classes.
@@ -203,12 +216,19 @@ class ListMultibinder(Generic[T]):
     Duplicates are allowed.
 
     Example:
-        >>> from pyiv.multibinder import ListMultibinder
+        >>> from pyiv import Config
         >>>
-        >>> multibinder = ListMultibinder(Validator, config)
-        >>> multibinder.add(EmailValidator)  # First
-        >>> multibinder.add(PhoneValidator)  # Second
-        >>> # Inject as List[Validator] - order preserved
+        >>> class Validator:
+        ...     pass
+        >>> class EmailValidator(Validator):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         pass
+        >>> multibinder = ListMultibinder(Validator, MyConfig())
+        >>> multibinder.add(EmailValidator)
+        >>> EmailValidator in multibinder.get_implementations()
+        True
     """
 
     def __init__(self, interface: Type[T], config: Any):
@@ -236,6 +256,7 @@ class ListMultibinder(Generic[T]):
                 f"{implementation.__name__} must be a subclass of {self._interface.__name__}"
             )
         self._implementations.append(implementation)
+        self._config.register_multibinding(self._interface, implementation, as_set=False)
 
     def add_instance(self, instance: T) -> None:
         """Add a pre-created instance.
@@ -249,6 +270,7 @@ class ListMultibinder(Generic[T]):
                 f"got {type(instance).__name__}"
             )
         self._instances.append(instance)
+        self._config.register_multibinding_instance(self._interface, instance, as_set=False)
 
     def get_implementations(self) -> List[Type[T]]:
         """Get all registered implementation classes.

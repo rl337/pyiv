@@ -41,11 +41,16 @@ Architecture:
 
 Quick Start:
     >>> from pyiv import Config, get_injector
+    >>> class Database:
+    ...     pass
+    >>> class PostgreSQL(Database):
+    ...     pass
     >>> class MyConfig(Config):
     ...     def configure(self):
     ...         self.register(Database, PostgreSQL)
     >>> injector = get_injector(MyConfig)
-    >>> db = injector.inject(Database)
+    >>> isinstance(injector.inject(Database), PostgreSQL)
+    True
 
 For more information, see the individual module documentation.
 """

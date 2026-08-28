@@ -62,7 +62,7 @@ run_check "isort import sorting" $ISORT_CMD --check-only pyiv/ tests/
 # 3. Pytest with coverage
 # Create build directory if it doesn't exist
 mkdir -p build
-$PYTEST_CMD --cov=pyiv --cov-report=xml:build/coverage.xml --cov-report=term-missing tests/
+$PYTEST_CMD --cov=pyiv --cov-report=xml:build/coverage.xml --cov-report=term-missing
 PYTEST_EXIT=$?
 if [ $PYTEST_EXIT -eq 0 ]; then
     echo -e "${GREEN}✓ Pytest with coverage passed${NC}"

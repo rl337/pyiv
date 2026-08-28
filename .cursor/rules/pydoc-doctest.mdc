@@ -1,0 +1,17 @@
+---
+description: Runnable doctests in pyiv module and class docstrings; they are the API docs source of truth.
+globs: pyiv/**/*.py
+alwaysApply: false
+---
+
+# Doctests in pyiv
+
+Public module and class docstrings are compiled into the Sphinx site and executed by `pytest --doctest-modules`.
+
+- Examples must be self-contained: define every name the snippet uses.
+- Do not hit the network, sleep for real time, or write files in the repo cwd. Use in-memory doubles (`MemoryFilesystem`, `SyntheticClock`, `MemoryConsole`) or invalid-input `Traceback` examples.
+- Inject `Set[T]` / `List[T]` through a host class constructor, not `injector.inject(Set[T])`.
+- Unregistered **concrete** classes are instantiated; Optional-none examples need an ABC (or a type the injector cannot build).
+- Expected output containing a newline must use `\\n` in the docstring (otherwise doctest sees a real line break).
+- Do not use `# doctest: +SKIP`. If a method is a variant of another API, put one
+  self-contained example on the primary method and point the other at it in prose.

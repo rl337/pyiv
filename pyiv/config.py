@@ -19,14 +19,27 @@ Usage:
     Example:
         >>> from pyiv import Config
         >>> from pyiv.singleton import SingletonType
+        >>> class Database:
+        ...     pass
+        >>> class PostgreSQL(Database):
+        ...     pass
+        >>> class Logger:
+        ...     pass
+        >>> class FileLogger(Logger):
+        ...     pass
+        >>> class Cache:
+        ...     pass
         >>> class MyConfig(Config):
         ...     def configure(self):
-        ...         # Register concrete implementation
         ...         self.register(Database, PostgreSQL)
-        ...         # Register with singleton lifecycle
         ...         self.register(Logger, FileLogger, singleton_type=SingletonType.SINGLETON)
-        ...         # Register pre-created instance
-        ...         self.register_instance(Cache, my_cache_instance)
+        ...         self.register_instance(Cache, Cache())
+        >>> from pyiv import get_injector
+        >>> injector = get_injector(MyConfig)
+        >>> isinstance(injector.inject(Database), PostgreSQL)
+        True
+        >>> injector.inject(Logger) is injector.inject(Logger)
+        True
 """
 
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar, Union
@@ -437,11 +450,14 @@ class Config:
             implementation: The implementation class or provider
             scope: Optional scope for lifecycle management
         """
-        provider: Optional[Provider[Any]] = None
-        # Check if it has a get method (Provider protocol)
+        # Classes may define get(); treat types as implementations, not providers.
+        if isinstance(implementation, type):
+            self._qualified_bindings[key] = (implementation, None, scope)
+            return
         if hasattr(implementation, "get") and callable(getattr(implementation, "get")):
-            provider = implementation  # type: ignore[assignment]
-        self._qualified_bindings[key] = (key.type, provider, scope)
+            self._qualified_bindings[key] = (key.type, implementation, scope)
+            return
+        raise TypeError(f"implementation must be a type or Provider, got {type(implementation)}")
 
     def get_key_binding(
         self, key: Key[Any]
@@ -492,6 +508,28 @@ class Config:
             set_impls.add(implementation)
         else:
             list_impls.append(implementation)
+
+    def register_multibinding_instance(
+        self,
+        interface: Type[T],
+        instance: T,
+        *,
+        as_set: bool = True,
+    ) -> None:
+        """Register a pre-created instance in a multibinding.
+
+        Args:
+            interface: The interface type
+            instance: The instance to add
+            as_set: If True, adds to set, else to list
+        """
+        if interface not in self._multibindings:
+            self._multibindings[interface] = (set(), [], set(), [])
+        set_impls, list_impls, set_instances, list_instances = self._multibindings[interface]
+        if as_set:
+            set_instances.add(instance)
+        else:
+            list_instances.append(instance)
 
     def get_multibinding(
         self, interface: Type[T]

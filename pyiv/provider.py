@@ -70,7 +70,9 @@ Usage Examples:
     Using InstanceProvider for Pre-Created Instances:
         >>> from pyiv.provider import InstanceProvider
         >>>
-        >>> logger = FileLogger()  # Pre-created instance
+        >>> class FileLogger:
+        ...     pass
+        >>> logger = FileLogger()
         >>> logger_provider = InstanceProvider(logger)
         >>> logger_provider.get() is logger
         True
@@ -94,23 +96,26 @@ class Provider(Protocol, Generic[T]):
 
     Example:
         >>> from pyiv.provider import Provider
-        >>> from pyiv import Injector
+        >>> from pyiv import Config, Injector, get_injector
         >>>
-        >>> class DatabaseProvider(Provider[Database]):
+        >>> class Database:
+        ...     pass
+        >>>
+        >>> class DatabaseProvider:
         ...     def __init__(self, injector: Injector):
         ...         self._injector = injector
         ...
         ...     def get(self) -> Database:
         ...         return self._injector.inject(Database)
         >>>
-        >>> # Provider can be injected into other classes
-        >>> class Service:
-        ...     def __init__(self, db_provider: Provider[Database]):
-        ...         self._db_provider = db_provider
-        ...
-        ...     def connect(self):
-        ...         db = self._db_provider.get()  # Lazy initialization
-        ...         return db
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Database, Database)
+        >>>
+        >>> injector = get_injector(MyConfig)
+        >>> provider: Provider[Database] = DatabaseProvider(injector)
+        >>> isinstance(provider.get(), Database)
+        True
     """
 
     def get(self) -> T:
@@ -129,20 +134,20 @@ class BaseProvider(ABC, Generic[T]):
     instantiated. Subclasses should implement the `get()` method.
 
     Example:
-        >>> from pyiv.provider import BaseProvider
+        >>> from pyiv.provider import BaseProvider, InstanceProvider
+        >>>
+        >>> class User:
+        ...     def __init__(self, name: str):
+        ...         self.name = name
         >>>
         >>> class UserProvider(BaseProvider[User]):
-        ...     def __init__(self, db: Database):
-        ...         self._db = db
-        ...
         ...     def get(self) -> User:
-        ...         return User(db=self._db)
+        ...         return User("alice")
         >>>
-        >>> # Use in configuration
-        >>> class MyConfig(Config):
-        ...     def configure(self):
-        ...         self.register(Database, PostgreSQL)
-        ...         self.register_provider(User, UserProvider)
+        >>> UserProvider().get().name
+        'alice'
+        >>> InstanceProvider(User("bob")).get().name
+        'bob'
     """
 
     @abstractmethod
