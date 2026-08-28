@@ -68,11 +68,11 @@ class MockDateTimeService(DateTimeService):
     Example:
         >>> from datetime import datetime, timezone
         >>> service = MockDateTimeService(datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc))
-        >>> service.now_utc()
-        datetime.datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+        >>> service.now_utc().isoformat()
+        '2024-01-15T10:30:00+00:00'
         >>> service.set_time(datetime(2024, 1, 16, 12, 0, 0, tzinfo=timezone.utc))
-        >>> service.now_utc()
-        datetime.datetime(2024, 1, 16, 12, 0, 0, tzinfo=timezone.utc)
+        >>> service.now_utc().isoformat()
+        '2024-01-16T12:00:00+00:00'
     """
 
     def __init__(self, fixed_time: Optional[datetime] = None):

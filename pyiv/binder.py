@@ -56,26 +56,20 @@ Usage Examples:
         >>> isinstance(db, PostgreSQL)
         True
 
-    Binding to Instances and Providers:
-        >>> from pyiv.provider import InstanceProvider
+    Binding to Instances:
         >>> from pyiv import Config, get_injector
         >>>
         >>> class Cache:
         ...     def __init__(self):
         ...         self.data = {}
         >>>
-        >>> class MyConfig(Config):
+        >>> cache = Cache()
+        >>> class InstanceConfig(Config):
         ...     def configure(self):
-        ...         binder = self.get_binder()
-        ...         # Bind to pre-created instance
-        ...         cache = Cache()
-        ...         binder.bind_instance(Cache, cache)
-        ...         # Or use fluent API
-        ...         binder.bind(Cache).to_instance(cache)
+        ...         self.get_binder().bind_instance(Cache, cache)
         >>>
-        >>> injector = get_injector(MyConfig)
-        >>> injected_cache = injector.inject(Cache)
-        >>> injected_cache is cache
+        >>> injector = get_injector(InstanceConfig)
+        >>> injector.inject(Cache) is cache
         True
 """
 
@@ -95,7 +89,17 @@ class BindingBuilder(Protocol, Generic[T]):
     be bound. It supports chaining methods to configure the binding.
 
     Example:
-        >>> binder.bind(Database).to(PostgreSQL).in_scope(SingletonScope())
+        >>> from pyiv import Config, get_injector
+        >>> from pyiv.scope import SingletonScope
+        >>> class Database:
+        ...     pass
+        >>> class PostgreSQL(Database):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.get_binder().bind(Database).to(PostgreSQL).in_scope(SingletonScope())
+        >>> isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)
+        True
     """
 
     def to(self, implementation: Type[T]) -> "BindingBuilder[T]":

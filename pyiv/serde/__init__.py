@@ -25,10 +25,12 @@ Usage:
         ...         # Register default (no-op or pickle)
         ...         self.register_chain_handler(ChainType.ENCODING, "default", PickleSerDe)
         >>> injector = get_injector(MyConfig)
-        >>> # Inject by handler type
         >>> json_serde = injector.inject_chain_handler(ChainType.ENCODING, "json")
-        >>> # Inject by name
+        >>> json_serde.handler_type
+        'json'
         >>> input_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
+        >>> input_serde.handler_type
+        'json'
 """
 
 from pyiv.serde.base import SerDe

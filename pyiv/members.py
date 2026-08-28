@@ -118,15 +118,25 @@ class InjectorMembersInjector(Generic[T]):
     Example:
         >>> from pyiv.members import InjectorMembersInjector
         >>> from dataclasses import dataclass, field
+        >>> from pyiv import Config, get_injector
+        >>>
+        >>> class Database:
+        ...     pass
         >>>
         >>> @dataclass
         ... class Service:
         ...     db: Database = field(default=None)
         >>>
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Database, Database)
+        >>>
         >>> injector = get_injector(MyConfig)
         >>> members_injector = InjectorMembersInjector(Service, injector)
         >>> service = Service()
         >>> members_injector.inject_members(service)
+        >>> isinstance(service.db, Database)
+        True
     """
 
     def __init__(self, cls: Type[T], injector: Any):

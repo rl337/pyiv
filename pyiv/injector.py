@@ -20,11 +20,21 @@ Usage:
 
     Example:
         >>> from pyiv import Config, Injector, get_injector
+        >>> class Database:
+        ...     pass
+        >>> class PostgreSQL(Database):
+        ...     pass
+        >>> class Logger:
+        ...     pass
+        >>> class FileLogger(Logger):
+        ...     pass
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, PostgreSQL)
         ...         self.register(Logger, FileLogger, singleton=True)
         >>> injector = get_injector(MyConfig)
+        >>> isinstance(injector.inject(Database), PostgreSQL)
+        True
         >>> db = injector.inject(Database)
         >>> logger = injector.inject(Logger)
 """
@@ -433,9 +443,21 @@ class Injector:
             ValueError: If no chain handler is registered for the handler type
 
         Example:
+            >>> from pyiv import Config, get_injector, ChainType
+            >>> from pyiv.serde import JSONSerDe
+            >>> class MyConfig(Config):
+            ...     def configure(self):
+            ...         self.register_chain_handler(ChainType.ENCODING, "json", JSONSerDe)
+            ...         self.register_chain_handler_by_name(
+            ...             ChainType.ENCODING, "json-input", JSONSerDe, handler_type="json"
+            ...         )
             >>> injector = get_injector(MyConfig)
-            >>> json_serde = injector.inject_chain_handler(ChainType.ENCODING, "json")
-            >>> data = json_serde.serialize({"key": "value"})
+            >>> injector.inject_chain_handler(ChainType.ENCODING, "json").handler_type
+            'json'
+            >>> injector.inject_chain_handler_by_name(
+            ...     ChainType.ENCODING, "json-input"
+            ... ).handler_type
+            'json'
         """
         # Check for pre-registered instance
         instance = self._config.get_chain_handler_instance(chain_type, handler_type)
@@ -502,9 +524,8 @@ class Injector:
             ValueError: If no chain handler is registered with the given name
 
         Example:
-            >>> injector = get_injector(MyConfig)
-            >>> input_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
-            >>> output_serde = injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-output")
+            The ``inject_chain_handler`` example registers a named ``json-input``
+            handler and looks it up with this method.
         """
         # Check for pre-registered instance
         instance = self._config.get_chain_handler_instance(chain_type, name)
@@ -570,12 +591,20 @@ class Injector:
 
         Example:
             >>> from dataclasses import dataclass, field
+            >>> from pyiv import Config, get_injector
+            >>> class Database:
+            ...     pass
             >>> @dataclass
             ... class Service:
             ...     db: Database = field(default=None)
-            >>>
+            >>> class MyConfig(Config):
+            ...     def configure(self):
+            ...         self.register(Database, Database)
+            >>> injector = get_injector(MyConfig)
             >>> service = Service()
-            >>> injector.inject_members(service)  # Injects db
+            >>> injector.inject_members(service)
+            >>> isinstance(service.db, Database)
+            True
         """
         cls = type(instance)
         members_injector = InjectorMembersInjector(cls, self)

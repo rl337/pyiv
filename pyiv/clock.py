@@ -17,13 +17,13 @@ Usage:
 
     Example:
         >>> from pyiv.clock import RealClock, SyntheticClock
-        >>> # Production
         >>> clock = RealClock()
-        >>> current = clock.time()
-        >>> clock.sleep(1.0)
-        >>> # Testing
+        >>> isinstance(clock.time(), float)
+        True
         >>> test_clock = SyntheticClock(start_time=100.0)
-        >>> test_clock.advance(5.0)  # Advance time manually
+        >>> test_clock.advance(5.0)
+        >>> test_clock.time()
+        105.0
 """
 
 from __future__ import annotations
@@ -43,10 +43,13 @@ class Clock(ABC):
     for testing.
 
     Example:
-        >>> clock = RealClock()
-        >>> current_time = clock.time()
-        >>> clock.sleep(1.0)  # Sleep for 1 second
-        >>> timer = clock.start_timer(5.0, callback, repeat=True)
+        >>> from pyiv.clock import SyntheticClock
+        >>> clock = SyntheticClock(100.0)
+        >>> clock.time()
+        100.0
+        >>> clock.sleep(1.5)
+        >>> clock.time()
+        101.5
     """
 
     @abstractmethod
@@ -110,12 +113,16 @@ class Timer(ABC):
     or repeating.
 
     Example:
-        >>> clock = RealClock()
-        >>> def my_callback():
-        ...     print("Timer fired!")
-        >>> timer = clock.start_timer(5.0, my_callback, repeat=False)
-        >>> # ... later ...
-        >>> timer.cancel()  # Cancel if needed
+        >>> from pyiv.clock import SyntheticClock
+        >>> clock = SyntheticClock(start_time=0.0)
+        >>> fired = []
+        >>> timer = clock.start_timer(5.0, lambda: fired.append(True), repeat=False)
+        >>> timer.is_active()
+        True
+        >>> clock.advance(5.0)
+        >>> fired
+        [True]
+        >>> timer.cancel()
     """
 
     @abstractmethod
@@ -146,10 +153,10 @@ class RealClock(Clock):
 
     Example:
         >>> clock = RealClock()
-        >>> start = clock.time()
-        >>> clock.sleep(0.1)  # Actually sleeps for 0.1 seconds
-        >>> elapsed = clock.time() - start
-        >>> assert elapsed >= 0.1
+        >>> isinstance(clock.time(), float)
+        True
+        >>> clock.monotonic() > 0
+        True
     """
 
     def time(self) -> float:

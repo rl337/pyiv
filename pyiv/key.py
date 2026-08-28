@@ -164,29 +164,29 @@ class Key(Generic[T]):
         >>> from pyiv.key import Key, Named
         >>>
         >>> # Key without qualifier (default binding)
-        >>> default_key = Key(Database)
+        >>> default_key = Key(int)
         >>>
         >>> # Key with qualifier
-        >>> primary_key = Key(Database, Named("primary"))
-        >>> replica_key = Key(Database, Named("replica"))
+        >>> primary_key = Key(int, Named("primary"))
+        >>> replica_key = Key(int, Named("replica"))
+        >>> primary_key != replica_key
+        True
     """
 
-    def __init__(self, type: Type[T], qualifier: Optional[Qualifier] = None):
+    def __init__(self, binding_type: Type[T], qualifier: Optional[Qualifier] = None):
         """Initialize a key.
 
         Args:
-            type: The type to bind
+            binding_type: The type to bind
             qualifier: Optional qualifier to distinguish this binding
 
         Raises:
-            TypeError: If type is not a type
+            TypeError: If binding_type is not a type
         """
-        # Use built-in type() function explicitly to avoid shadowing
-        if not isinstance(type, type):  # type: ignore[arg-type]
-            type_name = type.__class__.__name__ if hasattr(type, "__class__") else str(type)
+        if not isinstance(binding_type, type):
+            type_name = type(binding_type).__name__
             raise TypeError(f"type must be a type, got {type_name}")
-        # Cast to Type[T] to satisfy mypy (we've already validated it's a type)
-        self.type: Type[T] = type  # type: ignore[assignment]
+        self.type: Type[T] = binding_type
         self.qualifier: Optional[Qualifier] = qualifier
 
     def __eq__(self, other: Any) -> bool:

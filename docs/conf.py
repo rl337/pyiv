@@ -9,8 +9,8 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # Project information
 project = "pyiv"
-copyright = f"{datetime.now().year}, pyiv contributors"
-author = "pyiv contributors"
+copyright = f"{datetime.now().year}, Richard Lee"
+author = "Richard Lee"
 
 # Get version from pyiv package
 try:
@@ -19,7 +19,7 @@ try:
     release = pyiv.__version__
     version = ".".join(release.split(".")[:2])  # Major.minor
 except ImportError:
-    release = "0.2.10"
+    release = "0.2.20"
     version = "0.2"
 
 # Sphinx extensions
@@ -53,8 +53,11 @@ napoleon_include_private_with_doc = False
 # HTML theme
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    "display_version": True,
     "style_nav_header_background": "#0066cc",
+    "collapse_navigation": False,
+    "sticky_navigation": True,
+    "navigation_depth": 2,
+    "titles_only": True,
 }
 
 # HTML output options

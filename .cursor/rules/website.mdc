@@ -1,0 +1,17 @@
+---
+description: README vs Sphinx site split, homepage features, and RTD sidebar toctrees.
+globs: docs/**/*.rst,docs/**/*.md,docs/conf.py,README.md
+alwaysApply: false
+---
+
+# Website and README
+
+**README.md** is the GitHub landing page only: what pyiv is, git install, a short quick start, link to https://rl337.org/pyiv/. Do not duplicate the API reference here.
+
+**docs/** is the product site. Homepage Key Features must stay: type-based injection, scopes, keys/binder, reflection, test doubles, zero dependencies. Do not headline Factory. Do not claim PyPI or Poetry.
+
+Install instructions: `pip install git+https://github.com/rl337/pyiv.git` until a PyPI release exists.
+
+API navigation lives on `docs/index.rst` as grouped `toctree` directives (Core DI, Bindings, Discovery, Test doubles, Integrations) pointing at `docs/pyiv/pyiv.*.rst`. Do not rely on `modules.rst` alone—RTD leaves that sidebar empty until the page is opened. Keep `collapse_navigation: False` and `titles_only: True` in `conf.py`. Omit `binder_impl` from the sidebar.
+
+New public modules need a `docs/pyiv/pyiv.<name>.rst` automodule page **and** a toctree entry on `index.rst`.

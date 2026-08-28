@@ -17,14 +17,25 @@ Usage:
     Configure singleton behavior when registering dependencies in Config:
 
     Example:
-        >>> from pyiv import Config
+        >>> from pyiv import Config, get_injector
         >>> from pyiv.singleton import SingletonType
+        >>> class Logger:
+        ...     pass
+        >>> class FileLogger(Logger):
+        ...     pass
+        >>> class Cache:
+        ...     pass
+        >>> class RedisCache(Cache):
+        ...     pass
         >>> class MyConfig(Config):
         ...     def configure(self):
-        ...         # Per-injector singleton
         ...         self.register(Logger, FileLogger, singleton_type=SingletonType.SINGLETON)
-        ...         # Global singleton (shared across all injectors)
         ...         self.register(Cache, RedisCache, singleton_type=SingletonType.GLOBAL_SINGLETON)
+        >>> injector = get_injector(MyConfig)
+        >>> injector.inject(Logger) is injector.inject(Logger)
+        True
+        >>> injector.inject(Cache) is get_injector(MyConfig).inject(Cache)
+        True
 """
 
 import threading

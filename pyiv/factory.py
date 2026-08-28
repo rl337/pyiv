@@ -16,15 +16,19 @@ Usage:
 
     Example:
         >>> from pyiv.factory import SimpleFactory, BaseFactory
-        >>> # Simple factory from a function
+        >>> class User:
+        ...     def __init__(self, name: str):
+        ...         self.name = name
         >>> def create_user(name: str) -> User:
         ...     return User(name=name)
         >>> factory = SimpleFactory(create_user)
-        >>> user = factory.create("Alice")
-        >>> # Class-based factory
+        >>> factory.create("Alice").name
+        'Alice'
         >>> class UserFactory(BaseFactory[User]):
         ...     def create(self, name: str) -> User:
         ...         return User(name=name)
+        >>> UserFactory().create("Bob").name
+        'Bob'
 """
 
 from abc import ABC, abstractmethod

@@ -15,15 +15,11 @@ Usage:
     in memory without touching the disk.
 
     Example:
-        >>> from pyiv.filesystem import RealFilesystem, MemoryFilesystem
-        >>> # Production
-        >>> fs = RealFilesystem()
-        >>> fs.write_text("file.txt", "content")
-        >>> content = fs.read_text("file.txt")
-        >>> # Testing
-        >>> test_fs = MemoryFilesystem()
-        >>> test_fs.write_text("test.txt", "test content")
-        >>> assert test_fs.read_text("test.txt") == "test content"
+        >>> from pyiv.filesystem import MemoryFilesystem
+        >>> fs = MemoryFilesystem()
+        >>> fs.write_text("test.txt", "test content")
+        >>> fs.read_text("test.txt")
+        'test content'
 """
 
 import io

@@ -4,7 +4,24 @@ This document provides guidelines for AI agents working on the pyiv project.
 
 ## Project Overview
 
-pyiv is a lightweight dependency injection library for Python. It provides a simple, flexible way to manage dependencies and supports features like singletons, factories, and reflection-based discovery.
+pyiv is a Guice-style dependency injection library for Python. It supports
+type-based injection, scopes, qualified keys, Binder, reflection, and built-in
+test doubles (Clock, Filesystem, Console, DateTimeService). Runtime has zero
+third-party dependencies.
+
+## Documentation
+
+**README.md** is the GitHub landing page: what pyiv is, how to install, a short
+quick start, and a link to the site. Keep it short. Do not duplicate the API
+manual. Do not claim `pip install pyiv` until the package is on PyPI.
+
+**docs/** (Sphinx, https://rl337.org/pyiv/) is the product manual: features,
+install, quick start, and API pages generated from `pyiv` docstrings. Homepage
+Key Features should match the product (injection, scopes, keys/binder,
+reflection, test doubles, zero deps)—not factory-first copy.
+
+When you change a public module, update its docstring (doctest-backed) so the
+website stays accurate. See `.cursor/skills/maintain-docs/SKILL.md`.
 
 ## Versioning
 
@@ -14,7 +31,7 @@ pyiv is a lightweight dependency injection library for Python. It provides a sim
 
 - **Regular commits to main**: Automatically bumps patch version (0.1.0 → 0.1.1)
 - **Merge commits to main**: Automatically bumps minor version (0.1.0 → 0.2.0)
-- **Major versions**: Must be bumped manually using `poetry version major`
+- **Major versions**: Must be bumped manually in `pyproject.toml` and `pyiv/__init__.py`
 
 ### What This Means for Agents
 
@@ -35,8 +52,7 @@ pyiv is a lightweight dependency injection library for Python. It provides a sim
 If you need to manually bump a major version:
 
 ```bash
-poetry version major
-# Then manually update pyiv/__init__.py to match
+# Update version in pyproject.toml and pyiv/__init__.py to match
 ```
 
 ## Development Workflow
@@ -251,6 +267,9 @@ When implementing new features, follow these principles:
 
 - `pyproject.toml`: Project configuration and dependencies
 - `pyiv/__init__.py`: Package exports and version
+- `docs/index.rst`: Documentation homepage and API sidebar toctrees
+- `README.md`: GitHub landing page (not the API manual)
 - `.github/workflows/version-bump.yml`: Automatic version bumping workflow
 - `.github/workflows/ci.yml`: CI/CD pipeline
+- `.github/workflows/docs.yml`: Sphinx build and GitHub Pages deploy
 

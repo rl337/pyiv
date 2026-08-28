@@ -52,10 +52,11 @@ Issues = "https://github.com/yourusername/pyiv/issues"
 packages = ["pyiv"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "pyiv"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+addopts = "--doctest-modules"
 
 [tool.coverage.run]
 source = ["pyiv"]

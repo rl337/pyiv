@@ -6,8 +6,8 @@ such as HTTP, HTTPS, and others.
 
 Example:
     >>> from pyiv.network import HTTPClient
-    >>> client = HTTPClient()
-    >>> response = client.request("GET", "https://example.com")
+    >>> HTTPClient().handler_type
+    'http'
 """
 
 from pyiv.network.base import NetworkClient
