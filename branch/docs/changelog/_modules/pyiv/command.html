@@ -1,0 +1,811 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyiv.command &mdash; pyiv 0.2.24 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=75b4fac4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=dc91f075"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #0066cc" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyiv
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.html">pyiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.config.html">pyiv.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.injector.html">pyiv.injector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.binder.html">pyiv.binder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.key.html">pyiv.key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Discovery</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.chain.html">pyiv.chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.command.html">pyiv.command</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.network.html">pyiv.network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module listing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #0066cc" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyiv</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyiv.command</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyiv.command</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Command interface and discovery for CLI applications.</span>
+
+<span class="sd">This module provides a Command interface and automatic command discovery</span>
+<span class="sd">using pyiv's reflection capabilities. Commands can be organized hierarchically</span>
+<span class="sd">with commands, subcommands, and sub-subcommands.</span>
+
+<span class="sd">Commands support a lifecycle pattern:</span>
+<span class="sd">- init() - Initialize resources, configuration, etc.</span>
+<span class="sd">- execute() - Main execution (can call run() for long-running services)</span>
+<span class="sd">- cleanup() - Clean up resources on shutdown</span>
+
+<span class="sd">Commands can optionally receive dependency injection via an injector.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Command">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Interface for CLI commands.</span>
+
+<span class="sd">    Commands can be organized hierarchically:</span>
+<span class="sd">    - Top-level commands (e.g., "switchboard")</span>
+<span class="sd">    - Subcommands (e.g., "switchboard start")</span>
+<span class="sd">    - Sub-subcommands (e.g., "switchboard agent create")</span>
+
+<span class="sd">    Each command level can have its own arguments and execution logic.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="Command.get_name">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.get_name">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the command name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls: The class (implicit in classmethod)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Command name (e.g., "switchboard", "start", "create")</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Command.get_description">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.get_description">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_description</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the command description.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls: The class (implicit in classmethod)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Command description for help text</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s2">""</span></div>
+
+
+<div class="viewcode-block" id="Command.get_aliases">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.get_aliases">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_aliases</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Get command aliases.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls: The class (implicit in classmethod)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of alternative names for this command</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Command.add_args">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.add_args">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add arguments to the command's argument parser.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls: The class (implicit in classmethod)</span>
+<span class="sd">            parser: Argument parser to add arguments to</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Command.get_subcommands">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.get_subcommands">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subcommands</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">"Command"</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Get subcommands of this command.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls: The class (implicit in classmethod)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of command classes that are subcommands of this command</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Command.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">injector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initialize the command with parsed arguments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            args: Parsed command-line arguments</span>
+<span class="sd">            injector: Optional dependency injector for DI support</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">injector</span> <span class="o">=</span> <span class="n">injector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_event</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Command.init">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.init">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize the command (optional lifecycle hook).</span>
+
+<span class="sd">        Override this method to:</span>
+<span class="sd">        - Load configuration</span>
+<span class="sd">        - Initialize resources (database connections, clients, etc.)</span>
+<span class="sd">        - Set up signal handlers if needed</span>
+<span class="sd">        - Perform any one-time setup</span>
+
+<span class="sd">        This is called automatically by execute() before run().</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Command.run">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Run the command (optional lifecycle hook for long-running services).</span>
+
+<span class="sd">        Override this method for long-running services that need a main loop.</span>
+<span class="sd">        For one-shot commands, override execute() directly instead.</span>
+
+<span class="sd">        This method should:</span>
+<span class="sd">        - Start the main service loop</span>
+<span class="sd">        - Block until service should stop</span>
+<span class="sd">        - Handle the primary service functionality</span>
+
+<span class="sd">        This method should check self._shutdown_event periodically</span>
+<span class="sd">        and exit gracefully when shutdown is requested.</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Command.execute">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.execute">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Execute the command.</span>
+
+<span class="sd">        For long-running services, this typically calls:</span>
+<span class="sd">        1. init() - Initialize resources</span>
+<span class="sd">        2. run() - Main service loop</span>
+<span class="sd">        3. cleanup() - Clean up resources</span>
+
+<span class="sd">        For one-shot commands, implement the logic directly here.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Exit code (0 for success, non-zero for error)</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Command.cleanup">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.cleanup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Cleanup after command execution (optional lifecycle hook).</span>
+
+<span class="sd">        Override this method to:</span>
+<span class="sd">        - Close database connections</span>
+<span class="sd">        - Stop background tasks</span>
+<span class="sd">        - Clean up any resources</span>
+<span class="sd">        - Perform graceful shutdown</span>
+
+<span class="sd">        Called after execute() completes, even if an exception occurs.</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Command.setup_signal_handlers">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.setup_signal_handlers">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_signal_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Setup signal handlers for graceful shutdown.</span>
+
+<span class="sd">        Call this in init() for long-running services that need graceful shutdown.</span>
+<span class="sd">        """</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">signal_handler</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Received signal </span><span class="si">{</span><span class="n">signum</span><span class="si">}</span><span class="s2">, initiating graceful shutdown..."</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_event</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">,</span> <span class="n">signal_handler</span><span class="p">)</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">signal_handler</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ServiceCommand">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.ServiceCommand">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base class for long-running service commands.</span>
+
+<span class="sd">    Provides a standard lifecycle pattern:</span>
+<span class="sd">    1. init() - Initialize resources, configuration, etc.</span>
+<span class="sd">    2. run() - Main service loop (blocking)</span>
+<span class="sd">    3. cleanup() - Clean up resources on shutdown</span>
+
+<span class="sd">    Subclasses should override init(), run(), and cleanup().</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="ServiceCommand.execute">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.ServiceCommand.execute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Execute the service command lifecycle.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Exit code (0 for success, non-zero for error)</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Initialize</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Initializing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2"> initialized successfully"</span><span class="p">)</span>
+
+            <span class="c1"># Run</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Starting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2"> stopped"</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2"> interrupted by user"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">130</span>  <span class="c1"># Standard exit code for SIGINT</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Cleanup</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cleaning up </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2"> cleanup complete"</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error during cleanup: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CLICommand">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CLICommand">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CLICommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base class for one-shot CLI commands (not long-running services).</span>
+
+<span class="sd">    Provides a simplified lifecycle for commands that execute and exit:</span>
+<span class="sd">    1. init() - Optional initialization</span>
+<span class="sd">    2. run() - Main command logic (subclasses override this)</span>
+<span class="sd">    3. cleanup() - Optional cleanup</span>
+
+<span class="sd">    Subclasses should override run() (and optionally init()/cleanup()).</span>
+<span class="sd">    Set self._exit_code in run() to return a non-zero status.</span>
+
+<span class="sd">    Do not override execute() — it implements the lifecycle, KeyboardInterrupt</span>
+<span class="sd">    handling (exit 130), and SystemExit handling.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="CLICommand.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CLICommand.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">injector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initialize CLI command with parsed arguments."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">injector</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exit_code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CLICommand.init">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CLICommand.init">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize CLI command (no-op by default, override if needed)."""</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CLICommand.run">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CLICommand.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Run the CLI command (no-op by default).</span>
+
+<span class="sd">        Override this method to implement command logic. Set self._exit_code</span>
+<span class="sd">        to return a non-zero status from execute().</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exit_code</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="CLICommand.cleanup">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CLICommand.cleanup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Cleanup after CLI command (no-op by default, override if needed)."""</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CLICommand.execute">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CLICommand.execute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Execute the CLI command lifecycle.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Exit code (0 for success, non-zero for error)</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Initialize</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># Run (subclasses can override this or implement execute directly)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+            <span class="c1"># Return exit code (default to 0 if not set)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exit_code</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exit_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2"> interrupted by user"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">130</span>  <span class="c1"># Standard exit code for SIGINT</span>
+        <span class="k">except</span> <span class="ne">SystemExit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Allow commands to raise SystemExit with exit code</span>
+            <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Cleanup</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error during cleanup: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CommandRunner">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CommandRunner">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CommandRunner</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Runner for discovering and executing commands using reflection."""</span>
+
+<div class="viewcode-block" id="CommandRunner.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CommandRunner.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initialize the command runner.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: Optional pyiv Config instance for command discovery</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_command_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Command</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CommandRunner.discover_commands">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CommandRunner.discover_commands">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">discover_commands</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">package_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Command</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Discover commands in a package using reflection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            package_path: Python package path (e.g., "agenticness.commands")</span>
+<span class="sd">            pattern: Optional name pattern for filtering (e.g. ``*Command``)</span>
+<span class="sd">            recursive: Whether to scan submodules recursively</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary mapping command names to command classes</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_cache</span>
+
+        <span class="n">commands</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Command</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Use pyiv reflection if config is available and has Command registered</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.reflection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReflectionConfig</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">ReflectionConfig</span><span class="p">):</span>
+                    <span class="c1"># Try to discover Command implementations</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">implementations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discover_implementations</span><span class="p">(</span><span class="n">Command</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">cmd_class</span> <span class="ow">in</span> <span class="n">implementations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">cmd_name</span> <span class="o">=</span> <span class="n">cmd_class</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+                                <span class="n">commands</span><span class="p">[</span><span class="n">cmd_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd_class</span>
+                                <span class="c1"># Also register aliases</span>
+                                <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">cmd_class</span><span class="o">.</span><span class="n">get_aliases</span><span class="p">():</span>
+                                    <span class="n">commands</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd_class</span>
+                            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                                <span class="c1"># Skip commands that don't implement get_name properly</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Skipping command </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                                <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">commands</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_command_cache</span> <span class="o">=</span> <span class="n">commands</span>
+                            <span class="k">return</span> <span class="n">commands</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">"Reflection discovery failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">, falling back to manual discovery"</span>
+                        <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config check failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">, falling back to manual discovery"</span><span class="p">)</span>
+                <span class="c1"># Fall back to manual discovery if reflection fails</span>
+                <span class="k">pass</span>
+
+        <span class="c1"># Manual discovery fallback</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pkgutil</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">package</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">package_path</span><span class="p">)</span>
+
+            <span class="c1"># Scan the main module</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Command</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Command</span>
+                    <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">package_path</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">cmd_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+                        <span class="n">commands</span><span class="p">[</span><span class="n">cmd_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                        <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_aliases</span><span class="p">():</span>
+                            <span class="n">commands</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to get name from command </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+            <span class="c1"># Recursively scan submodules if requested</span>
+            <span class="k">if</span> <span class="n">recursive</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">importer</span><span class="p">,</span> <span class="n">modname</span><span class="p">,</span> <span class="n">ispkg</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="s2">"__path__"</span><span class="p">,</span> <span class="p">[]),</span> <span class="n">package_path</span> <span class="o">+</span> <span class="s2">"."</span>
+                <span class="p">):</span>
+                    <span class="k">if</span> <span class="n">ispkg</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">modname</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Command</span><span class="p">)</span>
+                                <span class="ow">and</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Command</span>
+                                <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">package_path</span><span class="p">)</span>
+                            <span class="p">):</span>
+                                <span class="k">try</span><span class="p">:</span>
+                                    <span class="n">cmd_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+                                    <span class="n">commands</span><span class="p">[</span><span class="n">cmd_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                                    <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_aliases</span><span class="p">():</span>
+                                        <span class="n">commands</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                        <span class="sa">f</span><span class="s2">"Failed to get name from command </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
+                                    <span class="p">)</span>
+                                    <span class="k">continue</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to import module </span><span class="si">{</span><span class="n">modname</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Manual discovery failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_command_cache</span> <span class="o">=</span> <span class="n">commands</span>
+        <span class="k">return</span> <span class="n">commands</span></div>
+
+
+<div class="viewcode-block" id="CommandRunner.create_parser">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CommandRunner.create_parser">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_parser</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prog</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Command</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create argument parser with discovered commands.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prog: Program name</span>
+<span class="sd">            description: Program description</span>
+<span class="sd">            commands: Optional pre-discovered commands dict</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Configured argument parser</span>
+<span class="sd">        """</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+            <span class="n">prog</span><span class="o">=</span><span class="n">prog</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">commands</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># This will be populated by the caller after discovery</span>
+            <span class="k">return</span> <span class="n">parser</span>
+
+        <span class="c1"># Add subparsers for commands</span>
+        <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s2">"command"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Command to run"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"COMMAND"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Register all commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_commands</span><span class="p">(</span><span class="n">subparsers</span><span class="p">,</span> <span class="n">commands</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parser</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_commands</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subparsers</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">_SubParsersAction</span><span class="p">,</span>
+        <span class="n">commands</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Command</span><span class="p">]],</span>
+        <span class="n">parent_path</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Recursively register commands and their subcommands.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            subparsers: Subparsers action to add commands to</span>
+<span class="sd">            commands: Dictionary of command classes to register</span>
+<span class="sd">            parent_path: Path of parent commands (for hierarchical commands)</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">parent_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parent_path</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">cmd_name</span><span class="p">,</span> <span class="n">cmd_class</span> <span class="ow">in</span> <span class="n">commands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="n">cmd_class</span><span class="o">.</span><span class="n">get_description</span><span class="p">()</span>
+                <span class="n">cmd_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+                    <span class="n">cmd_name</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">cmd_class</span><span class="o">.</span><span class="n">get_aliases</span><span class="p">()</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Add command arguments</span>
+                <span class="n">cmd_class</span><span class="o">.</span><span class="n">add_args</span><span class="p">(</span><span class="n">cmd_parser</span><span class="p">)</span>
+
+                <span class="c1"># Check for subcommands</span>
+                <span class="n">subcommands</span> <span class="o">=</span> <span class="n">cmd_class</span><span class="o">.</span><span class="n">get_subcommands</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">subcommands</span><span class="p">:</span>
+                    <span class="c1"># Create subparsers for subcommands</span>
+                    <span class="n">sub_subparsers</span> <span class="o">=</span> <span class="n">cmd_parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s2">"subcommand"</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">"Subcommand to run"</span><span class="p">,</span>
+                        <span class="n">metavar</span><span class="o">=</span><span class="s2">"SUBCOMMAND"</span><span class="p">,</span>
+                        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Build subcommand dict</span>
+                    <span class="n">subcommand_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Command</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">for</span> <span class="n">subcmd_class</span> <span class="ow">in</span> <span class="n">subcommands</span><span class="p">:</span>
+                        <span class="n">subcmd_name</span> <span class="o">=</span> <span class="n">subcmd_class</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+                        <span class="n">subcommand_dict</span><span class="p">[</span><span class="n">subcmd_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subcmd_class</span>
+                        <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">subcmd_class</span><span class="o">.</span><span class="n">get_aliases</span><span class="p">():</span>
+                            <span class="n">subcommand_dict</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">subcmd_class</span>
+
+                    <span class="c1"># Recursively register subcommands</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_register_commands</span><span class="p">(</span>
+                        <span class="n">sub_subparsers</span><span class="p">,</span> <span class="n">subcommand_dict</span><span class="p">,</span> <span class="n">parent_path</span> <span class="o">+</span> <span class="p">[</span><span class="n">cmd_name</span><span class="p">]</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># Skip commands that fail to register</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+                <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to register command </span><span class="si">{</span><span class="n">cmd_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+<div class="viewcode-block" id="CommandRunner.run">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CommandRunner.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">package_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">prog</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Discover commands and run the appropriate one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            package_path: Python package path to discover commands in</span>
+<span class="sd">            prog: Program name</span>
+<span class="sd">            description: Program description</span>
+<span class="sd">            args: Optional command-line arguments (defaults to sys.argv[1:])</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Exit code from command execution</span>
+<span class="sd">        """</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+        <span class="c1"># Discover commands</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discover_commands</span><span class="p">(</span><span class="n">package_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">commands</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No commands found in </span><span class="si">{</span><span class="n">package_path</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="c1"># Create parser</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_parser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="n">prog</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+
+        <span class="c1"># Add subparsers</span>
+        <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s2">"command"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Command to run"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"COMMAND"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Register commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_commands</span><span class="p">(</span><span class="n">subparsers</span><span class="p">,</span> <span class="n">commands</span><span class="p">)</span>
+
+        <span class="c1"># Parse arguments</span>
+        <span class="n">parsed_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># Find and execute command</span>
+        <span class="n">command_class</span> <span class="o">=</span> <span class="n">commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_class</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown command: </span><span class="si">{</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get injector from config if available</span>
+            <span class="n">injector</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injector</span>
+
+                    <span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+            <span class="n">command</span> <span class="o">=</span> <span class="n">command_class</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">,</span> <span class="n">injector</span><span class="o">=</span><span class="n">injector</span><span class="p">)</span>
+            <span class="n">exit_code</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">exit_code</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Interrupted by user"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">130</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="k">return</span> <span class="mi">1</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
