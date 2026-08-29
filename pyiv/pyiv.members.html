@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.members &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.members &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -125,22 +132,21 @@ instances. This supports field injection and method injection, which is useful
 for framework integration, legacy code, and cases where constructor injection
 is not possible.</p>
 <p><strong>What Problem Does This Solve?</strong></p>
-<p>MembersInjector solves the “framework-managed objects” problem:
-- <strong>Framework Integration</strong>: Inject into objects created by frameworks (Django models,</p>
-<blockquote>
-<div><p>Flask request objects, etc.) where you can’t control the constructor</p>
-</div></blockquote>
+<p>MembersInjector solves the “framework-managed objects” problem:</p>
 <ul class="simple">
-<li><p><strong>Legacy Code</strong>: Migrate existing code to DI without refactoring all constructors</p></li>
-<li><p><strong>Third-Party Objects</strong>: Inject dependencies into objects from libraries you don’t control</p></li>
-<li><p><strong>Data Classes</strong>: Support field injection for dataclasses and attrs classes</p></li>
+<li><p><strong>Framework Integration</strong>: Inject into objects you did not construct</p></li>
+<li><p><strong>Legacy Code</strong>: Migrate existing code to DI without refactoring constructors</p></li>
+<li><p><strong>Third-Party Objects</strong>: Inject dependencies into objects you do not control</p></li>
+<li><p><strong>Data Classes</strong>: Field injection for dataclasses and attrs classes</p></li>
 <li><p><strong>Flexibility</strong>: Use field injection when constructor injection is impractical</p></li>
 </ul>
-<p><strong>Real-World Use Cases:</strong>
-- <strong>Django Models</strong>: Inject services into Django model instances
-- <strong>Flask Request Context</strong>: Inject dependencies into Flask request objects
-- <strong>Legacy Codebase</strong>: Gradually migrate to DI without breaking existing code
-- <strong>Data Classes</strong>: Use dataclasses with DI for cleaner code</p>
+<p><strong>Real-World Use Cases:</strong></p>
+<ul class="simple">
+<li><p><strong>Django Models</strong>: Inject services into Django model instances</p></li>
+<li><p><strong>Flask Request Context</strong>: Inject dependencies into Flask request objects</p></li>
+<li><p><strong>Legacy Codebase</strong>: Gradually migrate to DI without breaking existing code</p></li>
+<li><p><strong>Data Classes</strong>: Use dataclasses with DI for cleaner code</p></li>
+</ul>
 <dl class="simple">
 <dt>Architecture:</dt><dd><ul class="simple">
 <li><p>MembersInjector: Protocol for injecting into existing instances</p></li>

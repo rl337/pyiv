@@ -6,21 +6,21 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyIV Documentation &mdash; pyiv 0.2.20 documentation</title>
+  <title>PyIV Documentation &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=75b4fac4" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="_static/documentation_options.js?v=171860b8"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pyiv" href="pyiv/pyiv.html" /> 
+    <link rel="next" title="Binding" href="guide/binding.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,7 +42,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.config.html">pyiv.config</a></li>
@@ -121,11 +128,12 @@
 <p>A Guice-style dependency injection library for Python. Register bindings,
 inject by type, and swap production implementations for test doubles without
 mocking the world.</p>
-<p style="margin: 12px 0 20px 0;">
-<span style="display: inline-block; padding: 4px 8px; background: #0066cc; color: white; border-radius: 4px; font-size: 0.85em; font-weight: 500; margin-right: 10px;">v|release|</span>
-Zero runtime dependencies. Python 3.8+.
-</p>
-
+<div class="hero-meta docutils container">
+<div class="version-badge docutils container">
+<p>0.2.23</p>
+</div>
+<p>Zero runtime dependencies. Python 3.8+.</p>
+</div>
 <div style="margin: 20px 0; padding: 15px; background: #e8f4f8; border-left: 4px solid #0066cc; border-radius: 4px;">
 <strong>Quick Links:</strong>
 <a href="https://github.com/rl337/pyiv" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">GitHub</a>
@@ -192,32 +200,19 @@ Zero runtime dependencies. Python 3.8+.
 <span class="n">logger</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Logger</span><span class="p">)</span>     <span class="c1"># shared per injector</span>
 </pre></div>
 </div>
-<p>Fluent Binder and qualified keys are documented on <a class="reference internal" href="pyiv/pyiv.binder.html"><span class="doc">pyiv.binder</span></a>
-and <a class="reference internal" href="pyiv/pyiv.key.html"><span class="doc">pyiv.key</span></a>.</p>
 </section>
-<section id="testing-with-abstractions">
-<h2>Testing with Abstractions<a class="headerlink" href="#testing-with-abstractions" title="Link to this heading"></a></h2>
-<p>Swap production types for in-memory doubles in a test config:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span><span class="p">,</span> <span class="n">RealClock</span><span class="p">,</span> <span class="n">SyntheticClock</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.filesystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">Filesystem</span><span class="p">,</span> <span class="n">MemoryFilesystem</span><span class="p">,</span> <span class="n">RealFilesystem</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">ProdConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Clock</span><span class="p">,</span> <span class="n">RealClock</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">,</span> <span class="n">RealFilesystem</span><span class="p">)</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">TestConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Clock</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">SyntheticClock</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span> <span class="n">singleton</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">,</span> <span class="n">MemoryFilesystem</span><span class="p">)</span>
-
-<span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">TestConfig</span><span class="p">)</span>
-<span class="n">clock</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Clock</span><span class="p">)</span>
-<span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">)</span>
-<span class="n">fs</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"test.txt"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">)</span>
-</pre></div>
+<section id="user-guide">
+<h2>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h2>
+<p>Binder vs <code class="docutils literal notranslate"><span class="pre">register</span></code>, scopes, qualified keys, and swapping Clock /
+Filesystem / Console / DateTimeService in tests:</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
+</ul>
 </div>
 </section>
 <section id="api-reference">
@@ -291,7 +286,7 @@ docstrings in the <code class="docutils literal notranslate"><span class="pre">p
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pyiv/pyiv.html" class="btn btn-neutral float-right" title="pyiv" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="guide/binding.html" class="btn btn-neutral float-right" title="Binding" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

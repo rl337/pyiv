@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.binder &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.binder &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -125,17 +132,21 @@ in a fluent, decoupled way. The Binder separates the configuration API from
 the implementation, making Config more testable and enabling programmatic
 configuration.</p>
 <p><strong>What Problem Does This Solve?</strong></p>
-<p>Binders solve the configuration API design problem:
-- <strong>Fluent API</strong>: Method chaining for readable, expressive configuration
-- <strong>Separation of Concerns</strong>: Configuration API separated from implementation
-- <strong>Testability</strong>: Mock binders for testing configuration logic
-- <strong>Programmatic Configuration</strong>: Build configurations dynamically
-- <strong>Better Readability</strong>: <cite>binder.bind(X).to(Y).in_scope(Z)</cite> is clearer than nested calls</p>
-<p><strong>Real-World Use Cases:</strong>
-- <strong>Dynamic Configuration</strong>: Build configurations based on environment variables
-- <strong>Configuration Testing</strong>: Mock binders to test configuration logic
-- <strong>Modular Configuration</strong>: Compose configurations from multiple sources
-- <strong>Framework Integration</strong>: Provide fluent APIs for framework-specific configuration</p>
+<p>Binders solve the configuration API design problem:</p>
+<ul class="simple">
+<li><p><strong>Fluent API</strong>: Method chaining for readable, expressive configuration</p></li>
+<li><p><strong>Separation of Concerns</strong>: Configuration API separated from implementation</p></li>
+<li><p><strong>Testability</strong>: Mock binders for testing configuration logic</p></li>
+<li><p><strong>Programmatic Configuration</strong>: Build configurations dynamically</p></li>
+<li><p><strong>Better Readability</strong>: <code class="docutils literal notranslate"><span class="pre">binder.bind(X).to(Y).in_scope(Z)</span></code> is clearer than nested calls</p></li>
+</ul>
+<p><strong>Real-World Use Cases:</strong></p>
+<ul class="simple">
+<li><p><strong>Dynamic Configuration</strong>: Build configurations based on environment variables</p></li>
+<li><p><strong>Configuration Testing</strong>: Mock binders to test configuration logic</p></li>
+<li><p><strong>Modular Configuration</strong>: Compose configurations from multiple sources</p></li>
+<li><p><strong>Framework Integration</strong>: Provide fluent APIs for framework-specific configuration</p></li>
+</ul>
 <dl class="simple">
 <dt>Architecture:</dt><dd><ul class="simple">
 <li><p>Binder: Protocol defining the binder interface</p></li>
@@ -215,14 +226,12 @@ configuration.</p>
 <p>Binders provide a fluent API for configuring dependency bindings.
 They separate the configuration API from the implementation, making
 Config more testable and enabling programmatic configuration.</p>
-<p class="rubric">Example</p>
-<dl class="simple">
-<dt>class MyBinder(Binder):</dt><dd><dl class="simple">
-<dt>def bind(self, abstract):</dt><dd><p>return BindingBuilder(…)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyBinder</span><span class="p">(</span><span class="n">Binder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstract</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.binder.Binder.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.binder.Binder.__init__" title="Link to this definition"></a></dt>

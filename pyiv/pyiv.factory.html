@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.factory &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.factory &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -175,16 +182,15 @@ factories, or SimpleFactory for quick function-based factories.</p>
 <p>Abstract base class for factory implementations.</p>
 <p>Provides a concrete base class for factories that need to be
 instantiated. Subclasses should implement the <cite>create()</cite> method.</p>
-<p class="rubric">Example</p>
-<dl class="simple">
-<dt>class UserFactory(BaseFactory[User]):</dt><dd><dl class="simple">
-<dt>def __init__(self, db: Database):</dt><dd><p>self._db = db</p>
-</dd>
-<dt>def create(self, name: str, email: str) -&gt; User:</dt><dd><p>return User(name=name, email=email, db=self._db)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UserFactory</span><span class="p">(</span><span class="n">BaseFactory</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Database</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">db</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.factory.BaseFactory.create">
 <span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/factory.html#BaseFactory.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.factory.BaseFactory.create" title="Link to this definition"></a></dt>
@@ -212,14 +218,12 @@ instantiated. Subclasses should implement the <cite>create()</cite> method.</p>
 <p>Factories are used to create instances of objects, typically with
 dependencies that need to be injected. This protocol defines the
 interface that factories should implement.</p>
-<p class="rubric">Example</p>
-<dl class="simple">
-<dt>class DatabaseFactory(Factory[Database]):</dt><dd><dl class="simple">
-<dt>def create(self, connection_string: str) -&gt; Database:</dt><dd><p>return PostgreSQL(connection_string)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DatabaseFactory</span><span class="p">(</span><span class="n">Factory</span><span class="p">[</span><span class="n">Database</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Database</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PostgreSQL</span><span class="p">(</span><span class="n">connection_string</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.factory.Factory.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.factory.Factory.__init__" title="Link to this definition"></a></dt>
@@ -252,16 +256,17 @@ interface that factories should implement.</p>
 <p>Useful for creating factories from functions or constructors
 without needing to define a full class.</p>
 <p class="rubric">Example</p>
-<p># Factory from a function
-def create_user(name: str) -&gt; User:</p>
-<blockquote>
-<div><p>return User(name=name)</p>
-</div></blockquote>
-<p>factory = SimpleFactory(create_user)
-user = factory.create(“Alice”)</p>
-<p># Factory from a class constructor
-factory = SimpleFactory(PostgreSQL)
-db = factory.create(connection_string=”postgresql://…”)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleFactory</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factory</span> <span class="o">=</span> <span class="n">SimpleFactory</span><span class="p">(</span><span class="n">create_user</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">"Alice"</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">'Alice'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.factory.SimpleFactory.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/factory.html#SimpleFactory.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.factory.SimpleFactory.__init__" title="Link to this definition"></a></dt>

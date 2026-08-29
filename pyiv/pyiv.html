@@ -6,22 +6,22 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pyiv.config" href="pyiv.config.html" />
-    <link rel="prev" title="PyIV Documentation" href="../index.html" /> 
+    <link rel="prev" title="Testing with doubles" href="../guide/testing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -119,47 +126,20 @@
              
   <section id="module-pyiv">
 <span id="pyiv"></span><h1>pyiv<a class="headerlink" href="#module-pyiv" title="Link to this heading"></a></h1>
-<p>pyiv - A lightweight dependency injection library for Python.</p>
-<p>PyIV (Python Injection and Validation) is a lightweight, type-aware dependency
-injection library designed for Python applications. It provides a simple yet
-powerful way to manage dependencies, improve testability, and reduce coupling.</p>
-<dl>
-<dt>Key Features:</dt><dd><ul class="simple">
-<li><p>Type-based dependency resolution using annotations</p></li>
-<li><p>Provider interface for lazy initialization and injector access</p></li>
-<li><p>Scope management for extensible lifecycle control</p></li>
-<li><p>Qualified bindings with type-safe keys</p></li>
-<li><p>Fluent configuration API with Binder</p></li>
-<li><p>Field/method injection with MembersInjector</p></li>
-<li><p>Optional dependencies with Optional[T] support</p></li>
-<li><p>Multibindings for multiple implementations</p></li>
-<li><p>Singleton lifecycle management (per-injector or global)</p></li>
-<li><p>Factory pattern support for complex object creation</p></li>
-<li><p>Built-in abstractions for common dependencies (Clock, Filesystem, etc.)</p></li>
-<li><p>Zero external dependencies (pure Python)</p></li>
+<p>Guice-style dependency injection for Python.</p>
+<p>pyiv provides type-based constructor injection, scopes, qualified keys, and
+built-in test doubles. Runtime has zero third-party dependencies. Python 3.8+.</p>
+<p>Key Features:</p>
+<ul class="simple">
+<li><p>Type-based constructor injection from annotations</p></li>
+<li><p>Scopes (per-injector and process-wide singletons, plus custom Scope)</p></li>
+<li><p>Qualified keys and a fluent Binder API</p></li>
+<li><p>Reflection to discover implementations in a package</p></li>
+<li><p>Test doubles for Clock, Filesystem, Console, and DateTimeService</p></li>
+<li><p>Zero runtime dependencies</p></li>
 </ul>
-</dd>
-<dt>Architecture:</dt><dd><p>The library is organized into modules:
-- config: Configuration base class for registering dependencies
-- injector: Core dependency injection engine
-- provider: Provider interface for lazy initialization
-- scope: Scope interface for lifecycle management
-- key: Key/Qualifier for type-safe qualified bindings
-- binder: Binder interface for fluent configuration
-- members: MembersInjector for field/method injection
-- optional: Optional dependency support
-- multibinder: Multibinder for multiple implementations
-- chain: Chain of responsibility pattern for extensible handlers
-- serde: Serialization/deserialization implementations
-- network: Network client abstractions (HTTP, HTTPS, etc.)
-- singleton: Singleton lifecycle management
-- factory: Factory pattern support
-- clock: Time abstraction for testing
-- filesystem: File I/O abstraction for testing
-- console: Console output abstraction for testing
-- datetime_service: DateTime abstraction for testing</p>
-</dd>
-<dt>Quick Start:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<p>Quick Start:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">pass</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
@@ -172,9 +152,6 @@ powerful way to manage dependencies, improve testability, and reduce coupling.</
 <span class="go">True</span>
 </pre></div>
 </div>
-</dd>
-</dl>
-<p>For more information, see the individual module documentation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.Base64SerDe">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">Base64SerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#Base64SerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Base64SerDe" title="Link to this definition"></a></dt>
@@ -523,16 +500,15 @@ overridden by subclasses that support terminal features.</p>
 <p>Abstract base class for factory implementations.</p>
 <p>Provides a concrete base class for factories that need to be
 instantiated. Subclasses should implement the <cite>create()</cite> method.</p>
-<p class="rubric">Example</p>
-<dl class="simple">
-<dt>class UserFactory(BaseFactory[User]):</dt><dd><dl class="simple">
-<dt>def __init__(self, db: Database):</dt><dd><p>self._db = db</p>
-</dd>
-<dt>def create(self, name: str, email: str) -&gt; User:</dt><dd><p>return User(name=name, email=email, db=self._db)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UserFactory</span><span class="p">(</span><span class="n">BaseFactory</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Database</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">db</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.BaseFactory.create">
 <span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/factory.html#BaseFactory.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.BaseFactory.create" title="Link to this definition"></a></dt>
@@ -597,14 +573,12 @@ instantiated. Subclasses should implement the <cite>get()</cite> method.</p>
 <p>Binders provide a fluent API for configuring dependency bindings.
 They separate the configuration API from the implementation, making
 Config more testable and enabling programmatic configuration.</p>
-<p class="rubric">Example</p>
-<dl class="simple">
-<dt>class MyBinder(Binder):</dt><dd><dl class="simple">
-<dt>def bind(self, abstract):</dt><dd><p>return BindingBuilder(…)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyBinder</span><span class="p">(</span><span class="n">Binder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstract</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.Binder.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.Binder.__init__" title="Link to this definition"></a></dt>
@@ -1175,7 +1149,7 @@ and exit gracefully when shutdown is requested.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>package_path</strong> – Python package path (e.g., “agenticness.commands”)</p></li>
-<li><p><strong>pattern</strong> – Optional name pattern for filtering (e.g., “<a href="#id1"><span class="problematic" id="id2">*</span></a>Command”)</p></li>
+<li><p><strong>pattern</strong> – Optional name pattern for filtering (e.g. <code class="docutils literal notranslate"><span class="pre">*Command</span></code>)</p></li>
 <li><p><strong>recursive</strong> – Whether to scan submodules recursively</p></li>
 </ul>
 </dd>
@@ -2079,14 +2053,12 @@ allowing implementations to be swapped for testing or different time sources.</p
 <p>Factories are used to create instances of objects, typically with
 dependencies that need to be injected. This protocol defines the
 interface that factories should implement.</p>
-<p class="rubric">Example</p>
-<dl class="simple">
-<dt>class DatabaseFactory(Factory[Database]):</dt><dd><dl class="simple">
-<dt>def create(self, connection_string: str) -&gt; Database:</dt><dd><p>return PostgreSQL(connection_string)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DatabaseFactory</span><span class="p">(</span><span class="n">Factory</span><span class="p">[</span><span class="n">Database</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Database</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PostgreSQL</span><span class="p">(</span><span class="n">connection_string</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.Factory.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.Factory.__init__" title="Link to this definition"></a></dt>
@@ -5617,22 +5589,17 @@ not be available in all contexts.</p>
 Instead of manually registering each implementation, you can register a package
 to scan, and all implementations of an interface will be automatically discovered
 and registered.</p>
-<p class="rubric">Example</p>
-<dl>
-<dt>class MyConfig(ReflectionConfig):</dt><dd><dl>
-<dt>def configure(self):</dt><dd><p># Register module for handler discovery
-self.register_module(</p>
-<blockquote>
-<div><p>Handler,
-“my_service.handlers”,
-pattern=”<a href="#id3"><span class="problematic" id="id4">*</span></a>Handler”,
-singleton_type=SingletonType.SINGLETON</p>
-</div></blockquote>
-<p>)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">ReflectionConfig</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span>
+            <span class="n">Handler</span><span class="p">,</span>
+            <span class="s2">"my_service.handlers"</span><span class="p">,</span>
+            <span class="n">pattern</span><span class="o">=</span><span class="s2">"*Handler"</span><span class="p">,</span>
+            <span class="n">singleton_type</span><span class="o">=</span><span class="n">SingletonType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.ReflectionConfig.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/reflection.html#ReflectionConfig.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.ReflectionConfig.__init__" title="Link to this definition"></a></dt>
@@ -5673,8 +5640,9 @@ Keys are class names (or “submodule.ClassName” for submodules).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>interface</strong> – The abstract class or interface to find implementations of</p></li>
 <li><p><strong>package_path</strong> – Python package path (e.g., “my_service.mcp.handlers”)</p></li>
-<li><p><strong>pattern</strong> – Optional name pattern for filtering (e.g., “<em>Handler”, “handle_</em>”)
-Uses fnmatch syntax. If None, all implementations are discovered.</p></li>
+<li><p><strong>pattern</strong> – Optional name pattern for filtering (e.g. <code class="docutils literal notranslate"><span class="pre">*Handler</span></code>,
+<code class="docutils literal notranslate"><span class="pre">handle_*</span></code>). Uses fnmatch syntax. If None, all implementations
+are discovered.</p></li>
 <li><p><strong>recursive</strong> – Whether to scan submodules recursively (default: True)</p></li>
 <li><p><strong>singleton_type</strong> – How to handle instances (default: SINGLETON for per-injector reuse)</p></li>
 </ul>
@@ -5686,23 +5654,20 @@ Uses fnmatch syntax. If None, all implementations are discovered.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<p># Discover all classes ending in “Handler” that implement Handler
-self.register_module(</p>
-<blockquote>
-<div><p>Handler,
-“my_service.handlers”,
-pattern=”<a href="#id5"><span class="problematic" id="id6">*</span></a>Handler”</p>
-</div></blockquote>
-<p>)</p>
-<p># Discover all implementations recursively
-self.register_module(</p>
-<blockquote>
-<div><p>Service,
-“my_service.services”,
-recursive=True</p>
-</div></blockquote>
-<p>)</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span>
+    <span class="n">Handler</span><span class="p">,</span>
+    <span class="s2">"my_service.handlers"</span><span class="p">,</span>
+    <span class="n">pattern</span><span class="o">=</span><span class="s2">"*Handler"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span>
+    <span class="n">Service</span><span class="p">,</span>
+    <span class="s2">"my_service.services"</span><span class="p">,</span>
+    <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -5717,22 +5682,19 @@ injection system. A scope can cache instances, create new ones on
 demand, or implement custom lifecycle logic.</p>
 <p>Scopes are more flexible than simple singletons - they can implement
 request-scoped, thread-scoped, session-scoped, or any custom lifecycle.</p>
-<p class="rubric">Example</p>
-<dl>
-<dt>class RequestScope(Scope):</dt><dd><dl>
-<dt>def __init__(self):</dt><dd><p>self._request_cache = {}</p>
-</dd>
-<dt>def scope(self, key, provider):</dt><dd><p>request_id = get_current_request_id()
-cache_key = (key, request_id)
-if cache_key not in self._request_cache:</p>
-<blockquote>
-<div><p>self._request_cache[cache_key] = provider.get()</p>
-</div></blockquote>
-<p>return lambda: self._request_cache[cache_key]</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RequestScope</span><span class="p">(</span><span class="n">Scope</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">provider</span><span class="p">):</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">get_current_request_id</span><span class="p">()</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">request_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">provider</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.Scope.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.Scope.__init__" title="Link to this definition"></a></dt>
@@ -5980,16 +5942,17 @@ Order is not preserved.</p>
 <p>Useful for creating factories from functions or constructors
 without needing to define a full class.</p>
 <p class="rubric">Example</p>
-<p># Factory from a function
-def create_user(name: str) -&gt; User:</p>
-<blockquote>
-<div><p>return User(name=name)</p>
-</div></blockquote>
-<p>factory = SimpleFactory(create_user)
-user = factory.create(“Alice”)</p>
-<p># Factory from a class constructor
-factory = SimpleFactory(PostgreSQL)
-db = factory.create(connection_string=”postgresql://…”)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleFactory</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factory</span> <span class="o">=</span> <span class="n">SimpleFactory</span><span class="p">(</span><span class="n">create_user</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">"Alice"</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">'Alice'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.SimpleFactory.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/factory.html#SimpleFactory.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.SimpleFactory.__init__" title="Link to this definition"></a></dt>
@@ -6092,13 +6055,13 @@ need different instances for different injectors (e.g., test vs production).</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">NONE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">NONE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">SINGLETON</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'singleton'</span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">SINGLETON</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'singleton'</span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -6381,20 +6344,18 @@ or repeating.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<p># Using a Config class
-class MyConfig(Config):</p>
-<blockquote>
-<div><dl class="simple">
-<dt>def configure(self):</dt><dd><p>self.register(Database, PostgreSQL)</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>injector = get_injector(MyConfig)
-db = injector.inject(Database)</p>
-<p># Using a Config instance (useful for test configs with parameters)
-test_config = MyTestConfig(mock_db=my_mock)
-injector = get_injector(test_config)
-db = injector.inject(Database)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Database</span><span class="p">),</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -6431,7 +6392,7 @@ db = injector.inject(Database)</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="PyIV Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../guide/testing.html" class="btn btn-neutral float-left" title="Testing with doubles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="pyiv.config.html" class="btn btn-neutral float-right" title="pyiv.config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

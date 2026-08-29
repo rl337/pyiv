@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.optional &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.optional &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -124,17 +131,21 @@
 When a dependency is marked as Optional[T], the injector will inject the
 dependency if available, or None if not registered.</p>
 <p><strong>What Problem Does This Solve?</strong></p>
-<p>Optional dependencies solve the “graceful degradation” problem:
-- <strong>Feature Flags</strong>: Support optional features that may or may not be available
-- <strong>Plugin Systems</strong>: Optional plugins that enhance functionality if present
-- <strong>Environment-Specific Dependencies</strong>: Different dependencies in dev vs production
-- <strong>Backward Compatibility</strong>: Add new optional dependencies without breaking existing code
-- <strong>Type Safety</strong>: Use Optional[T] instead of manual None checks</p>
-<p><strong>Real-World Use Cases:</strong>
-- <strong>Optional Caching</strong>: Cache service that may or may not be available
-- <strong>Optional Monitoring</strong>: Metrics/analytics that are optional in development
-- <strong>Optional Plugins</strong>: Third-party integrations that may not be installed
-- <strong>Feature Toggles</strong>: Features that can be enabled/disabled via configuration</p>
+<p>Optional dependencies solve the “graceful degradation” problem:</p>
+<ul class="simple">
+<li><p><strong>Feature Flags</strong>: Support optional features that may or may not be available</p></li>
+<li><p><strong>Plugin Systems</strong>: Optional plugins that enhance functionality if present</p></li>
+<li><p><strong>Environment-Specific Dependencies</strong>: Different dependencies in dev vs production</p></li>
+<li><p><strong>Backward Compatibility</strong>: Add new optional dependencies without breaking existing code</p></li>
+<li><p><strong>Type Safety</strong>: Use Optional[T] instead of manual None checks</p></li>
+</ul>
+<p><strong>Real-World Use Cases:</strong></p>
+<ul class="simple">
+<li><p><strong>Optional Caching</strong>: Cache service that may or may not be available</p></li>
+<li><p><strong>Optional Monitoring</strong>: Metrics/analytics that are optional in development</p></li>
+<li><p><strong>Optional Plugins</strong>: Third-party integrations that may not be installed</p></li>
+<li><p><strong>Feature Toggles</strong>: Features that can be enabled/disabled via configuration</p></li>
+</ul>
 <dl class="simple">
 <dt>Architecture:</dt><dd><ul class="simple">
 <li><p>OptionalBinder: Helper for binding optional dependencies</p></li>

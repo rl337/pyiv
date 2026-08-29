@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.console &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.console &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -125,18 +132,22 @@ print() statements to be replaced with injectable console objects. This
 enables testing by capturing console output without actually printing
 to stdout.</p>
 <p><strong>What Problem Does This Solve?</strong></p>
-<p>Console output solves the “print() testing” problem:
-- <strong>Testability</strong>: Capture print() output in tests without mocking sys.stdout
-- <strong>Flexibility</strong>: Redirect console output to files, memory, or custom handlers
-- <strong>Dependency Injection</strong>: Make console output injectable like other dependencies
-- <strong>Separation of Concerns</strong>: Distinguish user-facing output (console) from logging
-- <strong>Test Isolation</strong>: Each test can have its own console instance</p>
-<p><strong>Real-World Use Cases:</strong>
-- <strong>CLI Applications</strong>: Capture command output for testing
-- <strong>Interactive Programs</strong>: Test user prompts and responses
-- <strong>Progress Indicators</strong>: Test progress bars and status messages
-- <strong>Error Messages</strong>: Capture and verify error output
-- <strong>Report Generation</strong>: Redirect reports to files or memory</p>
+<p>Console output solves the “print() testing” problem:</p>
+<ul class="simple">
+<li><p><strong>Testability</strong>: Capture print() output in tests without mocking sys.stdout</p></li>
+<li><p><strong>Flexibility</strong>: Redirect console output to files, memory, or custom handlers</p></li>
+<li><p><strong>Dependency Injection</strong>: Make console output injectable like other dependencies</p></li>
+<li><p><strong>Separation of Concerns</strong>: Distinguish user-facing output (console) from logging</p></li>
+<li><p><strong>Test Isolation</strong>: Each test can have its own console instance</p></li>
+</ul>
+<p><strong>Real-World Use Cases:</strong></p>
+<ul class="simple">
+<li><p><strong>CLI Applications</strong>: Capture command output for testing</p></li>
+<li><p><strong>Interactive Programs</strong>: Test user prompts and responses</p></li>
+<li><p><strong>Progress Indicators</strong>: Test progress bars and status messages</p></li>
+<li><p><strong>Error Messages</strong>: Capture and verify error output</p></li>
+<li><p><strong>Report Generation</strong>: Redirect reports to files or memory</p></li>
+</ul>
 <dl class="simple">
 <dt>Architecture:</dt><dd><ul class="simple">
 <li><p>Console: Protocol defining file-like console interface</p></li>

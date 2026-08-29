@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.scope &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.scope &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../../_static/documentation_options.js?v=171860b8"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,7 +40,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.config.html">pyiv.config</a></li>
@@ -125,14 +132,15 @@
 <span class="sd">**What Problem Does This Solve?**</span>
 
 <span class="sd">Scopes solve the lifecycle management problem in DI:</span>
-<span class="sd">- **Singleton Pattern Generalization**: Beyond simple singletons, support request-scoped,</span>
-<span class="sd">  thread-scoped, session-scoped, and custom lifecycles</span>
+
+<span class="sd">- **Singleton Pattern Generalization**: Request, thread, session, and custom lifecycles</span>
 <span class="sd">- **Resource Management**: Control when expensive objects are created and destroyed</span>
-<span class="sd">- **Test Isolation**: Different scopes for test vs production (e.g., per-injector vs global)</span>
+<span class="sd">- **Test Isolation**: Different scopes for test vs production (per-injector vs global)</span>
 <span class="sd">- **Thread Safety**: GlobalSingletonScope provides thread-safe singleton access</span>
-<span class="sd">- **Extensibility**: Create custom scopes for framework-specific needs (e.g., Flask request scope)</span>
+<span class="sd">- **Extensibility**: Custom scopes for framework-specific needs (e.g. request scope)</span>
 
 <span class="sd">**Real-World Use Cases:**</span>
+
 <span class="sd">- **Request-Scoped**: Database connections that live for the duration of an HTTP request</span>
 <span class="sd">- **Session-Scoped**: User session objects that persist across multiple requests</span>
 <span class="sd">- **Thread-Scoped**: Thread-local storage for multi-threaded applications</span>
@@ -239,7 +247,8 @@
 <span class="sd">    Scopes are more flexible than simple singletons - they can implement</span>
 <span class="sd">    request-scoped, thread-scoped, session-scoped, or any custom lifecycle.</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Example::</span>
+
 <span class="sd">        class RequestScope(Scope):</span>
 <span class="sd">            def __init__(self):</span>
 <span class="sd">                self._request_cache = {}</span>

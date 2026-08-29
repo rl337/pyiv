@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.multibinder &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.multibinder &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -125,17 +132,21 @@ implementations of the same type. This is useful for plugin systems,
 event handlers, chain of responsibility patterns, and strategy patterns
 with multiple strategies.</p>
 <p><strong>What Problem Does This Solve?</strong></p>
-<p>Multibinders solve the “multiple implementations” problem:
-- <strong>Plugin Systems</strong>: Register and inject multiple plugins of the same type
-- <strong>Event Handlers</strong>: Multiple event handlers that all need to be notified
-- <strong>Chain of Responsibility</strong>: Multiple handlers that process requests in sequence
-- <strong>Strategy Pattern</strong>: Multiple strategies that can be applied
-- <strong>Validation Chains</strong>: Multiple validators that all need to run</p>
-<p><strong>Real-World Use Cases:</strong>
-- <strong>Event System</strong>: Multiple event listeners for the same event type
-- <strong>Validation Pipeline</strong>: Multiple validators that all need to run
-- <strong>Middleware Stack</strong>: Multiple middleware components in a web framework
-- <strong>Plugin Architecture</strong>: Multiple plugins that extend functionality</p>
+<p>Multibinders solve the “multiple implementations” problem:</p>
+<ul class="simple">
+<li><p><strong>Plugin Systems</strong>: Register and inject multiple plugins of the same type</p></li>
+<li><p><strong>Event Handlers</strong>: Multiple event handlers that all need to be notified</p></li>
+<li><p><strong>Chain of Responsibility</strong>: Multiple handlers that process requests in sequence</p></li>
+<li><p><strong>Strategy Pattern</strong>: Multiple strategies that can be applied</p></li>
+<li><p><strong>Validation Chains</strong>: Multiple validators that all need to run</p></li>
+</ul>
+<p><strong>Real-World Use Cases:</strong></p>
+<ul class="simple">
+<li><p><strong>Event System</strong>: Multiple event listeners for the same event type</p></li>
+<li><p><strong>Validation Pipeline</strong>: Multiple validators that all need to run</p></li>
+<li><p><strong>Middleware Stack</strong>: Multiple middleware components in a web framework</p></li>
+<li><p><strong>Plugin Architecture</strong>: Multiple plugins that extend functionality</p></li>
+</ul>
 <dl class="simple">
 <dt>Architecture:</dt><dd><ul class="simple">
 <li><p>Multibinder: Interface for binding multiple implementations</p></li>

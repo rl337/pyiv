@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.injector &mdash; pyiv 0.2.20 documentation</title>
+  <title>pyiv.injector &mdash; pyiv 0.2.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5fae4463" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20e0ead2"></script>
+      <script src="../_static/documentation_options.js?v=171860b8"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -43,7 +43,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
@@ -132,14 +139,12 @@ and managing singleton lifecycles based on configuration.</p>
 </dl>
 <p>The injector uses type annotations and Config registrations to automatically
 resolve dependencies. It supports:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>Constructor injection via type annotations</p></li>
 <li><p>Singleton lifecycle management</p></li>
 <li><p>Factory functions for complex object creation</p></li>
 <li><p>Circular dependency detection</p></li>
 </ul>
-</div></blockquote>
 <dl>
 <dt>Usage:</dt><dd><p>Create a Config subclass, register dependencies, then create an injector:</p>
 <dl>
@@ -366,20 +371,18 @@ and legacy code.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<p># Using a Config class
-class MyConfig(Config):</p>
-<blockquote>
-<div><dl class="simple">
-<dt>def configure(self):</dt><dd><p>self.register(Database, PostgreSQL)</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>injector = get_injector(MyConfig)
-db = injector.inject(Database)</p>
-<p># Using a Config instance (useful for test configs with parameters)
-test_config = MyTestConfig(mock_db=my_mock)
-injector = get_injector(test_config)
-db = injector.inject(Database)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Database</span><span class="p">),</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
