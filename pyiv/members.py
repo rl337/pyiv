@@ -8,14 +8,15 @@ is not possible.
 **What Problem Does This Solve?**
 
 MembersInjector solves the "framework-managed objects" problem:
-- **Framework Integration**: Inject into objects created by frameworks (Django models,
-  Flask request objects, etc.) where you can't control the constructor
-- **Legacy Code**: Migrate existing code to DI without refactoring all constructors
-- **Third-Party Objects**: Inject dependencies into objects from libraries you don't control
-- **Data Classes**: Support field injection for dataclasses and attrs classes
+
+- **Framework Integration**: Inject into objects you did not construct
+- **Legacy Code**: Migrate existing code to DI without refactoring constructors
+- **Third-Party Objects**: Inject dependencies into objects you do not control
+- **Data Classes**: Field injection for dataclasses and attrs classes
 - **Flexibility**: Use field injection when constructor injection is impractical
 
 **Real-World Use Cases:**
+
 - **Django Models**: Inject services into Django model instances
 - **Flask Request Context**: Inject dependencies into Flask request objects
 - **Legacy Codebase**: Gradually migrate to DI without breaking existing code

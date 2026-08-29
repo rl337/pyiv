@@ -7,6 +7,7 @@ dependency if available, or None if not registered.
 **What Problem Does This Solve?**
 
 Optional dependencies solve the "graceful degradation" problem:
+
 - **Feature Flags**: Support optional features that may or may not be available
 - **Plugin Systems**: Optional plugins that enhance functionality if present
 - **Environment-Specific Dependencies**: Different dependencies in dev vs production
@@ -14,6 +15,7 @@ Optional dependencies solve the "graceful degradation" problem:
 - **Type Safety**: Use Optional[T] instead of manual None checks
 
 **Real-World Use Cases:**
+
 - **Optional Caching**: Cache service that may or may not be available
 - **Optional Monitoring**: Metrics/analytics that are optional in development
 - **Optional Plugins**: Third-party integrations that may not be installed

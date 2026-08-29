@@ -8,14 +8,15 @@ custom scopes like request-scoped, thread-scoped, session-scoped, etc.
 **What Problem Does This Solve?**
 
 Scopes solve the lifecycle management problem in DI:
-- **Singleton Pattern Generalization**: Beyond simple singletons, support request-scoped,
-  thread-scoped, session-scoped, and custom lifecycles
+
+- **Singleton Pattern Generalization**: Request, thread, session, and custom lifecycles
 - **Resource Management**: Control when expensive objects are created and destroyed
-- **Test Isolation**: Different scopes for test vs production (e.g., per-injector vs global)
+- **Test Isolation**: Different scopes for test vs production (per-injector vs global)
 - **Thread Safety**: GlobalSingletonScope provides thread-safe singleton access
-- **Extensibility**: Create custom scopes for framework-specific needs (e.g., Flask request scope)
+- **Extensibility**: Custom scopes for framework-specific needs (e.g. request scope)
 
 **Real-World Use Cases:**
+
 - **Request-Scoped**: Database connections that live for the duration of an HTTP request
 - **Session-Scoped**: User session objects that persist across multiple requests
 - **Thread-Scoped**: Thread-local storage for multi-threaded applications
@@ -120,7 +121,8 @@ class Scope(Protocol):
     Scopes are more flexible than simple singletons - they can implement
     request-scoped, thread-scoped, session-scoped, or any custom lifecycle.
 
-    Example:
+    Example::
+
         class RequestScope(Scope):
             def __init__(self):
                 self._request_cache = {}

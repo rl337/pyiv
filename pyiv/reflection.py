@@ -22,15 +22,15 @@ class ReflectionConfig(Config):
     to scan, and all implementations of an interface will be automatically discovered
     and registered.
 
-    Example:
+    Example::
+
         class MyConfig(ReflectionConfig):
             def configure(self):
-                # Register module for handler discovery
                 self.register_module(
                     Handler,
                     "my_service.handlers",
                     pattern="*Handler",
-                    singleton_type=SingletonType.SINGLETON
+                    singleton_type=SingletonType.SINGLETON,
                 )
     """
 
@@ -52,8 +52,9 @@ class ReflectionConfig(Config):
         Args:
             interface: The abstract class or interface to find implementations of
             package_path: Python package path (e.g., "my_service.mcp.handlers")
-            pattern: Optional name pattern for filtering (e.g., "*Handler", "handle_*")
-                     Uses fnmatch syntax. If None, all implementations are discovered.
+            pattern: Optional name pattern for filtering (e.g. ``*Handler``,
+                ``handle_*``). Uses fnmatch syntax. If None, all implementations
+                are discovered.
             recursive: Whether to scan submodules recursively (default: True)
             singleton_type: How to handle instances (default: SINGLETON for per-injector reuse)
 
@@ -61,19 +62,18 @@ class ReflectionConfig(Config):
             TypeError: If interface is not a type
             ImportError: If the package cannot be imported
 
-        Example:
-            # Discover all classes ending in "Handler" that implement Handler
+        Example::
+
             self.register_module(
                 Handler,
                 "my_service.handlers",
-                pattern="*Handler"
+                pattern="*Handler",
             )
 
-            # Discover all implementations recursively
             self.register_module(
                 Service,
                 "my_service.services",
-                recursive=True
+                recursive=True,
             )
         """
         if not isinstance(interface, type):
