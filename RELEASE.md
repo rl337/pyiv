@@ -50,6 +50,8 @@ Both are attached to the GitHub Release. pyiv is not on PyPI yet; install a tagg
 pip install git+https://github.com/rl337/pyiv.git@v<version>
 ```
 
+User-facing notes for a version live in `CHANGELOG.md`. Put new bullets under **Unreleased** in the same PR as the change; after the auto-bump, move them to `## X.Y.Z`. GitHub Release bodies should match those bullets, not a squash commit.
+
 ## Release Artifacts
 
 Release artifacts are:

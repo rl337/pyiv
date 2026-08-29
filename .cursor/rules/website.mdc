@@ -16,4 +16,4 @@ API nav: grouped `toctree`s on `docs/index.rst` (User guide, Core DI, Bindings, 
 
 Production is https://rl337.org/pyiv/ from `main`. PR previews are `/branch/<branch>/` only.
 
-If a changelog page exists, link it from the site and from `project.urls`.
+If a changelog page exists, link it from the site (homepage + Reference toctree) and from `project.urls`. `CHANGELOG.md` is the source of truth; `docs/changelog.rst` includes it.

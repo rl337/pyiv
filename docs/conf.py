@@ -29,6 +29,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",  # Support for Google/NumPy style docstrings
+    "myst_parser",  # CHANGELOG.md on the changelog page
 ]
 
 # Autodoc settings
@@ -83,7 +84,12 @@ intersphinx_mapping = {
 htmlhelp_basename = "pyivdoc"
 
 # Exclude patterns
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md"]
+
+# Changelog is included from ../CHANGELOG.md; do not treat every .md as a page.
+source_suffix = {
+    ".rst": "restructuredtext",
+}
 
 # Master document
 master_doc = "index"

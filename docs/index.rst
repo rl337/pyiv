@@ -20,6 +20,7 @@ mocking the world.
    <div style="margin: 20px 0; padding: 15px; background: #e8f4f8; border-left: 4px solid #0066cc; border-radius: 4px;">
    <strong>Quick Links:</strong>
    <a href="https://github.com/rl337/pyiv" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">GitHub</a>
+   <a href="changelog.html" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">Changelog</a>
    <a href="https://github.com/rl337/pyiv/blob/main/README.md" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">README</a>
    </div>
 
@@ -165,6 +166,7 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    :maxdepth: 1
    :caption: Reference
 
+   changelog
    modules
 
 Indices and tables
