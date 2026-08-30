@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.serde.encodings &mdash; pyiv 0.2.23 documentation</title>
+  <title>pyiv.serde.encodings &mdash; pyiv 0.2.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=171860b8"></script>
-      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/documentation_options.js?v=dc91f075"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -97,6 +97,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Module listing</a></li>
 </ul>
 
@@ -163,7 +164,7 @@ in Python’s standard library:</p>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.Base64SerDe">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">Base64SerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#Base64SerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.Base64SerDe" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">Base64SerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#Base64SerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.Base64SerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>Base64 encoding SerDe.</p>
 <p>Encodes/decodes data using base64 encoding. Input must be bytes.</p>
@@ -186,7 +187,7 @@ in Python’s standard library:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.Base64SerDe.handler_type">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#pyiv.serde.encodings.Base64SerDe.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.encodings.Base64SerDe.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -213,7 +214,7 @@ in Python’s standard library:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.JSONSerDe">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">JSONSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.JSONSerDe" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">JSONSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.JSONSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>Standard JSON SerDe using Python’s json module.</p>
 <dl class="py method">
@@ -235,7 +236,7 @@ in Python’s standard library:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.JSONSerDe.handler_type">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#pyiv.serde.encodings.JSONSerDe.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.encodings.JSONSerDe.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -262,7 +263,7 @@ in Python’s standard library:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.NoOpSerDe">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">NoOpSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#NoOpSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.NoOpSerDe" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">NoOpSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#NoOpSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.NoOpSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>No-op SerDe that passes through data unchanged.</p>
 <p>This is the default fallback when no encoding is specified.</p>
@@ -285,7 +286,7 @@ in Python’s standard library:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.NoOpSerDe.handler_type">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#pyiv.serde.encodings.NoOpSerDe.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.encodings.NoOpSerDe.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -312,7 +313,7 @@ in Python’s standard library:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.PickleSerDe">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">PickleSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#PickleSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.PickleSerDe" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">PickleSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#PickleSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.PickleSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>Python pickle SerDe.</p>
 <p>Uses Python’s pickle module for serialization. This is a fallback option
@@ -336,7 +337,7 @@ when other encodings are not suitable.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.PickleSerDe.handler_type">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#pyiv.serde.encodings.PickleSerDe.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.encodings.PickleSerDe.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -363,7 +364,7 @@ when other encodings are not suitable.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.XMLSerDe">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">XMLSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#XMLSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.XMLSerDe" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">XMLSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#XMLSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.XMLSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>XML encoding SerDe.</p>
 <p>Encodes/decodes data using XML. For simple dict/list structures.</p>
@@ -386,7 +387,7 @@ when other encodings are not suitable.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.XMLSerDe.handler_type">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#pyiv.serde.encodings.XMLSerDe.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.encodings.XMLSerDe.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -413,7 +414,7 @@ when other encodings are not suitable.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.YAMLSerDe">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">YAMLSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#YAMLSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.YAMLSerDe" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">YAMLSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#YAMLSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.YAMLSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>YAML encoding SerDe.</p>
 <p>Uses PyYAML if available, otherwise raises ImportError.</p>
@@ -439,7 +440,7 @@ when other encodings are not suitable.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.YAMLSerDe.handler_type">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#pyiv.serde.encodings.YAMLSerDe.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.encodings.YAMLSerDe.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

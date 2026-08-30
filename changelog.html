@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module listing &mdash; pyiv 0.2.24 documentation</title>
+  <title>Changelog &mdash; pyiv 0.2.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=75b4fac4" />
@@ -20,7 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Changelog" href="changelog.html" /> 
+    <link rel="next" title="Module listing" href="modules.html" />
+    <link rel="prev" title="pyiv.network.clients" href="pyiv/pyiv.network.clients.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -96,8 +97,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Module listing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module listing</a></li>
 </ul>
 
         </div>
@@ -114,9 +115,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Module listing</li>
+      <li class="breadcrumb-item active">Changelog</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/rl337/pyiv/blob/main/docs/modules.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/rl337/pyiv/blob/main/docs/changelog.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -124,19 +125,103 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-listing">
-<h1>Module listing<a class="headerlink" href="#module-listing" title="Link to this heading"></a></h1>
-<p>This page exists so older <code class="docutils literal notranslate"><span class="pre">modules.html</span></code> links keep working.</p>
-<p>Use the left navigation (Core DI, Bindings, Discovery, Test doubles,
-Integrations) to browse the API. Those pages are generated from <code class="docutils literal notranslate"><span class="pre">pyiv</span></code>
-docstrings.</p>
+  <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<p>User-facing changes to pyiv, in <a class="reference external" href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>
+order. The first public PyPI version will be <strong>0.3.0</strong>. Until then, install with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/rl337/pyiv.git
+</pre></div>
+</div>
+<section id="unreleased">
+<h2>Unreleased<a class="headerlink" href="#unreleased" title="Link to this heading"></a></h2>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>This changelog, a <a class="reference external" href="https://rl337.org/pyiv/changelog.html">docs page</a>, and a
+Changelog URL in package metadata.</p></li>
+</ul>
+</section>
+</section>
+<section id="id1">
+<h2>0.2.24 - 2026-08-29<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>Added<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>User guide: binding, scopes, keys and collections, testing with doubles.</p></li>
+<li><p>Homepage version badge from the package version.</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Sphinx autodoc no longer breaks on Markdown-style lists in docstrings.</p></li>
+<li><p>Package overview matches homepage features (injection, scopes, keys, test
+doubles), not factory-first copy.</p></li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2>0.2.22 - 2026-08-28<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Package metadata: author Richard Lee, documentation
+<a class="reference external" href="https://rl337.org/pyiv/">https://rl337.org/pyiv/</a>.</p></li>
+<li><p>GitHub Releases and <code class="docutils literal notranslate"><span class="pre">RELEASE.md</span></code> install from git until PyPI exists.</p></li>
+</ul>
+</section>
+</section>
+<section id="id4">
+<h2>0.2.21 - 2026-08-28<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>Added<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Product docs at <a class="reference external" href="https://rl337.org/pyiv/">https://rl337.org/pyiv/</a> (git
+install, grouped API nav).</p></li>
+<li><p>Doctests in CI for examples in <code class="docutils literal notranslate"><span class="pre">pyiv</span></code> module docstrings.</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>Fixed<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">register_key</span></code> keeps the implementation class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Multibinder.add</span></code> registers the binding.</p></li>
+</ul>
+</section>
+</section>
+<section id="id7">
+<h2>0.2.20 - 2026-08-28<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>Fixed<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Singleton resolution no longer recurses into itself.</p></li>
+<li><p>CI fails when pytest exits 2 (collection errors), not only on test failures.</p></li>
+</ul>
+</section>
+</section>
+<section id="earlier-0-2-x">
+<h2>Earlier 0.2.x<a class="headerlink" href="#earlier-0-2-x" title="Link to this heading"></a></h2>
+<p>Pre-PyPI history. Not every auto-bump is listed.</p>
+<section id="id9">
+<h3>Added<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Guice-style Provider, Scope, Key, Binder, MembersInjector, Optional, and
+Multibinder.</p></li>
+<li><p>Clock, Filesystem, Console (including TTY/PTY), and DateTimeService test
+doubles.</p></li>
+<li><p>Reflection, SerDe, network clients, and Command.</p></li>
+<li><p>Per-injector and process-wide singletons.</p></li>
+</ul>
+</section>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="changelog.html" class="btn btn-neutral float-left" title="Changelog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyiv/pyiv.network.clients.html" class="btn btn-neutral float-left" title="pyiv.network.clients" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="Module listing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

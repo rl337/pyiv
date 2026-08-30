@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.chain &mdash; pyiv 0.2.23 documentation</title>
+  <title>pyiv.chain &mdash; pyiv 0.2.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=171860b8"></script>
-      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/documentation_options.js?v=dc91f075"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -97,6 +97,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Module listing</a></li>
 </ul>
 
@@ -136,14 +137,14 @@ own interface and implementations.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.chain.ChainHandler" title="pyiv.chain.ChainHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainHandler</span></code></a>()</p></td>
 <td><p>Abstract base class for chain of responsibility handlers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pyiv.chain.ChainType" title="pyiv.chain.ChainType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainType</span></code></a>(*values)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyiv.chain.ChainType" title="pyiv.chain.ChainType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainType</span></code></a>(value[, names, module, qualname, ...])</p></td>
 <td><p>Types of chain of responsibility handlers.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.chain.ChainHandler">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.chain.</span></span><span class="sig-name descname"><span class="pre">ChainHandler</span></span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainHandler" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.chain.</span></span><span class="sig-name descname"><span class="pre">ChainHandler</span></span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainHandler" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Abstract base class for chain of responsibility handlers.</p>
 <p>Chain handlers process requests in a chain. Each handler can either:
@@ -160,7 +161,7 @@ own interface and implementations.</p>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.chain.ChainHandler.chain_type">
-<span class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">chain_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyiv.chain.ChainType" title="pyiv.chain.ChainType"><span class="pre">ChainType</span></a></span><a class="headerlink" href="#pyiv.chain.ChainHandler.chain_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chain_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyiv.chain.ChainType" title="pyiv.chain.ChainType"><span class="pre">ChainType</span></a></em><a class="headerlink" href="#pyiv.chain.ChainHandler.chain_type" title="Link to this definition"></a></dt>
 <dd><p>Return the chain type this handler belongs to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -171,7 +172,7 @@ own interface and implementations.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.chain.ChainHandler.handle">
-<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainHandler.handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainHandler.handle" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainHandler.handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainHandler.handle" title="Link to this definition"></a></dt>
 <dd><p>Handle a request.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -188,7 +189,7 @@ own interface and implementations.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.chain.ChainHandler.handler_type">
-<span class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#pyiv.chain.ChainHandler.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.chain.ChainHandler.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <p>This identifies the specific implementation (e.g., “json”, “md5”, “quicksort”).</p>
 <dl class="field-list simple">
@@ -202,7 +203,7 @@ own interface and implementations.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.chain.ChainType">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyiv.chain.</span></span><span class="sig-name descname"><span class="pre">ChainType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainType" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.chain.</span></span><span class="sig-name descname"><span class="pre">ChainType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainType" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p>Types of chain of responsibility handlers.</p>
 <p>Each chain type represents a different category of handlers:
@@ -213,22 +214,22 @@ own interface and implementations.</p>
 - etc.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv.chain.ChainType.ENCODING">
-<span class="sig-name descname"><span class="pre">ENCODING</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'encoding'</span></span><a class="headerlink" href="#pyiv.chain.ChainType.ENCODING" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'encoding'</span></em><a class="headerlink" href="#pyiv.chain.ChainType.ENCODING" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv.chain.ChainType.HASHING">
-<span class="sig-name descname"><span class="pre">HASHING</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hashing'</span></span><a class="headerlink" href="#pyiv.chain.ChainType.HASHING" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">HASHING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hashing'</span></em><a class="headerlink" href="#pyiv.chain.ChainType.HASHING" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv.chain.ChainType.NETWORK_CLIENT">
-<span class="sig-name descname"><span class="pre">NETWORK_CLIENT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'network_client'</span></span><a class="headerlink" href="#pyiv.chain.ChainType.NETWORK_CLIENT" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NETWORK_CLIENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'network_client'</span></em><a class="headerlink" href="#pyiv.chain.ChainType.NETWORK_CLIENT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv.chain.ChainType.SORTING">
-<span class="sig-name descname"><span class="pre">SORTING</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sorting'</span></span><a class="headerlink" href="#pyiv.chain.ChainType.SORTING" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SORTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sorting'</span></em><a class="headerlink" href="#pyiv.chain.ChainType.SORTING" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
