@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyiv"
-version = "0.2.24"
+version = "0.2.25"
 description = "Guice-style dependency injection for Python, with scopes, qualified keys, and test doubles"
 readme = "README.md"
 requires-python = ">=3.8"
