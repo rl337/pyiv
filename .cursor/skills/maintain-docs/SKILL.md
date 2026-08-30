@@ -30,7 +30,7 @@ Canonical URLs (also `[project.urls]`): Homepage/Repository `https://github.com/
 1. Runnable module doctest (self-contained; no network, real sleeps, or cwd writes).
 2. New public module: `docs/pyiv/pyiv.<module>.rst` **and** the matching toctree on `docs/index.rst`. Omit `binder_impl`.
 3. Homepage Key Features stay: type injection, scopes, keys/binder, reflection, test doubles, zero deps. Not Factory-first.
-4. If the change is user-visible, add a changelog bullet the release notes can use.
+4. If the change is user-visible, add a bullet under `## Unreleased` in `CHANGELOG.md` (do not invent a version). GitHub Releases reuse those bullets.
 5. `pytest --doctest-modules pyiv` and `sphinx-build -b html docs docs/_build/html`.
 
 ## Sidebar UX

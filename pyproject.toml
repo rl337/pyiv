@@ -40,6 +40,7 @@ dev = [
 docs = [
     "sphinx>=5.0.0",
     "sphinx-rtd-theme>=1.0.0",
+    "myst-parser>=2.0.0,<3",  # <3 keeps Python 3.8; used to render CHANGELOG.md
 ]
 
 [project.urls]
@@ -47,6 +48,7 @@ Homepage = "https://github.com/rl337/pyiv"
 Documentation = "https://rl337.org/pyiv/"
 Repository = "https://github.com/rl337/pyiv"
 Issues = "https://github.com/rl337/pyiv/issues"
+Changelog = "https://rl337.org/pyiv/changelog.html"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pyiv"]
