@@ -91,20 +91,19 @@ run_check "Documentation quality" $PYTHON_CMD check_docs_quality.py
 echo ""
 echo -e "${YELLOW}Running: Sphinx documentation build${NC}"
 echo "Command: Building Sphinx documentation"
-# Check if sphinx-build is available
 SPHINX_BUILD="sphinx-build"
-if ! command -v sphinx-build &> /dev/null; then
-    echo -e "${YELLOW}⚠ sphinx-build not found, attempting to install Sphinx...${NC}"
-    # Try to install sphinx and sphinx-rtd-theme
-    if $PYTHON_CMD -m pip install --quiet --user sphinx sphinx-rtd-theme 2>&1; then
-        echo -e "${GREEN}✓ Sphinx installed${NC}"
-        # Add user local bin to PATH if sphinx was installed there
+if ! $PYTHON_CMD -c "import sphinx, myst_parser" &> /dev/null; then
+    echo -e "${YELLOW}⚠ Sphinx docs extras missing, installing .[docs]...${NC}"
+    if $PYTHON_CMD -m pip install --quiet -e ".[docs]" 2>&1; then
+        echo -e "${GREEN}✓ Docs extras installed${NC}"
         if [ -d "$HOME/.local/bin" ]; then
             export PATH="$HOME/.local/bin:$PATH"
-            SPHINX_BUILD="$HOME/.local/bin/sphinx-build"
+        fi
+        if command -v sphinx-build &> /dev/null; then
+            SPHINX_BUILD="$(command -v sphinx-build)"
         fi
     else
-        echo -e "${RED}✗ Failed to install Sphinx. Please install it manually: pip install sphinx sphinx-rtd-theme${NC}"
+        echo -e "${RED}✗ Failed to install docs extras. Please install: pip install -e \".[docs]\"${NC}"
         FAILED=1
     fi
 fi
