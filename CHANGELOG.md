@@ -1,18 +1,24 @@
 # Changelog
 
 User-facing changes to pyiv, in [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
-order. The first public PyPI version will be **0.3.0**. Until then, install with:
-
-```bash
-pip install git+https://github.com/rl337/pyiv.git
-```
+order. Install with `pip install pyiv`. Unreleased `main` is
+`pip install git+https://github.com/rl337/pyiv.git`.
 
 ## Unreleased
 
+## 0.3.0 - 2026-09-07
+
+First public PyPI release.
+
 ### Added
 
-- This changelog, a [docs page](https://rl337.org/pyiv/changelog.html), and a
-  Changelog URL in package metadata.
+- `pip install pyiv` (Python 3.8–3.13).
+- Changelog on the docs site and in package metadata.
+- `py.typed` so type checkers treat pyiv as typed.
+
+### Changed
+
+- README, docs, and GitHub Releases use `pip install pyiv` instead of a git URL.
 
 ## 0.2.24 - 2026-08-29
 

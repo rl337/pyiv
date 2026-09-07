@@ -10,7 +10,7 @@ README is the GitHub **and** PyPI long description: what pyiv is, honest install
 
 **docs/** is the product site. Key Features: type-based injection, scopes, keys/binder, reflection, test doubles, zero dependencies. Do not headline Factory.
 
-Install must match README and release notes. Until PyPI exists: `pip install git+https://github.com/rl337/pyiv.git`. No `pip install pyiv`, no PyPI project link, no Poetry.
+Install must match README and release notes: `pip install pyiv`. Unreleased `main` may use `pip install git+https://github.com/rl337/pyiv.git`. No Poetry.
 
 API nav: grouped `toctree`s on `docs/index.rst` (User guide, Core DI, Bindings, Discovery, Test doubles, Integrations). User guide pages live in `docs/guide/` with human titles. Keep `collapse_navigation: False` and `titles_only: True`. Omit `binder_impl`. New public modules need `docs/pyiv/pyiv.<name>.rst` and a toctree entry.
 

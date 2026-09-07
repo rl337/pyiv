@@ -11,19 +11,17 @@ Three public surfaces must agree. Docstrings feed the site; they are not a fourt
 | --- | --- | --- |
 | PyPI listing | `README.md`, `[project]` in `pyproject.toml` | README is GitHub **and** Warehouse long_description. Metadata (author, URLs, description) is the sidebar. Not a second API manual. |
 | Website | `docs/`, `pyiv/**/*.py` docstrings | Product manual at https://rl337.org/pyiv/. Features, install, guide, autodoc. Production is `main` only; PRs go to `/branch/<name>/`. |
-| Release notes | `CHANGELOG.md` (when present), GitHub Releases, `RELEASE.md`, `.github/workflows/release.yml` | Why this version shipped. Same install command as README. Not a squash-commit dump that tells people to `pip install` a version that is not on PyPI. |
+| Release notes | `CHANGELOG.md`, GitHub Releases, `RELEASE.md`, `.github/workflows/release.yml` | Why this version shipped. Same install command as README. Not a squash-commit dump. |
 
 ## Install story (must match all three)
 
-Until a production PyPI upload exists:
+- Install: `pip install pyiv`
+- Docs + PyPI: https://rl337.org/pyiv/ and https://pypi.org/project/pyiv/
+- Unreleased `main`: `pip install git+https://github.com/rl337/pyiv.git`
+- Do not mention Poetry.
+- PyPI is production `X.Y.Z` only (no RCs or nightlies). First public version is **0.3.0**.
 
-- Install: `pip install git+https://github.com/rl337/pyiv.git`
-- Do not write `pip install pyiv`, do not link https://pypi.org/project/pyiv/, do not mention Poetry.
-- First public version is **0.3.0**, not a 0.2.x tag.
-
-After that upload, flip README, `docs/index.rst`, changelog/release templates, and `project.urls` together in the same change.
-
-Canonical URLs (also `[project.urls]`): Homepage/Repository `https://github.com/rl337/pyiv`, Documentation `https://rl337.org/pyiv/`. No `yourusername` placeholders.
+Canonical URLs (also `[project.urls]`): Homepage/Repository `https://github.com/rl337/pyiv`, Documentation `https://rl337.org/pyiv/`, Changelog `https://rl337.org/pyiv/changelog.html`. No `yourusername` placeholders.
 
 ## After a public API change
 

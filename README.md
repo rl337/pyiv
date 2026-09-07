@@ -5,11 +5,16 @@ scopes, qualified keys, and built-in test doubles. Zero runtime dependencies.
 Python 3.8+.
 
 **Docs:** [https://rl337.org/pyiv/](https://rl337.org/pyiv/) ·
-**Changelog:** [https://rl337.org/pyiv/changelog.html](https://rl337.org/pyiv/changelog.html)
+**Changelog:** [https://rl337.org/pyiv/changelog.html](https://rl337.org/pyiv/changelog.html) ·
+**PyPI:** [https://pypi.org/project/pyiv/](https://pypi.org/project/pyiv/)
 
 ## Install
 
-pyiv is not on PyPI yet. Install from GitHub:
+```bash
+pip install pyiv
+```
+
+Requires Python 3.8 or newer. Unreleased `main`:
 
 ```bash
 pip install git+https://github.com/rl337/pyiv.git
@@ -48,7 +53,8 @@ pip install -e ".[dev,docs]"
 `pyiv/`), mypy, bandit, and a Sphinx build.
 
 Version numbers are bumped by GitHub Actions on `main`. Do not edit
-`pyproject.toml` / `pyiv/__init__.py` versions except for a manual major bump.
+`pyproject.toml` / `pyiv/__init__.py` versions except for a manual major bump
+(the 0.3.0 PyPI release is that exception).
 
 ## License
 

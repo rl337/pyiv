@@ -69,7 +69,7 @@ try:
 except ImportError:
     _has_commands = False
 
-__version__ = "0.2.25"
+__version__ = "0.3.0"
 __all__ = [
     "Config",
     "ReflectionConfig",

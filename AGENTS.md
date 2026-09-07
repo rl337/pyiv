@@ -17,7 +17,9 @@ Three surfaces must stay in sync (see `.cursor/skills/maintain-docs/SKILL.md`):
 - **docs/** (https://rl337.org/pyiv/): product manual; API from `pyiv` docstrings
 - **Changelog / GitHub Releases**: why the version shipped; same install command as README
 
-Do not claim `pip install pyiv` until the package is on PyPI. First public version is 0.3.0.
+Install with `pip install pyiv`. First public version is 0.3.0. Unreleased
+`main` can use `pip install git+https://github.com/rl337/pyiv.git`. Do not
+mention Poetry.
 
 Homepage Key Features should match the product (injection, scopes, keys/binder,
 reflection, test doubles, zero deps)—not factory-first copy.
