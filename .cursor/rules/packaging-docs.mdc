@@ -14,7 +14,7 @@ alwaysApply: false
 - `Changelog` = `https://rl337.org/pyiv/changelog.html`
 - Description should match the README one-liner (Guice-style DI, not factory-first)
 
-Install commands in `RELEASE.md`, release workflow text, and GitHub Release bodies must match README. Until pyiv is on PyPI, that is the git URL, not `pip install pyiv` or `pip install pyiv==<version>`.
+Install commands in `RELEASE.md`, release workflow text, and GitHub Release bodies must match README: `pip install pyiv` (and `pip install pyiv==<version>` on a tagged release). Unreleased `main` may use the git URL. Do not mention Poetry. PyPI is final `X.Y.Z` only.
 
 ## Changelog
 

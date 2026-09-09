@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyiv"
-version = "0.2.25"
+version = "0.3.0"
 description = "Guice-style dependency injection for Python, with scopes, qualified keys, and test doubles"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -12,7 +12,7 @@ license = {text = "MIT"}
 authors = [
     {name = "Richard Lee", email = "rlee@tokyo3.com"},
 ]
-keywords = ["dependency-injection", "di", "injector", "ioc"]
+keywords = ["dependency-injection", "di", "injector", "ioc", "guice"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -23,6 +23,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
 ]
 dependencies = []
 
@@ -70,7 +72,7 @@ show_missing = true
 
 [tool.black]
 line-length = 100
-target-version = ["py38", "py39", "py310", "py311", "py312"]
+target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
 
 [tool.isort]
 profile = "black"

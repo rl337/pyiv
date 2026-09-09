@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
@@ -88,9 +88,10 @@ jobs:
           path: build/htmlcov/
           if-no-files-found: ignore
 
-      - name: Build distribution packages (verify build)
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      - name: Build distribution packages
         run: |
+          python -m pip install --upgrade build twine
           python -m build --sdist --wheel
+          twine check dist/*
           echo "✓ Distribution packages built successfully"
 

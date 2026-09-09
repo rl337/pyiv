@@ -1,61 +1,59 @@
 # Release Process
 
-PyIV uses automatic semantic versioning and release generation based on commit messages and successful CI builds.
+pyiv versions live in `pyproject.toml` and `pyiv/__init__.py`. Patch/minor
+bumps on `main` are automatic. **Major versions** (and the first PyPI
+release, 0.3.0) are set by hand.
 
-## How It Works
+## Automatic patch/minor
 
-1. **Automatic Triggering**: When code is pushed to `main` and CI passes successfully, the release workflow automatically:
-   - Analyzes commit messages since the last release
-   - Determines the appropriate version bump (major/minor/patch)
-   - Updates the version in `pyproject.toml`
-   - Builds source distribution (tarball) and wheel
-   - Creates a Git tag
-   - Creates a GitHub Release with the distribution files
+After CI succeeds on `main`, **Auto Version Bump** increments:
 
-2. **Version Bump Logic**:
-   - **Major** (x.0.0): Breaking changes, major features, or commits with "breaking", "major", or "!" in the message
-   - **Minor** (0.x.0): New features, additions, or commits with "feat", "feature", "add", or "new" in the message
-   - **Patch** (0.0.x): Bug fixes, documentation, or other changes
+- **Patch** on a regular (including squash) commit
+- **Minor** on a merge commit
 
-## Manual Release
+It does **not** bump when:
 
-You can also trigger a release manually:
+- The commit message contains `[skip bump]`
+- `pyproject.toml` is already newer than the latest git tag (a manual major)
 
-1. Go to **Actions** → **Release** workflow
-2. Click **Run workflow**
-3. Choose version bump type:
-   - **auto**: Automatically determine from commit messages (default)
-   - **major**: Bump major version
-   - **minor**: Bump minor version
-   - **patch**: Bump patch version
+Those bump commits use `[skip ci]` so they do not loop.
 
-## Commit Message Guidelines
+## GitHub Release
 
-For best automatic version detection, use conventional commit messages:
+The **Release** workflow reads the version already in `pyproject.toml`. It
+does not bump. If `vX.Y.Z` is missing, it tags that version, attaches
+sdist/wheel, and opens a GitHub Release.
 
-- `feat: add new feature` → Minor version bump
-- `fix: fix bug` → Patch version bump
-- `BREAKING: change API` → Major version bump
-- `feat!: breaking change` → Major version bump
-
-## Distribution Files
-
-Each release includes:
-- **Source Distribution** (`.tar.gz`): Contains the source code
-- **Wheel Distribution** (`.whl`): Pre-built binary distribution
-
-Both are attached to the GitHub Release. pyiv is not on PyPI yet; install a tagged revision from git:
+Install line for every production release:
 
 ```bash
-pip install git+https://github.com/rl337/pyiv.git@v<version>
+pip install pyiv==<version>
 ```
 
-User-facing notes for a version live in `CHANGELOG.md`. Put new bullets under **Unreleased** in the same PR as the change; after the auto-bump, move them to `## X.Y.Z`. GitHub Release bodies should match those bullets, not a squash commit.
+User-facing notes live in `CHANGELOG.md`. Put new bullets under **Unreleased**
+in the same PR; after the auto-bump, move them to `## X.Y.Z`. GitHub Release
+bodies should match those bullets.
 
-## Release Artifacts
+## Publish to TestPyPI / PyPI
 
-Release artifacts are:
-- Uploaded to GitHub Releases
-- Available for 30 days as workflow artifacts
-- Automatically tagged with `v<version>` format
+PyPI gets **only** final `X.Y.Z` builds. No RCs, nightlies, or `--pre`.
+TestPyPI is a pipeline smoke test, not a user channel.
 
+Trusted Publishing (OIDC) — no API tokens in GitHub secrets:
+
+1. On [TestPyPI publishing](https://test.pypi.org/manage/account/publishing/)
+   and [PyPI publishing](https://pypi.org/manage/account/publishing/), add a
+   pending publisher: owner `rl337`, repo `pyiv`, workflow `release.yml`,
+   environment left blank.
+2. After `0.3.0` is on `main`, **Actions → Release → Run workflow**:
+   - First: **publish_target = testpypi**. Confirm
+     `pip install -i https://test.pypi.org/simple/ --no-deps pyiv==0.3.0`.
+   - Then: **publish_target = pypi**.
+
+Re-running TestPyPI for the same version is allowed (`skip-existing`).
+Production PyPI versions are immutable.
+
+## Manual GitHub Release only
+
+**Actions → Release → Run workflow** with **publish_target = none** tags and
+attaches artifacts without uploading to either index.

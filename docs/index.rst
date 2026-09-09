@@ -20,6 +20,7 @@ mocking the world.
    <div style="margin: 20px 0; padding: 15px; background: #e8f4f8; border-left: 4px solid #0066cc; border-radius: 4px;">
    <strong>Quick Links:</strong>
    <a href="https://github.com/rl337/pyiv" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">GitHub</a>
+   <a href="https://pypi.org/project/pyiv/" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">PyPI</a>
    <a href="changelog.html" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">Changelog</a>
    <a href="https://github.com/rl337/pyiv/blob/main/README.md" style="margin-left: 15px; color: #0066cc; text-decoration: none; font-weight: 500;">README</a>
    </div>
@@ -59,13 +60,15 @@ Key Features
 Installation
 ------------
 
-PyIV is not on PyPI yet. Install from GitHub:
+.. code-block:: bash
+
+   pip install pyiv
+
+Requires Python 3.8 or newer. Unreleased ``main``:
 
 .. code-block:: bash
 
    pip install git+https://github.com/rl337/pyiv.git
-
-Requires Python 3.8 or newer.
 
 Quick Start
 -----------

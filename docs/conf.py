@@ -19,7 +19,7 @@ try:
     release = pyiv.__version__
     version = ".".join(release.split(".")[:2])  # Major.minor
 except ImportError:
-    release = "0.2.20"
+    release = "0.3.0"
     version = "0.2"
 
 # Sphinx extensions

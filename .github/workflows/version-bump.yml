@@ -56,8 +56,33 @@ jobs:
           echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "Current version: $CURRENT_VERSION"
 
+      - name: Skip if version is already ahead of the latest tag
+        id: skip_ahead
+        run: |
+          CURRENT="${{ steps.current_version.outputs.current }}"
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          COMMIT_MSG=$(git log -1 --format=%s "${{ github.event.workflow_run.head_sha }}")
+          if echo "$COMMIT_MSG" | grep -q '\[skip bump\]'; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Skipping auto-bump: commit contains [skip bump]"
+            exit 0
+          fi
+          if [ -z "$LAST_TAG" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          LAST="${LAST_TAG#v}"
+          AHEAD=$(printf '%s\n%s\n' "$LAST" "$CURRENT" | sort -V | tail -1)
+          if [ "$CURRENT" != "$LAST" ] && [ "$AHEAD" = "$CURRENT" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Skipping auto-bump: pyproject $CURRENT is already ahead of $LAST_TAG"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Calculate new version
         id: new_version
+        if: steps.skip_ahead.outputs.skip != 'true'
         run: |
           CURRENT="${{ steps.current_version.outputs.current }}"
           IS_MERGE="${{ steps.check_merge.outputs.is_merge }}"
@@ -83,6 +108,7 @@ jobs:
 
       - name: Check if version already updated
         id: check_updated
+        if: steps.skip_ahead.outputs.skip != 'true'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
           CURRENT_VERSION="${{ steps.current_version.outputs.current }}"
@@ -95,7 +121,7 @@ jobs:
           fi
 
       - name: Update version in pyproject.toml
-        if: steps.check_updated.outputs.already_updated == 'false'
+        if: steps.skip_ahead.outputs.skip != 'true' && steps.check_updated.outputs.already_updated == 'false'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
           # Update version in pyproject.toml
@@ -107,7 +133,7 @@ jobs:
           echo "Updated pyproject.toml version to ${NEW_VERSION}"
 
       - name: Update version in __init__.py
-        if: steps.check_updated.outputs.already_updated == 'false'
+        if: steps.skip_ahead.outputs.skip != 'true' && steps.check_updated.outputs.already_updated == 'false'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
           # Update version in __init__.py
@@ -119,7 +145,7 @@ jobs:
           echo "Updated pyiv/__init__.py version to ${NEW_VERSION}"
 
       - name: Commit and push version bump
-        if: steps.check_updated.outputs.already_updated == 'false'
+        if: steps.skip_ahead.outputs.skip != 'true' && steps.check_updated.outputs.already_updated == 'false'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
           BUMP_TYPE="${{ steps.new_version.outputs.bump_type }}"
