@@ -131,7 +131,7 @@ class OptionalProvider(Generic[T]):
         """
         try:
             return self._provider.get()
-        except (ValueError, TypeError):
+        except Exception:
             return None
 
 

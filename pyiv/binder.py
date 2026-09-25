@@ -198,6 +198,18 @@ class Binder(Protocol):
         """Install another configuration module.
 
         Args:
-            config: Another Config instance to install
+            config: Another Config instance or subclass to install.
+                Later installs overwrite the same type/key (last wins).
         """
+        ...
+
+    def expose(self, type_or_key: Any) -> None:
+        """Expose a private binding to the parent environment.
+
+        Only meaningful on a :class:`~pyiv.config.PrivateConfig`.
+        """
+        ...
+
+    def require_explicit_bindings(self) -> None:
+        """Require every injectable type to be bound explicitly (no JIT)."""
         ...

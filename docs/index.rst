@@ -120,6 +120,7 @@ Filesystem / Console / DateTimeService in tests:
    Binding <guide/binding>
    Scopes <guide/scopes>
    Keys and collections <guide/keys>
+   Hierarchy and private modules <guide/hierarchy>
    Testing with doubles <guide/testing>
    Packages and extras <guide/packages>
 
@@ -141,6 +142,9 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    pyiv/pyiv.scope
    pyiv/pyiv.provider
    pyiv/pyiv.singleton
+   pyiv/pyiv.stage
+   pyiv/pyiv.errors
+   pyiv/pyiv.override
 
 .. toctree::
    :maxdepth: 1

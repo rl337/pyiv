@@ -203,7 +203,7 @@ class InjectorMembersInjector(Generic[T]):
                                 try:
                                     value = self._injector.inject(field_type)
                                     setattr(instance, field_name, value)
-                                except (ValueError, TypeError):
+                                except Exception:
                                     # Can't inject, skip
                                     pass
 
@@ -217,7 +217,7 @@ class InjectorMembersInjector(Generic[T]):
                         try:
                             value = self._injector.inject(field_type)
                             setattr(instance, field_name, value)
-                        except (ValueError, TypeError):
+                        except Exception:
                             # Can't inject, skip
                             pass
 

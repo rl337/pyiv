@@ -11,12 +11,25 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 - `pyiv-common` extra package (`pip install pyiv-common` or
   `pip install pyiv[common]`): `YAMLSerDe` (PyYAML) and `RequestsClient`
   (requests). Core `pyiv` stays stdlib-only.
+- Module composition: `Config.install` / `Binder.install` (last install wins).
+- `PrivateConfig` with `expose()`, and `Injector.create_child()` for
+  hierarchical injectors.
+- `MapMultibinder` / `Config.map_multibinder` for `Dict[K, V]` injection.
+- `override(base).with_(overrides)` for test/prod binding overlays.
+- `Stage.DEVELOPMENT` / `Stage.PRODUCTION` with eager singleton warmup.
+- `require_explicit_bindings()` to disable JIT construction.
+- `CreationError` with dependency path and circular-dependency detection.
+- Untargeted `binder.bind(Concrete)` self-bindings; `bind_key` registers
+  qualified keys; inject `Injector` by type annotation.
 
 ### Changed
 
 - `YAMLSerDe` moved from core to `pyiv-common`. `from pyiv.serde import
   YAMLSerDe` still works if the extra is installed.
-
+- Missing bindings and injection failures raise `CreationError` (with path)
+  instead of bare `ValueError` / `TypeError` at the injector boundary.
+- Constructor deps that are concrete types are just-in-time constructed when
+  explicit bindings are not required (transitive JIT).
 
 ## 0.3.0 - 2026-09-07
 

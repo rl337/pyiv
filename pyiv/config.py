@@ -44,12 +44,12 @@ Usage:
 
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar, Union
 
-from pyiv.binder import Binder, BindingBuilder
+from pyiv.binder import Binder
 from pyiv.chain import ChainHandler, ChainType
-from pyiv.key import Key, Qualifier
-from pyiv.multibinder import ListMultibinder, Multibinder, SetMultibinder
+from pyiv.key import Key
+from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
 from pyiv.provider import Provider
-from pyiv.scope import NoScope, Scope
+from pyiv.scope import Scope
 from pyiv.singleton import SingletonType
 
 T = TypeVar("T")
@@ -63,28 +63,30 @@ class Config:
 
     def __init__(self):
         """Initialize the configuration."""
+        self._init_stores()
+        self.configure()
+
+    def _init_stores(self) -> None:
+        """Initialize empty binding stores (shared by Config and overlays)."""
         self._registrations: Dict[Type, Union[Type, Any, Callable]] = {}
         self._instances: Dict[Type, Any] = {}
         self._singleton_types: Dict[Type, SingletonType] = {}
-        # Scope registrations: Type -> Scope
         self._scopes: Dict[Type, Scope] = {}
-        # Provider registrations: Type -> Provider
         self._providers: Dict[Type, Provider[Any]] = {}
-        # Qualified bindings: Key -> (Type, Provider, Scope)
         self._qualified_bindings: Dict[
             Key[Any], Tuple[Type, Optional[Provider[Any]], Optional[Scope]]
         ] = {}
-        # Multibindings: Type -> (Set[Type], List[Type], Set[Any], List[Any])
         self._multibindings: Dict[Type, Tuple[Set[Type], List[Type], Set[Any], List[Any]]] = {}
-        # Chain handler registrations: (chain_type, handler_type) -> implementation class
+        # Map multibindings: value_type -> (key -> implementation type, key -> instance)
+        self._map_multibindings: Dict[Type, Dict[Any, Type]] = {}
+        self._map_multibinding_instances: Dict[Type, Dict[Any, Any]] = {}
         self._chain_by_type: Dict[Tuple[ChainType, str], Type[ChainHandler]] = {}
-        # Chain handler registrations: (chain_type, name) -> (implementation class, handler_type)
         self._chain_by_name: Dict[Tuple[ChainType, str], Tuple[Type[ChainHandler], str]] = {}
-        # Chain handler instances: (chain_type, name) -> instance (for pre-created instances)
         self._chain_instances: Dict[Tuple[ChainType, str], ChainHandler] = {}
-        # Chain handler singleton configuration: (chain_type, name) -> singleton_type
         self._chain_singleton_types: Dict[Tuple[ChainType, str], SingletonType] = {}
-        self.configure()
+        self._require_explicit_bindings: bool = False
+        self._pending_private: List["PrivateConfig"] = []
+        self._exposed: Set[Union[Type, Key[Any]]] = set()
 
     def configure(self):
         """Override this method to register dependencies.
@@ -544,6 +546,159 @@ class Config:
         """
         return self._multibindings.get(interface)
 
+    def map_multibinder(self, value_type: Type[T]) -> MapMultibinder[Any, T]:
+        """Create a map multibinder for keyed implementations of ``value_type``."""
+        return MapMultibinder(value_type, self)
+
+    def register_map_multibinding(
+        self, value_type: Type[T], key: Any, implementation: Type[T]
+    ) -> None:
+        """Register a keyed implementation in a map multibinding."""
+        if value_type not in self._map_multibindings:
+            self._map_multibindings[value_type] = {}
+        self._map_multibindings[value_type][key] = implementation
+
+    def register_map_multibinding_instance(
+        self, value_type: Type[T], key: Any, instance: T
+    ) -> None:
+        """Register a keyed instance in a map multibinding."""
+        if value_type not in self._map_multibinding_instances:
+            self._map_multibinding_instances[value_type] = {}
+        self._map_multibinding_instances[value_type][key] = instance
+
+    def get_map_multibinding(
+        self, value_type: Type[T]
+    ) -> Optional[Tuple[Dict[Any, Type], Dict[Any, Any]]]:
+        """Get map multibinding data for a value type.
+
+        Returns:
+            Tuple of (key->implementation, key->instance), or None if empty
+        """
+        impls = self._map_multibindings.get(value_type, {})
+        instances = self._map_multibinding_instances.get(value_type, {})
+        if not impls and not instances:
+            return None
+        return (impls, instances)
+
+    def require_explicit_bindings(self) -> None:
+        """Disable just-in-time construction of unregistered concrete types."""
+        self._require_explicit_bindings = True
+
+    def requires_explicit_bindings(self) -> bool:
+        """Return whether explicit bindings are required."""
+        return self._require_explicit_bindings
+
+    def expose(self, type_or_key: Union[Type, Key[Any]]) -> None:
+        """Mark a binding as exposed from a private module.
+
+        On a regular Config this is a no-op store; :class:`PrivateConfig` uses
+        the set when installed into a parent.
+        """
+        self._exposed.add(type_or_key)
+
+    def get_exposed(self) -> Set[Union[Type, Key[Any]]]:
+        """Return types/keys marked for exposure from a private module."""
+        return set(self._exposed)
+
+    def install(self, other: Union[Type["Config"], "Config"]) -> None:
+        """Install another config module into this one.
+
+        Regular configs are merged immediately (last wins for the same type or
+        key). :class:`PrivateConfig` instances are queued and wired when the
+        injector is created so exposed bindings can delegate into a child
+        environment.
+        """
+        cfg = other() if isinstance(other, type) else other
+        if not isinstance(cfg, Config):
+            raise TypeError(f"install expects a Config, got {type(cfg)}")
+        if isinstance(cfg, PrivateConfig):
+            self._pending_private.append(cfg)
+            return
+        self.merge_from(cfg, replace=True)
+
+    def merge_from(self, other: "Config", *, replace: bool = True) -> None:
+        """Merge bindings from ``other`` into this config.
+
+        Args:
+            other: Source config
+            replace: If True, ``other`` overwrites existing keys; if False,
+                existing bindings are kept.
+        """
+        self._merge_dict(self._registrations, other._registrations, replace)
+        self._merge_dict(self._instances, other._instances, replace)
+        self._merge_dict(self._singleton_types, other._singleton_types, replace)
+        self._merge_dict(self._scopes, other._scopes, replace)
+        self._merge_dict(self._providers, other._providers, replace)
+        self._merge_dict(self._qualified_bindings, other._qualified_bindings, replace)
+        self._merge_dict(self._chain_by_type, other._chain_by_type, replace)
+        self._merge_dict(self._chain_by_name, other._chain_by_name, replace)
+        self._merge_dict(self._chain_instances, other._chain_instances, replace)
+        self._merge_dict(self._chain_singleton_types, other._chain_singleton_types, replace)
+
+        for interface, (
+            set_impls,
+            list_impls,
+            set_insts,
+            list_insts,
+        ) in other._multibindings.items():
+            if interface not in self._multibindings:
+                self._multibindings[interface] = (set(), [], set(), [])
+            s_i, l_i, s_n, l_n = self._multibindings[interface]
+            s_i.update(set_impls)
+            l_i.extend(list_impls)
+            s_n.update(set_insts)
+            l_n.extend(list_insts)
+
+        for value_type, mapping in other._map_multibindings.items():
+            if value_type not in self._map_multibindings:
+                self._map_multibindings[value_type] = {}
+            target = self._map_multibindings[value_type]
+            for k, v in mapping.items():
+                if replace or k not in target:
+                    target[k] = v
+
+        for value_type, mapping in other._map_multibinding_instances.items():
+            if value_type not in self._map_multibinding_instances:
+                self._map_multibinding_instances[value_type] = {}
+            target = self._map_multibinding_instances[value_type]
+            for k, v in mapping.items():
+                if replace or k not in target:
+                    target[k] = v
+
+        if other._require_explicit_bindings:
+            self._require_explicit_bindings = True
+
+        self._pending_private.extend(other._pending_private)
+        if replace:
+            self._exposed.update(other._exposed)
+        else:
+            self._exposed.update(other._exposed)
+
+    @staticmethod
+    def _merge_dict(target: Dict[Any, Any], source: Dict[Any, Any], replace: bool) -> None:
+        for key, value in source.items():
+            if replace or key not in target:
+                target[key] = value
+
+    def singleton_bindings(self) -> List[Type]:
+        """Return types that should be eagerly created in Stage.PRODUCTION."""
+        result: List[Type] = []
+        seen: Set[Type] = set()
+        for abstract, scope in self._scopes.items():
+            from pyiv.scope import GlobalSingletonScope, SingletonScope
+
+            if isinstance(scope, (SingletonScope, GlobalSingletonScope)) and abstract not in seen:
+                result.append(abstract)
+                seen.add(abstract)
+        for abstract, st in self._singleton_types.items():
+            if (
+                st in (SingletonType.SINGLETON, SingletonType.GLOBAL_SINGLETON)
+                and abstract not in seen
+            ):
+                result.append(abstract)
+                seen.add(abstract)
+        return result
+
     def get_binder(self) -> Binder:
         """Get a binder for fluent configuration.
 
@@ -553,3 +708,35 @@ class Config:
         from pyiv.binder_impl import ConfigBinder
 
         return ConfigBinder(self)
+
+
+class PrivateConfig(Config):
+    """Config whose bindings are hidden unless explicitly exposed.
+
+    When installed into a parent config, a child injector owns the private
+    graph. Only types/keys passed to :meth:`expose` are visible to the parent
+    (as providers that delegate into the child).
+
+    Example:
+        >>> from pyiv import Config, PrivateConfig, get_injector
+        >>> class Hidden:
+        ...     pass
+        >>> class Service:
+        ...     def __init__(self, hidden: Hidden):
+        ...         self.hidden = hidden
+        >>> class Impl(PrivateConfig):
+        ...     def configure(self):
+        ...         self.register(Hidden, Hidden)
+        ...         self.register(Service, Service)
+        ...         self.expose(Service)
+        >>> class App(Config):
+        ...     def configure(self):
+        ...         self.install(Impl)
+        >>> svc = get_injector(App).inject(Service)
+        >>> isinstance(svc.hidden, Hidden)
+        True
+    """
+
+    def expose(self, type_or_key: Union[Type, Key[Any]]) -> None:
+        """Expose a binding to the parent environment when this module is installed."""
+        self._exposed.add(type_or_key)
