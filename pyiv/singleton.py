@@ -44,12 +44,27 @@ from typing import Any, Dict, Type, Union
 
 
 class SingletonType(Enum):
-    """Type of singleton behavior for registered dependencies.
+    """Legacy enum for singleton lifecycle on ``Config.register``.
+
+    **Why this exists:** Older call sites use ``singleton_type=...`` instead of
+    a :class:`~pyiv.scope.Scope`. Prefer ``Scope`` for new code; this enum remains
+    for compatibility.
 
     Attributes:
         NONE: No singleton behavior - new instance created each time
         SINGLETON: Per-injector singleton - one instance per Injector instance
         GLOBAL_SINGLETON: Global singleton - one instance shared across all injectors (thread-safe)
+
+    Example:
+        >>> from pyiv import Config, get_injector
+        >>> class Logger:
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Logger, Logger, singleton_type=SingletonType.SINGLETON)
+        >>> inj = get_injector(MyConfig)
+        >>> inj.inject(Logger) is inj.inject(Logger)
+        True
     """
 
     NONE = "none"
@@ -58,13 +73,20 @@ class SingletonType(Enum):
 
 
 class GlobalSingletonRegistry:
-    """Thread-safe registry for global singletons.
+    """Process-wide store for ``GLOBAL_SINGLETON`` instances.
 
-    This registry stores singleton instances that are shared across
-    all injector instances. Access is thread-safe.
+    **Why this exists:** Some resources must be unique across injectors
+    (shared caches). Tests call :meth:`clear` between cases so state does
+    not leak.
 
-    Supports both Type keys (for standard DI) and string keys (for SerDe
-    and other named instances).
+    Example:
+        >>> class Cache:
+        ...     pass
+        >>> GlobalSingletonRegistry.clear()
+        >>> GlobalSingletonRegistry.set(Cache, Cache())
+        >>> GlobalSingletonRegistry.has(Cache)
+        True
+        >>> GlobalSingletonRegistry.clear()
     """
 
     _lock = threading.Lock()

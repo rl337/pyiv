@@ -26,6 +26,7 @@ Architecture:
     - Multibinder: Interface for binding multiple implementations
     - SetMultibinder: Binds to a Set[T] (no duplicates, no order)
     - ListMultibinder: Binds to a List[T] (preserves order, allows duplicates)
+    - MapMultibinder: Binds to a Dict[K, V] (keyed implementations)
 
 Usage Examples:
 
@@ -95,15 +96,45 @@ Usage Examples:
         'EmailValidator'
         >>> type(validators[1]).__name__
         'PhoneValidator'
+
+    Using MapMultibinder (Keyed Implementations):
+        >>> from typing import Dict
+        >>> from pyiv import Config, get_injector
+        >>> class Encoder:
+        ...     def encode(self, data: str) -> str:
+        ...         return data
+        >>> class JsonEncoder(Encoder):
+        ...     def encode(self, data: str) -> str:
+        ...         return f"json:{data}"
+        >>> class XmlEncoder(Encoder):
+        ...     def encode(self, data: str) -> str:
+        ...         return f"xml:{data}"
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         mb = self.map_multibinder(Encoder)
+        ...         mb.add("json", JsonEncoder)
+        ...         mb.add("xml", XmlEncoder)
+        >>> class EncoderHost:
+        ...     def __init__(self, encoders: Dict[str, Encoder]):
+        ...         self.encoders = encoders
+        >>> encoders = get_injector(MyConfig).inject(EncoderHost).encoders
+        >>> sorted(encoders.keys())
+        ['json', 'xml']
+        >>> encoders["json"].encode("x")
+        'json:x'
 """
 
-from typing import Any, Generic, List, Protocol, Set, Type, TypeVar
+from typing import Any, Dict, Generic, Hashable, List, Protocol, Set, Type, TypeVar
 
+K = TypeVar("K", bound=Hashable)
 T = TypeVar("T", contravariant=True)
+V = TypeVar("V")
 
 
 class Multibinder(Protocol, Generic[T]):
     """Protocol for binding multiple implementations of the same type.
+
+    **Why this exists:** Register many implementations of one type for injection as a collection.
 
     Multibinders allow multiple implementations of the same type to be
     registered and injected as a collection (Set or List).
@@ -134,6 +165,8 @@ class Multibinder(Protocol, Generic[T]):
 
 class SetMultibinder(Generic[T]):
     """Multibinder that binds to a Set[T].
+
+    **Why this exists:** Collect unique implementations as Set[T] (order not preserved).
 
     This multibinder collects implementations into a set, ensuring uniqueness.
     Order is not preserved.
@@ -214,6 +247,8 @@ class SetMultibinder(Generic[T]):
 class ListMultibinder(Generic[T]):
     """Multibinder that binds to a List[T].
 
+    **Why this exists:** Collect implementations as List[T] preserving add order.
+
     This multibinder collects implementations into a list, preserving order.
     Duplicates are allowed.
 
@@ -289,3 +324,64 @@ class ListMultibinder(Generic[T]):
             List of instances (order preserved)
         """
         return self._instances.copy()
+
+
+class MapMultibinder(Generic[K, V]):
+    """Multibinder that binds to a Dict[K, V].
+
+    **Why this exists:** Collect keyed implementations for Dict[K, V] injection.
+
+    Collects keyed implementations for injection as a mapping. Inject the
+    dict through a host class constructor, not ``injector.inject(Dict[...])``.
+
+    Example:
+        >>> from typing import Dict
+        >>> from pyiv import Config, get_injector
+        >>> class Plugin:
+        ...     pass
+        >>> class AuthPlugin(Plugin):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.map_multibinder(Plugin).add("auth", AuthPlugin)
+        >>> class Host:
+        ...     def __init__(self, plugins: Dict[str, Plugin]):
+        ...         self.plugins = plugins
+        >>> "auth" in get_injector(MyConfig).inject(Host).plugins
+        True
+    """
+
+    def __init__(self, value_type: Type[V], config: Any):
+        self._value_type = value_type
+        self._config = config
+        self._implementations: Dict[K, Type[V]] = {}
+        self._instances: Dict[K, V] = {}
+
+    def add(self, key: K, implementation: Type[V]) -> None:
+        """Add a keyed implementation class."""
+        if not isinstance(implementation, type):
+            raise TypeError(f"implementation must be a type, got {type(implementation)}")
+        if not issubclass(implementation, self._value_type):
+            raise TypeError(
+                f"{implementation.__name__} must be a subclass of {self._value_type.__name__}"
+            )
+        self._implementations[key] = implementation
+        self._config.register_map_multibinding(self._value_type, key, implementation)
+
+    def add_instance(self, key: K, instance: V) -> None:
+        """Add a keyed pre-created instance."""
+        if not isinstance(instance, self._value_type):
+            raise TypeError(
+                f"instance must be an instance of {self._value_type.__name__}, "
+                f"got {type(instance).__name__}"
+            )
+        self._instances[key] = instance
+        self._config.register_map_multibinding_instance(self._value_type, key, instance)
+
+    def get_implementations(self) -> Dict[K, Type[V]]:
+        """Get all registered keyed implementation classes."""
+        return dict(self._implementations)
+
+    def get_instances(self) -> Dict[K, V]:
+        """Get all registered keyed instances."""
+        return dict(self._instances)

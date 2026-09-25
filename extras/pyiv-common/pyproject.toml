@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyiv-common"
+version = "0.1.0"
+description = "Ubiquitous-library integrations for pyiv (PyYAML, requests)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Richard Lee", email = "rlee@tokyo3.com"},
+]
+keywords = ["dependency-injection", "di", "pyiv", "yaml", "requests"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+dependencies = [
+    "pyiv>=0.3.0",
+    "pyyaml",
+    "requests",
+]
+
+[project.urls]
+Homepage = "https://github.com/rl337/pyiv"
+Documentation = "https://rl337.org/pyiv/"
+Repository = "https://github.com/rl337/pyiv"
+Issues = "https://github.com/rl337/pyiv/issues"
+Changelog = "https://rl337.org/pyiv/changelog.html"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyiv_common"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "pyiv_common"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--doctest-modules"
+
+[tool.black]
+line-length = 100
+target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["pyiv", "pyiv_common"]

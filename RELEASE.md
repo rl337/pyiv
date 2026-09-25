@@ -44,14 +44,18 @@ Trusted Publishing (OIDC) — no API tokens in GitHub secrets:
 1. On [TestPyPI publishing](https://test.pypi.org/manage/account/publishing/)
    and [PyPI publishing](https://pypi.org/manage/account/publishing/), add a
    pending publisher: owner `rl337`, repo `pyiv`, workflow `release.yml`,
-   environment left blank.
+   environment left blank. Repeat for project **`pyiv-common`** (same
+   repo/workflow). `pyiv-common` versions independently (starts at 0.1.0)
+   and is not auto-bumped with core.
 2. After `0.3.0` is on `main`, **Actions → Release → Run workflow**:
    - First: **publish_target = testpypi**. Confirm
      `pip install -i https://test.pypi.org/simple/ --no-deps pyiv==0.3.0`.
    - Then: **publish_target = pypi**.
 
 Re-running TestPyPI for the same version is allowed (`skip-existing`).
-Production PyPI versions are immutable.
+Production PyPI versions are immutable. The release workflow also builds
+`pyiv-common`; `skip-existing` lets a core-only bump skip a
+`pyiv-common` version that is already on the index.
 
 ## Manual GitHub Release only
 

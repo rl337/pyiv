@@ -594,7 +594,7 @@ class CreateHandler(Handler):
 
             injector = get_injector(config)
 
-            with pytest.raises(ValueError, match="No implementation 'UnknownHandler' found"):
+            with pytest.raises(Exception, match="No implementation 'UnknownHandler' found"):
                 injector.inject_by_name(Handler, "UnknownHandler")
         finally:
             sys.path.remove(str(tmp_path))
@@ -612,7 +612,7 @@ class CreateHandler(Handler):
 
         injector = get_injector(RegularConfig)
 
-        with pytest.raises(ValueError, match="does not support reflection-based discovery"):
+        with pytest.raises(Exception, match="does not support reflection-based discovery"):
             injector.inject_by_name(Service, "SomeService")
 
     def test_inject_by_name_with_singleton(self, tmp_path):

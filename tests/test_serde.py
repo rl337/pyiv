@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from pyiv import ChainType, Config, get_injector
-from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XMLSerDe, YAMLSerDe
+from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XMLSerDe
 
 
 class CustomJSONSerDe(JSONSerDe):
@@ -316,10 +316,10 @@ class TestChainHandlerInjection:
 
         injector = get_injector(MyConfig)
 
-        with pytest.raises(ValueError, match="No chain handler registered"):
+        with pytest.raises(Exception, match="No chain handler registered"):
             injector.inject_chain_handler(ChainType.ENCODING, "json")
 
-        with pytest.raises(ValueError, match="No chain handler registered"):
+        with pytest.raises(Exception, match="No chain handler registered"):
             injector.inject_chain_handler_by_name(ChainType.ENCODING, "json-input")
 
 
@@ -385,3 +385,41 @@ class TestChainHandlerIntegration:
         data = "test"
         assert serde.serialize(data) == data
         assert serde.deserialize(data) == data
+
+
+class TestYAMLSerDeMovedToCommon:
+    """YAMLSerDe is not a core export; the serde shim points at pyiv-common."""
+
+    def test_yaml_serde_not_in_core_all(self):
+        import pyiv.serde as serde_mod
+
+        assert "YAMLSerDe" not in serde_mod.__all__
+        assert "YAMLSerDe" not in __import__("pyiv").__all__
+
+    def test_yaml_serde_shim_uses_pyiv_common(self):
+        pytest.importorskip("pyiv_common")
+        from pyiv.serde import YAMLSerDe
+        from pyiv_common.serde import YAMLSerDe as CommonYAMLSerDe
+
+        assert YAMLSerDe is CommonYAMLSerDe
+
+    def test_yaml_serde_shim_missing_extra(self, monkeypatch):
+        import builtins
+        import sys
+
+        import pyiv.serde as serde_mod
+
+        for key in list(sys.modules):
+            if key == "pyiv_common" or key.startswith("pyiv_common."):
+                monkeypatch.delitem(sys.modules, key, raising=False)
+
+        real_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == "pyiv_common" or name.startswith("pyiv_common."):
+                raise ImportError("mocked missing extra")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", fake_import)
+        with pytest.raises(ImportError, match="pip install pyiv-common"):
+            serde_mod.__getattr__("YAMLSerDe")

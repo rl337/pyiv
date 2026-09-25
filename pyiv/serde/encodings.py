@@ -5,26 +5,18 @@ in Python's standard library:
 
 - JSON: Standard JSON encoding
 - Base64: Base64 encoding
-- YAML: YAML encoding (if available)
 - XML: XML encoding
 - Pickle: Python pickle encoding (default/no-op fallback)
 - NoOp: No-op encoding (pass-through)
+
+YAML lives in ``pyiv-common`` (``from pyiv_common.serde import YAMLSerDe``).
 """
 
 import base64
-import io
 import json
 import pickle
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
-
-# Try to import yaml (not in standard library, but commonly available)
-try:
-    import yaml  # type: ignore[import-untyped]
-
-    YAML_AVAILABLE = True
-except ImportError:
-    YAML_AVAILABLE = False
 
 from pyiv.serde.base import SerDe
 
@@ -34,7 +26,22 @@ T = TypeVar("T")
 class NoOpSerDe(SerDe):
     """No-op SerDe that passes through data unchanged.
 
-    This is the default fallback when no encoding is specified.
+    Use this as the default when no encoding is configured, or when a pipeline
+    already holds strings/bytes and must not re-encode them. Strings and bytes
+    are returned as-is; other objects become ``str(obj)``.
+
+    **Why this exists:** Default pass-through encoder when no wire format was configured.
+
+
+    Example:
+        >>> from pyiv.serde.encodings import NoOpSerDe
+        >>> serde = NoOpSerDe()
+        >>> serde.handler_type
+        'noop'
+        >>> serde.serialize("already-encoded")
+        'already-encoded'
+        >>> serde.deserialize("already-encoded")
+        'already-encoded'
     """
 
     @property
@@ -75,8 +82,17 @@ class NoOpSerDe(SerDe):
 class PickleSerDe(SerDe):
     """Python pickle SerDe.
 
-    Uses Python's pickle module for serialization. This is a fallback option
-    when other encodings are not suitable.
+    Use this when you need to round-trip arbitrary Python objects that JSON,
+    XML, or base64 text cannot represent. Prefer safer text codecs for
+    untrusted input; pickle is a stdlib fallback for trusted local data.
+
+    Example:
+        >>> from pyiv.serde.encodings import PickleSerDe
+        >>> serde = PickleSerDe()
+        >>> serde.handler_type
+        'pickle'
+        >>> serde.deserialize(serde.serialize({"x": 2}))
+        {'x': 2}
     """
 
     @property
@@ -115,7 +131,22 @@ class PickleSerDe(SerDe):
 
 
 class JSONSerDe(SerDe):
-    """Standard JSON SerDe using Python's json module."""
+    """Standard JSON SerDe using Python's ``json`` module.
+
+    Use this for APIs, configs, and payloads that exchange JSON. Datetimes
+    serialize to ISO strings; objects with ``__dict__`` become dicts. Prefer
+    this over pickle whenever the data is text-safe and interoperable.
+
+    Example:
+        >>> from pyiv.serde.encodings import JSONSerDe
+        >>> serde = JSONSerDe()
+        >>> serde.handler_type
+        'json'
+        >>> serde.serialize({"a": 1})
+        '{"a": 1}'
+        >>> serde.deserialize('{"a": 1}')
+        {'a': 1}
+    """
 
     @property
     def handler_type(self) -> str:
@@ -175,7 +206,20 @@ class JSONSerDe(SerDe):
 class Base64SerDe(SerDe):
     """Base64 encoding SerDe.
 
-    Encodes/decodes data using base64 encoding. Input must be bytes.
+    Use this when binary payloads must travel as text (headers, logs, or
+    text-only transports). Strings are UTF-8 encoded first; non-bytes objects
+    fall back to pickle before encoding. Deserialize returns raw bytes.
+
+    Example:
+        >>> from pyiv.serde.encodings import Base64SerDe
+        >>> serde = Base64SerDe()
+        >>> serde.handler_type
+        'base64'
+        >>> encoded = serde.serialize(b"hello")
+        >>> encoded
+        'aGVsbG8='
+        >>> serde.deserialize(encoded)
+        b'hello'
     """
 
     @property
@@ -218,9 +262,22 @@ class Base64SerDe(SerDe):
 
 
 class XMLSerDe(SerDe):
-    """XML encoding SerDe.
+    """XML encoding SerDe for simple dict/list structures.
 
-    Encodes/decodes data using XML. For simple dict/list structures.
+    Use this when interoperability with XML-oriented systems matters and the
+    payload is a shallow dict or list. Nested dicts become child elements;
+    lists become ``item`` children. Not a full schema or namespace mapper.
+
+    Example:
+        >>> from pyiv.serde.encodings import XMLSerDe
+        >>> serde = XMLSerDe()
+        >>> serde.handler_type
+        'xml'
+        >>> xml = serde.serialize({"name": "Ada"})
+        >>> xml
+        '<root><name>Ada</name></root>'
+        >>> serde.deserialize(xml)
+        {'name': 'Ada'}
     """
 
     @property
@@ -320,54 +377,3 @@ class XMLSerDe(SerDe):
             else:
                 result[child.tag] = self._xml_to_dict(child)
         return result
-
-
-class YAMLSerDe(SerDe):
-    """YAML encoding SerDe.
-
-    Uses PyYAML if available, otherwise raises ImportError.
-    """
-
-    @property
-    def handler_type(self) -> str:
-        """Return the handler type identifier.
-
-        Returns:
-            The handler type identifier ("yaml")
-        """
-        return "yaml"
-
-    def serialize(self, obj: Any) -> str:
-        """Serialize using YAML encoding.
-
-        Args:
-            obj: The Python object to serialize
-
-        Returns:
-            YAML string representation
-
-        Raises:
-            ImportError: If PyYAML is not available
-        """
-        if not YAML_AVAILABLE:
-            raise ImportError("PyYAML is not installed. Install it with: pip install pyyaml")
-        return yaml.dump(obj, default_flow_style=False)
-
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
-        """Deserialize YAML string/bytes back to a Python object.
-
-        Args:
-            data: The YAML string or bytes
-            target_type: Optional type hint for the expected result type
-
-        Returns:
-            Deserialized Python object
-
-        Raises:
-            ImportError: If PyYAML is not available
-        """
-        if not YAML_AVAILABLE:
-            raise ImportError("PyYAML is not installed. Install it with: pip install pyyaml")
-        if isinstance(data, bytes):
-            data = data.decode("utf-8")
-        return yaml.safe_load(data)

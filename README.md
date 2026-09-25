@@ -20,6 +20,17 @@ Requires Python 3.8 or newer. Unreleased `main`:
 pip install git+https://github.com/rl337/pyiv.git
 ```
 
+YAML and requests integrations are a second package (core stays
+stdlib-only):
+
+```bash
+pip install pyiv-common
+```
+
+The [user guide](https://rl337.org/pyiv/) covers Binder, Keys, scopes,
+the Clock / Filesystem / Console / DateTimeService test doubles, and
+[related packages](https://rl337.org/pyiv/guide/packages.html).
+
 ## Quick start
 
 ```python
@@ -39,18 +50,16 @@ injector = get_injector(MyConfig)
 db = injector.inject(Database)  # PostgreSQL
 ```
 
-The [user guide](https://rl337.org/pyiv/) covers Binder, Keys, scopes,
-and the Clock / Filesystem / Console / DateTimeService test doubles.
-
 ## Development
 
 ```bash
 pip install -e ".[dev,docs]"
+pip install -e extras/pyiv-common
 ./run_checks.sh
 ```
 
 `run_checks.sh` formats (black/isort), runs pytest (including doctests in
-`pyiv/`), mypy, bandit, and a Sphinx build.
+`pyiv/` and `pyiv-common`), mypy, bandit, and a Sphinx build.
 
 Version numbers are bumped by GitHub Actions on `main`. Do not edit
 `pyproject.toml` / `pyiv/__init__.py` versions except for a manual major bump

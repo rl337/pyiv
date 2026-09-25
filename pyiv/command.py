@@ -22,14 +22,26 @@ logger = logging.getLogger(__name__)
 
 
 class Command(ABC):
-    """Interface for CLI commands.
+    """Base interface for discoverable CLI commands.
 
-    Commands can be organized hierarchically:
-    - Top-level commands (e.g., "switchboard")
-    - Subcommands (e.g., "switchboard start")
-    - Sub-subcommands (e.g., "switchboard agent create")
+    Use this when building hierarchical CLIs (command / subcommand trees) that
+    should be discoverable via reflection and optionally receive a pyiv
+    injector. Prefer ``CLICommand`` for one-shot tools and ``ServiceCommand``
+    for long-running processes.
 
-    Each command level can have its own arguments and execution logic.
+    Example:
+        >>> import argparse
+        >>> from pyiv.command import Command
+        >>> class HelloCommand(Command):
+        ...     @classmethod
+        ...     def get_name(cls) -> str:
+        ...         return "hello"
+        ...     def execute(self) -> int:
+        ...         return 0
+        >>> HelloCommand.get_name()
+        'hello'
+        >>> HelloCommand(argparse.Namespace()).execute()
+        0
     """
 
     @classmethod
@@ -179,12 +191,22 @@ class Command(ABC):
 class ServiceCommand(Command):
     """Base class for long-running service commands.
 
-    Provides a standard lifecycle pattern:
-    1. init() - Initialize resources, configuration, etc.
-    2. run() - Main service loop (blocking)
-    3. cleanup() - Clean up resources on shutdown
+    Use this when a command should run until interrupted (daemons, workers).
+    ``execute()`` runs ``init()`` → ``run()`` → ``cleanup()`` and maps
+    ``KeyboardInterrupt`` to exit code 130. Override those hooks; do not
+    reimplement the lifecycle unless necessary.
 
-    Subclasses should override init(), run(), and cleanup().
+    Example:
+        >>> import argparse
+        >>> from pyiv.command import ServiceCommand
+        >>> class OnceService(ServiceCommand):
+        ...     @classmethod
+        ...     def get_name(cls) -> str:
+        ...         return "once"
+        ...     def run(self) -> None:
+        ...         pass  # exit immediately after init
+        >>> OnceService(argparse.Namespace()).execute()
+        0
     """
 
     def execute(self) -> int:
@@ -227,16 +249,22 @@ class ServiceCommand(Command):
 class CLICommand(Command):
     """Base class for one-shot CLI commands (not long-running services).
 
-    Provides a simplified lifecycle for commands that execute and exit:
-    1. init() - Optional initialization
-    2. run() - Main command logic (subclasses override this)
-    3. cleanup() - Optional cleanup
+    Use this for tools that init, run once, and exit. Override ``run()`` (and
+    optionally ``init()``/``cleanup()``); set ``self._exit_code`` for non-zero
+    status. Do not override ``execute()`` — it owns KeyboardInterrupt / SystemExit
+    handling.
 
-    Subclasses should override run() (and optionally init()/cleanup()).
-    Set self._exit_code in run() to return a non-zero status.
-
-    Do not override execute() — it implements the lifecycle, KeyboardInterrupt
-    handling (exit 130), and SystemExit handling.
+    Example:
+        >>> import argparse
+        >>> from pyiv.command import CLICommand
+        >>> class EchoCommand(CLICommand):
+        ...     @classmethod
+        ...     def get_name(cls) -> str:
+        ...         return "echo"
+        ...     def run(self) -> None:
+        ...         self._exit_code = 0
+        >>> EchoCommand(argparse.Namespace()).execute()
+        0
     """
 
     def __init__(self, args: argparse.Namespace, injector: Optional[Any] = None):
@@ -296,7 +324,35 @@ class CLICommand(Command):
 
 
 class CommandRunner:
-    """Runner for discovering and executing commands using reflection."""
+    """Discovers and runs ``Command`` subclasses via reflection or import.
+
+    Use this as the entrypoint for a CLI package: discover commands under a
+    package path, build an argparse tree, and execute the selected command
+    with an optional pyiv injector from ``config``.
+
+    **Why this exists:** Discover and dispatch hierarchical CLI commands with a shared lifecycle.
+
+
+    Example:
+        >>> import argparse
+        >>> from pyiv.command import CLICommand, CommandRunner
+        >>> class GreetCommand(CLICommand):
+        ...     @classmethod
+        ...     def get_name(cls) -> str:
+        ...         return "greet"
+        ...     @classmethod
+        ...     def get_description(cls) -> str:
+        ...         return "Say hello"
+        ...     def run(self) -> None:
+        ...         self._exit_code = 0
+        >>> runner = CommandRunner()
+        >>> parser = runner.create_parser(
+        ...     prog="demo", commands={"greet": GreetCommand}
+        ... )
+        >>> args = parser.parse_args(["greet"])
+        >>> GreetCommand(args).execute()
+        0
+    """
 
     def __init__(self, config: Optional[Any] = None):
         """Initialize the command runner.

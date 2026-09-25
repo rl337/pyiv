@@ -23,8 +23,8 @@ Usage:
         >>> injector = get_injector(MyConfig)
         >>> serde = injector.inject_chain_handler(ChainType.ENCODING, "json")
 
-For other standard Python encodings (base64, pickle, XML, YAML, etc.),
-see the pyiv.serde.encodings module.
+For other standard Python encodings (base64, pickle, XML, etc.),
+see the pyiv.serde.encodings module. YAML is in pyiv-common.
 """
 
 # JSON SerDe is now in encodings.py

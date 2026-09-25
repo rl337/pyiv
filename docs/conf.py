@@ -6,6 +6,7 @@ from datetime import datetime
 
 # Add the project root to the path so autodoc can find pyiv
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../extras/pyiv-common"))
 
 # Project information
 project = "pyiv"

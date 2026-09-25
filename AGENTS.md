@@ -6,8 +6,9 @@ This document provides guidelines for AI agents working on the pyiv project.
 
 pyiv is a Guice-style dependency injection library for Python. It supports
 type-based injection, scopes, qualified keys, Binder, reflection, and built-in
-test doubles (Clock, Filesystem, Console, DateTimeService). Runtime has zero
-third-party dependencies.
+test doubles (Clock, Filesystem, Console, DateTimeService). Core runtime has
+zero third-party dependencies. Ubiquitous extras (PyYAML, requests) live in
+`pyiv-common`; see `.cursor/skills/package-boundaries/SKILL.md`.
 
 ## Documentation
 
@@ -17,9 +18,9 @@ Three surfaces must stay in sync (see `.cursor/skills/maintain-docs/SKILL.md`):
 - **docs/** (https://rl337.org/pyiv/): product manual; API from `pyiv` docstrings
 - **Changelog / GitHub Releases**: why the version shipped; same install command as README
 
-Install with `pip install pyiv`. First public version is 0.3.0. Unreleased
-`main` can use `pip install git+https://github.com/rl337/pyiv.git`. Do not
-mention Poetry.
+Install with `pip install pyiv`. Related: `pip install pyiv-common`. First
+public version is 0.3.0. Unreleased `main` can use
+`pip install git+https://github.com/rl337/pyiv.git`. Do not mention Poetry.
 
 Homepage Key Features should match the product (injection, scopes, keys/binder,
 reflection, test doubles, zero deps)—not factory-first copy.
@@ -133,10 +134,13 @@ Every module must include:
    - Architecture overview
    - Usage examples with doctest-compatible code
 
-2. **Interface/Class Documentation** with:
-   - Clear description of the interface/class
-   - **Doctest examples** that demonstrate usage
-   - Examples should be runnable and testable
+2. **Interface/Class Documentation** (every public class in `__all__`, plus
+   Protocols/ABCs — not only new/changed ones when you touch a module):
+   - Short **what** description
+   - **Why it exists** (`**Why this exists:**` or equivalent) — problem and when
+     to use it; not a restatement of the type name
+   - Runnable **Example** doctest (or pointer to a sibling example)
+   - Module-level problem statements do **not** replace class-level why/how
 
 3. **Method Documentation** with:
    - Clear parameter descriptions
@@ -239,7 +243,10 @@ Before committing:
 
 When implementing new features, follow these principles:
 
-1. **Zero Dependencies:** All interfaces use only Python stdlib
+1. **Zero Dependencies in core:** `pyiv` uses only the Python stdlib. Ubiquitous
+   third-party libraries (PyYAML, requests) go in `pyiv-common`. Domain stacks
+   (psycopg, boto3, redis) get a dedicated `pyiv-<domain>` extra — prefer not
+   to proliferate packages. See `.cursor/skills/package-boundaries/SKILL.md`.
 2. **Backward Compatible:** New interfaces don't break existing code
 3. **Protocol-Based:** Use `typing.Protocol` for interfaces (Pythonic)
 4. **Type-Safe:** Leverage Python's type system fully
@@ -270,6 +277,7 @@ When implementing new features, follow these principles:
 ## Key Files
 
 - `pyproject.toml`: Project configuration and dependencies
+- `extras/pyiv-common/`: `pyiv-common` extra (PyYAML, requests)
 - `pyiv/__init__.py`: Package exports and version
 - `docs/index.rst`: Documentation homepage and API sidebar toctrees
 - `README.md`: GitHub landing page (not the API manual)

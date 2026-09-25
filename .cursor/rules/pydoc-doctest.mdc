@@ -1,16 +1,36 @@
 ---
-description: Runnable doctests in pyiv module and class docstrings; they are the API docs source of truth.
-globs: pyiv/**/*.py
+description: Public class/module docstring content and runnable doctests; they are the API docs source of truth.
+globs: pyiv/**/*.py,extras/pyiv-common/pyiv_common/**/*.py
 alwaysApply: false
 ---
 
-# Doctests in pyiv
+# Public docstrings in pyiv
 
-Public module and class docstrings are compiled into the Sphinx site and executed by `pytest --doctest-modules`.
+Public module and class docstrings are compiled into the Sphinx site and executed by
+`pytest --doctest-modules`.
+
+## Content bar (every public class)
+
+Applies to types in package `__all__`, and to Protocols/ABCs meant for subclassing
+or injection — including `pyiv_common`. Not underscore-private helpers.
+
+Each class docstring must include:
+
+1. **What** — one short description line.
+2. **Why** — `**Why this exists:**` (or “Depend on this / Use this when…”) stating
+   the problem and when to reach for it. Restating the class name is not enough.
+3. **How** — a runnable `Example:` with `>>>` doctest, or an explicit pointer to a
+   sibling class’s example when this type is only a thin variant.
+
+Module-level “What Problem Does This Solve?” does **not** replace the class bar.
+Protocols and ABCs are highest priority; concrete impls can be shorter if they
+still have why + example.
+
+## Doctest mechanics
 
 - Examples must be self-contained: define every name the snippet uses.
 - Do not hit the network, sleep for real time, or write files in the repo cwd. Use in-memory doubles (`MemoryFilesystem`, `SyntheticClock`, `MemoryConsole`) or invalid-input `Traceback` examples.
-- Inject `Set[T]` / `List[T]` through a host class constructor, not `injector.inject(Set[T])`.
+- Inject `Set[T]` / `List[T]` / `Dict[K, V]` through a host class constructor, not `injector.inject(Set[T])`.
 - Unregistered **concrete** classes are instantiated; Optional-none examples need an ABC (or a type the injector cannot build).
 - Expected output containing a newline must use `\\n` in the docstring (otherwise doctest sees a real line break).
 - Do not use `# doctest: +SKIP`. If a method is a variant of another API, put one

@@ -70,6 +70,15 @@ Requires Python 3.8 or newer. Unreleased ``main``:
 
    pip install git+https://github.com/rl337/pyiv.git
 
+YAML and requests integrations are a second package (core stays
+stdlib-only):
+
+.. code-block:: bash
+
+   pip install pyiv-common
+
+See :doc:`guide/packages`.
+
 Quick Start
 -----------
 
@@ -111,7 +120,9 @@ Filesystem / Console / DateTimeService in tests:
    Binding <guide/binding>
    Scopes <guide/scopes>
    Keys and collections <guide/keys>
+   Hierarchy and private modules <guide/hierarchy>
    Testing with doubles <guide/testing>
+   Packages and extras <guide/packages>
 
 API Reference
 -------------
@@ -131,6 +142,9 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    pyiv/pyiv.scope
    pyiv/pyiv.provider
    pyiv/pyiv.singleton
+   pyiv/pyiv.stage
+   pyiv/pyiv.errors
+   pyiv/pyiv.override
 
 .. toctree::
    :maxdepth: 1
@@ -164,6 +178,14 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
 
    pyiv/pyiv.serde
    pyiv/pyiv.network
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Related packages
+
+   pyiv_common/pyiv_common
+   pyiv_common/pyiv_common.serde
+   pyiv_common/pyiv_common.network
 
 .. toctree::
    :maxdepth: 1

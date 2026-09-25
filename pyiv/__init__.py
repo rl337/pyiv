@@ -8,6 +8,8 @@ Key Features:
 - Type-based constructor injection from annotations
 - Scopes (per-injector and process-wide singletons, plus custom Scope)
 - Qualified keys and a fluent Binder API
+- Module install, private modules, child injectors, and config override
+- Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
 - Test doubles for Clock, Filesystem, Console, and DateTimeService
 - Zero runtime dependencies
@@ -30,7 +32,7 @@ Quick Start:
 from pyiv.binder import Binder, BindingBuilder
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.clock import Clock, RealClock, SyntheticClock, Timer
-from pyiv.config import Config
+from pyiv.config import Config, PrivateConfig
 from pyiv.console import (
     BaseConsole,
     Console,
@@ -41,14 +43,16 @@ from pyiv.console import (
     RealConsole,
 )
 from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
+from pyiv.errors import CreationError
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
 from pyiv.key import Key, Named, Qualifier
 from pyiv.members import InjectorMembersInjector, MembersInjector
-from pyiv.multibinder import ListMultibinder, Multibinder, SetMultibinder
+from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
 from pyiv.network import HTTPClient, HTTPSClient, NetworkClient
 from pyiv.optional import get_optional_type, is_optional_type
+from pyiv.override import override
 from pyiv.provider import (
     BaseProvider,
     FactoryProvider,
@@ -58,8 +62,9 @@ from pyiv.provider import (
 )
 from pyiv.reflection import ReflectionConfig
 from pyiv.scope import GlobalSingletonScope, NoScope, Scope, SingletonScope
-from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XMLSerDe, YAMLSerDe
+from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XMLSerDe
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
+from pyiv.stage import Stage
 
 # Command interface (optional import)
 try:
@@ -72,9 +77,13 @@ except ImportError:
 __version__ = "0.3.0"
 __all__ = [
     "Config",
+    "PrivateConfig",
     "ReflectionConfig",
     "Injector",
     "get_injector",
+    "Stage",
+    "CreationError",
+    "override",
     "ChainType",
     "ChainHandler",
     "Filesystem",
@@ -101,7 +110,6 @@ __all__ = [
     "JSONSerDe",
     "Base64SerDe",
     "XMLSerDe",
-    "YAMLSerDe",
     "PickleSerDe",
     "NoOpSerDe",
     "NetworkClient",
@@ -109,7 +117,6 @@ __all__ = [
     "HTTPSClient",
     "SingletonType",
     "GlobalSingletonRegistry",
-    # New interfaces
     "Provider",
     "BaseProvider",
     "InjectorProvider",
@@ -129,6 +136,7 @@ __all__ = [
     "Multibinder",
     "SetMultibinder",
     "ListMultibinder",
+    "MapMultibinder",
     "is_optional_type",
     "get_optional_type",
 ]

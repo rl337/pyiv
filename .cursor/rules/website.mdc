@@ -8,11 +8,11 @@ alwaysApply: false
 
 README is the GitHub **and** PyPI long description: what pyiv is, honest install, short quick start, link to https://rl337.org/pyiv/. Do not duplicate the API reference.
 
-**docs/** is the product site. Key Features: type-based injection, scopes, keys/binder, reflection, test doubles, zero dependencies. Do not headline Factory.
+**docs/** is the product site. Key Features: type-based injection, scopes, keys/binder, reflection, test doubles, zero dependencies (core). Do not headline Factory. `pyiv-common` is a second package (PyYAML, requests), not a core runtime dep.
 
-Install must match README and release notes: `pip install pyiv`. Unreleased `main` may use `pip install git+https://github.com/rl337/pyiv.git`. No Poetry.
+Install must match README and release notes: `pip install pyiv`. Related: `pip install pyiv-common`. Unreleased `main` may use `pip install git+https://github.com/rl337/pyiv.git`. No Poetry.
 
-API nav: grouped `toctree`s on `docs/index.rst` (User guide, Core DI, Bindings, Discovery, Test doubles, Integrations). User guide pages live in `docs/guide/` with human titles. Keep `collapse_navigation: False` and `titles_only: True`. Omit `binder_impl`. New public modules need `docs/pyiv/pyiv.<name>.rst` and a toctree entry.
+API nav: grouped `toctree`s on `docs/index.rst` (User guide, Core DI, Bindings, Discovery, Test doubles, Integrations, Related packages). User guide pages live in `docs/guide/` with human titles. Keep `collapse_navigation: False` and `titles_only: True`. Omit `binder_impl`. New public core modules need `docs/pyiv/pyiv.<name>.rst` and a toctree entry.
 
 Production is https://rl337.org/pyiv/ from `main`. PR previews are `/branch/<branch>/` only.
 

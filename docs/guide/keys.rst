@@ -74,6 +74,39 @@ the collection through a **host class constructor**, not
 
 ``as_set=False`` binds ``List[T]`` and preserves add order.
 
+Map multibinder
+---------------
+
+Keyed implementations inject as ``Dict[K, V]`` through a host constructor:
+
+.. code-block:: python
+
+   from typing import Dict
+
+   from pyiv import Config, get_injector
+
+   class Encoder:
+       pass
+
+   class JsonEncoder(Encoder):
+       pass
+
+   class XmlEncoder(Encoder):
+       pass
+
+   class EncoderHost:
+       def __init__(self, encoders: Dict[str, Encoder]):
+           self.encoders = encoders
+
+   class MyConfig(Config):
+       def configure(self):
+           mb = self.map_multibinder(Encoder)
+           mb.add("json", JsonEncoder)
+           mb.add("xml", XmlEncoder)
+
+   host = get_injector(MyConfig).inject(EncoderHost)
+   # host.encoders["json"] is JsonEncoder
+
 Optional dependencies
 ---------------------
 

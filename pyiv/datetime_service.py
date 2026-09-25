@@ -10,10 +10,20 @@ from typing import Optional
 
 
 class DateTimeService(ABC):
-    """Abstract base class for datetime operations.
+    """Abstract interface for UTC datetime operations.
 
-    This abstract class provides methods for getting the current UTC datetime,
-    allowing implementations to be swapped for testing or different time sources.
+    Depend on this instead of calling ``datetime.now`` directly so production
+    code can use ``PythonDateTimeService`` while tests inject
+    ``MockDateTimeService`` with a fixed clock.
+
+    Example:
+        >>> from datetime import datetime, timezone
+        >>> from pyiv.datetime_service import DateTimeService, MockDateTimeService
+        >>> def stamp(svc: DateTimeService) -> str:
+        ...     return svc.now_utc_iso()
+        >>> fixed = datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+        >>> stamp(MockDateTimeService(fixed))
+        '2024-01-15T10:30:00+00:00'
     """
 
     @abstractmethod
@@ -36,10 +46,23 @@ class DateTimeService(ABC):
 
 
 class PythonDateTimeService(DateTimeService):
-    """DateTime service implementation using Python's datetime module.
+    """DateTime service backed by the system clock.
 
-    This is the production implementation that uses Python's built-in datetime
-    module to return actual current time from the system clock.
+    Use this in production for real UTC timestamps. In tests, swap in
+    ``MockDateTimeService`` so assertions do not depend on wall-clock time.
+
+    **Why this exists:** Production DateTimeService backed by the system clock.
+
+
+    Example:
+        >>> from datetime import datetime, timezone
+        >>> from pyiv.datetime_service import PythonDateTimeService
+        >>> svc = PythonDateTimeService()
+        >>> now = svc.now_utc()
+        >>> isinstance(now, datetime) and now.tzinfo == timezone.utc
+        True
+        >>> "T" in svc.now_utc_iso()
+        True
     """
 
     def now_utc(self) -> datetime:
@@ -61,6 +84,8 @@ class PythonDateTimeService(DateTimeService):
 
 class MockDateTimeService(DateTimeService):
     """Mock datetime service for testing.
+
+    **Why this exists:** Freeze calendar time for deterministic tests of ISO/UTC stamps.
 
     This implementation allows you to control the time returned, making it
     easy to test time-dependent code with predictable timestamps.

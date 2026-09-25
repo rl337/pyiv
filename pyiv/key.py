@@ -89,15 +89,16 @@ T = TypeVar("T")
 
 
 class Qualifier(Protocol):
-    """Protocol for qualifier annotations.
+    """Marker for distinguishing multiple bindings of the same type.
 
-    Qualifiers are used to distinguish between multiple implementations
-    of the same type. They can be annotations, strings, or custom objects.
+    **Why this exists:** One interface often has several implementations
+    (primary vs replica DB). A qualifier + :class:`Key` selects which binding
+    to inject without inventing wrapper types.
 
     Example:
-        class Named(Qualifier):
-            def __init__(self, name: str):
-                self.name = name
+        >>> from pyiv.key import Named
+        >>> isinstance(Named("primary"), Named)
+        True
     """
 
     pass
@@ -105,6 +106,8 @@ class Qualifier(Protocol):
 
 class Named:
     """String-based qualifier for named bindings.
+
+    **Why this exists:** Most common Qualifier: distinguish bindings with a string name.
 
     This is the most common qualifier type, allowing bindings to be
     distinguished by a string name.
@@ -156,6 +159,8 @@ class Named:
 
 class Key(Generic[T]):
     """Type-safe key for qualified bindings.
+
+    **Why this exists:** Pair a type with an optional qualifier so multiple implementations of one type can coexist.
 
     A Key combines a type with an optional qualifier to create a unique
     binding key. This allows multiple implementations of the same type to

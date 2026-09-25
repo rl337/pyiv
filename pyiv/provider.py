@@ -89,6 +89,8 @@ T = TypeVar("T", covariant=True)
 class Provider(Protocol, Generic[T]):
     """Protocol for provider implementations.
 
+    **Why this exists:** Lazy or repeated creation of a type without constructing it at inject() time; inject Provider[T] instead of T.
+
     Providers are used to supply instances of a specific type, allowing for
     customized creation logic, lazy initialization, and injector access.
 
@@ -132,6 +134,8 @@ class Provider(Protocol, Generic[T]):
 class BaseProvider(ABC, Generic[T]):
     """Abstract base class for provider implementations.
 
+    **Why this exists:** Subclassable provider when you need a real class the injector can construct.
+
     Provides a concrete base class for providers that need to be
     instantiated. Subclasses should implement the `get()` method.
 
@@ -168,6 +172,9 @@ class InjectorProvider(Generic[T]):
     This provider wraps an injector and a type, delegating instance
     creation to the injector. This is useful when you need a Provider
     interface but want to use the injector's full dependency resolution.
+
+    **Why this exists:** Provider that asks an Injector for T on each get() — lazy graph lookup.
+
 
     Example:
         >>> from pyiv import Config, get_injector
@@ -209,6 +216,8 @@ class InjectorProvider(Generic[T]):
 class InstanceProvider(Generic[T]):
     """Provider that returns a pre-created instance.
 
+    **Why this exists:** Wrap an already-built object as a Provider for binder.to_provider / register_provider.
+
     This provider simply returns the same instance every time get() is called.
     Useful for wrapping pre-created singletons or instances.
 
@@ -247,6 +256,8 @@ class InstanceProvider(Generic[T]):
 
 class FactoryProvider(Generic[T]):
     """Provider that wraps a factory function.
+
+    **Why this exists:** Adapt a zero-arg factory callable into the Provider protocol.
 
     This provider calls a factory function each time get() is called.
     Useful for creating new instances on demand.

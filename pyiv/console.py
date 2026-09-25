@@ -184,6 +184,8 @@ class InputEvent(TerminalEvent):
 class Console(Protocol):
     """Protocol for console output implementations.
 
+    **Why this exists:** print() to sys.stdout is hard to assert; inject Console and capture with MemoryConsole in tests.
+
     Console provides a file-like interface for output, allowing print()
     statements to use dependency injection. This enables testing by
     capturing output without actually printing to stdout.
@@ -480,24 +482,30 @@ class Console(Protocol):
 class BaseConsole(ABC):
     """Abstract base class for console implementations.
 
-    Provides a concrete base class for console implementations.
-    Subclasses should implement the file-like interface methods.
-    Terminal methods have default no-op implementations that can be
-    overridden by subclasses that support terminal features.
+    Subclass this when you need a custom ``Console`` (file-like write plus
+    optional TTY helpers). Implement ``write``/``flush``/``writable``;
+    terminal methods default to no-ops so simple sinks stay small. Prefer
+    ``MemoryConsole`` for capturing ``print()`` in tests.
+
+    **Why this exists:** Shared base for Console implementations so TTY helpers default to no-ops.
+
 
     Example:
         >>> from pyiv.console import BaseConsole
-        >>>
-        >>> class CustomConsole(BaseConsole):
+        >>> class ListConsole(BaseConsole):
+        ...     def __init__(self):
+        ...         self.chunks = []
         ...     def write(self, s: str) -> int:
-        ...         # Custom write logic
+        ...         self.chunks.append(s)
         ...         return len(s)
-        ...
         ...     def flush(self) -> None:
         ...         pass
-        ...
         ...     def writable(self) -> bool:
         ...         return True
+        >>> c = ListConsole()
+        >>> print("hi", file=c)
+        >>> "".join(c.chunks)
+        'hi\\n'
     """
 
     @abstractmethod
@@ -698,6 +706,9 @@ class RealConsole(BaseConsole):
     behavior and TTY-specific functionality. Use this in production code
     for normal console output and terminal features like spinners, animations,
     and password prompts.
+
+    **Why this exists:** Production Console that writes to a real stream/TTY.
+
 
     Example:
         >>> from io import StringIO
@@ -1125,6 +1136,8 @@ class RealConsole(BaseConsole):
 class MemoryConsole(BaseConsole):
     """In-memory console for testing.
 
+    **Why this exists:** Capture print(..., file=console) without touching stdout.
+
     This console stores output in memory, allowing tests to capture
     and verify console output without actually printing to stdout.
 
@@ -1219,6 +1232,8 @@ class MemoryConsole(BaseConsole):
 
 class FileConsole(BaseConsole):
     """File-based console for testing.
+
+    **Why this exists:** When a test must verify output landed in a real file path.
 
     This console writes output to a file, useful for testing scenarios
     where you want to verify output was written to a specific file.

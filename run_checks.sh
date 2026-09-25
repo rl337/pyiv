@@ -53,11 +53,14 @@ else
     PYTHON_CMD="python3"
 fi
 
-# 1. Black formatting check
-run_check "Black formatting" $BLACK_CMD --check --diff pyiv/ tests/
+# 1. Core stdlib import guard
+run_check "Core stdlib imports" $PYTHON_CMD scripts/check_core_stdlib.py
 
-# 2. isort import sorting check
-run_check "isort import sorting" $ISORT_CMD --check-only pyiv/ tests/
+# 2. Black formatting check
+run_check "Black formatting" $BLACK_CMD --check --diff pyiv/ tests/ extras/pyiv-common/pyiv_common extras/pyiv-common/tests
+
+# 3. isort import sorting check
+run_check "isort import sorting" $ISORT_CMD --check-only pyiv/ tests/ extras/pyiv-common/pyiv_common extras/pyiv-common/tests
 
 # 3. Pytest with coverage
 # Create build directory if it doesn't exist
@@ -71,13 +74,25 @@ else
     FAILED=1
 fi
 
-# 4. mypy type checking
-run_check "mypy type checking" $MYPY_CMD pyiv/
+# 5. Extra package tests (pyiv-common)
+echo ""
+echo -e "${YELLOW}Running: Pytest pyiv-common${NC}"
+$PYTEST_CMD extras/pyiv-common/tests extras/pyiv-common/pyiv_common --doctest-modules
+EXTRA_PYTEST_EXIT=$?
+if [ $EXTRA_PYTEST_EXIT -eq 0 ]; then
+    echo -e "${GREEN}✓ Pytest pyiv-common passed${NC}"
+else
+    echo -e "${RED}✗ Pytest pyiv-common failed (exit code: $EXTRA_PYTEST_EXIT)${NC}"
+    FAILED=1
+fi
+
+# 6. mypy type checking
+run_check "mypy type checking" $MYPY_CMD pyiv/ extras/pyiv-common/pyiv_common
 
 # 5. Bandit security check (don't fail on warnings)
 # Create build directory if it doesn't exist
 mkdir -p build
-bandit -r pyiv/ -f json -o build/bandit-report.json || true
+bandit -r pyiv/ extras/pyiv-common/pyiv_common -f json -o build/bandit-report.json || true
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Bandit security check passed${NC}"
 else
