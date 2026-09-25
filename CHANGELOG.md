@@ -6,6 +6,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+## 0.4.0 - 2026-09-25
+
 ### Added
 
 - `pyiv-common` extra package (`pip install pyiv-common` or
