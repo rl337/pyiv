@@ -64,7 +64,9 @@ Install: `pip install pyiv` (core). `pip install pyiv-common` or
 1. Implement under `extras/pyiv-common/pyiv_common/` (subclass core `SerDe` /
    `NetworkClient` / `Config` — do not fork infrastructure).
 2. Tests in `extras/pyiv-common/tests/` (no live network; mock `requests`).
-3. Runnable module doctest. Export from `pyiv_common/__init__.py`.
+3. Runnable module doctest **and** class docs for every public type (what +
+   **why it exists** + Example doctest). Same bar as core; see
+   `.cursor/rules/pydoc-doctest.mdc`. Export from `pyiv_common/__init__.py`.
 4. Docs: `docs/guide/packages.rst` plus autodoc RST; changelog Unreleased.
 5. Keep `pyiv-common` version independent (starts 0.1.0). Do not bump it from
    the core auto-version workflow.

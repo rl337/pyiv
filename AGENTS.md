@@ -134,10 +134,13 @@ Every module must include:
    - Architecture overview
    - Usage examples with doctest-compatible code
 
-2. **Interface/Class Documentation** with:
-   - Clear description of the interface/class
-   - **Doctest examples** that demonstrate usage
-   - Examples should be runnable and testable
+2. **Interface/Class Documentation** (every public class in `__all__`, plus
+   Protocols/ABCs — not only new/changed ones when you touch a module):
+   - Short **what** description
+   - **Why it exists** (`**Why this exists:**` or equivalent) — problem and when
+     to use it; not a restatement of the type name
+   - Runnable **Example** doctest (or pointer to a sibling example)
+   - Module-level problem statements do **not** replace class-level why/how
 
 3. **Method Documentation** with:
    - Clear parameter descriptions
