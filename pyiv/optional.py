@@ -87,10 +87,12 @@ T = TypeVar("T")
 
 
 class OptionalProvider(Generic[T]):
-    """Provider that handles Optional[T] types.
+    """Provider that returns ``None`` when the underlying binding is unavailable.
 
-    This provider wraps another provider and returns None if the underlying
-    provider cannot provide an instance, otherwise returns the instance.
+    **Why this exists:** Optional dependencies (plugins, caches, monitors) should
+    degrade to ``None`` instead of failing injection. Wrap a provider when you
+    need ``Provider``-style lazy access with Optional semantics; constructor
+    ``Optional[T]`` params are handled by the injector automatically.
 
     Example:
         >>> from abc import ABC, abstractmethod

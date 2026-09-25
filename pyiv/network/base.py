@@ -15,26 +15,23 @@ from pyiv.chain import ChainHandler, ChainType
 
 
 class NetworkClient(ChainHandler):
-    """Abstract base class for network client operations.
+    """Abstract network client in the NETWORK_CLIENT chain.
 
-    NetworkClient is a chain handler for the NETWORK_CLIENT chain type.
-    It provides a unified interface for making network requests using various
-    protocols (HTTP, HTTPS, etc.).
+    Use this as the injectable type for protocol-specific clients (HTTP, HTTPS,
+    etc.). Register concrete clients in a chain so callers dispatch by URL
+    scheme without hard-coding urllib. Subclasses must implement
+    ``handler_type`` and ``request()``.
 
-    Subclasses must implement:
-        - handler_type: Return the protocol identifier (e.g., "http", "https")
-        - request(): Make a network request and return the response
+    **Why this exists:** Injectable HTTP-ish client so call sites do not hard-code urllib.
 
-    The handler_type property identifies the protocol (e.g., "http", "https").
-    Multiple implementations of the same handler_type can exist with different
-    behaviors (e.g., custom headers, authentication, retry logic, etc.).
 
     Example:
-        >>> class MyHTTPClient(NetworkClient):
+        >>> from typing import Any, Dict, Optional, Union
+        >>> from pyiv.network.base import NetworkClient
+        >>> class StubHTTP(NetworkClient):
         ...     @property
         ...     def handler_type(self) -> str:
         ...         return "http"
-        ...
         ...     def request(
         ...         self,
         ...         method: str,
@@ -43,8 +40,9 @@ class NetworkClient(ChainHandler):
         ...         data: Optional[Union[str, bytes]] = None,
         ...         timeout: Optional[float] = None,
         ...     ) -> Dict[str, Any]:
-        ...         # Implementation here
-        ...         pass
+        ...         return {"status": 200, "headers": {}, "body": b"ok", "url": url}
+        >>> StubHTTP().request("GET", "http://example.test")["body"]
+        b'ok'
     """
 
     @property

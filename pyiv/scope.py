@@ -114,6 +114,8 @@ Key = Union[Type, str, tuple]
 class Scope(Protocol):
     """Protocol for scope implementations.
 
+    **Why this exists:** Control instance lifetime beyond one-shot construction (request, singleton, custom).
+
     Scopes control the lifecycle of instances created by the dependency
     injection system. A scope can cache instances, create new ones on
     demand, or implement custom lifecycle logic.
@@ -151,6 +153,8 @@ class Scope(Protocol):
 class NoScope:
     """No scope - creates a new instance every time.
 
+    **Why this exists:** Explicit unscoped binding when a type annotation would otherwise imply reuse.
+
     This scope does not cache instances. Each call to get() will create
     a new instance. This is the default behavior when no scope is specified.
 
@@ -179,6 +183,8 @@ class NoScope:
 
 class SingletonScope:
     """Per-injector singleton scope.
+
+    **Why this exists:** One instance per injector — default app-wide singleton without process globals.
 
     This scope caches instances per injector. Each injector will have its
     own singleton instance. This is useful when you want singletons but
@@ -225,6 +231,8 @@ class SingletonScope:
 
 class GlobalSingletonScope:
     """Global singleton scope (thread-safe).
+
+    **Why this exists:** One instance shared by all injectors in the process (thread-safe).
 
     This scope caches instances globally across all injectors. The same
     instance is shared by all injectors and all threads. Access is thread-safe.

@@ -29,11 +29,26 @@ from enum import Enum
 
 
 class Stage(Enum):
-    """Injector construction stage.
+    """Injector construction stage: lazy vs fail-fast singletons.
+
+    **Why this exists:** Lazy singletons hide binding mistakes until first use.
+    Pass ``stage=Stage.PRODUCTION`` to :func:`~pyiv.injector.get_injector` so
+    singleton-scoped bindings are created at boot.
 
     Attributes:
         DEVELOPMENT: Singletons are created lazily on first inject (default).
         PRODUCTION: Singleton-scoped bindings are created when the injector is built.
+
+    Example:
+        >>> from pyiv import Config, Stage, get_injector
+        >>> from pyiv.scope import SingletonScope
+        >>> class Database:
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.get_binder().bind(Database).to(Database).in_scope(SingletonScope())
+        >>> isinstance(get_injector(MyConfig, stage=Stage.PRODUCTION).inject(Database), Database)
+        True
     """
 
     DEVELOPMENT = "development"

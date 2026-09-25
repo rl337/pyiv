@@ -31,7 +31,20 @@ from typing import BinaryIO, Iterator, Optional, TextIO, Union
 
 
 class Filesystem(ABC):
-    """Abstract filesystem interface for file operations."""
+    """Abstract filesystem for injectable file I/O.
+
+    **Why this exists:** Production code that calls ``open()`` / ``pathlib``
+    directly is hard to unit-test without touching disk or mocking builtins.
+    Depend on ``Filesystem`` and bind ``RealFilesystem`` in production and
+    ``MemoryFilesystem`` in tests.
+
+    Example:
+        >>> from pyiv.filesystem import MemoryFilesystem
+        >>> fs: Filesystem = MemoryFilesystem()
+        >>> fs.write_text("notes.txt", "hello")
+        >>> fs.read_text("notes.txt")
+        'hello'
+    """
 
     @abstractmethod
     def open(
@@ -219,7 +232,26 @@ class Filesystem(ABC):
 
 
 class RealFilesystem(Filesystem):
-    """Real filesystem implementation using standard library."""
+    """Real filesystem implementation using the standard library.
+
+    Use this in production when you need actual disk I/O. Prefer
+    ``MemoryFilesystem`` in unit tests so examples and CI never write into
+    the working tree.
+
+    **Why this exists:** Production Filesystem that performs real disk I/O.
+
+
+    Example:
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from pyiv.filesystem import RealFilesystem
+        >>> fs = RealFilesystem()
+        >>> with tempfile.TemporaryDirectory() as d:
+        ...     p = Path(d) / "hello.txt"
+        ...     fs.write_text(p, "hi")
+        ...     fs.read_text(p)
+        'hi'
+    """
 
     def open(
         self, file: Union[str, Path], mode: str = "r", encoding: Optional[str] = None
@@ -393,7 +425,22 @@ class RealFilesystem(Filesystem):
 
 
 class MemoryFilesystem(Filesystem):
-    """In-memory filesystem for testing."""
+    """In-memory filesystem for testing.
+
+    Use this whenever code under test needs file I/O but must not touch the
+    real disk. Paths live in a dict-backed store, so tests stay fast and
+    isolated.
+
+    Example:
+        >>> from pyiv.filesystem import MemoryFilesystem
+        >>> fs = MemoryFilesystem()
+        >>> fs.write_text("/notes/a.txt", "alpha")
+        >>> fs.mkdir("/notes/sub", parents=True, exist_ok=True)
+        >>> fs.exists("/notes/a.txt")
+        True
+        >>> fs.read_text("/notes/a.txt")
+        'alpha'
+    """
 
     def __init__(self):
         """Initialize in-memory filesystem."""

@@ -86,6 +86,8 @@ T = TypeVar("T", contravariant=True)
 class MembersInjector(Protocol, Generic[T]):
     """Protocol for injecting dependencies into existing instances.
 
+    **Why this exists:** Inject into objects you did not construct (frameworks, dataclasses, legacy).
+
     MembersInjectors inject dependencies into fields and methods of existing
     instances. This is useful for:
     - Framework integration (Django, Flask, etc.)
@@ -109,12 +111,14 @@ class MembersInjector(Protocol, Generic[T]):
 
 
 class InjectorMembersInjector(Generic[T]):
-    """MembersInjector implementation using an injector.
+    """MembersInjector that fills fields on instances you already constructed.
 
-    This implementation uses an injector to resolve dependencies and inject
-    them into fields and methods of existing instances. It supports:
-    - Field injection (for dataclasses, attrs, or regular classes)
-    - Method injection (for methods with type annotations)
+    **Why this exists:** Frameworks and legacy code often create objects outside
+    the injector. Use this (or ``injector.inject_members``) when constructor
+    injection is impractical—dataclasses, third-party types, or migration.
+
+    Supports field injection (dataclasses, attrs, regular classes) and method
+    injection for annotated methods.
 
     Example:
         >>> from pyiv.members import InjectorMembersInjector

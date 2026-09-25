@@ -13,10 +13,11 @@ from pyiv.network.base import NetworkClient
 
 
 class HTTPClient(NetworkClient):
-    """HTTP client using Python's standard library urllib.
+    """HTTP(S) client using stdlib ``urllib``.
 
-    This client uses urllib.request for HTTP requests. It supports all standard
-    HTTP methods and provides a simple interface for making requests.
+    Use this for plain HTTP or HTTPS URLs when you want a zero-dependency
+    client bound into the NETWORK_CLIENT chain. Prefer invalid-URL Traceback
+    examples in docs/tests — do not hit the network from doctests.
 
     Example:
         >>> client = HTTPClient()
@@ -108,10 +109,11 @@ class HTTPClient(NetworkClient):
 
 
 class HTTPSClient(NetworkClient):
-    """HTTPS client using Python's standard library urllib.
+    """HTTPS-only client using stdlib ``urllib``.
 
-    This client uses urllib.request for HTTPS requests with SSL/TLS support.
-    It supports all standard HTTP methods over HTTPS.
+    Use this when you want to reject non-HTTPS URLs at the client boundary
+    (scheme must be ``https://``). Like ``HTTPClient``, doctests should use
+    Traceback examples for invalid schemes rather than live network calls.
 
     Example:
         >>> client = HTTPSClient()

@@ -41,7 +41,28 @@ from pyiv.config import Config
 
 
 class OverrideBuilder:
-    """Builder returned by :func:`override`."""
+    """Fluent step after :func:`override` — call :meth:`with_` to finish.
+
+    **Why this exists:** Splitting ``override(base)`` from ``.with_(test)``
+    keeps the API readable when overlaying several override modules.
+
+    Example:
+        >>> from pyiv import Config, get_injector
+        >>> class Database:
+        ...     def name(self) -> str:
+        ...         return "prod"
+        >>> class Fake(Database):
+        ...     def name(self) -> str:
+        ...         return "fake"
+        >>> class Prod(Config):
+        ...     def configure(self):
+        ...         self.register(Database, Database)
+        >>> class Test(Config):
+        ...     def configure(self):
+        ...         self.register(Database, Fake)
+        >>> get_injector(override(Prod).with_(Test)).inject(Database).name()
+        'fake'
+    """
 
     def __init__(self, bases: Tuple[Union[Type[Config], Config], ...]):
         self._bases = bases
@@ -55,7 +76,13 @@ class OverrideBuilder:
 
 
 class OverriddenConfig(Config):
-    """Config built by merging base modules then override modules."""
+    """Merged config: base bindings with override bindings on top.
+
+    **Why this exists:** Tests need the production graph with a few keys
+    swapped. Prefer :func:`override` rather than constructing this directly.
+
+    See the :class:`OverrideBuilder` example for usage via ``override(...).with_(...)``.
+    """
 
     def __init__(
         self,

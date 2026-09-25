@@ -26,10 +26,19 @@ from typing import List, Optional, Sequence
 class CreationError(Exception):
     """Raised when the injector cannot create or resolve a dependency.
 
+    **Why this exists:** Deep graphs fail far from the call site. This error
+    carries the resolution path and optional nested causes so you can see
+    ``App -> Service -> Database`` instead of a bare ``ValueError``.
+
     Args:
         message: Human-readable failure reason
         path: Resolution path from the root request to the failing type
         causes: Nested failures (e.g. eager singleton warmup aggregation)
+
+    Example:
+        >>> err = CreationError("No binding", path=["Service", "Database"])
+        >>> "Service -> Database" in str(err)
+        True
     """
 
     def __init__(

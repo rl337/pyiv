@@ -96,7 +96,25 @@ class _ChildDelegatingProvider:
 
 
 class Injector:
-    """Dependency injector that creates instances based on configuration."""
+    """Resolves types and keys from a :class:`~pyiv.config.Config` graph.
+
+    **Why this exists:** Manual wiring (``new`` / factories everywhere) couples
+    construction to call sites. The injector builds objects from bindings and
+    constructor annotations so you register once and request by type.
+
+    Example:
+        >>> from pyiv import Config, get_injector
+        >>> class Database:
+        ...     pass
+        >>> class PostgreSQL(Database):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Database, PostgreSQL)
+        >>> injector = get_injector(MyConfig)
+        >>> isinstance(injector.inject(Database), PostgreSQL)
+        True
+    """
 
     def __init__(
         self,

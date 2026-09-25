@@ -30,6 +30,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
   instead of bare `ValueError` / `TypeError` at the injector boundary.
 - Constructor deps that are concrete types are just-in-time constructed when
   explicit bindings are not required (transitive JIT).
+- Public class docstrings now state why each type exists and include
+  runnable usage examples (doctest-backed) across core DI and test doubles.
 
 ## 0.3.0 - 2026-09-07
 

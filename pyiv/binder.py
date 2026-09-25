@@ -85,10 +85,11 @@ T = TypeVar("T")
 
 
 class BindingBuilder(Protocol, Generic[T]):
-    """Fluent builder for configuring bindings.
+    """Fluent steps after :meth:`Binder.bind` (``.to`` / ``.in_scope`` / …).
 
-    This builder provides a fluent API for configuring how a type should
-    be bound. It supports chaining methods to configure the binding.
+    **Why this exists:** A single ``register(...)`` call buries scope and
+    provider choices in kwargs. The builder makes the binding shape readable
+    as a chain while still writing the same ``Config`` store.
 
     Example:
         >>> from pyiv import Config, get_injector
@@ -150,17 +151,23 @@ class BindingBuilder(Protocol, Generic[T]):
 
 
 class Binder(Protocol):
-    """Protocol for binder implementations.
+    """Fluent configuration API for contributing bindings to a ``Config``.
 
-    Binders provide a fluent API for configuring dependency bindings.
-    They separate the configuration API from the implementation, making
-    Config more testable and enabling programmatic configuration.
+    **Why this exists:** Direct ``Config.register*`` calls work, but complex
+    graphs read better as ``bind(X).to(Y).in_scope(Z)``. The binder also
+    supports ``install``, ``expose``, and ``require_explicit_bindings``.
 
-    Example::
-
-        class MyBinder(Binder):
-            def bind(self, abstract):
-                return BindingBuilder(...)
+    Example:
+        >>> from pyiv import Config, get_injector
+        >>> class Database:
+        ...     pass
+        >>> class PostgreSQL(Database):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.get_binder().bind(Database).to(PostgreSQL)
+        >>> isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)
+        True
     """
 
     def bind(self, abstract: Type[T]) -> BindingBuilder[T]:

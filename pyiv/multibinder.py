@@ -134,6 +134,8 @@ V = TypeVar("V")
 class Multibinder(Protocol, Generic[T]):
     """Protocol for binding multiple implementations of the same type.
 
+    **Why this exists:** Register many implementations of one type for injection as a collection.
+
     Multibinders allow multiple implementations of the same type to be
     registered and injected as a collection (Set or List).
 
@@ -163,6 +165,8 @@ class Multibinder(Protocol, Generic[T]):
 
 class SetMultibinder(Generic[T]):
     """Multibinder that binds to a Set[T].
+
+    **Why this exists:** Collect unique implementations as Set[T] (order not preserved).
 
     This multibinder collects implementations into a set, ensuring uniqueness.
     Order is not preserved.
@@ -243,6 +247,8 @@ class SetMultibinder(Generic[T]):
 class ListMultibinder(Generic[T]):
     """Multibinder that binds to a List[T].
 
+    **Why this exists:** Collect implementations as List[T] preserving add order.
+
     This multibinder collects implementations into a list, preserving order.
     Duplicates are allowed.
 
@@ -322,6 +328,8 @@ class ListMultibinder(Generic[T]):
 
 class MapMultibinder(Generic[K, V]):
     """Multibinder that binds to a Dict[K, V].
+
+    **Why this exists:** Collect keyed implementations for Dict[K, V] injection.
 
     Collects keyed implementations for injection as a mapping. Inject the
     dict through a host class constructor, not ``injector.inject(Dict[...])``.

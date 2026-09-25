@@ -37,6 +37,8 @@ from typing import Callable, Optional
 class Clock(ABC):
     """Abstract clock interface for time operations.
 
+    **Why this exists:** Call sites that use time.time()/sleep couple production to wall clock; inject Clock and bind SyntheticClock in tests.
+
     This abstract class provides methods for time-related operations,
     allowing implementations to be swapped for testing or different
     time sources. Use RealClock for production code and SyntheticClock
@@ -106,11 +108,11 @@ class Clock(ABC):
 
 
 class Timer(ABC):
-    """Abstract timer interface.
+    """Abstract handle for a scheduled callback.
 
-    Timers are created by Clock implementations and can be used to
-    schedule callbacks at specific intervals. Timers can be one-shot
-    or repeating.
+    Use timers when code needs one-shot or repeating callbacks driven by a
+    ``Clock``. Prefer ``SyntheticClock.start_timer`` in tests so time advances
+    only when you call ``advance()``, not wall-clock sleep.
 
     Example:
         >>> from pyiv.clock import SyntheticClock
@@ -146,6 +148,8 @@ class Timer(ABC):
 
 class RealClock(Clock):
     """Real clock implementation using standard library.
+
+    **Why this exists:** Production binding for real wall-clock time and sleeping timers.
 
     This is the production implementation that uses Python's built-in
     time and threading modules to provide actual system clock time
@@ -219,10 +223,24 @@ class RealClock(Clock):
 
 
 class RealTimer(Timer):
-    """Real timer implementation using threading.Timer.
+    """Real timer implementation wrapping ``threading.Timer``.
 
-    This is the concrete timer returned by RealClock.start_timer().
-    It wraps a threading.Timer and provides the Timer interface.
+    Returned by ``RealClock.start_timer()`` for production scheduling. In
+    tests, prefer ``SyntheticTimer`` via ``SyntheticClock`` so callbacks fire
+    from ``advance()`` without real threads or sleep.
+
+    Example:
+        >>> import threading
+        >>> from pyiv.clock import RealTimer
+        >>> t = threading.Timer(3600, lambda: None)
+        >>> timer = RealTimer(t)
+        >>> isinstance(timer, RealTimer)
+        True
+        >>> timer.is_active()
+        False
+        >>> timer.cancel()
+        >>> timer.is_active()
+        False
     """
 
     def __init__(self, timer: threading.Timer):
@@ -252,6 +270,9 @@ class SyntheticClock(Clock):
     This implementation allows you to control time manually, making it
     easy to test time-dependent code with predictable timestamps.
     Time advances only when you call advance() or set_time().
+
+    **Why this exists:** Controllable clock for tests — advance time without sleeping.
+
 
     Example:
         >>> clock = SyntheticClock(start_time=100.0)
@@ -356,10 +377,25 @@ class SyntheticClock(Clock):
 
 
 class SyntheticTimer(Timer):
-    """Synthetic timer implementation for SyntheticClock.
+    """Synthetic timer driven by ``SyntheticClock`` time.
 
-    This timer fires based on synthetic time rather than real time.
-    It only fires when the clock's time is advanced past the fire time.
+    Use this in tests for delayed or repeating callbacks: the timer fires
+    only when the clock is advanced past its fire time, never via wall clock.
+
+    Example:
+        >>> from pyiv.clock import SyntheticClock
+        >>> clock = SyntheticClock(start_time=0.0)
+        >>> hits = []
+        >>> timer = clock.start_timer(2.0, lambda: hits.append(1), repeat=True)
+        >>> isinstance(timer, SyntheticTimer)
+        True
+        >>> clock.advance(2.0)
+        >>> clock.advance(2.0)
+        >>> hits
+        [1, 1]
+        >>> timer.cancel()
+        >>> timer.is_active()
+        False
     """
 
     def __init__(

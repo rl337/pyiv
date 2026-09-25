@@ -56,9 +56,23 @@ T = TypeVar("T")
 
 
 class Config:
-    """Base class for dependency injection configuration.
+    """Module of bindings that describe how to build an object graph.
 
-    Subclasses should override `configure()` to register dependencies.
+    **Why this exists:** Without a registration surface, every call site must
+    know concrete classes. Subclass ``Config``, override ``configure()``, and
+    register interfaces → implementations (or use :meth:`get_binder`).
+
+    Example:
+        >>> from pyiv import Config, get_injector
+        >>> class Database:
+        ...     pass
+        >>> class PostgreSQL(Database):
+        ...     pass
+        >>> class MyConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Database, PostgreSQL)
+        >>> isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)
+        True
     """
 
     def __init__(self):
@@ -712,6 +726,8 @@ class Config:
 
 class PrivateConfig(Config):
     """Config whose bindings are hidden unless explicitly exposed.
+
+    **Why this exists:** Hide internal bindings and expose only a facade type to the parent graph.
 
     When installed into a parent config, a child injector owns the private
     graph. Only types/keys passed to :meth:`expose` are visible to the parent

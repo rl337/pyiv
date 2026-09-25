@@ -38,17 +38,20 @@ T = TypeVar("T", covariant=True)
 
 
 class Factory(Protocol, Generic[T]):
-    """Protocol for factory implementations.
+    """Callable creation API for objects that need runtime arguments.
 
-    Factories are used to create instances of objects, typically with
-    dependencies that need to be injected. This protocol defines the
-    interface that factories should implement.
+    **Why this exists:** A DI ``Provider`` builds one graph-managed instance.
+    A ``Factory`` creates many instances with caller-supplied args (user id,
+    connection string) while still allowing the factory itself to be injected.
 
-    Example::
-
-        class DatabaseFactory(Factory[Database]):
-            def create(self, connection_string: str) -> Database:
-                return PostgreSQL(connection_string)
+    Example:
+        >>> from pyiv.factory import SimpleFactory
+        >>> class User:
+        ...     def __init__(self, name: str):
+        ...         self.name = name
+        >>> factory: Factory[User] = SimpleFactory(User)
+        >>> factory.create(name="Ada").name
+        'Ada'
     """
 
     def create(self, *args: Any, **kwargs: Any) -> T:
@@ -65,19 +68,22 @@ class Factory(Protocol, Generic[T]):
 
 
 class BaseFactory(ABC, Generic[T]):
-    """Abstract base class for factory implementations.
+    """ABC when you want a class-based factory with constructor injection.
 
-    Provides a concrete base class for factories that need to be
-    instantiated. Subclasses should implement the `create()` method.
+    **Why this exists:** Protocols are fine for typing; subclassing
+    ``BaseFactory`` gives a real type the injector can construct, with
+    dependencies supplied to ``__init__`` and runtime args to ``create``.
 
-    Example::
-
-        class UserFactory(BaseFactory[User]):
-            def __init__(self, db: Database):
-                self._db = db
-
-            def create(self, name: str, email: str) -> User:
-                return User(name=name, email=email, db=self._db)
+    Example:
+        >>> from pyiv.factory import BaseFactory
+        >>> class User:
+        ...     def __init__(self, name: str):
+        ...         self.name = name
+        >>> class UserFactory(BaseFactory[User]):
+        ...     def create(self, name: str) -> User:
+        ...         return User(name=name)
+        >>> UserFactory().create("Ada").name
+        'Ada'
     """
 
     @abstractmethod
@@ -96,6 +102,8 @@ class BaseFactory(ABC, Generic[T]):
 
 class SimpleFactory(Generic[T]):
     """Simple factory that wraps a callable.
+
+    **Why this exists:** Wrap a function/constructor as a Factory without defining a subclass.
 
     Useful for creating factories from functions or constructors
     without needing to define a full class.

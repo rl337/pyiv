@@ -17,33 +17,35 @@ T = TypeVar("T")
 class SerDe(ChainHandler):
     """Abstract base class for serialization/deserialization operations.
 
-    SerDe (Serialize/Deserialize) is a chain handler for the ENCODING chain type.
-    It provides a unified interface for converting objects to and from various
-    encoding formats (JSON, base64, XML, pickle, etc.). YAML is provided by
-    ``pyiv-common``.
+    SerDe is a chain handler for the ENCODING chain. Subclass it for each
+    codec (JSON, base64, XML, pickle, etc.); YAML lives in ``pyiv-common``.
 
-    Subclasses must implement:
-        - handler_type: Return the encoding type identifier (e.g., "json", "base64", "pickle")
-        - serialize(): Convert a Python object to encoded bytes/string
-        - deserialize(): Convert encoded bytes/string back to a Python object
+    Use this when callers should pick a codec by ``handler_type`` instead of
+    hard-coding ``json.dumps`` / ``pickle.loads``. Register implementations on
+    the ENCODING chain so injectors and pipelines can swap formats without
+    rewriting call sites. Multiple handlers may share a ``handler_type`` with
+    different behaviors (date formatting, null handling, and so on).
 
-    The handler_type property identifies the format (e.g., "json", "base64", "pickle").
-    Multiple implementations of the same handler_type can exist with different
-    behaviors (e.g., date formatting, null handling, etc.).
+    Subclasses must implement ``handler_type``, ``serialize``, and
+    ``deserialize``.
 
     Example:
+        >>> import json
+        >>> from typing import Any, Optional, Type
+        >>> from pyiv.serde.base import SerDe
         >>> class MyJSONSerDe(SerDe):
         ...     @property
         ...     def handler_type(self) -> str:
         ...         return "json"
-        ...
         ...     def serialize(self, obj: Any) -> str:
-        ...         import json
         ...         return json.dumps(obj)
-        ...
-        ...     def deserialize(self, data: str, target_type: Optional[Type[T]]) -> T:
-        ...         import json
+        ...     def deserialize(
+        ...         self, data: str, target_type: Optional[Type] = None
+        ...     ) -> Any:
         ...         return json.loads(data)
+        >>> serde = MyJSONSerDe()
+        >>> serde.deserialize(serde.serialize({"a": 1}))
+        {'a': 1}
     """
 
     @property

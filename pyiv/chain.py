@@ -13,14 +13,18 @@ T = TypeVar("T")
 
 
 class ChainType(Enum):
-    """Types of chain of responsibility handlers.
+    """Category key for a family of chain-of-responsibility handlers.
 
-    Each chain type represents a different category of handlers:
-    - ENCODING: Serialization/deserialization (SerDe)
-    - HASHING: Hash function implementations
-    - SORTING: Sorting algorithm implementations
-    - NETWORK_CLIENT: Network protocol clients (HTTP, HTTPS, etc.)
-    - etc.
+    **Why this exists:** SerDe, network clients, and other pluggable handlers
+    share the same registration/injection machinery but must not collide.
+    ``ChainType`` namespaces those registries (encoding vs network, …).
+
+    Example:
+        >>> from pyiv.chain import ChainType
+        >>> ChainType.ENCODING.value
+        'encoding'
+        >>> ChainType.NETWORK_CLIENT.value
+        'network_client'
     """
 
     ENCODING = "encoding"
@@ -30,17 +34,19 @@ class ChainType(Enum):
 
 
 class ChainHandler(ABC):
-    """Abstract base class for chain of responsibility handlers.
+    """Pluggable handler looked up by chain type and handler name/type.
 
-    Chain handlers process requests in a chain. Each handler can either:
-    - Handle the request and return a result
-    - Pass the request to the next handler in the chain
-    - Reject the request
+    **Why this exists:** Apps need interchangeable strategies (JSON vs pickle,
+    HTTP vs HTTPS) without hard-coding classes at call sites. Register handlers
+    on ``Config`` and resolve them with ``inject_chain_handler``.
 
-    Subclasses must implement:
-        - chain_type: The type of chain this handler belongs to
-        - handler_type: The specific handler type identifier (e.g., "json", "md5", "quicksort")
-        - handle(): Process the request
+    Example:
+        >>> from pyiv.serde import JSONSerDe
+        >>> h: ChainHandler = JSONSerDe()
+        >>> h.chain_type is ChainType.ENCODING
+        True
+        >>> h.handler_type
+        'json'
     """
 
     @property

@@ -17,6 +17,8 @@ from pyiv.singleton import SingletonType
 class ReflectionConfig(Config):
     """Configuration class that supports module-based discovery of implementations.
 
+    **Why this exists:** Auto-discover interface implementations in a package instead of listing every class.
+
     This class extends Config to add reflection-based discovery capabilities.
     Instead of manually registering each implementation, you can register a package
     to scan, and all implementations of an interface will be automatically discovered
