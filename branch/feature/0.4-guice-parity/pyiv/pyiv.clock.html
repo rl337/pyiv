@@ -182,16 +182,16 @@ For testing, use SyntheticClock which allows manual time advancement.</p>
 <td><p>Real clock implementation using standard library.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.clock.RealTimer" title="pyiv.clock.RealTimer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RealTimer</span></code></a>(timer)</p></td>
-<td><p>Real timer implementation using threading.Timer.</p></td>
+<td><p>Real timer implementation wrapping <code class="docutils literal notranslate"><span class="pre">threading.Timer</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.clock.SyntheticClock" title="pyiv.clock.SyntheticClock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyntheticClock</span></code></a>([start_time])</p></td>
 <td><p>Synthetic clock for testing - allows manual time control.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.clock.SyntheticTimer" title="pyiv.clock.SyntheticTimer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyntheticTimer</span></code></a>(clock, interval, callback, ...)</p></td>
-<td><p>Synthetic timer implementation for SyntheticClock.</p></td>
+<td><p>Synthetic timer driven by <code class="docutils literal notranslate"><span class="pre">SyntheticClock</span></code> time.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.clock.Timer" title="pyiv.clock.Timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Timer</span></code></a>()</p></td>
-<td><p>Abstract timer interface.</p></td>
+<td><p>Abstract handle for a scheduled callback.</p></td>
 </tr>
 </tbody>
 </table>
@@ -200,6 +200,7 @@ For testing, use SyntheticClock which allows manual time advancement.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.clock.</span></span><span class="sig-name descname"><span class="pre">Clock</span></span><a class="reference internal" href="../_modules/pyiv/clock.html#Clock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.clock.Clock" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Abstract clock interface for time operations.</p>
+<p><strong>Why this exists:</strong> Call sites that use time.time()/sleep couple production to wall clock; inject Clock and bind SyntheticClock in tests.</p>
 <p>This abstract class provides methods for time-related operations,
 allowing implementations to be swapped for testing or different
 time sources. Use RealClock for production code and SyntheticClock
@@ -283,6 +284,7 @@ for testing.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.clock.</span></span><span class="sig-name descname"><span class="pre">RealClock</span></span><a class="reference internal" href="../_modules/pyiv/clock.html#RealClock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.clock.RealClock" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.clock.Clock" title="pyiv.clock.Clock"><code class="xref py py-class docutils literal notranslate"><span class="pre">Clock</span></code></a></p>
 <p>Real clock implementation using standard library.</p>
+<p><strong>Why this exists:</strong> Production binding for real wall-clock time and sleeping timers.</p>
 <p>This is the production implementation that uses Python’s built-in
 time and threading modules to provide actual system clock time
 and real sleep operations.</p>
@@ -362,9 +364,24 @@ and real sleep operations.</p>
 <dt class="sig sig-object py" id="pyiv.clock.RealTimer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.clock.</span></span><span class="sig-name descname"><span class="pre">RealTimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Timer" title="(in Python v3.14)"><span class="pre">Timer</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/clock.html#RealTimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.clock.RealTimer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.clock.Timer" title="pyiv.clock.Timer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timer</span></code></a></p>
-<p>Real timer implementation using threading.Timer.</p>
-<p>This is the concrete timer returned by RealClock.start_timer().
-It wraps a threading.Timer and provides the Timer interface.</p>
+<p>Real timer implementation wrapping <code class="docutils literal notranslate"><span class="pre">threading.Timer</span></code>.</p>
+<p>Returned by <code class="docutils literal notranslate"><span class="pre">RealClock.start_timer()</span></code> for production scheduling. In
+tests, prefer <code class="docutils literal notranslate"><span class="pre">SyntheticTimer</span></code> via <code class="docutils literal notranslate"><span class="pre">SyntheticClock</span></code> so callbacks fire
+from <code class="docutils literal notranslate"><span class="pre">advance()</span></code> without real threads or sleep.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealTimer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="mi">3600</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span> <span class="o">=</span> <span class="n">RealTimer</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="n">RealTimer</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span><span class="o">.</span><span class="n">is_active</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span><span class="o">.</span><span class="n">is_active</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.clock.RealTimer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Timer" title="(in Python v3.14)"><span class="pre">Timer</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/clock.html#RealTimer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.clock.RealTimer.__init__" title="Link to this definition"></a></dt>
@@ -403,6 +420,7 @@ It wraps a threading.Timer and provides the Timer interface.</p>
 <p>This implementation allows you to control time manually, making it
 easy to test time-dependent code with predictable timestamps.
 Time advances only when you call advance() or set_time().</p>
+<p><strong>Why this exists:</strong> Controllable clock for tests — advance time without sleeping.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span> <span class="o">=</span> <span class="n">SyntheticClock</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">clock</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">==</span> <span class="mf">100.0</span>
@@ -513,9 +531,25 @@ Time advances only when you call advance() or set_time().</p>
 <dt class="sig sig-object py" id="pyiv.clock.SyntheticTimer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.clock.</span></span><span class="sig-name descname"><span class="pre">SyntheticTimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyiv.clock.SyntheticClock" title="pyiv.clock.SyntheticClock"><span class="pre">SyntheticClock</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/clock.html#SyntheticTimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.clock.SyntheticTimer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.clock.Timer" title="pyiv.clock.Timer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timer</span></code></a></p>
-<p>Synthetic timer implementation for SyntheticClock.</p>
-<p>This timer fires based on synthetic time rather than real time.
-It only fires when the clock’s time is advanced past the fire time.</p>
+<p>Synthetic timer driven by <code class="docutils literal notranslate"><span class="pre">SyntheticClock</span></code> time.</p>
+<p>Use this in tests for delayed or repeating callbacks: the timer fires
+only when the clock is advanced past its fire time, never via wall clock.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyntheticClock</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span> <span class="o">=</span> <span class="n">SyntheticClock</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hits</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span> <span class="o">=</span> <span class="n">clock</span><span class="o">.</span><span class="n">start_timer</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">hits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="n">SyntheticTimer</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hits</span>
+<span class="go">[1, 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span><span class="o">.</span><span class="n">is_active</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.clock.SyntheticTimer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyiv.clock.SyntheticClock" title="pyiv.clock.SyntheticClock"><span class="pre">SyntheticClock</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/clock.html#SyntheticTimer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.clock.SyntheticTimer.__init__" title="Link to this definition"></a></dt>
@@ -556,10 +590,10 @@ It only fires when the clock’s time is advanced past the fire time.</p>
 <dt class="sig sig-object py" id="pyiv.clock.Timer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.clock.</span></span><span class="sig-name descname"><span class="pre">Timer</span></span><a class="reference internal" href="../_modules/pyiv/clock.html#Timer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.clock.Timer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Abstract timer interface.</p>
-<p>Timers are created by Clock implementations and can be used to
-schedule callbacks at specific intervals. Timers can be one-shot
-or repeating.</p>
+<p>Abstract handle for a scheduled callback.</p>
+<p>Use timers when code needs one-shot or repeating callbacks driven by a
+<code class="docutils literal notranslate"><span class="pre">Clock</span></code>. Prefer <code class="docutils literal notranslate"><span class="pre">SyntheticClock.start_timer</span></code> in tests so time advances
+only when you call <code class="docutils literal notranslate"><span class="pre">advance()</span></code>, not wall-clock sleep.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyntheticClock</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span> <span class="o">=</span> <span class="n">SyntheticClock</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>

@@ -273,6 +273,7 @@ custom scopes like request-scoped, thread-scoped, session-scoped, etc.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.scope.</span></span><span class="sig-name descname"><span class="pre">GlobalSingletonScope</span></span><a class="reference internal" href="../_modules/pyiv/scope.html#GlobalSingletonScope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.scope.GlobalSingletonScope" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Global singleton scope (thread-safe).</p>
+<p><strong>Why this exists:</strong> One instance shared by all injectors in the process (thread-safe).</p>
 <p>This scope caches instances globally across all injectors. The same
 instance is shared by all injectors and all threads. Access is thread-safe.</p>
 <p>This is useful for truly global singletons like configuration, caches,
@@ -339,6 +340,7 @@ or shared resources.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.scope.</span></span><span class="sig-name descname"><span class="pre">NoScope</span></span><a class="reference internal" href="../_modules/pyiv/scope.html#NoScope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.scope.NoScope" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>No scope - creates a new instance every time.</p>
+<p><strong>Why this exists:</strong> Explicit unscoped binding when a type annotation would otherwise imply reuse.</p>
 <p>This scope does not cache instances. Each call to get() will create
 a new instance. This is the default behavior when no scope is specified.</p>
 <p class="rubric">Example</p>
@@ -375,6 +377,7 @@ a new instance. This is the default behavior when no scope is specified.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.scope.</span></span><span class="sig-name descname"><span class="pre">Scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/scope.html#Scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.scope.Scope" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
 <p>Protocol for scope implementations.</p>
+<p><strong>Why this exists:</strong> Control instance lifetime beyond one-shot construction (request, singleton, custom).</p>
 <p>Scopes control the lifecycle of instances created by the dependency
 injection system. A scope can cache instances, create new ones on
 demand, or implement custom lifecycle logic.</p>
@@ -422,6 +425,7 @@ request-scoped, thread-scoped, session-scoped, or any custom lifecycle.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.scope.</span></span><span class="sig-name descname"><span class="pre">SingletonScope</span></span><a class="reference internal" href="../_modules/pyiv/scope.html#SingletonScope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.scope.SingletonScope" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Per-injector singleton scope.</p>
+<p><strong>Why this exists:</strong> One instance per injector — default app-wide singleton without process globals.</p>
 <p>This scope caches instances per injector. Each injector will have its
 own singleton instance. This is useful when you want singletons but
 need different instances for different injectors (e.g., test vs production).</p>

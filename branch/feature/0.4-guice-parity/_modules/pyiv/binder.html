@@ -227,10 +227,11 @@
 <div class="viewcode-block" id="BindingBuilder">
 <a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BindingBuilder</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""Fluent builder for configuring bindings.</span>
+<span class="w">    </span><span class="sd">"""Fluent steps after :meth:`Binder.bind` (``.to`` / ``.in_scope`` / …).</span>
 
-<span class="sd">    This builder provides a fluent API for configuring how a type should</span>
-<span class="sd">    be bound. It supports chaining methods to configure the binding.</span>
+<span class="sd">    **Why this exists:** A single ``register(...)`` call buries scope and</span>
+<span class="sd">    provider choices in kwargs. The builder makes the binding shape readable</span>
+<span class="sd">    as a chain while still writing the same ``Config`` store.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
@@ -307,17 +308,23 @@
 <div class="viewcode-block" id="Binder">
 <a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.Binder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Binder</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Protocol for binder implementations.</span>
+<span class="w">    </span><span class="sd">"""Fluent configuration API for contributing bindings to a ``Config``.</span>
 
-<span class="sd">    Binders provide a fluent API for configuring dependency bindings.</span>
-<span class="sd">    They separate the configuration API from the implementation, making</span>
-<span class="sd">    Config more testable and enabling programmatic configuration.</span>
+<span class="sd">    **Why this exists:** Direct ``Config.register*`` calls work, but complex</span>
+<span class="sd">    graphs read better as ``bind(X).to(Y).in_scope(Z)``. The binder also</span>
+<span class="sd">    supports ``install``, ``expose``, and ``require_explicit_bindings``.</span>
 
-<span class="sd">    Example::</span>
-
-<span class="sd">        class MyBinder(Binder):</span>
-<span class="sd">            def bind(self, abstract):</span>
-<span class="sd">                return BindingBuilder(...)</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class PostgreSQL(Database):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.get_binder().bind(Database).to(PostgreSQL)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Binder.bind">

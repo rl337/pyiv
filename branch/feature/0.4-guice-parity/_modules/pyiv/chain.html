@@ -155,14 +155,18 @@
 <div class="viewcode-block" id="ChainType">
 <a class="viewcode-back" href="../../pyiv/pyiv.chain.html#pyiv.ChainType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ChainType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Types of chain of responsibility handlers.</span>
+<span class="w">    </span><span class="sd">"""Category key for a family of chain-of-responsibility handlers.</span>
 
-<span class="sd">    Each chain type represents a different category of handlers:</span>
-<span class="sd">    - ENCODING: Serialization/deserialization (SerDe)</span>
-<span class="sd">    - HASHING: Hash function implementations</span>
-<span class="sd">    - SORTING: Sorting algorithm implementations</span>
-<span class="sd">    - NETWORK_CLIENT: Network protocol clients (HTTP, HTTPS, etc.)</span>
-<span class="sd">    - etc.</span>
+<span class="sd">    **Why this exists:** SerDe, network clients, and other pluggable handlers</span>
+<span class="sd">    share the same registration/injection machinery but must not collide.</span>
+<span class="sd">    ``ChainType`` namespaces those registries (encoding vs network, …).</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.chain import ChainType</span>
+<span class="sd">        &gt;&gt;&gt; ChainType.ENCODING.value</span>
+<span class="sd">        'encoding'</span>
+<span class="sd">        &gt;&gt;&gt; ChainType.NETWORK_CLIENT.value</span>
+<span class="sd">        'network_client'</span>
 <span class="sd">    """</span>
 
     <span class="n">ENCODING</span> <span class="o">=</span> <span class="s2">"encoding"</span>
@@ -175,17 +179,19 @@
 <div class="viewcode-block" id="ChainHandler">
 <a class="viewcode-back" href="../../pyiv/pyiv.chain.html#pyiv.ChainHandler">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ChainHandler</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Abstract base class for chain of responsibility handlers.</span>
+<span class="w">    </span><span class="sd">"""Pluggable handler looked up by chain type and handler name/type.</span>
 
-<span class="sd">    Chain handlers process requests in a chain. Each handler can either:</span>
-<span class="sd">    - Handle the request and return a result</span>
-<span class="sd">    - Pass the request to the next handler in the chain</span>
-<span class="sd">    - Reject the request</span>
+<span class="sd">    **Why this exists:** Apps need interchangeable strategies (JSON vs pickle,</span>
+<span class="sd">    HTTP vs HTTPS) without hard-coding classes at call sites. Register handlers</span>
+<span class="sd">    on ``Config`` and resolve them with ``inject_chain_handler``.</span>
 
-<span class="sd">    Subclasses must implement:</span>
-<span class="sd">        - chain_type: The type of chain this handler belongs to</span>
-<span class="sd">        - handler_type: The specific handler type identifier (e.g., "json", "md5", "quicksort")</span>
-<span class="sd">        - handle(): Process the request</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.serde import JSONSerDe</span>
+<span class="sd">        &gt;&gt;&gt; h: ChainHandler = JSONSerDe()</span>
+<span class="sd">        &gt;&gt;&gt; h.chain_type is ChainType.ENCODING</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; h.handler_type</span>
+<span class="sd">        'json'</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>

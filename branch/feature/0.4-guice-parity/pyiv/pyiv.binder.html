@@ -227,10 +227,10 @@ configuration.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.binder.Binder" title="pyiv.binder.Binder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Binder</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Protocol for binder implementations.</p></td>
+<td><p>Fluent configuration API for contributing bindings to a <code class="docutils literal notranslate"><span class="pre">Config</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.binder.BindingBuilder" title="pyiv.binder.BindingBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BindingBuilder</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Fluent builder for configuring bindings.</p></td>
+<td><p>Fluent steps after <a class="reference internal" href="#pyiv.binder.Binder.bind" title="pyiv.binder.Binder.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Binder.bind()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">.to</span></code> / <code class="docutils literal notranslate"><span class="pre">.in_scope</span></code> / …).</p></td>
 </tr>
 </tbody>
 </table>
@@ -238,14 +238,21 @@ configuration.</p>
 <dt class="sig sig-object py" id="pyiv.binder.Binder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.binder.</span></span><span class="sig-name descname"><span class="pre">Binder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/binder.html#Binder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder.Binder" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
-<p>Protocol for binder implementations.</p>
-<p>Binders provide a fluent API for configuring dependency bindings.
-They separate the configuration API from the implementation, making
-Config more testable and enabling programmatic configuration.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyBinder</span><span class="p">(</span><span class="n">Binder</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstract</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<p>Fluent configuration API for contributing bindings to a <code class="docutils literal notranslate"><span class="pre">Config</span></code>.</p>
+<p><strong>Why this exists:</strong> Direct <code class="docutils literal notranslate"><span class="pre">Config.register*</span></code> calls work, but complex
+graphs read better as <code class="docutils literal notranslate"><span class="pre">bind(X).to(Y).in_scope(Z)</span></code>. The binder also
+supports <code class="docutils literal notranslate"><span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">expose</span></code>, and <code class="docutils literal notranslate"><span class="pre">require_explicit_bindings</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Database</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Database</span><span class="p">),</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -326,9 +333,10 @@ Later installs overwrite the same type/key (last wins).</p>
 <dt class="sig sig-object py" id="pyiv.binder.BindingBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.binder.</span></span><span class="sig-name descname"><span class="pre">BindingBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/binder.html#BindingBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder.BindingBuilder" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>Fluent builder for configuring bindings.</p>
-<p>This builder provides a fluent API for configuring how a type should
-be bound. It supports chaining methods to configure the binding.</p>
+<p>Fluent steps after <a class="reference internal" href="#pyiv.binder.Binder.bind" title="pyiv.binder.Binder.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Binder.bind()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">.to</span></code> / <code class="docutils literal notranslate"><span class="pre">.in_scope</span></code> / …).</p>
+<p><strong>Why this exists:</strong> A single <code class="docutils literal notranslate"><span class="pre">register(...)</span></code> call buries scope and
+provider choices in kwargs. The builder makes the binding shape readable
+as a chain while still writing the same <code class="docutils literal notranslate"><span class="pre">Config</span></code> store.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingletonScope</span>

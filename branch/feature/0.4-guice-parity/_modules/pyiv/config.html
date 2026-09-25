@@ -198,9 +198,23 @@
 <div class="viewcode-block" id="Config">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Base class for dependency injection configuration.</span>
+<span class="w">    </span><span class="sd">"""Module of bindings that describe how to build an object graph.</span>
 
-<span class="sd">    Subclasses should override `configure()` to register dependencies.</span>
+<span class="sd">    **Why this exists:** Without a registration surface, every call site must</span>
+<span class="sd">    know concrete classes. Subclass ``Config``, override ``configure()``, and</span>
+<span class="sd">    register interfaces → implementations (or use :meth:`get_binder`).</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class PostgreSQL(Database):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Database, PostgreSQL)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Config.__init__">
@@ -971,6 +985,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.PrivateConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PrivateConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Config whose bindings are hidden unless explicitly exposed.</span>
+
+<span class="sd">    **Why this exists:** Hide internal bindings and expose only a facade type to the parent graph.</span>
 
 <span class="sd">    When installed into a parent config, a child injector owns the private</span>
 <span class="sd">    graph. Only types/keys passed to :meth:`expose` are visible to the parent</span>

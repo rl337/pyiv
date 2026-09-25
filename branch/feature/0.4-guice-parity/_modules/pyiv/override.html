@@ -183,7 +183,28 @@
 <div class="viewcode-block" id="OverrideBuilder">
 <a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverrideBuilder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OverrideBuilder</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Builder returned by :func:`override`."""</span>
+<span class="w">    </span><span class="sd">"""Fluent step after :func:`override` — call :meth:`with_` to finish.</span>
+
+<span class="sd">    **Why this exists:** Splitting ``override(base)`` from ``.with_(test)``</span>
+<span class="sd">    keeps the API readable when overlaying several override modules.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     def name(self) -&gt; str:</span>
+<span class="sd">        ...         return "prod"</span>
+<span class="sd">        &gt;&gt;&gt; class Fake(Database):</span>
+<span class="sd">        ...     def name(self) -&gt; str:</span>
+<span class="sd">        ...         return "fake"</span>
+<span class="sd">        &gt;&gt;&gt; class Prod(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Database, Database)</span>
+<span class="sd">        &gt;&gt;&gt; class Test(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Database, Fake)</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(override(Prod).with_(Test)).inject(Database).name()</span>
+<span class="sd">        'fake'</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="OverrideBuilder.__init__">
 <a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverrideBuilder.__init__">[docs]</a>
@@ -206,7 +227,13 @@
 <div class="viewcode-block" id="OverriddenConfig">
 <a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverriddenConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OverriddenConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Config built by merging base modules then override modules."""</span>
+<span class="w">    </span><span class="sd">"""Merged config: base bindings with override bindings on top.</span>
+
+<span class="sd">    **Why this exists:** Tests need the production graph with a few keys</span>
+<span class="sd">    swapped. Prefer :func:`override` rather than constructing this directly.</span>
+
+<span class="sd">    See the :class:`OverrideBuilder` example for usage via ``override(...).with_(...)``.</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="OverriddenConfig.__init__">
 <a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverriddenConfig.__init__">[docs]</a>

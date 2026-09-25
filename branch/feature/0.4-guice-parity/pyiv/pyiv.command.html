@@ -158,10 +158,10 @@ with commands, subcommands, and sub-subcommands.</p>
 <td><p>Base class for one-shot CLI commands (not long-running services).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.command.Command" title="pyiv.command.Command"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Command</span></code></a>(args[, injector])</p></td>
-<td><p>Interface for CLI commands.</p></td>
+<td><p>Base interface for discoverable CLI commands.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.command.CommandRunner" title="pyiv.command.CommandRunner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CommandRunner</span></code></a>([config])</p></td>
-<td><p>Runner for discovering and executing commands using reflection.</p></td>
+<td><p>Discovers and runs <code class="docutils literal notranslate"><span class="pre">Command</span></code> subclasses via reflection or import.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.command.ServiceCommand" title="pyiv.command.ServiceCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ServiceCommand</span></code></a>(args[, injector])</p></td>
 <td><p>Base class for long-running service commands.</p></td>
@@ -173,14 +173,23 @@ with commands, subcommands, and sub-subcommands.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.command.</span></span><span class="sig-name descname"><span class="pre">CLICommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.14)"><span class="pre">Namespace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/command.html#CLICommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.CLICommand" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.command.Command" title="pyiv.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
 <p>Base class for one-shot CLI commands (not long-running services).</p>
-<p>Provides a simplified lifecycle for commands that execute and exit:
-1. init() - Optional initialization
-2. run() - Main command logic (subclasses override this)
-3. cleanup() - Optional cleanup</p>
-<p>Subclasses should override run() (and optionally init()/cleanup()).
-Set self._exit_code in run() to return a non-zero status.</p>
-<p>Do not override execute() — it implements the lifecycle, KeyboardInterrupt
-handling (exit 130), and SystemExit handling.</p>
+<p>Use this for tools that init, run once, and exit. Override <code class="docutils literal notranslate"><span class="pre">run()</span></code> (and
+optionally <code class="docutils literal notranslate"><span class="pre">init()</span></code>/<code class="docutils literal notranslate"><span class="pre">cleanup()</span></code>); set <code class="docutils literal notranslate"><span class="pre">self._exit_code</span></code> for non-zero
+status. Do not override <code class="docutils literal notranslate"><span class="pre">execute()</span></code> — it owns KeyboardInterrupt / SystemExit
+handling.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLICommand</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">EchoCommand</span><span class="p">(</span><span class="n">CLICommand</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nd">@classmethod</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">"echo"</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_exit_code</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">EchoCommand</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">())</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="go">0</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.command.CLICommand.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.14)"><span class="pre">Namespace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/command.html#CLICommand.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.CLICommand.__init__" title="Link to this definition"></a></dt>
@@ -224,12 +233,26 @@ to return a non-zero status from execute().</p>
 <dt class="sig sig-object py" id="pyiv.command.Command">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.command.</span></span><span class="sig-name descname"><span class="pre">Command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.14)"><span class="pre">Namespace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/command.html#Command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.Command" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Interface for CLI commands.</p>
-<p>Commands can be organized hierarchically:
-- Top-level commands (e.g., “switchboard”)
-- Subcommands (e.g., “switchboard start”)
-- Sub-subcommands (e.g., “switchboard agent create”)</p>
-<p>Each command level can have its own arguments and execution logic.</p>
+<p>Base interface for discoverable CLI commands.</p>
+<p>Use this when building hierarchical CLIs (command / subcommand trees) that
+should be discoverable via reflection and optionally receive a pyiv
+injector. Prefer <code class="docutils literal notranslate"><span class="pre">CLICommand</span></code> for one-shot tools and <code class="docutils literal notranslate"><span class="pre">ServiceCommand</span></code>
+for long-running processes.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">Command</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">HelloCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nd">@classmethod</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">"hello"</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">HelloCommand</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+<span class="go">'hello'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">HelloCommand</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">())</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="go">0</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.command.Command.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.14)"><span class="pre">Namespace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/command.html#Command.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.Command.__init__" title="Link to this definition"></a></dt>
@@ -381,7 +404,32 @@ and exit gracefully when shutdown is requested.</p>
 <dt class="sig sig-object py" id="pyiv.command.CommandRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.command.</span></span><span class="sig-name descname"><span class="pre">CommandRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/command.html#CommandRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.CommandRunner" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Runner for discovering and executing commands using reflection.</p>
+<p>Discovers and runs <code class="docutils literal notranslate"><span class="pre">Command</span></code> subclasses via reflection or import.</p>
+<p>Use this as the entrypoint for a CLI package: discover commands under a
+package path, build an argparse tree, and execute the selected command
+with an optional pyiv injector from <code class="docutils literal notranslate"><span class="pre">config</span></code>.</p>
+<p><strong>Why this exists:</strong> Discover and dispatch hierarchical CLI commands with a shared lifecycle.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLICommand</span><span class="p">,</span> <span class="n">CommandRunner</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">GreetCommand</span><span class="p">(</span><span class="n">CLICommand</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nd">@classmethod</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">"greet"</span>
+<span class="gp">... </span>    <span class="nd">@classmethod</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_description</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">"Say hello"</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_exit_code</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runner</span> <span class="o">=</span> <span class="n">CommandRunner</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">create_parser</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">prog</span><span class="o">=</span><span class="s2">"demo"</span><span class="p">,</span> <span class="n">commands</span><span class="o">=</span><span class="p">{</span><span class="s2">"greet"</span><span class="p">:</span> <span class="n">GreetCommand</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s2">"greet"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">GreetCommand</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="go">0</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.command.CommandRunner.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/command.html#CommandRunner.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.CommandRunner.__init__" title="Link to this definition"></a></dt>
@@ -455,11 +503,23 @@ and exit gracefully when shutdown is requested.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.command.</span></span><span class="sig-name descname"><span class="pre">ServiceCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.14)"><span class="pre">Namespace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/command.html#ServiceCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.ServiceCommand" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.command.Command" title="pyiv.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
 <p>Base class for long-running service commands.</p>
-<p>Provides a standard lifecycle pattern:
-1. init() - Initialize resources, configuration, etc.
-2. run() - Main service loop (blocking)
-3. cleanup() - Clean up resources on shutdown</p>
-<p>Subclasses should override init(), run(), and cleanup().</p>
+<p>Use this when a command should run until interrupted (daemons, workers).
+<code class="docutils literal notranslate"><span class="pre">execute()</span></code> runs <code class="docutils literal notranslate"><span class="pre">init()</span></code> → <code class="docutils literal notranslate"><span class="pre">run()</span></code> → <code class="docutils literal notranslate"><span class="pre">cleanup()</span></code> and maps
+<code class="docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code> to exit code 130. Override those hooks; do not
+reimplement the lifecycle unless necessary.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.command</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServiceCommand</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">OnceService</span><span class="p">(</span><span class="n">ServiceCommand</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nd">@classmethod</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s2">"once"</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">pass</span>  <span class="c1"># exit immediately after init</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">OnceService</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">())</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="go">0</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.command.ServiceCommand.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/pyiv/command.html#ServiceCommand.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.command.ServiceCommand.execute" title="Link to this definition"></a></dt>

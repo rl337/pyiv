@@ -259,23 +259,27 @@ to stdout.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.console.</span></span><span class="sig-name descname"><span class="pre">BaseConsole</span></span><a class="reference internal" href="../_modules/pyiv/console.html#BaseConsole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.console.BaseConsole" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Abstract base class for console implementations.</p>
-<p>Provides a concrete base class for console implementations.
-Subclasses should implement the file-like interface methods.
-Terminal methods have default no-op implementations that can be
-overridden by subclasses that support terminal features.</p>
+<p>Subclass this when you need a custom <code class="docutils literal notranslate"><span class="pre">Console</span></code> (file-like write plus
+optional TTY helpers). Implement <code class="docutils literal notranslate"><span class="pre">write</span></code>/<code class="docutils literal notranslate"><span class="pre">flush</span></code>/<code class="docutils literal notranslate"><span class="pre">writable</span></code>;
+terminal methods default to no-ops so simple sinks stay small. Prefer
+<code class="docutils literal notranslate"><span class="pre">MemoryConsole</span></code> for capturing <code class="docutils literal notranslate"><span class="pre">print()</span></code> in tests.</p>
+<p><strong>Why this exists:</strong> Shared base for Console implementations so TTY helpers default to no-ops.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.console</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseConsole</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">CustomConsole</span><span class="p">(</span><span class="n">BaseConsole</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">ListConsole</span><span class="p">(</span><span class="n">BaseConsole</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="gp">... </span>        <span class="c1"># Custom write logic</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-<span class="gp">...</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="gp">... </span>        <span class="k">pass</span>
-<span class="gp">...</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">writable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ListConsole</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">"hi"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">chunks</span><span class="p">)</span>
+<span class="go">'hi\n'</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -572,6 +576,7 @@ overridden by subclasses that support terminal features.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.console.</span></span><span class="sig-name descname"><span class="pre">Console</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/console.html#Console"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.console.Console" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
 <p>Protocol for console output implementations.</p>
+<p><strong>Why this exists:</strong> print() to sys.stdout is hard to assert; inject Console and capture with MemoryConsole in tests.</p>
 <p>Console provides a file-like interface for output, allowing print()
 statements to use dependency injection. This enables testing by
 capturing output without actually printing to stdout.</p>
@@ -1010,6 +1015,7 @@ colors, styles, and event history.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.console.</span></span><span class="sig-name descname"><span class="pre">FileConsole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/console.html#FileConsole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.console.FileConsole" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.console.BaseConsole" title="pyiv.console.BaseConsole"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConsole</span></code></a></p>
 <p>File-based console for testing.</p>
+<p><strong>Why this exists:</strong> When a test must verify output landed in a real file path.</p>
 <p>This console writes output to a file, useful for testing scenarios
 where you want to verify output was written to a specific file.</p>
 <p class="rubric">Example</p>
@@ -1105,6 +1111,7 @@ where you want to verify output was written to a specific file.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.console.</span></span><span class="sig-name descname"><span class="pre">MemoryConsole</span></span><a class="reference internal" href="../_modules/pyiv/console.html#MemoryConsole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.console.MemoryConsole" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.console.BaseConsole" title="pyiv.console.BaseConsole"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConsole</span></code></a></p>
 <p>In-memory console for testing.</p>
+<p><strong>Why this exists:</strong> Capture print(…, file=console) without touching stdout.</p>
 <p>This console stores output in memory, allowing tests to capture
 and verify console output without actually printing to stdout.</p>
 <p class="rubric">Example</p>
@@ -1953,6 +1960,7 @@ terminal. Use this for testing programs that require TTY behavior.</p>
 behavior and TTY-specific functionality. Use this in production code
 for normal console output and terminal features like spinners, animations,
 and password prompts.</p>
+<p><strong>Why this exists:</strong> Production Console that writes to a real stream/TTY.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.console</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealConsole</span>

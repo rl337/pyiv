@@ -159,6 +159,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ReflectionConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Configuration class that supports module-based discovery of implementations.</span>
 
+<span class="sd">    **Why this exists:** Auto-discover interface implementations in a package instead of listing every class.</span>
+
 <span class="sd">    This class extends Config to add reflection-based discovery capabilities.</span>
 <span class="sd">    Instead of manually registering each implementation, you can register a package</span>
 <span class="sd">    to scan, and all implementations of an interface will be automatically discovered</span>

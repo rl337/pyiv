@@ -189,10 +189,10 @@ thread-safe singletons shared across all injector instances.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.singleton.GlobalSingletonRegistry" title="pyiv.singleton.GlobalSingletonRegistry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GlobalSingletonRegistry</span></code></a>()</p></td>
-<td><p>Thread-safe registry for global singletons.</p></td>
+<td><p>Process-wide store for <code class="docutils literal notranslate"><span class="pre">GLOBAL_SINGLETON</span></code> instances.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.singleton.SingletonType" title="pyiv.singleton.SingletonType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingletonType</span></code></a>(value[, names, module, ...])</p></td>
-<td><p>Type of singleton behavior for registered dependencies.</p></td>
+<td><p>Legacy enum for singleton lifecycle on <code class="docutils literal notranslate"><span class="pre">Config.register</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -200,11 +200,20 @@ thread-safe singletons shared across all injector instances.</p>
 <dt class="sig sig-object py" id="pyiv.singleton.GlobalSingletonRegistry">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.singleton.</span></span><span class="sig-name descname"><span class="pre">GlobalSingletonRegistry</span></span><a class="reference internal" href="../_modules/pyiv/singleton.html#GlobalSingletonRegistry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.singleton.GlobalSingletonRegistry" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Thread-safe registry for global singletons.</p>
-<p>This registry stores singleton instances that are shared across
-all injector instances. Access is thread-safe.</p>
-<p>Supports both Type keys (for standard DI) and string keys (for SerDe
-and other named instances).</p>
+<p>Process-wide store for <code class="docutils literal notranslate"><span class="pre">GLOBAL_SINGLETON</span></code> instances.</p>
+<p><strong>Why this exists:</strong> Some resources must be unique across injectors
+(shared caches). Tests call <a class="reference internal" href="#pyiv.singleton.GlobalSingletonRegistry.clear" title="pyiv.singleton.GlobalSingletonRegistry.clear"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clear()</span></code></a> between cases so state does
+not leak.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Cache</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">GlobalSingletonRegistry</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">GlobalSingletonRegistry</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">Cache</span><span class="p">,</span> <span class="n">Cache</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">GlobalSingletonRegistry</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">Cache</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">GlobalSingletonRegistry</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.singleton.GlobalSingletonRegistry.clear">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/singleton.html#GlobalSingletonRegistry.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.singleton.GlobalSingletonRegistry.clear" title="Link to this definition"></a></dt>
@@ -271,7 +280,10 @@ and other named instances).</p>
 <dt class="sig sig-object py" id="pyiv.singleton.SingletonType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.singleton.</span></span><span class="sig-name descname"><span class="pre">SingletonType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/singleton.html#SingletonType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.singleton.SingletonType" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>Type of singleton behavior for registered dependencies.</p>
+<p>Legacy enum for singleton lifecycle on <code class="docutils literal notranslate"><span class="pre">Config.register</span></code>.</p>
+<p><strong>Why this exists:</strong> Older call sites use <code class="docutils literal notranslate"><span class="pre">singleton_type=...</span></code> instead of
+a <a class="reference internal" href="pyiv.scope.html#pyiv.scope.Scope" title="pyiv.scope.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a>. Prefer <code class="docutils literal notranslate"><span class="pre">Scope</span></code> for new code; this enum remains
+for compatibility.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv.singleton.SingletonType.NONE">
 <span class="sig-name descname"><span class="pre">NONE</span></span><a class="headerlink" href="#pyiv.singleton.SingletonType.NONE" title="Link to this definition"></a></dt>
@@ -290,6 +302,18 @@ and other named instances).</p>
 <dd><p>Global singleton - one instance shared across all injectors (thread-safe)</p>
 </dd></dl>
 
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Logger</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Logger</span><span class="p">,</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">singleton_type</span><span class="o">=</span><span class="n">SingletonType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inj</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Logger</span><span class="p">)</span> <span class="ow">is</span> <span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Logger</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id0">
 <span class="sig-name descname"><span class="pre">GLOBAL_SINGLETON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'global_singleton'</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>

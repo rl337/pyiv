@@ -150,10 +150,10 @@ including HTTP and HTTPS clients using urllib.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.network.clients.HTTPClient" title="pyiv.network.clients.HTTPClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HTTPClient</span></code></a>()</p></td>
-<td><p>HTTP client using Python's standard library urllib.</p></td>
+<td><p>HTTP(S) client using stdlib <code class="docutils literal notranslate"><span class="pre">urllib</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.network.clients.HTTPSClient" title="pyiv.network.clients.HTTPSClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HTTPSClient</span></code></a>()</p></td>
-<td><p>HTTPS client using Python's standard library urllib.</p></td>
+<td><p>HTTPS-only client using stdlib <code class="docutils literal notranslate"><span class="pre">urllib</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -161,9 +161,10 @@ including HTTP and HTTPS clients using urllib.</p>
 <dt class="sig sig-object py" id="pyiv.network.clients.HTTPClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.network.clients.</span></span><span class="sig-name descname"><span class="pre">HTTPClient</span></span><a class="reference internal" href="../_modules/pyiv/network/clients.html#HTTPClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.network.clients.HTTPClient" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.network.base.html#pyiv.network.base.NetworkClient" title="pyiv.network.base.NetworkClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkClient</span></code></a></p>
-<p>HTTP client using Python’s standard library urllib.</p>
-<p>This client uses urllib.request for HTTP requests. It supports all standard
-HTTP methods and provides a simple interface for making requests.</p>
+<p>HTTP(S) client using stdlib <code class="docutils literal notranslate"><span class="pre">urllib</span></code>.</p>
+<p>Use this for plain HTTP or HTTPS URLs when you want a zero-dependency
+client bound into the NETWORK_CLIENT chain. Prefer invalid-URL Traceback
+examples in docs/tests — do not hit the network from doctests.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">HTTPClient</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">handler_type</span>
@@ -226,9 +227,10 @@ HTTP methods and provides a simple interface for making requests.</p>
 <dt class="sig sig-object py" id="pyiv.network.clients.HTTPSClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.network.clients.</span></span><span class="sig-name descname"><span class="pre">HTTPSClient</span></span><a class="reference internal" href="../_modules/pyiv/network/clients.html#HTTPSClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.network.clients.HTTPSClient" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.network.base.html#pyiv.network.base.NetworkClient" title="pyiv.network.base.NetworkClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkClient</span></code></a></p>
-<p>HTTPS client using Python’s standard library urllib.</p>
-<p>This client uses urllib.request for HTTPS requests with SSL/TLS support.
-It supports all standard HTTP methods over HTTPS.</p>
+<p>HTTPS-only client using stdlib <code class="docutils literal notranslate"><span class="pre">urllib</span></code>.</p>
+<p>Use this when you want to reject non-HTTPS URLs at the client boundary
+(scheme must be <code class="docutils literal notranslate"><span class="pre">https://</span></code>). Like <code class="docutils literal notranslate"><span class="pre">HTTPClient</span></code>, doctests should use
+Traceback examples for invalid schemes rather than live network calls.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">HTTPSClient</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">handler_type</span>

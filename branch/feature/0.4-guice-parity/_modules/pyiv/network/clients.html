@@ -155,10 +155,11 @@
 <div class="viewcode-block" id="HTTPClient">
 <a class="viewcode-back" href="../../../pyiv/pyiv.network.clients.html#pyiv.HTTPClient">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HTTPClient</span><span class="p">(</span><span class="n">NetworkClient</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""HTTP client using Python's standard library urllib.</span>
+<span class="w">    </span><span class="sd">"""HTTP(S) client using stdlib ``urllib``.</span>
 
-<span class="sd">    This client uses urllib.request for HTTP requests. It supports all standard</span>
-<span class="sd">    HTTP methods and provides a simple interface for making requests.</span>
+<span class="sd">    Use this for plain HTTP or HTTPS URLs when you want a zero-dependency</span>
+<span class="sd">    client bound into the NETWORK_CLIENT chain. Prefer invalid-URL Traceback</span>
+<span class="sd">    examples in docs/tests — do not hit the network from doctests.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; client = HTTPClient()</span>
@@ -256,10 +257,11 @@
 <div class="viewcode-block" id="HTTPSClient">
 <a class="viewcode-back" href="../../../pyiv/pyiv.network.clients.html#pyiv.HTTPSClient">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HTTPSClient</span><span class="p">(</span><span class="n">NetworkClient</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""HTTPS client using Python's standard library urllib.</span>
+<span class="w">    </span><span class="sd">"""HTTPS-only client using stdlib ``urllib``.</span>
 
-<span class="sd">    This client uses urllib.request for HTTPS requests with SSL/TLS support.</span>
-<span class="sd">    It supports all standard HTTP methods over HTTPS.</span>
+<span class="sd">    Use this when you want to reject non-HTTPS URLs at the client boundary</span>
+<span class="sd">    (scheme must be ``https://``). Like ``HTTPClient``, doctests should use</span>
+<span class="sd">    Traceback examples for invalid schemes rather than live network calls.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; client = HTTPSClient()</span>

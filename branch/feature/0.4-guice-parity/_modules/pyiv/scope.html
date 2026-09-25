@@ -256,6 +256,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Scope</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Protocol for scope implementations.</span>
 
+<span class="sd">    **Why this exists:** Control instance lifetime beyond one-shot construction (request, singleton, custom).</span>
+
 <span class="sd">    Scopes control the lifecycle of instances created by the dependency</span>
 <span class="sd">    injection system. A scope can cache instances, create new ones on</span>
 <span class="sd">    demand, or implement custom lifecycle logic.</span>
@@ -299,6 +301,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">NoScope</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""No scope - creates a new instance every time.</span>
 
+<span class="sd">    **Why this exists:** Explicit unscoped binding when a type annotation would otherwise imply reuse.</span>
+
 <span class="sd">    This scope does not cache instances. Each call to get() will create</span>
 <span class="sd">    a new instance. This is the default behavior when no scope is specified.</span>
 
@@ -333,6 +337,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.scope.html#pyiv.SingletonScope">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SingletonScope</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Per-injector singleton scope.</span>
+
+<span class="sd">    **Why this exists:** One instance per injector — default app-wide singleton without process globals.</span>
 
 <span class="sd">    This scope caches instances per injector. Each injector will have its</span>
 <span class="sd">    own singleton instance. This is useful when you want singletons but</span>
@@ -388,6 +394,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.scope.html#pyiv.GlobalSingletonScope">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GlobalSingletonScope</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Global singleton scope (thread-safe).</span>
+
+<span class="sd">    **Why this exists:** One instance shared by all injectors in the process (thread-safe).</span>
 
 <span class="sd">    This scope caches instances globally across all injectors. The same</span>
 <span class="sd">    instance is shared by all injectors and all threads. Access is thread-safe.</span>

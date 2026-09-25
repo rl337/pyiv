@@ -152,7 +152,7 @@ method.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.network.base.NetworkClient" title="pyiv.network.base.NetworkClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NetworkClient</span></code></a>()</p></td>
-<td><p>Abstract base class for network client operations.</p></td>
+<td><p>Abstract network client in the NETWORK_CLIENT chain.</p></td>
 </tr>
 </tbody>
 </table>
@@ -160,26 +160,19 @@ method.</p>
 <dt class="sig sig-object py" id="pyiv.network.base.NetworkClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.network.base.</span></span><span class="sig-name descname"><span class="pre">NetworkClient</span></span><a class="reference internal" href="../_modules/pyiv/network/base.html#NetworkClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.network.base.NetworkClient" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.chain.html#pyiv.chain.ChainHandler" title="pyiv.chain.ChainHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChainHandler</span></code></a></p>
-<p>Abstract base class for network client operations.</p>
-<p>NetworkClient is a chain handler for the NETWORK_CLIENT chain type.
-It provides a unified interface for making network requests using various
-protocols (HTTP, HTTPS, etc.).</p>
-<dl class="simple">
-<dt>Subclasses must implement:</dt><dd><ul class="simple">
-<li><p>handler_type: Return the protocol identifier (e.g., “http”, “https”)</p></li>
-<li><p>request(): Make a network request and return the response</p></li>
-</ul>
-</dd>
-</dl>
-<p>The handler_type property identifies the protocol (e.g., “http”, “https”).
-Multiple implementations of the same handler_type can exist with different
-behaviors (e.g., custom headers, authentication, retry logic, etc.).</p>
+<p>Abstract network client in the NETWORK_CLIENT chain.</p>
+<p>Use this as the injectable type for protocol-specific clients (HTTP, HTTPS,
+etc.). Register concrete clients in a chain so callers dispatch by URL
+scheme without hard-coding urllib. Subclasses must implement
+<code class="docutils literal notranslate"><span class="pre">handler_type</span></code> and <code class="docutils literal notranslate"><span class="pre">request()</span></code>.</p>
+<p><strong>Why this exists:</strong> Injectable HTTP-ish client so call sites do not hard-code urllib.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyHTTPClient</span><span class="p">(</span><span class="n">NetworkClient</span><span class="p">):</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.network.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">StubHTTP</span><span class="p">(</span><span class="n">NetworkClient</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="nd">@property</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">handler_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="s2">"http"</span>
-<span class="gp">...</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="p">,</span>
 <span class="gp">... </span>        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -188,8 +181,9 @@ behaviors (e.g., custom headers, authentication, retry logic, etc.).</p>
 <span class="gp">... </span>        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="gp">... </span>        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="gp">... </span>        <span class="c1"># Implementation here</span>
-<span class="gp">... </span>        <span class="k">pass</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">"headers"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"body"</span><span class="p">:</span> <span class="sa">b</span><span class="s2">"ok"</span><span class="p">,</span> <span class="s2">"url"</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">StubHTTP</span><span class="p">()</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"http://example.test"</span><span class="p">)[</span><span class="s2">"body"</span><span class="p">]</span>
+<span class="go">b'ok'</span>
 </pre></div>
 </div>
 <dl class="py property">

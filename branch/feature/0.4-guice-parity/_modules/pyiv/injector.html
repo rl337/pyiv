@@ -238,7 +238,25 @@
 <div class="viewcode-block" id="Injector">
 <a class="viewcode-back" href="../../pyiv/pyiv.injector.html#pyiv.Injector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Injector</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Dependency injector that creates instances based on configuration."""</span>
+<span class="w">    </span><span class="sd">"""Resolves types and keys from a :class:`~pyiv.config.Config` graph.</span>
+
+<span class="sd">    **Why this exists:** Manual wiring (``new`` / factories everywhere) couples</span>
+<span class="sd">    construction to call sites. The injector builds objects from bindings and</span>
+<span class="sd">    constructor annotations so you register once and request by type.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class PostgreSQL(Database):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Database, PostgreSQL)</span>
+<span class="sd">        &gt;&gt;&gt; injector = get_injector(MyConfig)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(injector.inject(Database), PostgreSQL)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="Injector.__init__">
 <a class="viewcode-back" href="../../pyiv/pyiv.injector.html#pyiv.Injector.__init__">[docs]</a>

@@ -229,10 +229,12 @@
 <div class="viewcode-block" id="OptionalProvider">
 <a class="viewcode-back" href="../../pyiv/pyiv.optional.html#pyiv.OptionalProvider">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OptionalProvider</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""Provider that handles Optional[T] types.</span>
+<span class="w">    </span><span class="sd">"""Provider that returns ``None`` when the underlying binding is unavailable.</span>
 
-<span class="sd">    This provider wraps another provider and returns None if the underlying</span>
-<span class="sd">    provider cannot provide an instance, otherwise returns the instance.</span>
+<span class="sd">    **Why this exists:** Optional dependencies (plugins, caches, monitors) should</span>
+<span class="sd">    degrade to ``None`` instead of failing injection. Wrap a provider when you</span>
+<span class="sd">    need ``Provider``-style lazy access with Optional semantics; constructor</span>
+<span class="sd">    ``Optional[T]`` params are handled by the injector automatically.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from abc import ABC, abstractmethod</span>

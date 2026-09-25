@@ -179,6 +179,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Clock</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Abstract clock interface for time operations.</span>
 
+<span class="sd">    **Why this exists:** Call sites that use time.time()/sleep couple production to wall clock; inject Clock and bind SyntheticClock in tests.</span>
+
 <span class="sd">    This abstract class provides methods for time-related operations,</span>
 <span class="sd">    allowing implementations to be swapped for testing or different</span>
 <span class="sd">    time sources. Use RealClock for production code and SyntheticClock</span>
@@ -266,11 +268,11 @@
 <div class="viewcode-block" id="Timer">
 <a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Timer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Timer</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Abstract timer interface.</span>
+<span class="w">    </span><span class="sd">"""Abstract handle for a scheduled callback.</span>
 
-<span class="sd">    Timers are created by Clock implementations and can be used to</span>
-<span class="sd">    schedule callbacks at specific intervals. Timers can be one-shot</span>
-<span class="sd">    or repeating.</span>
+<span class="sd">    Use timers when code needs one-shot or repeating callbacks driven by a</span>
+<span class="sd">    ``Clock``. Prefer ``SyntheticClock.start_timer`` in tests so time advances</span>
+<span class="sd">    only when you call ``advance()``, not wall-clock sleep.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv.clock import SyntheticClock</span>
@@ -315,6 +317,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealClock">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RealClock</span><span class="p">(</span><span class="n">Clock</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Real clock implementation using standard library.</span>
+
+<span class="sd">    **Why this exists:** Production binding for real wall-clock time and sleeping timers.</span>
 
 <span class="sd">    This is the production implementation that uses Python's built-in</span>
 <span class="sd">    time and threading modules to provide actual system clock time</span>
@@ -406,10 +410,24 @@
 <div class="viewcode-block" id="RealTimer">
 <a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealTimer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RealTimer</span><span class="p">(</span><span class="n">Timer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Real timer implementation using threading.Timer.</span>
+<span class="w">    </span><span class="sd">"""Real timer implementation wrapping ``threading.Timer``.</span>
 
-<span class="sd">    This is the concrete timer returned by RealClock.start_timer().</span>
-<span class="sd">    It wraps a threading.Timer and provides the Timer interface.</span>
+<span class="sd">    Returned by ``RealClock.start_timer()`` for production scheduling. In</span>
+<span class="sd">    tests, prefer ``SyntheticTimer`` via ``SyntheticClock`` so callbacks fire</span>
+<span class="sd">    from ``advance()`` without real threads or sleep.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import threading</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.clock import RealTimer</span>
+<span class="sd">        &gt;&gt;&gt; t = threading.Timer(3600, lambda: None)</span>
+<span class="sd">        &gt;&gt;&gt; timer = RealTimer(t)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(timer, RealTimer)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; timer.is_active()</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; timer.cancel()</span>
+<span class="sd">        &gt;&gt;&gt; timer.is_active()</span>
+<span class="sd">        False</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="RealTimer.__init__">
@@ -451,6 +469,9 @@
 <span class="sd">    This implementation allows you to control time manually, making it</span>
 <span class="sd">    easy to test time-dependent code with predictable timestamps.</span>
 <span class="sd">    Time advances only when you call advance() or set_time().</span>
+
+<span class="sd">    **Why this exists:** Controllable clock for tests — advance time without sleeping.</span>
+
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; clock = SyntheticClock(start_time=100.0)</span>
@@ -582,10 +603,25 @@
 <div class="viewcode-block" id="SyntheticTimer">
 <a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticTimer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SyntheticTimer</span><span class="p">(</span><span class="n">Timer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Synthetic timer implementation for SyntheticClock.</span>
+<span class="w">    </span><span class="sd">"""Synthetic timer driven by ``SyntheticClock`` time.</span>
 
-<span class="sd">    This timer fires based on synthetic time rather than real time.</span>
-<span class="sd">    It only fires when the clock's time is advanced past the fire time.</span>
+<span class="sd">    Use this in tests for delayed or repeating callbacks: the timer fires</span>
+<span class="sd">    only when the clock is advanced past its fire time, never via wall clock.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.clock import SyntheticClock</span>
+<span class="sd">        &gt;&gt;&gt; clock = SyntheticClock(start_time=0.0)</span>
+<span class="sd">        &gt;&gt;&gt; hits = []</span>
+<span class="sd">        &gt;&gt;&gt; timer = clock.start_timer(2.0, lambda: hits.append(1), repeat=True)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(timer, SyntheticTimer)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; clock.advance(2.0)</span>
+<span class="sd">        &gt;&gt;&gt; clock.advance(2.0)</span>
+<span class="sd">        &gt;&gt;&gt; hits</span>
+<span class="sd">        [1, 1]</span>
+<span class="sd">        &gt;&gt;&gt; timer.cancel()</span>
+<span class="sd">        &gt;&gt;&gt; timer.is_active()</span>
+<span class="sd">        False</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="SyntheticTimer.__init__">

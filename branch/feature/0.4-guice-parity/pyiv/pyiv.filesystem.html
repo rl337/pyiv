@@ -172,13 +172,13 @@ in memory without touching the disk.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.filesystem.Filesystem" title="pyiv.filesystem.Filesystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Filesystem</span></code></a>()</p></td>
-<td><p>Abstract filesystem interface for file operations.</p></td>
+<td><p>Abstract filesystem for injectable file I/O.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.filesystem.MemoryFilesystem" title="pyiv.filesystem.MemoryFilesystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MemoryFilesystem</span></code></a>()</p></td>
 <td><p>In-memory filesystem for testing.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.filesystem.RealFilesystem" title="pyiv.filesystem.RealFilesystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RealFilesystem</span></code></a>()</p></td>
-<td><p>Real filesystem implementation using standard library.</p></td>
+<td><p>Real filesystem implementation using the standard library.</p></td>
 </tr>
 </tbody>
 </table>
@@ -186,7 +186,19 @@ in memory without touching the disk.</p>
 <dt class="sig sig-object py" id="pyiv.filesystem.Filesystem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.filesystem.</span></span><span class="sig-name descname"><span class="pre">Filesystem</span></span><a class="reference internal" href="../_modules/pyiv/filesystem.html#Filesystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.filesystem.Filesystem" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Abstract filesystem interface for file operations.</p>
+<p>Abstract filesystem for injectable file I/O.</p>
+<p><strong>Why this exists:</strong> Production code that calls <code class="docutils literal notranslate"><span class="pre">open()</span></code> / <code class="docutils literal notranslate"><span class="pre">pathlib</span></code>
+directly is hard to unit-test without touching disk or mocking builtins.
+Depend on <code class="docutils literal notranslate"><span class="pre">Filesystem</span></code> and bind <code class="docutils literal notranslate"><span class="pre">RealFilesystem</span></code> in production and
+<code class="docutils literal notranslate"><span class="pre">MemoryFilesystem</span></code> in tests.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.filesystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryFilesystem</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="p">:</span> <span class="n">Filesystem</span> <span class="o">=</span> <span class="n">MemoryFilesystem</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"notes.txt"</span><span class="p">,</span> <span class="s2">"hello"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s2">"notes.txt"</span><span class="p">)</span>
+<span class="go">'hello'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.filesystem.Filesystem.copy">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/filesystem.html#Filesystem.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.filesystem.Filesystem.copy" title="Link to this definition"></a></dt>
@@ -424,6 +436,20 @@ in memory without touching the disk.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.filesystem.</span></span><span class="sig-name descname"><span class="pre">MemoryFilesystem</span></span><a class="reference internal" href="../_modules/pyiv/filesystem.html#MemoryFilesystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.filesystem.MemoryFilesystem" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.filesystem.Filesystem" title="pyiv.filesystem.Filesystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filesystem</span></code></a></p>
 <p>In-memory filesystem for testing.</p>
+<p>Use this whenever code under test needs file I/O but must not touch the
+real disk. Paths live in a dict-backed store, so tests stay fast and
+isolated.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.filesystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryFilesystem</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">MemoryFilesystem</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"/notes/a.txt"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">"/notes/sub"</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">"/notes/a.txt"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s2">"/notes/a.txt"</span><span class="p">)</span>
+<span class="go">'alpha'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.filesystem.MemoryFilesystem.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/filesystem.html#MemoryFilesystem.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.filesystem.MemoryFilesystem.__init__" title="Link to this definition"></a></dt>
@@ -706,7 +732,23 @@ in memory without touching the disk.</p>
 <dt class="sig sig-object py" id="pyiv.filesystem.RealFilesystem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.filesystem.</span></span><span class="sig-name descname"><span class="pre">RealFilesystem</span></span><a class="reference internal" href="../_modules/pyiv/filesystem.html#RealFilesystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.filesystem.RealFilesystem" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.filesystem.Filesystem" title="pyiv.filesystem.Filesystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filesystem</span></code></a></p>
-<p>Real filesystem implementation using standard library.</p>
+<p>Real filesystem implementation using the standard library.</p>
+<p>Use this in production when you need actual disk I/O. Prefer
+<code class="docutils literal notranslate"><span class="pre">MemoryFilesystem</span></code> in unit tests so examples and CI never write into
+the working tree.</p>
+<p><strong>Why this exists:</strong> Production Filesystem that performs real disk I/O.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.filesystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealFilesystem</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">RealFilesystem</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"hello.txt"</span>
+<span class="gp">... </span>    <span class="n">fs</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"hi"</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">fs</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="go">'hi'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.filesystem.RealFilesystem.copy">
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/filesystem.html#RealFilesystem.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.filesystem.RealFilesystem.copy" title="Link to this definition"></a></dt>

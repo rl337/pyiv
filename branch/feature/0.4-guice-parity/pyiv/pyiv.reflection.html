@@ -158,6 +158,7 @@ in Python packages using reflection, eliminating the need for manual registratio
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.reflection.</span></span><span class="sig-name descname"><span class="pre">ReflectionConfig</span></span><a class="reference internal" href="../_modules/pyiv/reflection.html#ReflectionConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.reflection.ReflectionConfig" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.config.html#pyiv.config.Config" title="pyiv.config.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a></p>
 <p>Configuration class that supports module-based discovery of implementations.</p>
+<p><strong>Why this exists:</strong> Auto-discover interface implementations in a package instead of listing every class.</p>
 <p>This class extends Config to add reflection-based discovery capabilities.
 Instead of manually registering each implementation, you can register a package
 to scan, and all implementations of an interface will be automatically discovered

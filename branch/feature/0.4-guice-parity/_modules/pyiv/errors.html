@@ -168,10 +168,19 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">CreationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Raised when the injector cannot create or resolve a dependency.</span>
 
+<span class="sd">    **Why this exists:** Deep graphs fail far from the call site. This error</span>
+<span class="sd">    carries the resolution path and optional nested causes so you can see</span>
+<span class="sd">    ``App -&gt; Service -&gt; Database`` instead of a bare ``ValueError``.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        message: Human-readable failure reason</span>
 <span class="sd">        path: Resolution path from the root request to the failing type</span>
 <span class="sd">        causes: Nested failures (e.g. eager singleton warmup aggregation)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; err = CreationError("No binding", path=["Service", "Database"])</span>
+<span class="sd">        &gt;&gt;&gt; "Service -&gt; Database" in str(err)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="CreationError.__init__">

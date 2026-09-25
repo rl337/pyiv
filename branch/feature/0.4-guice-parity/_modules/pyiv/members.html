@@ -228,6 +228,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">MembersInjector</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Protocol for injecting dependencies into existing instances.</span>
 
+<span class="sd">    **Why this exists:** Inject into objects you did not construct (frameworks, dataclasses, legacy).</span>
+
 <span class="sd">    MembersInjectors inject dependencies into fields and methods of existing</span>
 <span class="sd">    instances. This is useful for:</span>
 <span class="sd">    - Framework integration (Django, Flask, etc.)</span>
@@ -257,12 +259,14 @@
 <div class="viewcode-block" id="InjectorMembersInjector">
 <a class="viewcode-back" href="../../pyiv/pyiv.members.html#pyiv.InjectorMembersInjector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InjectorMembersInjector</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""MembersInjector implementation using an injector.</span>
+<span class="w">    </span><span class="sd">"""MembersInjector that fills fields on instances you already constructed.</span>
 
-<span class="sd">    This implementation uses an injector to resolve dependencies and inject</span>
-<span class="sd">    them into fields and methods of existing instances. It supports:</span>
-<span class="sd">    - Field injection (for dataclasses, attrs, or regular classes)</span>
-<span class="sd">    - Method injection (for methods with type annotations)</span>
+<span class="sd">    **Why this exists:** Frameworks and legacy code often create objects outside</span>
+<span class="sd">    the injector. Use this (or ``injector.inject_members``) when constructor</span>
+<span class="sd">    injection is impractical—dataclasses, third-party types, or migration.</span>
+
+<span class="sd">    Supports field injection (dataclasses, attrs, regular classes) and method</span>
+<span class="sd">    injection for annotated methods.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv.members import InjectorMembersInjector</span>

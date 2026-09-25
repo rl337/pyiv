@@ -161,7 +161,7 @@ in Python’s standard library:</p>
 <td><p>Base64 encoding SerDe.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.serde.encodings.JSONSerDe" title="pyiv.serde.encodings.JSONSerDe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JSONSerDe</span></code></a>()</p></td>
-<td><p>Standard JSON SerDe using Python's json module.</p></td>
+<td><p>Standard JSON SerDe using Python's <code class="docutils literal notranslate"><span class="pre">json</span></code> module.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.serde.encodings.NoOpSerDe" title="pyiv.serde.encodings.NoOpSerDe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NoOpSerDe</span></code></a>()</p></td>
 <td><p>No-op SerDe that passes through data unchanged.</p></td>
@@ -170,7 +170,7 @@ in Python’s standard library:</p>
 <td><p>Python pickle SerDe.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.serde.encodings.XMLSerDe" title="pyiv.serde.encodings.XMLSerDe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">XMLSerDe</span></code></a>()</p></td>
-<td><p>XML encoding SerDe.</p></td>
+<td><p>XML encoding SerDe for simple dict/list structures.</p></td>
 </tr>
 </tbody>
 </table>
@@ -179,7 +179,21 @@ in Python’s standard library:</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">Base64SerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#Base64SerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.Base64SerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>Base64 encoding SerDe.</p>
-<p>Encodes/decodes data using base64 encoding. Input must be bytes.</p>
+<p>Use this when binary payloads must travel as text (headers, logs, or
+text-only transports). Strings are UTF-8 encoded first; non-bytes objects
+fall back to pickle before encoding. Deserialize returns raw bytes.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde.encodings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base64SerDe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span> <span class="o">=</span> <span class="n">Base64SerDe</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">handler_type</span>
+<span class="go">'base64'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span> <span class="o">=</span> <span class="n">serde</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span>
+<span class="go">'aGVsbG8='</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+<span class="go">b'hello'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.Base64SerDe.deserialize">
 <span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#Base64SerDe.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.Base64SerDe.deserialize" title="Link to this definition"></a></dt>
@@ -228,7 +242,21 @@ in Python’s standard library:</p>
 <dt class="sig sig-object py" id="pyiv.serde.encodings.JSONSerDe">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">JSONSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.JSONSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
-<p>Standard JSON SerDe using Python’s json module.</p>
+<p>Standard JSON SerDe using Python’s <code class="docutils literal notranslate"><span class="pre">json</span></code> module.</p>
+<p>Use this for APIs, configs, and payloads that exchange JSON. Datetimes
+serialize to ISO strings; objects with <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> become dicts. Prefer
+this over pickle whenever the data is text-safe and interoperable.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde.encodings</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONSerDe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span> <span class="o">=</span> <span class="n">JSONSerDe</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">handler_type</span>
+<span class="go">'json'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">serialize</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">'{"a": 1}'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="s1">'{"a": 1}'</span><span class="p">)</span>
+<span class="go">{'a': 1}</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.JSONSerDe.deserialize">
 <span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.JSONSerDe.deserialize" title="Link to this definition"></a></dt>
@@ -278,7 +306,21 @@ in Python’s standard library:</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">NoOpSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#NoOpSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.NoOpSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>No-op SerDe that passes through data unchanged.</p>
-<p>This is the default fallback when no encoding is specified.</p>
+<p>Use this as the default when no encoding is configured, or when a pipeline
+already holds strings/bytes and must not re-encode them. Strings and bytes
+are returned as-is; other objects become <code class="docutils literal notranslate"><span class="pre">str(obj)</span></code>.</p>
+<p><strong>Why this exists:</strong> Default pass-through encoder when no wire format was configured.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde.encodings</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoOpSerDe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span> <span class="o">=</span> <span class="n">NoOpSerDe</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">handler_type</span>
+<span class="go">'noop'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">"already-encoded"</span><span class="p">)</span>
+<span class="go">'already-encoded'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="s2">"already-encoded"</span><span class="p">)</span>
+<span class="go">'already-encoded'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.NoOpSerDe.deserialize">
 <span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#NoOpSerDe.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.NoOpSerDe.deserialize" title="Link to this definition"></a></dt>
@@ -328,8 +370,18 @@ in Python’s standard library:</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">PickleSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#PickleSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.PickleSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
 <p>Python pickle SerDe.</p>
-<p>Uses Python’s pickle module for serialization. This is a fallback option
-when other encodings are not suitable.</p>
+<p>Use this when you need to round-trip arbitrary Python objects that JSON,
+XML, or base64 text cannot represent. Prefer safer text codecs for
+untrusted input; pickle is a stdlib fallback for trusted local data.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde.encodings</span><span class="w"> </span><span class="kn">import</span> <span class="n">PickleSerDe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span> <span class="o">=</span> <span class="n">PickleSerDe</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">handler_type</span>
+<span class="go">'pickle'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">serde</span><span class="o">.</span><span class="n">serialize</span><span class="p">({</span><span class="s2">"x"</span><span class="p">:</span> <span class="mi">2</span><span class="p">}))</span>
+<span class="go">{'x': 2}</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.PickleSerDe.deserialize">
 <span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#PickleSerDe.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.PickleSerDe.deserialize" title="Link to this definition"></a></dt>
@@ -378,8 +430,22 @@ when other encodings are not suitable.</p>
 <dt class="sig sig-object py" id="pyiv.serde.encodings.XMLSerDe">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.encodings.</span></span><span class="sig-name descname"><span class="pre">XMLSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#XMLSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.XMLSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
-<p>XML encoding SerDe.</p>
-<p>Encodes/decodes data using XML. For simple dict/list structures.</p>
+<p>XML encoding SerDe for simple dict/list structures.</p>
+<p>Use this when interoperability with XML-oriented systems matters and the
+payload is a shallow dict or list. Nested dicts become child elements;
+lists become <code class="docutils literal notranslate"><span class="pre">item</span></code> children. Not a full schema or namespace mapper.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde.encodings</span><span class="w"> </span><span class="kn">import</span> <span class="n">XMLSerDe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span> <span class="o">=</span> <span class="n">XMLSerDe</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">handler_type</span>
+<span class="go">'xml'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xml</span> <span class="o">=</span> <span class="n">serde</span><span class="o">.</span><span class="n">serialize</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Ada"</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xml</span>
+<span class="go">'&lt;root&gt;&lt;name&gt;Ada&lt;/name&gt;&lt;/root&gt;'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+<span class="go">{'name': 'Ada'}</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.serde.encodings.XMLSerDe.deserialize">
 <span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#XMLSerDe.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.encodings.XMLSerDe.deserialize" title="Link to this definition"></a></dt>

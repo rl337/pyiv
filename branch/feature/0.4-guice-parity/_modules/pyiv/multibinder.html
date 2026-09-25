@@ -276,6 +276,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Multibinder</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Protocol for binding multiple implementations of the same type.</span>
 
+<span class="sd">    **Why this exists:** Register many implementations of one type for injection as a collection.</span>
+
 <span class="sd">    Multibinders allow multiple implementations of the same type to be</span>
 <span class="sd">    registered and injected as a collection (Set or List).</span>
 
@@ -314,6 +316,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.SetMultibinder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SetMultibinder</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Multibinder that binds to a Set[T].</span>
+
+<span class="sd">    **Why this exists:** Collect unique implementations as Set[T] (order not preserved).</span>
 
 <span class="sd">    This multibinder collects implementations into a set, ensuring uniqueness.</span>
 <span class="sd">    Order is not preserved.</span>
@@ -412,6 +416,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ListMultibinder</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Multibinder that binds to a List[T].</span>
 
+<span class="sd">    **Why this exists:** Collect implementations as List[T] preserving add order.</span>
+
 <span class="sd">    This multibinder collects implementations into a list, preserving order.</span>
 <span class="sd">    Duplicates are allowed.</span>
 
@@ -509,6 +515,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.MapMultibinder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MapMultibinder</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Multibinder that binds to a Dict[K, V].</span>
+
+<span class="sd">    **Why this exists:** Collect keyed implementations for Dict[K, V] injection.</span>
 
 <span class="sd">    Collects keyed implementations for injection as a mapping. Inject the</span>
 <span class="sd">    dict through a host class constructor, not ``injector.inject(Dict[...])``.</span>

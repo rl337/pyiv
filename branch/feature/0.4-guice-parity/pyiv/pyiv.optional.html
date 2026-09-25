@@ -242,7 +242,7 @@ dependency if available, or None if not registered.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.optional.OptionalProvider" title="pyiv.optional.OptionalProvider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionalProvider</span></code></a>(provider, injector)</p></td>
-<td><p>Provider that handles Optional[T] types.</p></td>
+<td><p>Provider that returns <code class="docutils literal notranslate"><span class="pre">None</span></code> when the underlying binding is unavailable.</p></td>
 </tr>
 </tbody>
 </table>
@@ -250,9 +250,11 @@ dependency if available, or None if not registered.</p>
 <dt class="sig sig-object py" id="pyiv.optional.OptionalProvider">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.optional.</span></span><span class="sig-name descname"><span class="pre">OptionalProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.provider.html#pyiv.provider.Provider" title="pyiv.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/optional.html#OptionalProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.optional.OptionalProvider" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>Provider that handles Optional[T] types.</p>
-<p>This provider wraps another provider and returns None if the underlying
-provider cannot provide an instance, otherwise returns the instance.</p>
+<p>Provider that returns <code class="docutils literal notranslate"><span class="pre">None</span></code> when the underlying binding is unavailable.</p>
+<p><strong>Why this exists:</strong> Optional dependencies (plugins, caches, monitors) should
+degrade to <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of failing injection. Wrap a provider when you
+need <code class="docutils literal notranslate"><span class="pre">Provider</span></code>-style lazy access with Optional semantics; constructor
+<code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> params are handled by the injector automatically.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>

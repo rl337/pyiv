@@ -231,15 +231,16 @@
 <div class="viewcode-block" id="Qualifier">
 <a class="viewcode-back" href="../../pyiv/pyiv.key.html#pyiv.Qualifier">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Qualifier</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Protocol for qualifier annotations.</span>
+<span class="w">    </span><span class="sd">"""Marker for distinguishing multiple bindings of the same type.</span>
 
-<span class="sd">    Qualifiers are used to distinguish between multiple implementations</span>
-<span class="sd">    of the same type. They can be annotations, strings, or custom objects.</span>
+<span class="sd">    **Why this exists:** One interface often has several implementations</span>
+<span class="sd">    (primary vs replica DB). A qualifier + :class:`Key` selects which binding</span>
+<span class="sd">    to inject without inventing wrapper types.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        class Named(Qualifier):</span>
-<span class="sd">            def __init__(self, name: str):</span>
-<span class="sd">                self.name = name</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.key import Named</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(Named("primary"), Named)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
     <span class="k">pass</span></div>
@@ -250,6 +251,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.key.html#pyiv.Named">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Named</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""String-based qualifier for named bindings.</span>
+
+<span class="sd">    **Why this exists:** Most common Qualifier: distinguish bindings with a string name.</span>
 
 <span class="sd">    This is the most common qualifier type, allowing bindings to be</span>
 <span class="sd">    distinguished by a string name.</span>
@@ -307,6 +310,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.key.html#pyiv.Key">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Key</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Type-safe key for qualified bindings.</span>
+
+<span class="sd">    **Why this exists:** Pair a type with an optional qualifier so multiple implementations of one type can coexist.</span>
 
 <span class="sd">    A Key combines a type with an optional qualifier to create a unique</span>
 <span class="sd">    binding key. This allows multiple implementations of the same type to</span>

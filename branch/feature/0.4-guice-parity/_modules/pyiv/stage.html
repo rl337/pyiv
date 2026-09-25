@@ -171,11 +171,26 @@
 <div class="viewcode-block" id="Stage">
 <a class="viewcode-back" href="../../pyiv/pyiv.stage.html#pyiv.Stage">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Stage</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Injector construction stage.</span>
+<span class="w">    </span><span class="sd">"""Injector construction stage: lazy vs fail-fast singletons.</span>
+
+<span class="sd">    **Why this exists:** Lazy singletons hide binding mistakes until first use.</span>
+<span class="sd">    Pass ``stage=Stage.PRODUCTION`` to :func:`~pyiv.injector.get_injector` so</span>
+<span class="sd">    singleton-scoped bindings are created at boot.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        DEVELOPMENT: Singletons are created lazily on first inject (default).</span>
 <span class="sd">        PRODUCTION: Singleton-scoped bindings are created when the injector is built.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, Stage, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.scope import SingletonScope</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.get_binder().bind(Database).to(Database).in_scope(SingletonScope())</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(get_injector(MyConfig, stage=Stage.PRODUCTION).inject(Database), Database)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
     <span class="n">DEVELOPMENT</span> <span class="o">=</span> <span class="s2">"development"</span>

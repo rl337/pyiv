@@ -350,6 +350,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Console</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Protocol for console output implementations.</span>
 
+<span class="sd">    **Why this exists:** print() to sys.stdout is hard to assert; inject Console and capture with MemoryConsole in tests.</span>
+
 <span class="sd">    Console provides a file-like interface for output, allowing print()</span>
 <span class="sd">    statements to use dependency injection. This enables testing by</span>
 <span class="sd">    capturing output without actually printing to stdout.</span>
@@ -763,24 +765,30 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseConsole</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Abstract base class for console implementations.</span>
 
-<span class="sd">    Provides a concrete base class for console implementations.</span>
-<span class="sd">    Subclasses should implement the file-like interface methods.</span>
-<span class="sd">    Terminal methods have default no-op implementations that can be</span>
-<span class="sd">    overridden by subclasses that support terminal features.</span>
+<span class="sd">    Subclass this when you need a custom ``Console`` (file-like write plus</span>
+<span class="sd">    optional TTY helpers). Implement ``write``/``flush``/``writable``;</span>
+<span class="sd">    terminal methods default to no-ops so simple sinks stay small. Prefer</span>
+<span class="sd">    ``MemoryConsole`` for capturing ``print()`` in tests.</span>
+
+<span class="sd">    **Why this exists:** Shared base for Console implementations so TTY helpers default to no-ops.</span>
+
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv.console import BaseConsole</span>
-<span class="sd">        &gt;&gt;&gt;</span>
-<span class="sd">        &gt;&gt;&gt; class CustomConsole(BaseConsole):</span>
+<span class="sd">        &gt;&gt;&gt; class ListConsole(BaseConsole):</span>
+<span class="sd">        ...     def __init__(self):</span>
+<span class="sd">        ...         self.chunks = []</span>
 <span class="sd">        ...     def write(self, s: str) -&gt; int:</span>
-<span class="sd">        ...         # Custom write logic</span>
+<span class="sd">        ...         self.chunks.append(s)</span>
 <span class="sd">        ...         return len(s)</span>
-<span class="sd">        ...</span>
 <span class="sd">        ...     def flush(self) -&gt; None:</span>
 <span class="sd">        ...         pass</span>
-<span class="sd">        ...</span>
 <span class="sd">        ...     def writable(self) -&gt; bool:</span>
 <span class="sd">        ...         return True</span>
+<span class="sd">        &gt;&gt;&gt; c = ListConsole()</span>
+<span class="sd">        &gt;&gt;&gt; print("hi", file=c)</span>
+<span class="sd">        &gt;&gt;&gt; "".join(c.chunks)</span>
+<span class="sd">        'hi\\n'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="BaseConsole.write">
@@ -1098,6 +1106,9 @@
 <span class="sd">    behavior and TTY-specific functionality. Use this in production code</span>
 <span class="sd">    for normal console output and terminal features like spinners, animations,</span>
 <span class="sd">    and password prompts.</span>
+
+<span class="sd">    **Why this exists:** Production Console that writes to a real stream/TTY.</span>
+
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from io import StringIO</span>
@@ -1645,6 +1656,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">MemoryConsole</span><span class="p">(</span><span class="n">BaseConsole</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""In-memory console for testing.</span>
 
+<span class="sd">    **Why this exists:** Capture print(..., file=console) without touching stdout.</span>
+
 <span class="sd">    This console stores output in memory, allowing tests to capture</span>
 <span class="sd">    and verify console output without actually printing to stdout.</span>
 
@@ -1766,6 +1779,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.console.html#pyiv.FileConsole">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileConsole</span><span class="p">(</span><span class="n">BaseConsole</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""File-based console for testing.</span>
+
+<span class="sd">    **Why this exists:** When a test must verify output landed in a real file path.</span>
 
 <span class="sd">    This console writes output to a file, useful for testing scenarios</span>
 <span class="sd">    where you want to verify output was written to a specific file.</span>

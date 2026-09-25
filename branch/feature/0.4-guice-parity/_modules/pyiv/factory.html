@@ -180,17 +180,20 @@
 <div class="viewcode-block" id="Factory">
 <a class="viewcode-back" href="../../pyiv/pyiv.factory.html#pyiv.Factory">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Factory</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""Protocol for factory implementations.</span>
+<span class="w">    </span><span class="sd">"""Callable creation API for objects that need runtime arguments.</span>
 
-<span class="sd">    Factories are used to create instances of objects, typically with</span>
-<span class="sd">    dependencies that need to be injected. This protocol defines the</span>
-<span class="sd">    interface that factories should implement.</span>
+<span class="sd">    **Why this exists:** A DI ``Provider`` builds one graph-managed instance.</span>
+<span class="sd">    A ``Factory`` creates many instances with caller-supplied args (user id,</span>
+<span class="sd">    connection string) while still allowing the factory itself to be injected.</span>
 
-<span class="sd">    Example::</span>
-
-<span class="sd">        class DatabaseFactory(Factory[Database]):</span>
-<span class="sd">            def create(self, connection_string: str) -&gt; Database:</span>
-<span class="sd">                return PostgreSQL(connection_string)</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.factory import SimpleFactory</span>
+<span class="sd">        &gt;&gt;&gt; class User:</span>
+<span class="sd">        ...     def __init__(self, name: str):</span>
+<span class="sd">        ...         self.name = name</span>
+<span class="sd">        &gt;&gt;&gt; factory: Factory[User] = SimpleFactory(User)</span>
+<span class="sd">        &gt;&gt;&gt; factory.create(name="Ada").name</span>
+<span class="sd">        'Ada'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Factory.create">
@@ -213,19 +216,22 @@
 <div class="viewcode-block" id="BaseFactory">
 <a class="viewcode-back" href="../../pyiv/pyiv.factory.html#pyiv.BaseFactory">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseFactory</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""Abstract base class for factory implementations.</span>
+<span class="w">    </span><span class="sd">"""ABC when you want a class-based factory with constructor injection.</span>
 
-<span class="sd">    Provides a concrete base class for factories that need to be</span>
-<span class="sd">    instantiated. Subclasses should implement the `create()` method.</span>
+<span class="sd">    **Why this exists:** Protocols are fine for typing; subclassing</span>
+<span class="sd">    ``BaseFactory`` gives a real type the injector can construct, with</span>
+<span class="sd">    dependencies supplied to ``__init__`` and runtime args to ``create``.</span>
 
-<span class="sd">    Example::</span>
-
-<span class="sd">        class UserFactory(BaseFactory[User]):</span>
-<span class="sd">            def __init__(self, db: Database):</span>
-<span class="sd">                self._db = db</span>
-
-<span class="sd">            def create(self, name: str, email: str) -&gt; User:</span>
-<span class="sd">                return User(name=name, email=email, db=self._db)</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.factory import BaseFactory</span>
+<span class="sd">        &gt;&gt;&gt; class User:</span>
+<span class="sd">        ...     def __init__(self, name: str):</span>
+<span class="sd">        ...         self.name = name</span>
+<span class="sd">        &gt;&gt;&gt; class UserFactory(BaseFactory[User]):</span>
+<span class="sd">        ...     def create(self, name: str) -&gt; User:</span>
+<span class="sd">        ...         return User(name=name)</span>
+<span class="sd">        &gt;&gt;&gt; UserFactory().create("Ada").name</span>
+<span class="sd">        'Ada'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="BaseFactory.create">
@@ -250,6 +256,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.factory.html#pyiv.SimpleFactory">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimpleFactory</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Simple factory that wraps a callable.</span>
+
+<span class="sd">    **Why this exists:** Wrap a function/constructor as a Factory without defining a subclass.</span>
 
 <span class="sd">    Useful for creating factories from functions or constructors</span>
 <span class="sd">    without needing to define a full class.</span>

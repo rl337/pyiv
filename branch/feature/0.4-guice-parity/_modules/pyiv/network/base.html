@@ -157,26 +157,23 @@
 <div class="viewcode-block" id="NetworkClient">
 <a class="viewcode-back" href="../../../pyiv/pyiv.network.base.html#pyiv.NetworkClient">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NetworkClient</span><span class="p">(</span><span class="n">ChainHandler</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Abstract base class for network client operations.</span>
+<span class="w">    </span><span class="sd">"""Abstract network client in the NETWORK_CLIENT chain.</span>
 
-<span class="sd">    NetworkClient is a chain handler for the NETWORK_CLIENT chain type.</span>
-<span class="sd">    It provides a unified interface for making network requests using various</span>
-<span class="sd">    protocols (HTTP, HTTPS, etc.).</span>
+<span class="sd">    Use this as the injectable type for protocol-specific clients (HTTP, HTTPS,</span>
+<span class="sd">    etc.). Register concrete clients in a chain so callers dispatch by URL</span>
+<span class="sd">    scheme without hard-coding urllib. Subclasses must implement</span>
+<span class="sd">    ``handler_type`` and ``request()``.</span>
 
-<span class="sd">    Subclasses must implement:</span>
-<span class="sd">        - handler_type: Return the protocol identifier (e.g., "http", "https")</span>
-<span class="sd">        - request(): Make a network request and return the response</span>
+<span class="sd">    **Why this exists:** Injectable HTTP-ish client so call sites do not hard-code urllib.</span>
 
-<span class="sd">    The handler_type property identifies the protocol (e.g., "http", "https").</span>
-<span class="sd">    Multiple implementations of the same handler_type can exist with different</span>
-<span class="sd">    behaviors (e.g., custom headers, authentication, retry logic, etc.).</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; class MyHTTPClient(NetworkClient):</span>
+<span class="sd">        &gt;&gt;&gt; from typing import Any, Dict, Optional, Union</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.network.base import NetworkClient</span>
+<span class="sd">        &gt;&gt;&gt; class StubHTTP(NetworkClient):</span>
 <span class="sd">        ...     @property</span>
 <span class="sd">        ...     def handler_type(self) -&gt; str:</span>
 <span class="sd">        ...         return "http"</span>
-<span class="sd">        ...</span>
 <span class="sd">        ...     def request(</span>
 <span class="sd">        ...         self,</span>
 <span class="sd">        ...         method: str,</span>
@@ -185,8 +182,9 @@
 <span class="sd">        ...         data: Optional[Union[str, bytes]] = None,</span>
 <span class="sd">        ...         timeout: Optional[float] = None,</span>
 <span class="sd">        ...     ) -&gt; Dict[str, Any]:</span>
-<span class="sd">        ...         # Implementation here</span>
-<span class="sd">        ...         pass</span>
+<span class="sd">        ...         return {"status": 200, "headers": {}, "body": b"ok", "url": url}</span>
+<span class="sd">        &gt;&gt;&gt; StubHTTP().request("GET", "http://example.test")["body"]</span>
+<span class="sd">        b'ok'</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>

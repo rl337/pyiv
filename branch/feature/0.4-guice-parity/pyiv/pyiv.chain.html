@@ -150,10 +150,10 @@ own interface and implementations.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.chain.ChainHandler" title="pyiv.chain.ChainHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainHandler</span></code></a>()</p></td>
-<td><p>Abstract base class for chain of responsibility handlers.</p></td>
+<td><p>Pluggable handler looked up by chain type and handler name/type.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.chain.ChainType" title="pyiv.chain.ChainType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainType</span></code></a>(value[, names, module, qualname, ...])</p></td>
-<td><p>Types of chain of responsibility handlers.</p></td>
+<td><p>Category key for a family of chain-of-responsibility handlers.</p></td>
 </tr>
 </tbody>
 </table>
@@ -161,19 +161,19 @@ own interface and implementations.</p>
 <dt class="sig sig-object py" id="pyiv.chain.ChainHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.chain.</span></span><span class="sig-name descname"><span class="pre">ChainHandler</span></span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainHandler" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Abstract base class for chain of responsibility handlers.</p>
-<p>Chain handlers process requests in a chain. Each handler can either:
-- Handle the request and return a result
-- Pass the request to the next handler in the chain
-- Reject the request</p>
-<dl class="simple">
-<dt>Subclasses must implement:</dt><dd><ul class="simple">
-<li><p>chain_type: The type of chain this handler belongs to</p></li>
-<li><p>handler_type: The specific handler type identifier (e.g., “json”, “md5”, “quicksort”)</p></li>
-<li><p>handle(): Process the request</p></li>
-</ul>
-</dd>
-</dl>
+<p>Pluggable handler looked up by chain type and handler name/type.</p>
+<p><strong>Why this exists:</strong> Apps need interchangeable strategies (JSON vs pickle,
+HTTP vs HTTPS) without hard-coding classes at call sites. Register handlers
+on <code class="docutils literal notranslate"><span class="pre">Config</span></code> and resolve them with <code class="docutils literal notranslate"><span class="pre">inject_chain_handler</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONSerDe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="p">:</span> <span class="n">ChainHandler</span> <span class="o">=</span> <span class="n">JSONSerDe</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">chain_type</span> <span class="ow">is</span> <span class="n">ChainType</span><span class="o">.</span><span class="n">ENCODING</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">handler_type</span>
+<span class="go">'json'</span>
+</pre></div>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.chain.ChainHandler.chain_type">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chain_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pyiv.chain.ChainType" title="pyiv.chain.ChainType"><span class="pre">ChainType</span></a></em><a class="headerlink" href="#pyiv.chain.ChainHandler.chain_type" title="Link to this definition"></a></dt>
@@ -220,13 +220,18 @@ own interface and implementations.</p>
 <dt class="sig sig-object py" id="pyiv.chain.ChainType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.chain.</span></span><span class="sig-name descname"><span class="pre">ChainType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainType" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>Types of chain of responsibility handlers.</p>
-<p>Each chain type represents a different category of handlers:
-- ENCODING: Serialization/deserialization (SerDe)
-- HASHING: Hash function implementations
-- SORTING: Sorting algorithm implementations
-- NETWORK_CLIENT: Network protocol clients (HTTP, HTTPS, etc.)
-- etc.</p>
+<p>Category key for a family of chain-of-responsibility handlers.</p>
+<p><strong>Why this exists:</strong> SerDe, network clients, and other pluggable handlers
+share the same registration/injection machinery but must not collide.
+<code class="docutils literal notranslate"><span class="pre">ChainType</span></code> namespaces those registries (encoding vs network, …).</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.chain</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainType</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ChainType</span><span class="o">.</span><span class="n">ENCODING</span><span class="o">.</span><span class="n">value</span>
+<span class="go">'encoding'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ChainType</span><span class="o">.</span><span class="n">NETWORK_CLIENT</span><span class="o">.</span><span class="n">value</span>
+<span class="go">'network_client'</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv.chain.ChainType.ENCODING">
 <span class="sig-name descname"><span class="pre">ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'encoding'</span></em><a class="headerlink" href="#pyiv.chain.ChainType.ENCODING" title="Link to this definition"></a></dt>

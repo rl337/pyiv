@@ -193,7 +193,7 @@ are registered and configured for the dependency injection system.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.config.Config" title="pyiv.config.Config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Config</span></code></a>()</p></td>
-<td><p>Base class for dependency injection configuration.</p></td>
+<td><p>Module of bindings that describe how to build an object graph.</p></td>
 </tr>
 </tbody>
 </table>
@@ -201,8 +201,23 @@ are registered and configured for the dependency injection system.</p>
 <dt class="sig sig-object py" id="pyiv.config.Config">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Base class for dependency injection configuration.</p>
-<p>Subclasses should override <cite>configure()</cite> to register dependencies.</p>
+<p>Module of bindings that describe how to build an object graph.</p>
+<p><strong>Why this exists:</strong> Without a registration surface, every call site must
+know concrete classes. Subclass <code class="docutils literal notranslate"><span class="pre">Config</span></code>, override <code class="docutils literal notranslate"><span class="pre">configure()</span></code>, and
+register interfaces → implementations (or use <a class="reference internal" href="#pyiv.config.Config.get_binder" title="pyiv.config.Config.get_binder"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_binder()</span></code></a>).</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Database</span><span class="p">),</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.config.Config.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/config.html#Config.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config.__init__" title="Link to this definition"></a></dt>
@@ -725,6 +740,7 @@ with different behaviors (e.g., “json-input”, “json-output”,
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.config.</span></span><span class="sig-name descname"><span class="pre">PrivateConfig</span></span><a class="reference internal" href="../_modules/pyiv/config.html#PrivateConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.PrivateConfig" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.config.Config" title="pyiv.config.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a></p>
 <p>Config whose bindings are hidden unless explicitly exposed.</p>
+<p><strong>Why this exists:</strong> Hide internal bindings and expose only a facade type to the parent graph.</p>
 <p>When installed into a parent config, a child injector owns the private
 graph. Only types/keys passed to <a class="reference internal" href="#pyiv.config.PrivateConfig.expose" title="pyiv.config.PrivateConfig.expose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expose()</span></code></a> are visible to the parent
 (as providers that delegate into the child).</p>

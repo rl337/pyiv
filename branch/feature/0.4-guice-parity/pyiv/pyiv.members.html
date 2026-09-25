@@ -229,7 +229,7 @@ is not possible.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.members.InjectorMembersInjector" title="pyiv.members.InjectorMembersInjector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InjectorMembersInjector</span></code></a>(cls, injector)</p></td>
-<td><p>MembersInjector implementation using an injector.</p></td>
+<td><p>MembersInjector that fills fields on instances you already constructed.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.members.MembersInjector" title="pyiv.members.MembersInjector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembersInjector</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Protocol for injecting dependencies into existing instances.</p></td>
@@ -240,11 +240,12 @@ is not possible.</p>
 <dt class="sig sig-object py" id="pyiv.members.InjectorMembersInjector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.members.</span></span><span class="sig-name descname"><span class="pre">InjectorMembersInjector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/members.html#InjectorMembersInjector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.members.InjectorMembersInjector" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>MembersInjector implementation using an injector.</p>
-<p>This implementation uses an injector to resolve dependencies and inject
-them into fields and methods of existing instances. It supports:
-- Field injection (for dataclasses, attrs, or regular classes)
-- Method injection (for methods with type annotations)</p>
+<p>MembersInjector that fills fields on instances you already constructed.</p>
+<p><strong>Why this exists:</strong> Frameworks and legacy code often create objects outside
+the injector. Use this (or <code class="docutils literal notranslate"><span class="pre">injector.inject_members</span></code>) when constructor
+injection is impractical—dataclasses, third-party types, or migration.</p>
+<p>Supports field injection (dataclasses, attrs, regular classes) and method
+injection for annotated methods.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.members</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectorMembersInjector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
@@ -309,6 +310,7 @@ them into fields and methods of existing instances. It supports:
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.members.</span></span><span class="sig-name descname"><span class="pre">MembersInjector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/members.html#MembersInjector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.members.MembersInjector" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>Protocol for injecting dependencies into existing instances.</p>
+<p><strong>Why this exists:</strong> Inject into objects you did not construct (frameworks, dataclasses, legacy).</p>
 <p>MembersInjectors inject dependencies into fields and methods of existing
 instances. This is useful for:
 - Framework integration (Django, Flask, etc.)
