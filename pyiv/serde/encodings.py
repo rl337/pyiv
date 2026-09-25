@@ -5,26 +5,18 @@ in Python's standard library:
 
 - JSON: Standard JSON encoding
 - Base64: Base64 encoding
-- YAML: YAML encoding (if available)
 - XML: XML encoding
 - Pickle: Python pickle encoding (default/no-op fallback)
 - NoOp: No-op encoding (pass-through)
+
+YAML lives in ``pyiv-common`` (``from pyiv_common.serde import YAMLSerDe``).
 """
 
 import base64
-import io
 import json
 import pickle
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
-
-# Try to import yaml (not in standard library, but commonly available)
-try:
-    import yaml  # type: ignore[import-untyped]
-
-    YAML_AVAILABLE = True
-except ImportError:
-    YAML_AVAILABLE = False
 
 from pyiv.serde.base import SerDe
 
@@ -320,54 +312,3 @@ class XMLSerDe(SerDe):
             else:
                 result[child.tag] = self._xml_to_dict(child)
         return result
-
-
-class YAMLSerDe(SerDe):
-    """YAML encoding SerDe.
-
-    Uses PyYAML if available, otherwise raises ImportError.
-    """
-
-    @property
-    def handler_type(self) -> str:
-        """Return the handler type identifier.
-
-        Returns:
-            The handler type identifier ("yaml")
-        """
-        return "yaml"
-
-    def serialize(self, obj: Any) -> str:
-        """Serialize using YAML encoding.
-
-        Args:
-            obj: The Python object to serialize
-
-        Returns:
-            YAML string representation
-
-        Raises:
-            ImportError: If PyYAML is not available
-        """
-        if not YAML_AVAILABLE:
-            raise ImportError("PyYAML is not installed. Install it with: pip install pyyaml")
-        return yaml.dump(obj, default_flow_style=False)
-
-    def deserialize(self, data: Union[str, bytes], target_type: Optional[Type[T]] = None) -> T:
-        """Deserialize YAML string/bytes back to a Python object.
-
-        Args:
-            data: The YAML string or bytes
-            target_type: Optional type hint for the expected result type
-
-        Returns:
-            Deserialized Python object
-
-        Raises:
-            ImportError: If PyYAML is not available
-        """
-        if not YAML_AVAILABLE:
-            raise ImportError("PyYAML is not installed. Install it with: pip install pyyaml")
-        if isinstance(data, bytes):
-            data = data.decode("utf-8")
-        return yaml.safe_load(data)

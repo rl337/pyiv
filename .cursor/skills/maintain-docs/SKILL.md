@@ -15,9 +15,12 @@ Three public surfaces must agree. Docstrings feed the site; they are not a fourt
 
 ## Install story (must match all three)
 
-- Install: `pip install pyiv`
+- Install: `pip install pyiv` (stdlib-only core)
+- Related package: `pip install pyiv-common` (or `pip install pyiv[common]`) for
+  PyYAML / requests integrations. Not part of a plain `pip install pyiv`.
 - Docs + PyPI: https://rl337.org/pyiv/ and https://pypi.org/project/pyiv/
 - Unreleased `main`: `pip install git+https://github.com/rl337/pyiv.git`
+- Unreleased extra: `pip install "pyiv-common @ git+https://github.com/rl337/pyiv.git#subdirectory=extras/pyiv-common"`
 - Do not mention Poetry.
 - PyPI is production `X.Y.Z` only (no RCs or nightlies). First public version is **0.3.0**.
 
@@ -27,7 +30,7 @@ Canonical URLs (also `[project.urls]`): Homepage/Repository `https://github.com/
 
 1. Runnable module doctest (self-contained; no network, real sleeps, or cwd writes).
 2. New public module: `docs/pyiv/pyiv.<module>.rst` **and** the matching toctree on `docs/index.rst`. Omit `binder_impl`.
-3. Homepage Key Features stay: type injection, scopes, keys/binder, reflection, test doubles, zero deps. Not Factory-first.
+3. Homepage Key Features stay: type injection, scopes, keys/binder, reflection, test doubles, zero deps. Not Factory-first. Zero deps is **core** `pyiv`; `pyiv-common` is a second package.
 4. If the change is user-visible, add a bullet under `## Unreleased` in `CHANGELOG.md` (do not invent a version). GitHub Releases reuse those bullets.
 5. `pytest --doctest-modules pyiv` and `sphinx-build -b html docs docs/_build/html`.
 

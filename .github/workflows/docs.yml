@@ -5,6 +5,7 @@ on:
     branches: [main, master]
     paths:
       - "pyiv/**"
+      - "extras/pyiv-common/**"
       - "docs/**"
       - ".github/workflows/docs.yml"
   pull_request:
@@ -12,6 +13,7 @@ on:
     branches: [main, master]
     paths:
       - "pyiv/**"
+      - "extras/pyiv-common/**"
       - "docs/**"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
@@ -52,7 +54,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-3.12-docs-${{ hashFiles('pyproject.toml') }}
+          key: ${{ runner.os }}-pip-3.12-docs-${{ hashFiles('pyproject.toml', 'extras/pyiv-common/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-3.12-docs-
             ${{ runner.os }}-pip-3.12-
@@ -62,6 +64,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[docs]"
+          pip install -e extras/pyiv-common
 
       - name: Build documentation with Sphinx
         if: github.event.action != 'closed'

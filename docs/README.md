@@ -9,6 +9,7 @@ The GitHub [README](../README.md) is a short landing page and should not duplica
 
 ```bash
 pip install -e ".[dev,docs]"
+pip install -e extras/pyiv-common
 cd docs
 sphinx-build -b html . _build/html
 ```

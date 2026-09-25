@@ -6,6 +6,18 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+### Added
+
+- `pyiv-common` extra package (`pip install pyiv-common` or
+  `pip install pyiv[common]`): `YAMLSerDe` (PyYAML) and `RequestsClient`
+  (requests). Core `pyiv` stays stdlib-only.
+
+### Changed
+
+- `YAMLSerDe` moved from core to `pyiv-common`. `from pyiv.serde import
+  YAMLSerDe` still works if the extra is installed.
+
+
 ## 0.3.0 - 2026-09-07
 
 First public PyPI release.

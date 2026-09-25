@@ -13,5 +13,4 @@
       NoOpSerDe
       PickleSerDe
       XMLSerDe
-      YAMLSerDe
    

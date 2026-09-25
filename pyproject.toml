@@ -44,6 +44,9 @@ docs = [
     "sphinx-rtd-theme>=1.0.0",
     "myst-parser>=2.0.0,<3",  # <3 keeps Python 3.8; used to render CHANGELOG.md
 ]
+common = [
+    "pyiv-common",
+]
 
 [project.urls]
 Homepage = "https://github.com/rl337/pyiv"
@@ -77,6 +80,7 @@ target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
 [tool.isort]
 profile = "black"
 line_length = 100
+known_first_party = ["pyiv", "pyiv_common"]
 
 [tool.mypy]
 python_version = "3.8"

@@ -7,7 +7,8 @@ standard library.
 
 Architecture:
     - SerDe: Base abstract class extending ChainHandler for ENCODING chain type
-    - Standard encodings: JSON, Base64, XML, YAML (if available), Pickle, NoOp
+    - Standard encodings: JSON, Base64, XML, Pickle, NoOp
+    - YAML: ``pyiv-common`` (``from pyiv_common.serde import YAMLSerDe``)
     - DI Integration: Register and inject SerDe instances via chain system
 
 Usage:
@@ -34,14 +35,30 @@ Usage:
 """
 
 from pyiv.serde.base import SerDe
-from pyiv.serde.encodings import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, XMLSerDe, YAMLSerDe
+from pyiv.serde.encodings import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, XMLSerDe
 
 __all__ = [
     "SerDe",
     "JSONSerDe",
     "Base64SerDe",
     "XMLSerDe",
-    "YAMLSerDe",
     "PickleSerDe",
     "NoOpSerDe",
 ]
+
+
+def __getattr__(name: str):
+    """Compatibility shim: YAMLSerDe moved to pyiv-common.
+
+    ``from pyiv.serde import YAMLSerDe`` still works if ``pyiv-common`` is
+    installed. The name is not in ``__all__`` and is not documented as core.
+    """
+    if name == "YAMLSerDe":
+        try:
+            from pyiv_common.serde import YAMLSerDe
+        except ImportError as exc:
+            raise ImportError(
+                "YAMLSerDe lives in pyiv-common. Install it with: pip install pyiv-common"
+            ) from exc
+        return YAMLSerDe
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -16,6 +16,8 @@ alwaysApply: false
 
 Install commands in `RELEASE.md`, release workflow text, and GitHub Release bodies must match README: `pip install pyiv` (and `pip install pyiv==<version>` on a tagged release). Unreleased `main` may use the git URL. Do not mention Poetry. PyPI is final `X.Y.Z` only.
 
+`pip install pyiv` is stdlib-only. PyYAML/requests integrations are `pip install pyiv-common` (or `pyiv[common]`). Do not add third-party runtime dependencies to core `[project] dependencies`. Extra packages live under `extras/` and version independently of core.
+
 ## Changelog
 
 `CHANGELOG.md` is the source of truth (GitHub, PyPI URL, Sphinx `docs/changelog.rst`). Keep a Changelog layout:
