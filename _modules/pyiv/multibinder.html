@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -151,6 +166,7 @@
 <span class="sd">    - Multibinder: Interface for binding multiple implementations</span>
 <span class="sd">    - SetMultibinder: Binds to a Set[T] (no duplicates, no order)</span>
 <span class="sd">    - ListMultibinder: Binds to a List[T] (preserves order, allows duplicates)</span>
+<span class="sd">    - MapMultibinder: Binds to a Dict[K, V] (keyed implementations)</span>
 
 <span class="sd">Usage Examples:</span>
 
@@ -220,17 +236,47 @@
 <span class="sd">        'EmailValidator'</span>
 <span class="sd">        &gt;&gt;&gt; type(validators[1]).__name__</span>
 <span class="sd">        'PhoneValidator'</span>
+
+<span class="sd">    Using MapMultibinder (Keyed Implementations):</span>
+<span class="sd">        &gt;&gt;&gt; from typing import Dict</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Encoder:</span>
+<span class="sd">        ...     def encode(self, data: str) -&gt; str:</span>
+<span class="sd">        ...         return data</span>
+<span class="sd">        &gt;&gt;&gt; class JsonEncoder(Encoder):</span>
+<span class="sd">        ...     def encode(self, data: str) -&gt; str:</span>
+<span class="sd">        ...         return f"json:{data}"</span>
+<span class="sd">        &gt;&gt;&gt; class XmlEncoder(Encoder):</span>
+<span class="sd">        ...     def encode(self, data: str) -&gt; str:</span>
+<span class="sd">        ...         return f"xml:{data}"</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         mb = self.map_multibinder(Encoder)</span>
+<span class="sd">        ...         mb.add("json", JsonEncoder)</span>
+<span class="sd">        ...         mb.add("xml", XmlEncoder)</span>
+<span class="sd">        &gt;&gt;&gt; class EncoderHost:</span>
+<span class="sd">        ...     def __init__(self, encoders: Dict[str, Encoder]):</span>
+<span class="sd">        ...         self.encoders = encoders</span>
+<span class="sd">        &gt;&gt;&gt; encoders = get_injector(MyConfig).inject(EncoderHost).encoders</span>
+<span class="sd">        &gt;&gt;&gt; sorted(encoders.keys())</span>
+<span class="sd">        ['json', 'xml']</span>
+<span class="sd">        &gt;&gt;&gt; encoders["json"].encode("x")</span>
+<span class="sd">        'json:x'</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
 
+<span class="n">K</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"K"</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Hashable</span><span class="p">)</span>
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">,</span> <span class="n">contravariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"V"</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Multibinder">
 <a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.Multibinder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Multibinder</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Protocol for binding multiple implementations of the same type.</span>
+
+<span class="sd">    **Why this exists:** Register many implementations of one type for injection as a collection.</span>
 
 <span class="sd">    Multibinders allow multiple implementations of the same type to be</span>
 <span class="sd">    registered and injected as a collection (Set or List).</span>
@@ -270,6 +316,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.SetMultibinder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SetMultibinder</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Multibinder that binds to a Set[T].</span>
+
+<span class="sd">    **Why this exists:** Collect unique implementations as Set[T] (order not preserved).</span>
 
 <span class="sd">    This multibinder collects implementations into a set, ensuring uniqueness.</span>
 <span class="sd">    Order is not preserved.</span>
@@ -368,6 +416,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ListMultibinder</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Multibinder that binds to a List[T].</span>
 
+<span class="sd">    **Why this exists:** Collect implementations as List[T] preserving add order.</span>
+
 <span class="sd">    This multibinder collects implementations into a list, preserving order.</span>
 <span class="sd">    Duplicates are allowed.</span>
 
@@ -457,6 +507,85 @@
 <span class="sd">            List of instances (order preserved)</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MapMultibinder">
+<a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.MapMultibinder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MapMultibinder</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Multibinder that binds to a Dict[K, V].</span>
+
+<span class="sd">    **Why this exists:** Collect keyed implementations for Dict[K, V] injection.</span>
+
+<span class="sd">    Collects keyed implementations for injection as a mapping. Inject the</span>
+<span class="sd">    dict through a host class constructor, not ``injector.inject(Dict[...])``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from typing import Dict</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Plugin:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class AuthPlugin(Plugin):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.map_multibinder(Plugin).add("auth", AuthPlugin)</span>
+<span class="sd">        &gt;&gt;&gt; class Host:</span>
+<span class="sd">        ...     def __init__(self, plugins: Dict[str, Plugin]):</span>
+<span class="sd">        ...         self.plugins = plugins</span>
+<span class="sd">        &gt;&gt;&gt; "auth" in get_injector(MyConfig).inject(Host).plugins</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="MapMultibinder.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.MapMultibinder.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">V</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span> <span class="o">=</span> <span class="n">value_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_implementations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">V</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="MapMultibinder.add">
+<a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.MapMultibinder.add">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">K</span><span class="p">,</span> <span class="n">implementation</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">V</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add a keyed implementation class."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"implementation must be a type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">implementation</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">implementation</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must be a subclass of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_implementations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">implementation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_map_multibinding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">implementation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MapMultibinder.add_instance">
+<a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.MapMultibinder.add_instance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">K</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add a keyed pre-created instance."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"instance must be an instance of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_map_multibinding_instance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value_type</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MapMultibinder.get_implementations">
+<a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.MapMultibinder.get_implementations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_implementations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">V</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Get all registered keyed implementation classes."""</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_implementations</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MapMultibinder.get_instances">
+<a class="viewcode-back" href="../../pyiv/pyiv.multibinder.html#pyiv.MapMultibinder.get_instances">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Get all registered keyed instances."""</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

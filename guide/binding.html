@@ -48,7 +48,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -60,6 +62,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -94,6 +99,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -180,11 +195,58 @@ expression:</p>
 <p><code class="docutils literal notranslate"><span class="pre">register</span></code> and Binder write the same config. Pick one style per project;
 mixing them in one <code class="docutils literal notranslate"><span class="pre">configure()</span></code> is fine.</p>
 </section>
+<section id="installing-modules">
+<h2>Installing modules<a class="headerlink" href="#installing-modules" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">install</span></code> merges another <code class="docutils literal notranslate"><span class="pre">Config</span></code> into this one. Later installs overwrite
+the same type or key (last wins). Use <a class="reference internal" href="../pyiv/pyiv.override.html#pyiv.override.override" title="pyiv.override.override"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyiv.override.override()</span></code></a> when you
+want an explicit base/override overlay for tests.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DbConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">PostgreSQL</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AppConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">DbConfig</span><span class="p">)</span>
+
+<span class="n">get_injector</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Database</span><span class="p">)</span>  <span class="c1"># PostgreSQL</span>
+</pre></div>
+</div>
+</section>
+<section id="untargeted-bindings">
+<h2>Untargeted bindings<a class="headerlink" href="#untargeted-bindings" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">binder.bind(Concrete)</span></code> without <code class="docutils literal notranslate"><span class="pre">.to(...)</span></code> registers a self-binding
+(needed for explicit-binding mode and private modules):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Service</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Service</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="stages">
+<h2>Stages<a class="headerlink" href="#stages" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">get_injector(config,</span> <span class="pre">stage=Stage.PRODUCTION)</span></code> eagerly creates
+singleton-scoped bindings at build time so misconfiguration fails fast.
+The default is <code class="docutils literal notranslate"><span class="pre">Stage.DEVELOPMENT</span></code> (lazy).</p>
+<p>See also <a class="reference internal" href="hierarchy.html"><span class="doc">Hierarchy and private modules</span></a> for child injectors and private modules.</p>
+</section>
 <section id="unregistered-concrete-types">
 <h2>Unregistered concrete types<a class="headerlink" href="#unregistered-concrete-types" title="Link to this heading"></a></h2>
 <p>If you <code class="docutils literal notranslate"><span class="pre">inject()</span></code> a <strong>concrete</strong> class that was never registered, the
-injector still constructs it and fills its annotated parameters. Interfaces
-and ABCs must be bound (or marked optional — see <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a>).</p>
+injector still constructs it and fills its annotated parameters (unless
+<code class="docutils literal notranslate"><span class="pre">require_explicit_bindings()</span></code> is set). Interfaces and ABCs must be bound
+(or marked optional — see <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a>). Concrete constructor dependencies
+are also just-in-time constructed when explicit mode is off.</p>
 <p>See also <a class="reference internal" href="../pyiv/pyiv.config.html"><span class="doc">pyiv.config</span></a> and <a class="reference internal" href="../pyiv/pyiv.binder.html"><span class="doc">pyiv.binder</span></a>.</p>
 </section>
 </section>

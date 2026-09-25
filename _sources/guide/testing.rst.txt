@@ -53,5 +53,26 @@ What to swap
 Keep the rest of the object graph on real classes. Only replace the edges that
 talk to the world.
 
+Override overlays
+-----------------
+
+When the production graph is large, overlay only the doubles with
+``override(ProdConfig).with_(TestConfig)`` instead of rewriting every binding:
+
+.. code-block:: python
+
+   from pyiv import get_injector, override
+   from pyiv.clock import Clock, SyntheticClock
+
+   class TestOverrides(Config):
+       def configure(self):
+           self.register(
+               Clock,
+               lambda: SyntheticClock(start_time=100.0),
+               singleton=True,
+           )
+
+   injector = get_injector(override(ProdConfig).with_(TestOverrides))
+
 See also :doc:`/pyiv/pyiv.clock`, :doc:`/pyiv/pyiv.filesystem`,
 :doc:`/pyiv/pyiv.console`, and :doc:`/pyiv/pyiv.datetime_service`.

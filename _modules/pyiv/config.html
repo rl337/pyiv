@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -169,12 +184,12 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.binder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Binder</span><span class="p">,</span> <span class="n">BindingBuilder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.binder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Binder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.chain</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainHandler</span><span class="p">,</span> <span class="n">ChainType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Qualifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.multibinder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListMultibinder</span><span class="p">,</span> <span class="n">Multibinder</span><span class="p">,</span> <span class="n">SetMultibinder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.multibinder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListMultibinder</span><span class="p">,</span> <span class="n">MapMultibinder</span><span class="p">,</span> <span class="n">Multibinder</span><span class="p">,</span> <span class="n">SetMultibinder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provider</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoScope</span><span class="p">,</span> <span class="n">Scope</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scope</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.singleton</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingletonType</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
@@ -183,38 +198,54 @@
 <div class="viewcode-block" id="Config">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Base class for dependency injection configuration.</span>
+<span class="w">    </span><span class="sd">"""Module of bindings that describe how to build an object graph.</span>
 
-<span class="sd">    Subclasses should override `configure()` to register dependencies.</span>
+<span class="sd">    **Why this exists:** Without a registration surface, every call site must</span>
+<span class="sd">    know concrete classes. Subclass ``Config``, override ``configure()``, and</span>
+<span class="sd">    register interfaces → implementations (or use :meth:`get_binder`).</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class PostgreSQL(Database):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Database, PostgreSQL)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Config.__init__">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Initialize the configuration."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_stores</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_stores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize empty binding stores (shared by Config and overlays)."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_singleton_types</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">SingletonType</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Scope registrations: Type -&gt; Scope</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scopes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Scope</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Provider registrations: Type -&gt; Provider</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Provider</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Qualified bindings: Key -&gt; (Type, Provider, Scope)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
             <span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Provider</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Scope</span><span class="p">]]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Multibindings: Type -&gt; (Set[Type], List[Type], Set[Any], List[Any])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_multibindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">Type</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Chain handler registrations: (chain_type, handler_type) -&gt; implementation class</span>
+        <span class="c1"># Map multibindings: value_type -&gt; (key -&gt; implementation type, key -&gt; instance)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chain_by_type</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">ChainType</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Type</span><span class="p">[</span><span class="n">ChainHandler</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Chain handler registrations: (chain_type, name) -&gt; (implementation class, handler_type)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chain_by_name</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">ChainType</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">ChainHandler</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Chain handler instances: (chain_type, name) -&gt; instance (for pre-created instances)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chain_instances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">ChainType</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">ChainHandler</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Chain handler singleton configuration: (chain_type, name) -&gt; singleton_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chain_singleton_types</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">ChainType</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">SingletonType</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_require_explicit_bindings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_private</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">"PrivateConfig"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Config.configure">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.configure">[docs]</a>
@@ -749,6 +780,192 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multibindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Config.map_multibinder">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.map_multibinder">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_multibinder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">MapMultibinder</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Create a map multibinder for keyed implementations of ``value_type``."""</span>
+        <span class="k">return</span> <span class="n">MapMultibinder</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.register_map_multibinding">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.register_map_multibinding">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_map_multibinding</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">implementation</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register a keyed implementation in a map multibinding."""</span>
+        <span class="k">if</span> <span class="n">value_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="p">[</span><span class="n">value_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="p">[</span><span class="n">value_type</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">implementation</span></div>
+
+
+<div class="viewcode-block" id="Config.register_map_multibinding_instance">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.register_map_multibinding_instance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_map_multibinding_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">T</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register a keyed instance in a map multibinding."""</span>
+        <span class="k">if</span> <span class="n">value_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="p">[</span><span class="n">value_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="p">[</span><span class="n">value_type</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span></div>
+
+
+<div class="viewcode-block" id="Config.get_map_multibinding">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.get_map_multibinding">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_map_multibinding</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">"""Get map multibinding data for a value type.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple of (key-&gt;implementation, key-&gt;instance), or None if empty</span>
+<span class="sd">        """</span>
+        <span class="n">impls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">instances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">impls</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">instances</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">impls</span><span class="p">,</span> <span class="n">instances</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.require_explicit_bindings">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.require_explicit_bindings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">require_explicit_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Disable just-in-time construction of unregistered concrete types."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_require_explicit_bindings</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Config.requires_explicit_bindings">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.requires_explicit_bindings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">requires_explicit_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return whether explicit bindings are required."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_explicit_bindings</span></div>
+
+
+<div class="viewcode-block" id="Config.expose">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.expose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_or_key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Mark a binding as exposed from a private module.</span>
+
+<span class="sd">        On a regular Config this is a no-op store; :class:`PrivateConfig` uses</span>
+<span class="sd">        the set when installed into a parent.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">type_or_key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.get_exposed">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.get_exposed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_exposed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">"""Return types/keys marked for exposure from a private module."""</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.install">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.install">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">"Config"</span><span class="p">],</span> <span class="s2">"Config"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Install another config module into this one.</span>
+
+<span class="sd">        Regular configs are merged immediately (last wins for the same type or</span>
+<span class="sd">        key). :class:`PrivateConfig` instances are queued and wired when the</span>
+<span class="sd">        injector is created so exposed bindings can delegate into a child</span>
+<span class="sd">        environment.</span>
+<span class="sd">        """</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">other</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">other</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">Config</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"install expects a Config, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">PrivateConfig</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_private</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merge_from</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.merge_from">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.merge_from">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">merge_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">"Config"</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Merge bindings from ``other`` into this config.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other: Source config</span>
+<span class="sd">            replace: If True, ``other`` overwrites existing keys; if False,</span>
+<span class="sd">                existing bindings are kept.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_registrations</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_instances</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_singleton_types</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_singleton_types</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scopes</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_scopes</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_providers</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain_by_type</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain_by_type</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain_by_name</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain_by_name</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain_instances</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain_instances</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain_singleton_types</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain_singleton_types</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="p">(</span>
+            <span class="n">set_impls</span><span class="p">,</span>
+            <span class="n">list_impls</span><span class="p">,</span>
+            <span class="n">set_insts</span><span class="p">,</span>
+            <span class="n">list_insts</span><span class="p">,</span>
+        <span class="p">)</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_multibindings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">interface</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multibindings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_multibindings</span><span class="p">[</span><span class="n">interface</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">set</span><span class="p">(),</span> <span class="p">[],</span> <span class="nb">set</span><span class="p">(),</span> <span class="p">[])</span>
+            <span class="n">s_i</span><span class="p">,</span> <span class="n">l_i</span><span class="p">,</span> <span class="n">s_n</span><span class="p">,</span> <span class="n">l_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multibindings</span><span class="p">[</span><span class="n">interface</span><span class="p">]</span>
+            <span class="n">s_i</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">set_impls</span><span class="p">)</span>
+            <span class="n">l_i</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">list_impls</span><span class="p">)</span>
+            <span class="n">s_n</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">set_insts</span><span class="p">)</span>
+            <span class="n">l_n</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">list_insts</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="p">[</span><span class="n">value_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="p">[</span><span class="n">value_type</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">replace</span> <span class="ow">or</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+                    <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="k">for</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="p">[</span><span class="n">value_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="p">[</span><span class="n">value_type</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">replace</span> <span class="ow">or</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+                    <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">_require_explicit_bindings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_require_explicit_bindings</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_private</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_pending_private</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_exposed</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_exposed</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_merge_dict</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">source</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">replace</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+                <span class="n">target</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="Config.singleton_bindings">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.singleton_bindings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">singleton_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return types that should be eagerly created in Stage.PRODUCTION."""</span>
+        <span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">seen</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">abstract</span><span class="p">,</span> <span class="n">scope</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scopes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">GlobalSingletonScope</span><span class="p">,</span> <span class="n">SingletonScope</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="p">(</span><span class="n">SingletonScope</span><span class="p">,</span> <span class="n">GlobalSingletonScope</span><span class="p">))</span> <span class="ow">and</span> <span class="n">abstract</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">abstract</span><span class="p">,</span> <span class="n">st</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_singleton_types</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">st</span> <span class="ow">in</span> <span class="p">(</span><span class="n">SingletonType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">SingletonType</span><span class="o">.</span><span class="n">GLOBAL_SINGLETON</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">abstract</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span>
+            <span class="p">):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
 <div class="viewcode-block" id="Config.get_binder">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.get_binder">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_binder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Binder</span><span class="p">:</span>
@@ -760,6 +977,46 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.binder_impl</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigBinder</span>
 
         <span class="k">return</span> <span class="n">ConfigBinder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PrivateConfig">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.PrivateConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrivateConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Config whose bindings are hidden unless explicitly exposed.</span>
+
+<span class="sd">    **Why this exists:** Hide internal bindings and expose only a facade type to the parent graph.</span>
+
+<span class="sd">    When installed into a parent config, a child injector owns the private</span>
+<span class="sd">    graph. Only types/keys passed to :meth:`expose` are visible to the parent</span>
+<span class="sd">    (as providers that delegate into the child).</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, PrivateConfig, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Hidden:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class Service:</span>
+<span class="sd">        ...     def __init__(self, hidden: Hidden):</span>
+<span class="sd">        ...         self.hidden = hidden</span>
+<span class="sd">        &gt;&gt;&gt; class Impl(PrivateConfig):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Hidden, Hidden)</span>
+<span class="sd">        ...         self.register(Service, Service)</span>
+<span class="sd">        ...         self.expose(Service)</span>
+<span class="sd">        &gt;&gt;&gt; class App(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.install(Impl)</span>
+<span class="sd">        &gt;&gt;&gt; svc = get_injector(App).inject(Service)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(svc.hidden, Hidden)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="PrivateConfig.expose">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.PrivateConfig.expose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_or_key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Expose a binding to the parent environment when this module is installed."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">type_or_key</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

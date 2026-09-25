@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -144,32 +159,35 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SerDe</span><span class="p">(</span><span class="n">ChainHandler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Abstract base class for serialization/deserialization operations.</span>
 
-<span class="sd">    SerDe (Serialize/Deserialize) is a chain handler for the ENCODING chain type.</span>
-<span class="sd">    It provides a unified interface for converting objects to and from various</span>
-<span class="sd">    encoding formats (JSON, base64, YAML, XML, pickle, etc.).</span>
+<span class="sd">    SerDe is a chain handler for the ENCODING chain. Subclass it for each</span>
+<span class="sd">    codec (JSON, base64, XML, pickle, etc.); YAML lives in ``pyiv-common``.</span>
 
-<span class="sd">    Subclasses must implement:</span>
-<span class="sd">        - handler_type: Return the encoding type identifier (e.g., "json", "base64", "pickle")</span>
-<span class="sd">        - serialize(): Convert a Python object to encoded bytes/string</span>
-<span class="sd">        - deserialize(): Convert encoded bytes/string back to a Python object</span>
+<span class="sd">    Use this when callers should pick a codec by ``handler_type`` instead of</span>
+<span class="sd">    hard-coding ``json.dumps`` / ``pickle.loads``. Register implementations on</span>
+<span class="sd">    the ENCODING chain so injectors and pipelines can swap formats without</span>
+<span class="sd">    rewriting call sites. Multiple handlers may share a ``handler_type`` with</span>
+<span class="sd">    different behaviors (date formatting, null handling, and so on).</span>
 
-<span class="sd">    The handler_type property identifies the format (e.g., "json", "base64", "pickle").</span>
-<span class="sd">    Multiple implementations of the same handler_type can exist with different</span>
-<span class="sd">    behaviors (e.g., date formatting, null handling, etc.).</span>
+<span class="sd">    Subclasses must implement ``handler_type``, ``serialize``, and</span>
+<span class="sd">    ``deserialize``.</span>
 
 <span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import json</span>
+<span class="sd">        &gt;&gt;&gt; from typing import Any, Optional, Type</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.serde.base import SerDe</span>
 <span class="sd">        &gt;&gt;&gt; class MyJSONSerDe(SerDe):</span>
 <span class="sd">        ...     @property</span>
 <span class="sd">        ...     def handler_type(self) -&gt; str:</span>
 <span class="sd">        ...         return "json"</span>
-<span class="sd">        ...</span>
 <span class="sd">        ...     def serialize(self, obj: Any) -&gt; str:</span>
-<span class="sd">        ...         import json</span>
 <span class="sd">        ...         return json.dumps(obj)</span>
-<span class="sd">        ...</span>
-<span class="sd">        ...     def deserialize(self, data: str, target_type: Optional[Type[T]]) -&gt; T:</span>
-<span class="sd">        ...         import json</span>
+<span class="sd">        ...     def deserialize(</span>
+<span class="sd">        ...         self, data: str, target_type: Optional[Type] = None</span>
+<span class="sd">        ...     ) -&gt; Any:</span>
 <span class="sd">        ...         return json.loads(data)</span>
+<span class="sd">        &gt;&gt;&gt; serde = MyJSONSerDe()</span>
+<span class="sd">        &gt;&gt;&gt; serde.deserialize(serde.serialize({"a": 1}))</span>
+<span class="sd">        {'a': 1}</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>

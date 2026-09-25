@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pyiv" href="../pyiv/pyiv.html" />
-    <link rel="prev" title="Keys and collections" href="keys.html" /> 
+    <link rel="next" title="Packages" href="packages.html" />
+    <link rel="prev" title="Hierarchy and private modules" href="hierarchy.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,7 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -60,6 +62,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -94,6 +99,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -176,6 +191,25 @@ should not mock <code class="docutils literal notranslate"><span class="pre">tim
 </ul>
 <p>Keep the rest of the object graph on real classes. Only replace the edges that
 talk to the world.</p>
+</section>
+<section id="override-overlays">
+<h2>Override overlays<a class="headerlink" href="#override-overlays" title="Link to this heading"></a></h2>
+<p>When the production graph is large, overlay only the doubles with
+<code class="docutils literal notranslate"><span class="pre">override(ProdConfig).with_(TestConfig)</span></code> instead of rewriting every binding:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injector</span><span class="p">,</span> <span class="n">override</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span><span class="p">,</span> <span class="n">SyntheticClock</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestOverrides</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+            <span class="n">Clock</span><span class="p">,</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="n">SyntheticClock</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
+            <span class="n">singleton</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">override</span><span class="p">(</span><span class="n">ProdConfig</span><span class="p">)</span><span class="o">.</span><span class="n">with_</span><span class="p">(</span><span class="n">TestOverrides</span><span class="p">))</span>
+</pre></div>
+</div>
 <p>See also <a class="reference internal" href="../pyiv/pyiv.clock.html"><span class="doc">pyiv.clock</span></a>, <a class="reference internal" href="../pyiv/pyiv.filesystem.html"><span class="doc">pyiv.filesystem</span></a>,
 <a class="reference internal" href="../pyiv/pyiv.console.html"><span class="doc">pyiv.console</span></a>, and <a class="reference internal" href="../pyiv/pyiv.datetime_service.html"><span class="doc">pyiv.datetime_service</span></a>.</p>
 </section>
@@ -185,8 +219,8 @@ talk to the world.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="keys.html" class="btn btn-neutral float-left" title="Keys and collections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../pyiv/pyiv.html" class="btn btn-neutral float-right" title="pyiv" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="hierarchy.html" class="btn btn-neutral float-left" title="Hierarchy and private modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="packages.html" class="btn btn-neutral float-right" title="Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

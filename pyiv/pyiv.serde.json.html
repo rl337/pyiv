@@ -48,7 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -60,6 +62,9 @@
 <li class="toctree-l1"><a class="reference internal" href="pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -94,6 +99,16 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -156,16 +171,30 @@ serialization/deserialization.</p>
 </dl>
 </dd>
 </dl>
-<p>For other standard Python encodings (base64, pickle, XML, YAML, etc.),
-see the pyiv.serde.encodings module.</p>
+<p>For other standard Python encodings (base64, pickle, XML, etc.),
+see the pyiv.serde.encodings module. YAML is in pyiv-common.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.serde.json.JSONSerDe">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.serde.json.</span></span><span class="sig-name descname"><span class="pre">JSONSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.json.JSONSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
-<p>Standard JSON SerDe using Python’s json module.</p>
+<p>Standard JSON SerDe using Python’s <code class="docutils literal notranslate"><span class="pre">json</span></code> module.</p>
+<p>Use this for APIs, configs, and payloads that exchange JSON. Datetimes
+serialize to ISO strings; objects with <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> become dicts. Prefer
+this over pickle whenever the data is text-safe and interoperable.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde.encodings</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONSerDe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span> <span class="o">=</span> <span class="n">JSONSerDe</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">handler_type</span>
+<span class="go">'json'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">serialize</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="go">'{"a": 1}'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serde</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="s1">'{"a": 1}'</span><span class="p">)</span>
+<span class="go">{'a': 1}</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.serde.json.JSONSerDe.deserialize">
-<span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.json.JSONSerDe.deserialize" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.json.JSONSerDe.deserialize" title="Link to this definition"></a></dt>
 <dd><p>Deserialize JSON string/bytes back to a Python object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -182,7 +211,7 @@ see the pyiv.serde.encodings module.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyiv.serde.json.JSONSerDe.handler_type">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.json.JSONSerDe.handler_type" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.serde.json.JSONSerDe.handler_type" title="Link to this definition"></a></dt>
 <dd><p>Return the handler type identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -193,7 +222,7 @@ see the pyiv.serde.encodings module.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.serde.json.JSONSerDe.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.json.JSONSerDe.serialize" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#JSONSerDe.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.serde.json.JSONSerDe.serialize" title="Link to this definition"></a></dt>
 <dd><p>Serialize using standard JSON encoding.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -20,7 +20,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Testing with doubles" href="testing.html" />
+    <link rel="next" title="Hierarchy and private modules" href="hierarchy.html" />
     <link rel="prev" title="Scopes" href="scopes.html" /> 
 </head>
 
@@ -48,7 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scopes.html">Scopes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -60,6 +62,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -94,6 +99,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -193,6 +208,37 @@ the collection through a <strong>host class constructor</strong>, not
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">as_set=False</span></code> binds <code class="docutils literal notranslate"><span class="pre">List[T]</span></code> and preserves add order.</p>
 </section>
+<section id="map-multibinder">
+<h2>Map multibinder<a class="headerlink" href="#map-multibinder" title="Link to this heading"></a></h2>
+<p>Keyed implementations inject as <code class="docutils literal notranslate"><span class="pre">Dict[K,</span> <span class="pre">V]</span></code> through a host constructor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Encoder</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">JsonEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">XmlEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EncoderHost</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoders</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Encoder</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoders</span> <span class="o">=</span> <span class="n">encoders</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_multibinder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span>
+        <span class="n">mb</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"json"</span><span class="p">,</span> <span class="n">JsonEncoder</span><span class="p">)</span>
+        <span class="n">mb</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"xml"</span><span class="p">,</span> <span class="n">XmlEncoder</span><span class="p">)</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">EncoderHost</span><span class="p">)</span>
+<span class="c1"># host.encoders["json"] is JsonEncoder</span>
+</pre></div>
+</div>
+</section>
 <section id="optional-dependencies">
 <h2>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> injects the binding or <code class="docutils literal notranslate"><span class="pre">None</span></code>. Use an <strong>ABC</strong> (or another
@@ -227,7 +273,7 @@ binding is still built:</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="scopes.html" class="btn btn-neutral float-left" title="Scopes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="testing.html" class="btn btn-neutral float-right" title="Testing with doubles" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="hierarchy.html" class="btn btn-neutral float-right" title="Hierarchy and private modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

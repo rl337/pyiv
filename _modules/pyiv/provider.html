@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -216,6 +231,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Provider</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Protocol for provider implementations.</span>
 
+<span class="sd">    **Why this exists:** Lazy or repeated creation of a type without constructing it at inject() time; inject Provider[T] instead of T.</span>
+
 <span class="sd">    Providers are used to supply instances of a specific type, allowing for</span>
 <span class="sd">    customized creation logic, lazy initialization, and injector access.</span>
 
@@ -265,6 +282,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseProvider</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Abstract base class for provider implementations.</span>
 
+<span class="sd">    **Why this exists:** Subclassable provider when you need a real class the injector can construct.</span>
+
 <span class="sd">    Provides a concrete base class for providers that need to be</span>
 <span class="sd">    instantiated. Subclasses should implement the `get()` method.</span>
 
@@ -307,6 +326,9 @@
 <span class="sd">    This provider wraps an injector and a type, delegating instance</span>
 <span class="sd">    creation to the injector. This is useful when you need a Provider</span>
 <span class="sd">    interface but want to use the injector's full dependency resolution.</span>
+
+<span class="sd">    **Why this exists:** Provider that asks an Injector for T on each get() — lazy graph lookup.</span>
+
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
@@ -357,6 +379,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">InstanceProvider</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Provider that returns a pre-created instance.</span>
 
+<span class="sd">    **Why this exists:** Wrap an already-built object as a Provider for binder.to_provider / register_provider.</span>
+
 <span class="sd">    This provider simply returns the same instance every time get() is called.</span>
 <span class="sd">    Useful for wrapping pre-created singletons or instances.</span>
 
@@ -404,6 +428,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.provider.html#pyiv.FactoryProvider">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FactoryProvider</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""Provider that wraps a factory function.</span>
+
+<span class="sd">    **Why this exists:** Adapt a zero-arg factory callable into the Provider protocol.</span>
 
 <span class="sd">    This provider calls a factory function each time get() is called.</span>
 <span class="sd">    Useful for creating new instances on demand.</span>

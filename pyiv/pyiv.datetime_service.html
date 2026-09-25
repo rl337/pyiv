@@ -48,7 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -60,6 +62,9 @@
 <li class="toctree-l1"><a class="reference internal" href="pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -94,6 +99,16 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -134,13 +149,13 @@ for dependency injection and easier testing of time-dependent code.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.datetime_service.DateTimeService" title="pyiv.datetime_service.DateTimeService"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DateTimeService</span></code></a>()</p></td>
-<td><p>Abstract base class for datetime operations.</p></td>
+<td><p>Abstract interface for UTC datetime operations.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.datetime_service.MockDateTimeService" title="pyiv.datetime_service.MockDateTimeService"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MockDateTimeService</span></code></a>([fixed_time])</p></td>
 <td><p>Mock datetime service for testing.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.datetime_service.PythonDateTimeService" title="pyiv.datetime_service.PythonDateTimeService"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PythonDateTimeService</span></code></a>()</p></td>
-<td><p>DateTime service implementation using Python's datetime module.</p></td>
+<td><p>DateTime service backed by the system clock.</p></td>
 </tr>
 </tbody>
 </table>
@@ -148,9 +163,20 @@ for dependency injection and easier testing of time-dependent code.</p>
 <dt class="sig sig-object py" id="pyiv.datetime_service.DateTimeService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.datetime_service.</span></span><span class="sig-name descname"><span class="pre">DateTimeService</span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#DateTimeService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.DateTimeService" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Abstract base class for datetime operations.</p>
-<p>This abstract class provides methods for getting the current UTC datetime,
-allowing implementations to be swapped for testing or different time sources.</p>
+<p>Abstract interface for UTC datetime operations.</p>
+<p>Depend on this instead of calling <code class="docutils literal notranslate"><span class="pre">datetime.now</span></code> directly so production
+code can use <code class="docutils literal notranslate"><span class="pre">PythonDateTimeService</span></code> while tests inject
+<code class="docutils literal notranslate"><span class="pre">MockDateTimeService</span></code> with a fixed clock.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.datetime_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">DateTimeService</span><span class="p">,</span> <span class="n">MockDateTimeService</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">stamp</span><span class="p">(</span><span class="n">svc</span><span class="p">:</span> <span class="n">DateTimeService</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">svc</span><span class="o">.</span><span class="n">now_utc_iso</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fixed</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stamp</span><span class="p">(</span><span class="n">MockDateTimeService</span><span class="p">(</span><span class="n">fixed</span><span class="p">))</span>
+<span class="go">'2024-01-15T10:30:00+00:00'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.datetime_service.DateTimeService.now_utc">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">now_utc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#DateTimeService.now_utc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.DateTimeService.now_utc" title="Link to this definition"></a></dt>
@@ -164,7 +190,7 @@ allowing implementations to be swapped for testing or different time sources.</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.datetime_service.DateTimeService.now_utc_iso">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">now_utc_iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#DateTimeService.now_utc_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.DateTimeService.now_utc_iso" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">now_utc_iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#DateTimeService.now_utc_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.DateTimeService.now_utc_iso" title="Link to this definition"></a></dt>
 <dd><p>Get current UTC datetime as ISO format string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -180,9 +206,10 @@ allowing implementations to be swapped for testing or different time sources.</p
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.datetime_service.MockDateTimeService">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.datetime_service.</span></span><span class="sig-name descname"><span class="pre">MockDateTimeService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fixed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.datetime_service.</span></span><span class="sig-name descname"><span class="pre">MockDateTimeService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fixed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.datetime_service.DateTimeService" title="pyiv.datetime_service.DateTimeService"><code class="xref py py-class docutils literal notranslate"><span class="pre">DateTimeService</span></code></a></p>
 <p>Mock datetime service for testing.</p>
+<p><strong>Why this exists:</strong> Freeze calendar time for deterministic tests of ISO/UTC stamps.</p>
 <p>This implementation allows you to control the time returned, making it
 easy to test time-dependent code with predictable timestamps.</p>
 <p class="rubric">Example</p>
@@ -197,7 +224,7 @@ easy to test time-dependent code with predictable timestamps.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.datetime_service.MockDateTimeService.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fixed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fixed_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize with optional fixed time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -219,7 +246,7 @@ easy to test time-dependent code with predictable timestamps.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.datetime_service.MockDateTimeService.now_utc_iso">
-<span class="sig-name descname"><span class="pre">now_utc_iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService.now_utc_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService.now_utc_iso" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">now_utc_iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService.now_utc_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService.now_utc_iso" title="Link to this definition"></a></dt>
 <dd><p>Return fixed time as ISO string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -230,7 +257,7 @@ easy to test time-dependent code with predictable timestamps.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.datetime_service.MockDateTimeService.set_time">
-<span class="sig-name descname"><span class="pre">set_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService.set_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService.set_time" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#MockDateTimeService.set_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.MockDateTimeService.set_time" title="Link to this definition"></a></dt>
 <dd><p>Set the fixed time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -245,9 +272,21 @@ easy to test time-dependent code with predictable timestamps.</p>
 <dt class="sig sig-object py" id="pyiv.datetime_service.PythonDateTimeService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.datetime_service.</span></span><span class="sig-name descname"><span class="pre">PythonDateTimeService</span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#PythonDateTimeService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.PythonDateTimeService" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyiv.datetime_service.DateTimeService" title="pyiv.datetime_service.DateTimeService"><code class="xref py py-class docutils literal notranslate"><span class="pre">DateTimeService</span></code></a></p>
-<p>DateTime service implementation using Python’s datetime module.</p>
-<p>This is the production implementation that uses Python’s built-in datetime
-module to return actual current time from the system clock.</p>
+<p>DateTime service backed by the system clock.</p>
+<p>Use this in production for real UTC timestamps. In tests, swap in
+<code class="docutils literal notranslate"><span class="pre">MockDateTimeService</span></code> so assertions do not depend on wall-clock time.</p>
+<p><strong>Why this exists:</strong> Production DateTimeService backed by the system clock.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.datetime_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">PythonDateTimeService</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">svc</span> <span class="o">=</span> <span class="n">PythonDateTimeService</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">now</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">now_utc</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">now</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span> <span class="ow">and</span> <span class="n">now</span><span class="o">.</span><span class="n">tzinfo</span> <span class="o">==</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">"T"</span> <span class="ow">in</span> <span class="n">svc</span><span class="o">.</span><span class="n">now_utc_iso</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.datetime_service.PythonDateTimeService.now_utc">
 <span class="sig-name descname"><span class="pre">now_utc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#PythonDateTimeService.now_utc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.PythonDateTimeService.now_utc" title="Link to this definition"></a></dt>
@@ -261,7 +300,7 @@ module to return actual current time from the system clock.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.datetime_service.PythonDateTimeService.now_utc_iso">
-<span class="sig-name descname"><span class="pre">now_utc_iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#PythonDateTimeService.now_utc_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.PythonDateTimeService.now_utc_iso" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">now_utc_iso</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/datetime_service.html#PythonDateTimeService.now_utc_iso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.datetime_service.PythonDateTimeService.now_utc_iso" title="Link to this definition"></a></dt>
 <dd><p>Get current UTC datetime as ISO format string using Python’s datetime.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -158,7 +173,20 @@
 <div class="viewcode-block" id="Filesystem">
 <a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Filesystem</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Abstract filesystem interface for file operations."""</span>
+<span class="w">    </span><span class="sd">"""Abstract filesystem for injectable file I/O.</span>
+
+<span class="sd">    **Why this exists:** Production code that calls ``open()`` / ``pathlib``</span>
+<span class="sd">    directly is hard to unit-test without touching disk or mocking builtins.</span>
+<span class="sd">    Depend on ``Filesystem`` and bind ``RealFilesystem`` in production and</span>
+<span class="sd">    ``MemoryFilesystem`` in tests.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.filesystem import MemoryFilesystem</span>
+<span class="sd">        &gt;&gt;&gt; fs: Filesystem = MemoryFilesystem()</span>
+<span class="sd">        &gt;&gt;&gt; fs.write_text("notes.txt", "hello")</span>
+<span class="sd">        &gt;&gt;&gt; fs.read_text("notes.txt")</span>
+<span class="sd">        'hello'</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="Filesystem.open">
 <a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.open">[docs]</a>
@@ -397,7 +425,26 @@
 <div class="viewcode-block" id="RealFilesystem">
 <a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RealFilesystem</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Real filesystem implementation using standard library."""</span>
+<span class="w">    </span><span class="sd">"""Real filesystem implementation using the standard library.</span>
+
+<span class="sd">    Use this in production when you need actual disk I/O. Prefer</span>
+<span class="sd">    ``MemoryFilesystem`` in unit tests so examples and CI never write into</span>
+<span class="sd">    the working tree.</span>
+
+<span class="sd">    **Why this exists:** Production Filesystem that performs real disk I/O.</span>
+
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import tempfile</span>
+<span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.filesystem import RealFilesystem</span>
+<span class="sd">        &gt;&gt;&gt; fs = RealFilesystem()</span>
+<span class="sd">        &gt;&gt;&gt; with tempfile.TemporaryDirectory() as d:</span>
+<span class="sd">        ...     p = Path(d) / "hello.txt"</span>
+<span class="sd">        ...     fs.write_text(p, "hi")</span>
+<span class="sd">        ...     fs.read_text(p)</span>
+<span class="sd">        'hi'</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="RealFilesystem.open">
 <a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.open">[docs]</a>
@@ -622,7 +669,22 @@
 <div class="viewcode-block" id="MemoryFilesystem">
 <a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MemoryFilesystem</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""In-memory filesystem for testing."""</span>
+<span class="w">    </span><span class="sd">"""In-memory filesystem for testing.</span>
+
+<span class="sd">    Use this whenever code under test needs file I/O but must not touch the</span>
+<span class="sd">    real disk. Paths live in a dict-backed store, so tests stay fast and</span>
+<span class="sd">    isolated.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.filesystem import MemoryFilesystem</span>
+<span class="sd">        &gt;&gt;&gt; fs = MemoryFilesystem()</span>
+<span class="sd">        &gt;&gt;&gt; fs.write_text("/notes/a.txt", "alpha")</span>
+<span class="sd">        &gt;&gt;&gt; fs.mkdir("/notes/sub", parents=True, exist_ok=True)</span>
+<span class="sd">        &gt;&gt;&gt; fs.exists("/notes/a.txt")</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; fs.read_text("/notes/a.txt")</span>
+<span class="sd">        'alpha'</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="MemoryFilesystem.__init__">
 <a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.__init__">[docs]</a>

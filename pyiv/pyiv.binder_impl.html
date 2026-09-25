@@ -46,7 +46,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -58,6 +60,9 @@
 <li class="toctree-l1"><a class="reference internal" href="pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -92,6 +97,16 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -147,13 +162,7 @@ to provide a fluent configuration API.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBinder.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.config.html#pyiv.config.Config" title="pyiv.config.Config"><span class="pre">Config</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialize binder.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – The config to register bindings with</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBinder.bind">
@@ -171,7 +180,7 @@ to provide a fluent configuration API.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBinder.bind_instance">
-<span class="sig-name descname"><span class="pre">bind_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abstract</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.bind_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.bind_instance" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">bind_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abstract</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.bind_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.bind_instance" title="Link to this definition"></a></dt>
 <dd><p>Bind to a pre-created instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -198,20 +207,32 @@ to provide a fluent configuration API.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBinder.expose">
+<span class="sig-name descname"><span class="pre">expose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_or_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.expose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.expose" title="Link to this definition"></a></dt>
+<dd><p>Expose a binding from a PrivateConfig to the parent environment.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBinder.finalize">
-<span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.finalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.finalize" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.finalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.finalize" title="Link to this definition"></a></dt>
 <dd><p>Finalize all pending bindings.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBinder.install">
-<span class="sig-name descname"><span class="pre">install</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.install"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.install" title="Link to this definition"></a></dt>
-<dd><p>Install another configuration module.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – Another Config instance to install</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">install</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.install"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.install" title="Link to this definition"></a></dt>
+<dd><p>Install another configuration module into this config.</p>
+<p>Later installs overwrite earlier bindings for the same type or key
+(last wins). Use <a class="reference internal" href="pyiv.override.html#pyiv.override.override" title="pyiv.override.override"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyiv.override.override()</span></code></a> when you need an
+explicit base/override overlay for tests.</p>
+<p>PrivateConfig installs are deferred until injector construction so
+exposed bindings can delegate into an isolated child environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBinder.require_explicit_bindings">
+<span class="sig-name descname"><span class="pre">require_explicit_bindings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBinder.require_explicit_bindings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBinder.require_explicit_bindings" title="Link to this definition"></a></dt>
+<dd><p>Disable just-in-time construction of unregistered concrete types.</p>
 </dd></dl>
 
 </dd></dl>
@@ -239,6 +260,42 @@ to provide a fluent configuration API.</p>
 <dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBindingBuilder.in_scope">
 <span class="sig-name descname"><span class="pre">in_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.scope.html#pyiv.scope.Scope" title="pyiv.scope.Scope"><span class="pre">Scope</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigBindingBuilder" title="pyiv.binder_impl.ConfigBindingBuilder"><span class="pre">ConfigBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBindingBuilder.in_scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBindingBuilder.in_scope" title="Link to this definition"></a></dt>
 <dd><p>Set the scope for this binding.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBindingBuilder.to">
+<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigBindingBuilder" title="pyiv.binder_impl.ConfigBindingBuilder"><span class="pre">ConfigBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBindingBuilder.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBindingBuilder.to" title="Link to this definition"></a></dt>
+<dd><p>Bind to a concrete implementation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBindingBuilder.to_instance">
+<span class="sig-name descname"><span class="pre">to_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigBindingBuilder" title="pyiv.binder_impl.ConfigBindingBuilder"><span class="pre">ConfigBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBindingBuilder.to_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBindingBuilder.to_instance" title="Link to this definition"></a></dt>
+<dd><p>Bind to a pre-created instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBindingBuilder.to_provider">
+<span class="sig-name descname"><span class="pre">to_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.provider.html#pyiv.provider.Provider" title="pyiv.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigBindingBuilder" title="pyiv.binder_impl.ConfigBindingBuilder"><span class="pre">ConfigBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBindingBuilder.to_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBindingBuilder.to_provider" title="Link to this definition"></a></dt>
+<dd><p>Bind to a provider.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigKeyBindingBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.binder_impl.</span></span><span class="sig-name descname"><span class="pre">ConfigKeyBindingBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.config.html#pyiv.config.Config" title="pyiv.config.Config"><span class="pre">Config</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigKeyBindingBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigKeyBindingBuilder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyiv.binder.html#pyiv.binder.BindingBuilder" title="pyiv.binder.BindingBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">BindingBuilder</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Binding builder for qualified keys.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigKeyBindingBuilder.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.config.html#pyiv.config.Config" title="pyiv.config.Config"><span class="pre">Config</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigKeyBindingBuilder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigKeyBindingBuilder.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigKeyBindingBuilder.in_scope">
+<span class="sig-name descname"><span class="pre">in_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.scope.html#pyiv.scope.Scope" title="pyiv.scope.Scope"><span class="pre">Scope</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigKeyBindingBuilder" title="pyiv.binder_impl.ConfigKeyBindingBuilder"><span class="pre">ConfigKeyBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigKeyBindingBuilder.in_scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigKeyBindingBuilder.in_scope" title="Link to this definition"></a></dt>
+<dd><p>Set the scope for this binding.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>scope</strong> – The scope to use</p>
@@ -250,8 +307,8 @@ to provide a fluent configuration API.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBindingBuilder.to">
-<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigBindingBuilder" title="pyiv.binder_impl.ConfigBindingBuilder"><span class="pre">ConfigBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBindingBuilder.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBindingBuilder.to" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigKeyBindingBuilder.to">
+<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigKeyBindingBuilder" title="pyiv.binder_impl.ConfigKeyBindingBuilder"><span class="pre">ConfigKeyBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigKeyBindingBuilder.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigKeyBindingBuilder.to" title="Link to this definition"></a></dt>
 <dd><p>Bind to a concrete implementation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -264,8 +321,8 @@ to provide a fluent configuration API.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBindingBuilder.to_instance">
-<span class="sig-name descname"><span class="pre">to_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigBindingBuilder" title="pyiv.binder_impl.ConfigBindingBuilder"><span class="pre">ConfigBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBindingBuilder.to_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBindingBuilder.to_instance" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigKeyBindingBuilder.to_instance">
+<span class="sig-name descname"><span class="pre">to_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigKeyBindingBuilder" title="pyiv.binder_impl.ConfigKeyBindingBuilder"><span class="pre">ConfigKeyBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigKeyBindingBuilder.to_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigKeyBindingBuilder.to_instance" title="Link to this definition"></a></dt>
 <dd><p>Bind to a pre-created instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -278,8 +335,8 @@ to provide a fluent configuration API.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigBindingBuilder.to_provider">
-<span class="sig-name descname"><span class="pre">to_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.provider.html#pyiv.provider.Provider" title="pyiv.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigBindingBuilder" title="pyiv.binder_impl.ConfigBindingBuilder"><span class="pre">ConfigBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigBindingBuilder.to_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigBindingBuilder.to_provider" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyiv.binder_impl.ConfigKeyBindingBuilder.to_provider">
+<span class="sig-name descname"><span class="pre">to_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.provider.html#pyiv.provider.Provider" title="pyiv.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyiv.binder_impl.ConfigKeyBindingBuilder" title="pyiv.binder_impl.ConfigKeyBindingBuilder"><span class="pre">ConfigKeyBindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder_impl.html#ConfigKeyBindingBuilder.to_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.binder_impl.ConfigKeyBindingBuilder.to_provider" title="Link to this definition"></a></dt>
 <dd><p>Bind to a provider.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

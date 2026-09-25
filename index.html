@@ -47,7 +47,9 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -59,6 +61,9 @@
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -93,6 +98,16 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -178,6 +193,12 @@ mocking the world.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/rl337/pyiv.git
 </pre></div>
 </div>
+<p>YAML and requests integrations are a second package (core stays
+stdlib-only):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pyiv-common
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="guide/packages.html"><span class="doc">Packages</span></a>.</p>
 </section>
 <section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
@@ -216,7 +237,9 @@ Filesystem / Console / DateTimeService in tests:</p>
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
 </ul>
 </div>
 </section>
@@ -235,6 +258,9 @@ docstrings in the <code class="docutils literal notranslate"><span class="pre">p
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -268,6 +294,14 @@ docstrings in the <code class="docutils literal notranslate"><span class="pre">p
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.serde.html">pyiv.serde</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.network.html">pyiv.network</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.html">pyiv_common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">

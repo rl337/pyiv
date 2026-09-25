@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -212,10 +227,11 @@
 <div class="viewcode-block" id="BindingBuilder">
 <a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BindingBuilder</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""Fluent builder for configuring bindings.</span>
+<span class="w">    </span><span class="sd">"""Fluent steps after :meth:`Binder.bind` (``.to`` / ``.in_scope`` / …).</span>
 
-<span class="sd">    This builder provides a fluent API for configuring how a type should</span>
-<span class="sd">    be bound. It supports chaining methods to configure the binding.</span>
+<span class="sd">    **Why this exists:** A single ``register(...)`` call buries scope and</span>
+<span class="sd">    provider choices in kwargs. The builder makes the binding shape readable</span>
+<span class="sd">    as a chain while still writing the same ``Config`` store.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
@@ -292,17 +308,23 @@
 <div class="viewcode-block" id="Binder">
 <a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.Binder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Binder</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Protocol for binder implementations.</span>
+<span class="w">    </span><span class="sd">"""Fluent configuration API for contributing bindings to a ``Config``.</span>
 
-<span class="sd">    Binders provide a fluent API for configuring dependency bindings.</span>
-<span class="sd">    They separate the configuration API from the implementation, making</span>
-<span class="sd">    Config more testable and enabling programmatic configuration.</span>
+<span class="sd">    **Why this exists:** Direct ``Config.register*`` calls work, but complex</span>
+<span class="sd">    graphs read better as ``bind(X).to(Y).in_scope(Z)``. The binder also</span>
+<span class="sd">    supports ``install``, ``expose``, and ``require_explicit_bindings``.</span>
 
-<span class="sd">    Example::</span>
-
-<span class="sd">        class MyBinder(Binder):</span>
-<span class="sd">            def bind(self, abstract):</span>
-<span class="sd">                return BindingBuilder(...)</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class PostgreSQL(Database):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.get_binder().bind(Database).to(PostgreSQL)</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Binder.bind">
@@ -351,8 +373,26 @@
 <span class="w">        </span><span class="sd">"""Install another configuration module.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            config: Another Config instance to install</span>
+<span class="sd">            config: Another Config instance or subclass to install.</span>
+<span class="sd">                Later installs overwrite the same type/key (last wins).</span>
 <span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Binder.expose">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.Binder.expose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_or_key</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Expose a private binding to the parent environment.</span>
+
+<span class="sd">        Only meaningful on a :class:`~pyiv.config.PrivateConfig`.</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Binder.require_explicit_bindings">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.Binder.require_explicit_bindings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">require_explicit_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Require every injectable type to be bound explicitly (no JIT)."""</span>
         <span class="o">...</span></div>
 </div>
 

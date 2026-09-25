@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -137,10 +152,20 @@
 <div class="viewcode-block" id="DateTimeService">
 <a class="viewcode-back" href="../../pyiv/pyiv.datetime_service.html#pyiv.DateTimeService">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DateTimeService</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Abstract base class for datetime operations.</span>
+<span class="w">    </span><span class="sd">"""Abstract interface for UTC datetime operations.</span>
 
-<span class="sd">    This abstract class provides methods for getting the current UTC datetime,</span>
-<span class="sd">    allowing implementations to be swapped for testing or different time sources.</span>
+<span class="sd">    Depend on this instead of calling ``datetime.now`` directly so production</span>
+<span class="sd">    code can use ``PythonDateTimeService`` while tests inject</span>
+<span class="sd">    ``MockDateTimeService`` with a fixed clock.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from datetime import datetime, timezone</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.datetime_service import DateTimeService, MockDateTimeService</span>
+<span class="sd">        &gt;&gt;&gt; def stamp(svc: DateTimeService) -&gt; str:</span>
+<span class="sd">        ...     return svc.now_utc_iso()</span>
+<span class="sd">        &gt;&gt;&gt; fixed = datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc)</span>
+<span class="sd">        &gt;&gt;&gt; stamp(MockDateTimeService(fixed))</span>
+<span class="sd">        '2024-01-15T10:30:00+00:00'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="DateTimeService.now_utc">
@@ -172,10 +197,23 @@
 <div class="viewcode-block" id="PythonDateTimeService">
 <a class="viewcode-back" href="../../pyiv/pyiv.datetime_service.html#pyiv.PythonDateTimeService">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PythonDateTimeService</span><span class="p">(</span><span class="n">DateTimeService</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""DateTime service implementation using Python's datetime module.</span>
+<span class="w">    </span><span class="sd">"""DateTime service backed by the system clock.</span>
 
-<span class="sd">    This is the production implementation that uses Python's built-in datetime</span>
-<span class="sd">    module to return actual current time from the system clock.</span>
+<span class="sd">    Use this in production for real UTC timestamps. In tests, swap in</span>
+<span class="sd">    ``MockDateTimeService`` so assertions do not depend on wall-clock time.</span>
+
+<span class="sd">    **Why this exists:** Production DateTimeService backed by the system clock.</span>
+
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from datetime import datetime, timezone</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.datetime_service import PythonDateTimeService</span>
+<span class="sd">        &gt;&gt;&gt; svc = PythonDateTimeService()</span>
+<span class="sd">        &gt;&gt;&gt; now = svc.now_utc()</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(now, datetime) and now.tzinfo == timezone.utc</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; "T" in svc.now_utc_iso()</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="PythonDateTimeService.now_utc">
@@ -206,6 +244,8 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.datetime_service.html#pyiv.MockDateTimeService">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MockDateTimeService</span><span class="p">(</span><span class="n">DateTimeService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Mock datetime service for testing.</span>
+
+<span class="sd">    **Why this exists:** Freeze calendar time for deterministic tests of ISO/UTC stamps.</span>
 
 <span class="sd">    This implementation allows you to control the time returned, making it</span>
 <span class="sd">    easy to test time-dependent code with predictable timestamps.</span>

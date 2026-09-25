@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -130,26 +145,18 @@
 
 <span class="sd">- JSON: Standard JSON encoding</span>
 <span class="sd">- Base64: Base64 encoding</span>
-<span class="sd">- YAML: YAML encoding (if available)</span>
 <span class="sd">- XML: XML encoding</span>
 <span class="sd">- Pickle: Python pickle encoding (default/no-op fallback)</span>
 <span class="sd">- NoOp: No-op encoding (pass-through)</span>
+
+<span class="sd">YAML lives in ``pyiv-common`` (``from pyiv_common.serde import YAMLSerDe``).</span>
 <span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
-
-<span class="c1"># Try to import yaml (not in standard library, but commonly available)</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>  <span class="c1"># type: ignore[import-untyped]</span>
-
-    <span class="n">YAML_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">YAML_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.serde.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SerDe</span>
 
@@ -161,7 +168,22 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">NoOpSerDe</span><span class="p">(</span><span class="n">SerDe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""No-op SerDe that passes through data unchanged.</span>
 
-<span class="sd">    This is the default fallback when no encoding is specified.</span>
+<span class="sd">    Use this as the default when no encoding is configured, or when a pipeline</span>
+<span class="sd">    already holds strings/bytes and must not re-encode them. Strings and bytes</span>
+<span class="sd">    are returned as-is; other objects become ``str(obj)``.</span>
+
+<span class="sd">    **Why this exists:** Default pass-through encoder when no wire format was configured.</span>
+
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.serde.encodings import NoOpSerDe</span>
+<span class="sd">        &gt;&gt;&gt; serde = NoOpSerDe()</span>
+<span class="sd">        &gt;&gt;&gt; serde.handler_type</span>
+<span class="sd">        'noop'</span>
+<span class="sd">        &gt;&gt;&gt; serde.serialize("already-encoded")</span>
+<span class="sd">        'already-encoded'</span>
+<span class="sd">        &gt;&gt;&gt; serde.deserialize("already-encoded")</span>
+<span class="sd">        'already-encoded'</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
@@ -211,8 +233,17 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">PickleSerDe</span><span class="p">(</span><span class="n">SerDe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Python pickle SerDe.</span>
 
-<span class="sd">    Uses Python's pickle module for serialization. This is a fallback option</span>
-<span class="sd">    when other encodings are not suitable.</span>
+<span class="sd">    Use this when you need to round-trip arbitrary Python objects that JSON,</span>
+<span class="sd">    XML, or base64 text cannot represent. Prefer safer text codecs for</span>
+<span class="sd">    untrusted input; pickle is a stdlib fallback for trusted local data.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.serde.encodings import PickleSerDe</span>
+<span class="sd">        &gt;&gt;&gt; serde = PickleSerDe()</span>
+<span class="sd">        &gt;&gt;&gt; serde.handler_type</span>
+<span class="sd">        'pickle'</span>
+<span class="sd">        &gt;&gt;&gt; serde.deserialize(serde.serialize({"x": 2}))</span>
+<span class="sd">        {'x': 2}</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
@@ -260,7 +291,22 @@
 <div class="viewcode-block" id="JSONSerDe">
 <a class="viewcode-back" href="../../../pyiv/pyiv.serde.json.html#pyiv.JSONSerDe">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">JSONSerDe</span><span class="p">(</span><span class="n">SerDe</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Standard JSON SerDe using Python's json module."""</span>
+<span class="w">    </span><span class="sd">"""Standard JSON SerDe using Python's ``json`` module.</span>
+
+<span class="sd">    Use this for APIs, configs, and payloads that exchange JSON. Datetimes</span>
+<span class="sd">    serialize to ISO strings; objects with ``__dict__`` become dicts. Prefer</span>
+<span class="sd">    this over pickle whenever the data is text-safe and interoperable.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.serde.encodings import JSONSerDe</span>
+<span class="sd">        &gt;&gt;&gt; serde = JSONSerDe()</span>
+<span class="sd">        &gt;&gt;&gt; serde.handler_type</span>
+<span class="sd">        'json'</span>
+<span class="sd">        &gt;&gt;&gt; serde.serialize({"a": 1})</span>
+<span class="sd">        '{"a": 1}'</span>
+<span class="sd">        &gt;&gt;&gt; serde.deserialize('{"a": 1}')</span>
+<span class="sd">        {'a': 1}</span>
+<span class="sd">    """</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">handler_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -329,7 +375,20 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Base64SerDe</span><span class="p">(</span><span class="n">SerDe</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Base64 encoding SerDe.</span>
 
-<span class="sd">    Encodes/decodes data using base64 encoding. Input must be bytes.</span>
+<span class="sd">    Use this when binary payloads must travel as text (headers, logs, or</span>
+<span class="sd">    text-only transports). Strings are UTF-8 encoded first; non-bytes objects</span>
+<span class="sd">    fall back to pickle before encoding. Deserialize returns raw bytes.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.serde.encodings import Base64SerDe</span>
+<span class="sd">        &gt;&gt;&gt; serde = Base64SerDe()</span>
+<span class="sd">        &gt;&gt;&gt; serde.handler_type</span>
+<span class="sd">        'base64'</span>
+<span class="sd">        &gt;&gt;&gt; encoded = serde.serialize(b"hello")</span>
+<span class="sd">        &gt;&gt;&gt; encoded</span>
+<span class="sd">        'aGVsbG8='</span>
+<span class="sd">        &gt;&gt;&gt; serde.deserialize(encoded)</span>
+<span class="sd">        b'hello'</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
@@ -381,9 +440,22 @@
 <div class="viewcode-block" id="XMLSerDe">
 <a class="viewcode-back" href="../../../pyiv/pyiv.serde.encodings.html#pyiv.XMLSerDe">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">XMLSerDe</span><span class="p">(</span><span class="n">SerDe</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""XML encoding SerDe.</span>
+<span class="w">    </span><span class="sd">"""XML encoding SerDe for simple dict/list structures.</span>
 
-<span class="sd">    Encodes/decodes data using XML. For simple dict/list structures.</span>
+<span class="sd">    Use this when interoperability with XML-oriented systems matters and the</span>
+<span class="sd">    payload is a shallow dict or list. Nested dicts become child elements;</span>
+<span class="sd">    lists become ``item`` children. Not a full schema or namespace mapper.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.serde.encodings import XMLSerDe</span>
+<span class="sd">        &gt;&gt;&gt; serde = XMLSerDe()</span>
+<span class="sd">        &gt;&gt;&gt; serde.handler_type</span>
+<span class="sd">        'xml'</span>
+<span class="sd">        &gt;&gt;&gt; xml = serde.serialize({"name": "Ada"})</span>
+<span class="sd">        &gt;&gt;&gt; xml</span>
+<span class="sd">        '&lt;root&gt;&lt;name&gt;Ada&lt;/name&gt;&lt;/root&gt;'</span>
+<span class="sd">        &gt;&gt;&gt; serde.deserialize(xml)</span>
+<span class="sd">        {'name': 'Ada'}</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
@@ -489,66 +561,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xml_to_dict</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
-
-
-
-<div class="viewcode-block" id="YAMLSerDe">
-<a class="viewcode-back" href="../../../pyiv/pyiv.serde.encodings.html#pyiv.YAMLSerDe">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">YAMLSerDe</span><span class="p">(</span><span class="n">SerDe</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""YAML encoding SerDe.</span>
-
-<span class="sd">    Uses PyYAML if available, otherwise raises ImportError.</span>
-<span class="sd">    """</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">handler_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return the handler type identifier.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            The handler type identifier ("yaml")</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="s2">"yaml"</span>
-
-<div class="viewcode-block" id="YAMLSerDe.serialize">
-<a class="viewcode-back" href="../../../pyiv/pyiv.serde.encodings.html#pyiv.YAMLSerDe.serialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Serialize using YAML encoding.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            obj: The Python object to serialize</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            YAML string representation</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ImportError: If PyYAML is not available</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">YAML_AVAILABLE</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">"PyYAML is not installed. Install it with: pip install pyyaml"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="YAMLSerDe.deserialize">
-<a class="viewcode-back" href="../../../pyiv/pyiv.serde.encodings.html#pyiv.YAMLSerDe.deserialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span> <span class="n">target_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Deserialize YAML string/bytes back to a Python object.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            data: The YAML string or bytes</span>
-<span class="sd">            target_type: Optional type hint for the expected result type</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Deserialized Python object</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ImportError: If PyYAML is not available</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">YAML_AVAILABLE</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">"PyYAML is not installed. Install it with: pip install pyyaml"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
-</div>
 
 </pre></div>
 

@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyiv.override &mdash; pyiv 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=75b4fac4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e259d695"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #0066cc" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyiv
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.html">pyiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.config.html">pyiv.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.injector.html">pyiv.injector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.binder.html">pyiv.binder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.key.html">pyiv.key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Discovery</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.chain.html">pyiv.chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.command.html">pyiv.command</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.network.html">pyiv.network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module listing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #0066cc" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyiv</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyiv.override</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyiv.override</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Config overlay for replacing production bindings in tests.</span>
+
+<span class="sd">**What Problem Does This Solve?**</span>
+
+<span class="sd">Test suites need the real module graph with a few bindings swapped for doubles.</span>
+<span class="sd">Rebuilding the whole ``Config`` is brittle. ``override(base).with_(test)``</span>
+<span class="sd">keeps the base registrations and replaces only keys present in the override.</span>
+
+<span class="sd">**Real-World Use Cases:**</span>
+
+<span class="sd">- Swap ``Clock`` / ``Filesystem`` for synthetic doubles in integration tests</span>
+<span class="sd">- Replace a remote client with an in-memory stub while keeping the rest of the graph</span>
+
+<span class="sd">Usage Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">    &gt;&gt;&gt; from pyiv.override import override</span>
+<span class="sd">    &gt;&gt;&gt; class Database:</span>
+<span class="sd">    ...     def name(self) -&gt; str:</span>
+<span class="sd">    ...         return "prod"</span>
+<span class="sd">    &gt;&gt;&gt; class ProdDatabase(Database):</span>
+<span class="sd">    ...     def name(self) -&gt; str:</span>
+<span class="sd">    ...         return "prod"</span>
+<span class="sd">    &gt;&gt;&gt; class FakeDatabase(Database):</span>
+<span class="sd">    ...     def name(self) -&gt; str:</span>
+<span class="sd">    ...         return "fake"</span>
+<span class="sd">    &gt;&gt;&gt; class ProdConfig(Config):</span>
+<span class="sd">    ...     def configure(self):</span>
+<span class="sd">    ...         self.register(Database, ProdDatabase)</span>
+<span class="sd">    &gt;&gt;&gt; class TestConfig(Config):</span>
+<span class="sd">    ...     def configure(self):</span>
+<span class="sd">    ...         self.register(Database, FakeDatabase)</span>
+<span class="sd">    &gt;&gt;&gt; inj = get_injector(override(ProdConfig).with_(TestConfig))</span>
+<span class="sd">    &gt;&gt;&gt; inj.inject(Database).name()</span>
+<span class="sd">    'fake'</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+
+
+<div class="viewcode-block" id="OverrideBuilder">
+<a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverrideBuilder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OverrideBuilder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Fluent step after :func:`override` — call :meth:`with_` to finish.</span>
+
+<span class="sd">    **Why this exists:** Splitting ``override(base)`` from ``.with_(test)``</span>
+<span class="sd">    keeps the API readable when overlaying several override modules.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Database:</span>
+<span class="sd">        ...     def name(self) -&gt; str:</span>
+<span class="sd">        ...         return "prod"</span>
+<span class="sd">        &gt;&gt;&gt; class Fake(Database):</span>
+<span class="sd">        ...     def name(self) -&gt; str:</span>
+<span class="sd">        ...         return "fake"</span>
+<span class="sd">        &gt;&gt;&gt; class Prod(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Database, Database)</span>
+<span class="sd">        &gt;&gt;&gt; class Test(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Database, Fake)</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(override(Prod).with_(Test)).inject(Database).name()</span>
+<span class="sd">        'fake'</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="OverrideBuilder.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverrideBuilder.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Config</span><span class="p">],</span> <span class="n">Config</span><span class="p">],</span> <span class="o">...</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bases</span> <span class="o">=</span> <span class="n">bases</span></div>
+
+
+<div class="viewcode-block" id="OverrideBuilder.with_">
+<a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverrideBuilder.with_">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">overrides</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Config</span><span class="p">],</span> <span class="n">Config</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Config</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return a config that overlays ``overrides`` on the bases.</span>
+
+<span class="sd">        Bindings in later overrides win over earlier ones and over the bases.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">OverriddenConfig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bases</span><span class="p">,</span> <span class="n">overrides</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OverriddenConfig">
+<a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverriddenConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OverriddenConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Merged config: base bindings with override bindings on top.</span>
+
+<span class="sd">    **Why this exists:** Tests need the production graph with a few keys</span>
+<span class="sd">    swapped. Prefer :func:`override` rather than constructing this directly.</span>
+
+<span class="sd">    See the :class:`OverrideBuilder` example for usage via ``override(...).with_(...)``.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="OverriddenConfig.__init__">
+<a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverriddenConfig.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">bases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Config</span><span class="p">],</span> <span class="n">Config</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span>
+        <span class="n">overrides</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Config</span><span class="p">],</span> <span class="n">Config</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="c1"># Initialize empty state without running a user configure().</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_stores</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merge_from</span><span class="p">(</span><span class="n">_as_config</span><span class="p">(</span><span class="n">base</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ov</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merge_from</span><span class="p">(</span><span class="n">_as_config</span><span class="p">(</span><span class="n">ov</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OverriddenConfig.configure">
+<a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.OverriddenConfig.configure">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""No-op; bindings come from merged modules."""</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="override">
+<a class="viewcode-back" href="../../pyiv/pyiv.override.html#pyiv.override">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">override</span><span class="p">(</span><span class="o">*</span><span class="n">bases</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Config</span><span class="p">],</span> <span class="n">Config</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OverrideBuilder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Start an override overlay over one or more base configs.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        get_injector(override(ProdConfig).with_(TestConfig))</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">bases</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"override() requires at least one base config"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">OverrideBuilder</span><span class="p">(</span><span class="n">bases</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Config</span><span class="p">],</span> <span class="n">Config</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Config</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">Config</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">config</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">Config</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">config</span><span class="p">()</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"expected Config subclass or instance, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

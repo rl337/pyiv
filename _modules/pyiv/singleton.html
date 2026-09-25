@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -171,12 +186,27 @@
 <div class="viewcode-block" id="SingletonType">
 <a class="viewcode-back" href="../../pyiv/pyiv.singleton.html#pyiv.SingletonType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SingletonType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Type of singleton behavior for registered dependencies.</span>
+<span class="w">    </span><span class="sd">"""Legacy enum for singleton lifecycle on ``Config.register``.</span>
+
+<span class="sd">    **Why this exists:** Older call sites use ``singleton_type=...`` instead of</span>
+<span class="sd">    a :class:`~pyiv.scope.Scope`. Prefer ``Scope`` for new code; this enum remains</span>
+<span class="sd">    for compatibility.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        NONE: No singleton behavior - new instance created each time</span>
 <span class="sd">        SINGLETON: Per-injector singleton - one instance per Injector instance</span>
 <span class="sd">        GLOBAL_SINGLETON: Global singleton - one instance shared across all injectors (thread-safe)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Logger:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class MyConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.register(Logger, Logger, singleton_type=SingletonType.SINGLETON)</span>
+<span class="sd">        &gt;&gt;&gt; inj = get_injector(MyConfig)</span>
+<span class="sd">        &gt;&gt;&gt; inj.inject(Logger) is inj.inject(Logger)</span>
+<span class="sd">        True</span>
 <span class="sd">    """</span>
 
     <span class="n">NONE</span> <span class="o">=</span> <span class="s2">"none"</span>
@@ -188,13 +218,20 @@
 <div class="viewcode-block" id="GlobalSingletonRegistry">
 <a class="viewcode-back" href="../../pyiv/pyiv.singleton.html#pyiv.GlobalSingletonRegistry">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GlobalSingletonRegistry</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Thread-safe registry for global singletons.</span>
+<span class="w">    </span><span class="sd">"""Process-wide store for ``GLOBAL_SINGLETON`` instances.</span>
 
-<span class="sd">    This registry stores singleton instances that are shared across</span>
-<span class="sd">    all injector instances. Access is thread-safe.</span>
+<span class="sd">    **Why this exists:** Some resources must be unique across injectors</span>
+<span class="sd">    (shared caches). Tests call :meth:`clear` between cases so state does</span>
+<span class="sd">    not leak.</span>
 
-<span class="sd">    Supports both Type keys (for standard DI) and string keys (for SerDe</span>
-<span class="sd">    and other named instances).</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; class Cache:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; GlobalSingletonRegistry.clear()</span>
+<span class="sd">        &gt;&gt;&gt; GlobalSingletonRegistry.set(Cache, Cache())</span>
+<span class="sd">        &gt;&gt;&gt; GlobalSingletonRegistry.has(Cache)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; GlobalSingletonRegistry.clear()</span>
 <span class="sd">    """</span>
 
     <span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>

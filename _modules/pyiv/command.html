@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -149,14 +164,26 @@
 <div class="viewcode-block" id="Command">
 <a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Interface for CLI commands.</span>
+<span class="w">    </span><span class="sd">"""Base interface for discoverable CLI commands.</span>
 
-<span class="sd">    Commands can be organized hierarchically:</span>
-<span class="sd">    - Top-level commands (e.g., "switchboard")</span>
-<span class="sd">    - Subcommands (e.g., "switchboard start")</span>
-<span class="sd">    - Sub-subcommands (e.g., "switchboard agent create")</span>
+<span class="sd">    Use this when building hierarchical CLIs (command / subcommand trees) that</span>
+<span class="sd">    should be discoverable via reflection and optionally receive a pyiv</span>
+<span class="sd">    injector. Prefer ``CLICommand`` for one-shot tools and ``ServiceCommand``</span>
+<span class="sd">    for long-running processes.</span>
 
-<span class="sd">    Each command level can have its own arguments and execution logic.</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import argparse</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.command import Command</span>
+<span class="sd">        &gt;&gt;&gt; class HelloCommand(Command):</span>
+<span class="sd">        ...     @classmethod</span>
+<span class="sd">        ...     def get_name(cls) -&gt; str:</span>
+<span class="sd">        ...         return "hello"</span>
+<span class="sd">        ...     def execute(self) -&gt; int:</span>
+<span class="sd">        ...         return 0</span>
+<span class="sd">        &gt;&gt;&gt; HelloCommand.get_name()</span>
+<span class="sd">        'hello'</span>
+<span class="sd">        &gt;&gt;&gt; HelloCommand(argparse.Namespace()).execute()</span>
+<span class="sd">        0</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Command.get_name">
@@ -342,12 +369,22 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ServiceCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Base class for long-running service commands.</span>
 
-<span class="sd">    Provides a standard lifecycle pattern:</span>
-<span class="sd">    1. init() - Initialize resources, configuration, etc.</span>
-<span class="sd">    2. run() - Main service loop (blocking)</span>
-<span class="sd">    3. cleanup() - Clean up resources on shutdown</span>
+<span class="sd">    Use this when a command should run until interrupted (daemons, workers).</span>
+<span class="sd">    ``execute()`` runs ``init()`` → ``run()`` → ``cleanup()`` and maps</span>
+<span class="sd">    ``KeyboardInterrupt`` to exit code 130. Override those hooks; do not</span>
+<span class="sd">    reimplement the lifecycle unless necessary.</span>
 
-<span class="sd">    Subclasses should override init(), run(), and cleanup().</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import argparse</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.command import ServiceCommand</span>
+<span class="sd">        &gt;&gt;&gt; class OnceService(ServiceCommand):</span>
+<span class="sd">        ...     @classmethod</span>
+<span class="sd">        ...     def get_name(cls) -&gt; str:</span>
+<span class="sd">        ...         return "once"</span>
+<span class="sd">        ...     def run(self) -&gt; None:</span>
+<span class="sd">        ...         pass  # exit immediately after init</span>
+<span class="sd">        &gt;&gt;&gt; OnceService(argparse.Namespace()).execute()</span>
+<span class="sd">        0</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="ServiceCommand.execute">
@@ -396,16 +433,22 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">CLICommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Base class for one-shot CLI commands (not long-running services).</span>
 
-<span class="sd">    Provides a simplified lifecycle for commands that execute and exit:</span>
-<span class="sd">    1. init() - Optional initialization</span>
-<span class="sd">    2. run() - Main command logic (subclasses override this)</span>
-<span class="sd">    3. cleanup() - Optional cleanup</span>
+<span class="sd">    Use this for tools that init, run once, and exit. Override ``run()`` (and</span>
+<span class="sd">    optionally ``init()``/``cleanup()``); set ``self._exit_code`` for non-zero</span>
+<span class="sd">    status. Do not override ``execute()`` — it owns KeyboardInterrupt / SystemExit</span>
+<span class="sd">    handling.</span>
 
-<span class="sd">    Subclasses should override run() (and optionally init()/cleanup()).</span>
-<span class="sd">    Set self._exit_code in run() to return a non-zero status.</span>
-
-<span class="sd">    Do not override execute() — it implements the lifecycle, KeyboardInterrupt</span>
-<span class="sd">    handling (exit 130), and SystemExit handling.</span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import argparse</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.command import CLICommand</span>
+<span class="sd">        &gt;&gt;&gt; class EchoCommand(CLICommand):</span>
+<span class="sd">        ...     @classmethod</span>
+<span class="sd">        ...     def get_name(cls) -&gt; str:</span>
+<span class="sd">        ...         return "echo"</span>
+<span class="sd">        ...     def run(self) -&gt; None:</span>
+<span class="sd">        ...         self._exit_code = 0</span>
+<span class="sd">        &gt;&gt;&gt; EchoCommand(argparse.Namespace()).execute()</span>
+<span class="sd">        0</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="CLICommand.__init__">
@@ -483,7 +526,35 @@
 <div class="viewcode-block" id="CommandRunner">
 <a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CommandRunner">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CommandRunner</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Runner for discovering and executing commands using reflection."""</span>
+<span class="w">    </span><span class="sd">"""Discovers and runs ``Command`` subclasses via reflection or import.</span>
+
+<span class="sd">    Use this as the entrypoint for a CLI package: discover commands under a</span>
+<span class="sd">    package path, build an argparse tree, and execute the selected command</span>
+<span class="sd">    with an optional pyiv injector from ``config``.</span>
+
+<span class="sd">    **Why this exists:** Discover and dispatch hierarchical CLI commands with a shared lifecycle.</span>
+
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import argparse</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.command import CLICommand, CommandRunner</span>
+<span class="sd">        &gt;&gt;&gt; class GreetCommand(CLICommand):</span>
+<span class="sd">        ...     @classmethod</span>
+<span class="sd">        ...     def get_name(cls) -&gt; str:</span>
+<span class="sd">        ...         return "greet"</span>
+<span class="sd">        ...     @classmethod</span>
+<span class="sd">        ...     def get_description(cls) -&gt; str:</span>
+<span class="sd">        ...         return "Say hello"</span>
+<span class="sd">        ...     def run(self) -&gt; None:</span>
+<span class="sd">        ...         self._exit_code = 0</span>
+<span class="sd">        &gt;&gt;&gt; runner = CommandRunner()</span>
+<span class="sd">        &gt;&gt;&gt; parser = runner.create_parser(</span>
+<span class="sd">        ...     prog="demo", commands={"greet": GreetCommand}</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; args = parser.parse_args(["greet"])</span>
+<span class="sd">        &gt;&gt;&gt; GreetCommand(args).execute()</span>
+<span class="sd">        0</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="CommandRunner.__init__">
 <a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.CommandRunner.__init__">[docs]</a>

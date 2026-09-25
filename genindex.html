@@ -45,7 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -57,6 +59,9 @@
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.scope.html">pyiv.scope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.provider.html">pyiv.provider</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
@@ -91,6 +96,16 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -167,6 +182,8 @@
 </li>
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.__init__">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
 </li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.__init__">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.__init__">(pyiv.BindingBuilder method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.CLICommand.__init__">(pyiv.CLICommand method)</a>
@@ -221,7 +238,11 @@
 </li>
         <li><a href="pyiv/pyiv.console.html#pyiv.console.WriteEvent.__init__">(pyiv.console.WriteEvent method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.CreationError.__init__">(pyiv.CreationError method)</a>
+</li>
         <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.MockDateTimeService.__init__">(pyiv.datetime_service.MockDateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.errors.html#pyiv.errors.CreationError.__init__">(pyiv.errors.CreationError method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Factory.__init__">(pyiv.Factory method)</a>
 </li>
@@ -255,6 +276,8 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.__init__">(pyiv.ListMultibinder method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.__init__">(pyiv.MapMultibinder method)</a>
+</li>
         <li><a href="pyiv/pyiv.members.html#pyiv.members.InjectorMembersInjector.__init__">(pyiv.members.InjectorMembersInjector method)</a>
 </li>
         <li><a href="pyiv/pyiv.members.html#pyiv.members.MembersInjector.__init__">(pyiv.members.MembersInjector method)</a>
@@ -273,6 +296,8 @@
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.ListMultibinder.__init__">(pyiv.multibinder.ListMultibinder method)</a>
 </li>
+        <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder.__init__">(pyiv.multibinder.MapMultibinder method)</a>
+</li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.Multibinder.__init__">(pyiv.multibinder.Multibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.SetMultibinder.__init__">(pyiv.multibinder.SetMultibinder method)</a>
@@ -280,6 +305,10 @@
         <li><a href="pyiv/pyiv.html#pyiv.Named.__init__">(pyiv.Named method)</a>
 </li>
         <li><a href="pyiv/pyiv.optional.html#pyiv.optional.OptionalProvider.__init__">(pyiv.optional.OptionalProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.override.html#pyiv.override.OverriddenConfig.__init__">(pyiv.override.OverriddenConfig method)</a>
+</li>
+        <li><a href="pyiv/pyiv.override.html#pyiv.override.OverrideBuilder.__init__">(pyiv.override.OverrideBuilder method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Provider.__init__">(pyiv.Provider method)</a>
 </li>
@@ -325,9 +354,13 @@
       <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.add">add() (pyiv.ListMultibinder method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.add">(pyiv.MapMultibinder method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Multibinder.add">(pyiv.Multibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.ListMultibinder.add">(pyiv.multibinder.ListMultibinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder.add">(pyiv.multibinder.MapMultibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.Multibinder.add">(pyiv.multibinder.Multibinder method)</a>
 </li>
@@ -347,9 +380,13 @@
       <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.add_instance">add_instance() (pyiv.ListMultibinder method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.add_instance">(pyiv.MapMultibinder method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Multibinder.add_instance">(pyiv.Multibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.ListMultibinder.add_instance">(pyiv.multibinder.ListMultibinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder.add_instance">(pyiv.multibinder.MapMultibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.Multibinder.add_instance">(pyiv.multibinder.Multibinder method)</a>
 </li>
@@ -662,10 +699,14 @@
 </li>
       <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder">ConfigBindingBuilder (class in pyiv.binder_impl)</a>
 </li>
+      <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder">ConfigKeyBindingBuilder (class in pyiv.binder_impl)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.configure">configure() (pyiv.Config method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.configure">(pyiv.config.Config method)</a>
+</li>
+        <li><a href="pyiv/pyiv.override.html#pyiv.override.OverriddenConfig.configure">(pyiv.override.OverriddenConfig method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Console">Console (class in pyiv)</a>
@@ -702,12 +743,20 @@
         <li><a href="pyiv/pyiv.html#pyiv.SimpleFactory.create">(pyiv.SimpleFactory method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Injector.create_child">create_child() (pyiv.Injector method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.create_child">(pyiv.injector.Injector method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.command.html#pyiv.command.CommandRunner.create_parser">create_parser() (pyiv.command.CommandRunner method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.CommandRunner.create_parser">(pyiv.CommandRunner method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.errors.html#pyiv.errors.CreationError">CreationError</a>, <a href="pyiv/pyiv.html#pyiv.CreationError">[1]</a>
+</li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.CursorMoveEvent">CursorMoveEvent (class in pyiv.console)</a>
 </li>
   </ul></td>
@@ -747,8 +796,6 @@
 </li>
         <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.XMLSerDe.deserialize">(pyiv.serde.encodings.XMLSerDe method)</a>
 </li>
-        <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.YAMLSerDe.deserialize">(pyiv.serde.encodings.YAMLSerDe method)</a>
-</li>
         <li><a href="pyiv/pyiv.serde.json.html#pyiv.serde.json.JSONSerDe.deserialize">(pyiv.serde.json.JSONSerDe method)</a>
 </li>
         <li><a href="pyiv/pyiv.serde.html#pyiv.serde.JSONSerDe.deserialize">(pyiv.serde.JSONSerDe method)</a>
@@ -761,15 +808,21 @@
 </li>
         <li><a href="pyiv/pyiv.serde.html#pyiv.serde.XMLSerDe.deserialize">(pyiv.serde.XMLSerDe method)</a>
 </li>
-        <li><a href="pyiv/pyiv.serde.html#pyiv.serde.YAMLSerDe.deserialize">(pyiv.serde.YAMLSerDe method)</a>
-</li>
         <li><a href="pyiv/pyiv.html#pyiv.XMLSerDe.deserialize">(pyiv.XMLSerDe method)</a>
 </li>
-        <li><a href="pyiv/pyiv.html#pyiv.YAMLSerDe.deserialize">(pyiv.YAMLSerDe method)</a>
+        <li><a href="pyiv_common/pyiv_common.serde.html#pyiv_common.serde.YAMLSerDe.deserialize">(pyiv_common.serde.YAMLSerDe method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.YAMLSerDe.deserialize">(pyiv_common.YAMLSerDe method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#id3">DEVELOPMENT (pyiv.Stage attribute)</a>, <a href="pyiv/pyiv.html#pyiv.Stage.DEVELOPMENT">[1]</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.stage.html#id0">(pyiv.stage.Stage attribute)</a>, <a href="pyiv/pyiv.stage.html#pyiv.stage.Stage.DEVELOPMENT">[1]</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.command.html#pyiv.command.CommandRunner.discover_commands">discover_commands() (pyiv.command.CommandRunner method)</a>
 
       <ul>
@@ -788,6 +841,12 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.Injector.eager_singletons">eager_singletons() (pyiv.Injector method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.eager_singletons">(pyiv.injector.Injector method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.EchoChangeEvent">EchoChangeEvent (class in pyiv.console)</a>
 </li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.EchoChangeEvent.enabled">enabled (pyiv.console.EchoChangeEvent attribute)</a>
@@ -832,6 +891,22 @@
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.exists">(pyiv.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.exists">(pyiv.RealFilesystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Binder.expose">expose() (pyiv.Binder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder.html#pyiv.binder.Binder.expose">(pyiv.binder.Binder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.expose">(pyiv.binder_impl.ConfigBinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Config.expose">(pyiv.Config method)</a>
+</li>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.expose">(pyiv.config.Config method)</a>
+</li>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.PrivateConfig.expose">(pyiv.config.PrivateConfig method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.PrivateConfig.expose">(pyiv.PrivateConfig method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1084,10 +1159,20 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.get_events">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.get_exposed">get_exposed() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.get_exposed">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.get_implementations">get_implementations() (pyiv.ListMultibinder method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.get_implementations">(pyiv.MapMultibinder method)</a>
+</li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.ListMultibinder.get_implementations">(pyiv.multibinder.ListMultibinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder.get_implementations">(pyiv.multibinder.MapMultibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.SetMultibinder.get_implementations">(pyiv.multibinder.SetMultibinder method)</a>
 </li>
@@ -1109,7 +1194,11 @@
       <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.get_instances">get_instances() (pyiv.ListMultibinder method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.get_instances">(pyiv.MapMultibinder method)</a>
+</li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.ListMultibinder.get_instances">(pyiv.multibinder.ListMultibinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder.get_instances">(pyiv.multibinder.MapMultibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.SetMultibinder.get_instances">(pyiv.multibinder.SetMultibinder method)</a>
 </li>
@@ -1122,14 +1211,20 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.get_key_binding">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.get_map_multibinding">get_map_multibinding() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.get_map_multibinding">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.get_multibinding">get_multibinding() (pyiv.Config method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.get_multibinding">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Command.get_name">get_name() (pyiv.Command class method)</a>
 
       <ul>
@@ -1425,8 +1520,6 @@
 </li>
         <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.XMLSerDe.handler_type">(pyiv.serde.encodings.XMLSerDe property)</a>
 </li>
-        <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.YAMLSerDe.handler_type">(pyiv.serde.encodings.YAMLSerDe property)</a>
-</li>
         <li><a href="pyiv/pyiv.serde.json.html#pyiv.serde.json.JSONSerDe.handler_type">(pyiv.serde.json.JSONSerDe property)</a>
 </li>
         <li><a href="pyiv/pyiv.serde.html#pyiv.serde.JSONSerDe.handler_type">(pyiv.serde.JSONSerDe property)</a>
@@ -1439,11 +1532,15 @@
 </li>
         <li><a href="pyiv/pyiv.serde.html#pyiv.serde.XMLSerDe.handler_type">(pyiv.serde.XMLSerDe property)</a>
 </li>
-        <li><a href="pyiv/pyiv.serde.html#pyiv.serde.YAMLSerDe.handler_type">(pyiv.serde.YAMLSerDe property)</a>
-</li>
         <li><a href="pyiv/pyiv.html#pyiv.XMLSerDe.handler_type">(pyiv.XMLSerDe property)</a>
 </li>
-        <li><a href="pyiv/pyiv.html#pyiv.YAMLSerDe.handler_type">(pyiv.YAMLSerDe property)</a>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsClient.handler_type">(pyiv_common.network.RequestsClient property)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsClient.handler_type">(pyiv_common.RequestsClient property)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.serde.html#pyiv_common.serde.YAMLSerDe.handler_type">(pyiv_common.serde.YAMLSerDe property)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.YAMLSerDe.handler_type">(pyiv_common.YAMLSerDe property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1531,6 +1628,8 @@
       <ul>
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.in_scope">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
 </li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.in_scope">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.in_scope">(pyiv.BindingBuilder method)</a>
 </li>
       </ul></li>
@@ -1608,6 +1707,10 @@
         <li><a href="pyiv/pyiv.binder.html#pyiv.binder.Binder.install">(pyiv.binder.Binder method)</a>
 </li>
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.install">(pyiv.binder_impl.ConfigBinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Config.install">(pyiv.Config method)</a>
+</li>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.install">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1746,6 +1849,18 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.map_multibinder">map_multibinder() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.map_multibinder">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder">MapMultibinder (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder">(class in pyiv.multibinder)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.MembersInjector">MembersInjector (class in pyiv)</a>
 
       <ul>
@@ -1762,6 +1877,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem">(class in pyiv.filesystem)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.merge_from">merge_from() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.merge_from">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.mkdir">mkdir() (pyiv.Filesystem method)</a>
@@ -1812,6 +1933,8 @@
 </li>
         <li><a href="pyiv/pyiv.datetime_service.html#module-pyiv.datetime_service">pyiv.datetime_service</a>
 </li>
+        <li><a href="pyiv/pyiv.errors.html#module-pyiv.errors">pyiv.errors</a>
+</li>
         <li><a href="pyiv/pyiv.factory.html#module-pyiv.factory">pyiv.factory</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#module-pyiv.filesystem">pyiv.filesystem</a>
@@ -1832,6 +1955,8 @@
 </li>
         <li><a href="pyiv/pyiv.optional.html#module-pyiv.optional">pyiv.optional</a>
 </li>
+        <li><a href="pyiv/pyiv.override.html#module-pyiv.override">pyiv.override</a>
+</li>
         <li><a href="pyiv/pyiv.provider.html#module-pyiv.provider">pyiv.provider</a>
 </li>
         <li><a href="pyiv/pyiv.reflection.html#module-pyiv.reflection">pyiv.reflection</a>
@@ -1847,6 +1972,14 @@
         <li><a href="pyiv/pyiv.serde.json.html#module-pyiv.serde.json">pyiv.serde.json</a>
 </li>
         <li><a href="pyiv/pyiv.singleton.html#module-pyiv.singleton">pyiv.singleton</a>
+</li>
+        <li><a href="pyiv/pyiv.stage.html#module-pyiv.stage">pyiv.stage</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#module-pyiv_common">pyiv_common</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.network.html#module-pyiv_common.network">pyiv_common.network</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.serde.html#module-pyiv_common.serde">pyiv_common.serde</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Clock.monotonic">monotonic() (pyiv.Clock method)</a>
@@ -1877,6 +2010,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.move">(pyiv.RealFilesystem method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.move_cursor">move_cursor() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -1899,8 +2034,6 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.move_cursor">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.move_cursor_down">move_cursor_down() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -2123,12 +2256,28 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.optional.html#pyiv.optional.OptionalProvider">OptionalProvider (class in pyiv.optional)</a>
 </li>
+      <li><a href="pyiv/pyiv.override.html#pyiv.override.OverriddenConfig">OverriddenConfig (class in pyiv.override)</a>
+</li>
+      <li><a href="pyiv/pyiv.html#pyiv.override">override() (in module pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.override.html#pyiv.override.override">(in module pyiv.override)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.override.html#pyiv.override.OverrideBuilder">OverrideBuilder (class in pyiv.override)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.Injector.parent">parent (pyiv.Injector property)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.parent">(pyiv.injector.Injector property)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.PickleSerDe">PickleSerDe (class in pyiv)</a>
 
       <ul>
@@ -2141,6 +2290,18 @@
 
       <ul>
         <li><a href="pyiv/pyiv.console.html#pyiv.console.RawModeChangeEvent.previous_state">(pyiv.console.RawModeChangeEvent attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.PrivateConfig">PrivateConfig (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.PrivateConfig">(class in pyiv.config)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#id4">PRODUCTION (pyiv.Stage attribute)</a>, <a href="pyiv/pyiv.html#pyiv.Stage.PRODUCTION">[1]</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.stage.html#id1">(pyiv.stage.Stage attribute)</a>, <a href="pyiv/pyiv.stage.html#pyiv.stage.Stage.PRODUCTION">[1]</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Provider">Provider (class in pyiv)</a>
@@ -2219,6 +2380,13 @@
 </li>
       </ul></li>
       <li>
+    pyiv.errors
+
+      <ul>
+        <li><a href="pyiv/pyiv.errors.html#module-pyiv.errors">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv.factory
 
       <ul>
@@ -2291,6 +2459,13 @@
 </li>
       </ul></li>
       <li>
+    pyiv.override
+
+      <ul>
+        <li><a href="pyiv/pyiv.override.html#module-pyiv.override">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv.provider
 
       <ul>
@@ -2344,6 +2519,34 @@
 
       <ul>
         <li><a href="pyiv/pyiv.singleton.html#module-pyiv.singleton">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.stage
+
+      <ul>
+        <li><a href="pyiv/pyiv.stage.html#module-pyiv.stage">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv_common
+
+      <ul>
+        <li><a href="pyiv_common/pyiv_common.html#module-pyiv_common">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv_common.network
+
+      <ul>
+        <li><a href="pyiv_common/pyiv_common.network.html#module-pyiv_common.network">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv_common.serde
+
+      <ul>
+        <li><a href="pyiv_common/pyiv_common.serde.html#module-pyiv_common.serde">module</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.PythonDateTimeService">PythonDateTimeService (class in pyiv)</a>
@@ -2504,8 +2707,6 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_chain_handler">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.register_chain_handler_by_name">register_chain_handler_by_name() (pyiv.Config method)</a>
 
       <ul>
@@ -2528,6 +2729,20 @@
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_key">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.register_map_multibinding">register_map_multibinding() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_map_multibinding">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.register_map_multibinding_instance">register_map_multibinding_instance() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_map_multibinding_instance">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.reflection.html#pyiv.reflection.ReflectionConfig.register_module">register_module() (pyiv.reflection.ReflectionConfig method)</a>
@@ -2572,6 +2787,34 @@
         <li><a href="pyiv/pyiv.network.html#pyiv.network.NetworkClient.request">(pyiv.network.NetworkClient method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.NetworkClient.request">(pyiv.NetworkClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsClient.request">(pyiv_common.network.RequestsClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsClient.request">(pyiv_common.RequestsClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsClient">RequestsClient (class in pyiv_common)</a>
+
+      <ul>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsClient">(class in pyiv_common.network)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Binder.require_explicit_bindings">require_explicit_bindings() (pyiv.Binder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder.html#pyiv.binder.Binder.require_explicit_bindings">(pyiv.binder.Binder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.require_explicit_bindings">(pyiv.binder_impl.ConfigBinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Config.require_explicit_bindings">(pyiv.Config method)</a>
+</li>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.require_explicit_bindings">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.requires_explicit_bindings">requires_explicit_bindings() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.requires_explicit_bindings">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.reset_color">reset_color() (pyiv.BaseConsole method)</a>
@@ -2739,8 +2982,6 @@
 </li>
         <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.XMLSerDe.serialize">(pyiv.serde.encodings.XMLSerDe method)</a>
 </li>
-        <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.YAMLSerDe.serialize">(pyiv.serde.encodings.YAMLSerDe method)</a>
-</li>
         <li><a href="pyiv/pyiv.serde.json.html#pyiv.serde.json.JSONSerDe.serialize">(pyiv.serde.json.JSONSerDe method)</a>
 </li>
         <li><a href="pyiv/pyiv.serde.html#pyiv.serde.JSONSerDe.serialize">(pyiv.serde.JSONSerDe method)</a>
@@ -2753,11 +2994,11 @@
 </li>
         <li><a href="pyiv/pyiv.serde.html#pyiv.serde.XMLSerDe.serialize">(pyiv.serde.XMLSerDe method)</a>
 </li>
-        <li><a href="pyiv/pyiv.serde.html#pyiv.serde.YAMLSerDe.serialize">(pyiv.serde.YAMLSerDe method)</a>
-</li>
         <li><a href="pyiv/pyiv.html#pyiv.XMLSerDe.serialize">(pyiv.XMLSerDe method)</a>
 </li>
-        <li><a href="pyiv/pyiv.html#pyiv.YAMLSerDe.serialize">(pyiv.YAMLSerDe method)</a>
+        <li><a href="pyiv_common/pyiv_common.serde.html#pyiv_common.serde.YAMLSerDe.serialize">(pyiv_common.serde.YAMLSerDe method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.YAMLSerDe.serialize">(pyiv_common.YAMLSerDe method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.ServiceCommand">ServiceCommand (class in pyiv)</a>
@@ -2902,6 +3143,12 @@
         <li><a href="pyiv/pyiv.html#id2">(pyiv.SingletonType attribute)</a>, <a href="pyiv/pyiv.html#pyiv.SingletonType.SINGLETON">[1]</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.singleton_bindings">singleton_bindings() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.singleton_bindings">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.SingletonScope">SingletonScope (class in pyiv)</a>
 
       <ul>
@@ -2932,6 +3179,18 @@
 
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.ChainType.SORTING">(pyiv.ChainType attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Stage">Stage (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.stage.html#pyiv.stage.Stage">(class in pyiv.stage)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Injector.stage">stage (pyiv.Injector property)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.stage">(pyiv.injector.Injector property)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Clock.start_timer">start_timer() (pyiv.Clock method)</a>
@@ -2998,20 +3257,22 @@
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.time">(pyiv.SyntheticClock method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Timer">Timer (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.Timer">(class in pyiv.clock)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.TerminalEvent.timestamp">timestamp (pyiv.console.TerminalEvent attribute)</a>
 </li>
       <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder.to">to() (pyiv.binder.BindingBuilder method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.to">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.to">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.to">(pyiv.BindingBuilder method)</a>
 </li>
@@ -3021,6 +3282,8 @@
       <ul>
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.to_instance">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
 </li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.to_instance">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.to_instance">(pyiv.BindingBuilder method)</a>
 </li>
       </ul></li>
@@ -3028,6 +3291,8 @@
 
       <ul>
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.to_provider">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.to_provider">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.to_provider">(pyiv.BindingBuilder method)</a>
 </li>
@@ -3038,6 +3303,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.MemoryConsole.truncate">(pyiv.MemoryConsole method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.errors.html#pyiv.errors.type_name">type_name() (in module pyiv.errors)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -3088,6 +3355,8 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.override.html#pyiv.override.OverrideBuilder.with_">with_() (pyiv.override.OverrideBuilder method)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.writable">writable() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -3204,12 +3473,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.CursorMoveEvent.y">y (pyiv.console.CursorMoveEvent attribute)</a>
 </li>
-      <li><a href="pyiv/pyiv.html#pyiv.YAMLSerDe">YAMLSerDe (class in pyiv)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv_common/pyiv_common.html#pyiv_common.YAMLSerDe">YAMLSerDe (class in pyiv_common)</a>
 
       <ul>
-        <li><a href="pyiv/pyiv.serde.html#pyiv.serde.YAMLSerDe">(class in pyiv.serde)</a>
-</li>
-        <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.YAMLSerDe">(class in pyiv.serde.encodings)</a>
+        <li><a href="pyiv_common/pyiv_common.serde.html#pyiv_common.serde.YAMLSerDe">(class in pyiv_common.serde)</a>
 </li>
       </ul></li>
   </ul></td>
