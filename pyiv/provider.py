@@ -81,7 +81,9 @@ Usage Examples:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, Protocol, Type, TypeVar
+from typing import Any, Callable, Generic, Protocol, Type, TypeVar, Union
+
+from pyiv.key import Key
 
 T = TypeVar("T", covariant=True)
 
@@ -169,46 +171,57 @@ class BaseProvider(ABC, Generic[T]):
 class InjectorProvider(Generic[T]):
     """Provider that uses an injector to create instances.
 
-    This provider wraps an injector and a type, delegating instance
-    creation to the injector. This is useful when you need a Provider
-    interface but want to use the injector's full dependency resolution.
+    This provider wraps an injector and a type or :class:`~pyiv.key.Key`,
+    delegating instance creation to the injector. Useful for lazy lookup
+    and for ``Annotated[Provider[T], Named(...)]`` constructor params
+    (field / members injection does not unwrap that Annotated form).
 
-    **Why this exists:** Provider that asks an Injector for T on each get() — lazy graph lookup.
+    **Why this exists:** Provider that asks an Injector for T (or a qualified
+    Key) on each get() — lazy graph lookup.
 
 
     Example:
         >>> from pyiv import Config, get_injector
+        >>> from pyiv.key import Key, Named
         >>> from pyiv.provider import InjectorProvider
         >>>
         >>> class Database:
-        ...     pass
+        ...     def __init__(self, name: str = "default"):
+        ...         self.name = name
+        >>>
+        >>> class PostgreSQL(Database):
+        ...     def __init__(self):
+        ...         super().__init__("postgresql")
         >>>
         >>> class MyConfig(Config):
         ...     def configure(self):
         ...         self.register(Database, Database)
+        ...         self.register_key(Key(Database, Named("primary")), PostgreSQL)
         >>>
         >>> injector = get_injector(MyConfig)
         >>> db_provider = InjectorProvider(Database, injector)
-        >>> db = db_provider.get()  # Uses injector.inject(Database)
-        >>> isinstance(db, Database)
+        >>> isinstance(db_provider.get(), Database)
         True
+        >>> named = InjectorProvider(Key(Database, Named("primary")), injector)
+        >>> named.get().name
+        'postgresql'
     """
 
-    def __init__(self, cls: Type[T], injector: Any):
-        """Initialize provider with a type and injector.
+    def __init__(self, cls_or_key: Union[Type[T], Key[T]], injector: Any):
+        """Initialize provider with a type or Key and injector.
 
         Args:
-            cls: The type to provide instances of
+            cls_or_key: The type or qualified Key to provide instances of
             injector: The injector to use for instance creation
         """
-        self._cls = cls
+        self._cls = cls_or_key
         self._injector = injector
 
     def get(self) -> T:
         """Get an instance using the injector.
 
         Returns:
-            An instance of type T created by the injector
+            An instance created by ``injector.inject`` of the type or Key
         """
         return self._injector.inject(self._cls)
 

@@ -1,11 +1,14 @@
 """Tests for qualified Key bindings, Named tag sets, and Matched resolution."""
 
+import sys
 from abc import ABC
 
 import pytest
 
 from pyiv import Config, CreationError, get_injector
 from pyiv.key import Key, Matched, Named
+
+_ANNOTATED_REQUIRES_39 = sys.version_info < (3, 9)
 
 
 class Database:
@@ -288,3 +291,143 @@ def test_named_scalar_name_and_repr_back_compat():
     assert named.name == "primary"
     assert named.tags == frozenset({"primary"})
     assert repr(named) == "Named('primary')"
+
+
+# --- Annotated constructor injection (typing.Annotated is 3.9+) ---
+
+
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
+def test_annotated_named_and_matched_constructor():
+    from typing import Annotated
+
+    class Host:
+        def __init__(
+            self,
+            exact: Annotated[Encoder, Named(["json", "pretty"])],
+            nearest: Annotated[Encoder, Matched(required=["json"], prefer=["pretty"])],
+        ):
+            self.exact = exact
+            self.nearest = nearest
+
+    class MyConfig(Config):
+        def configure(self):
+            self.register_key(Key(Encoder, Named("json")), JSONEncoder)
+            self.register_key(
+                Key(Encoder, Named(["json", "pretty"])),
+                PrettyJSONEncoder,
+            )
+
+    host = get_injector(MyConfig).inject(Host)
+    assert isinstance(host.exact, PrettyJSONEncoder)
+    assert isinstance(host.nearest, PrettyJSONEncoder)
+
+
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
+def test_annotated_optional_matched_missing_is_none():
+    from typing import Annotated, Optional
+
+    class Host:
+        def __init__(
+            self,
+            summarize: Annotated[
+                Optional[Encoder],
+                Matched(required=["reason", "summarize"]),
+            ] = None,
+        ):
+            self.summarize = summarize
+
+    class MyConfig(Config):
+        def configure(self):
+            self.register_key(Key(Encoder, Named("json")), JSONEncoder)
+
+    assert get_injector(MyConfig).inject(Host).summarize is None
+
+
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
+def test_annotated_optional_matched_ambiguous_raises():
+    from abc import abstractmethod
+    from typing import Annotated, Optional
+
+    class Codec(ABC):
+        @abstractmethod
+        def name(self) -> str:
+            raise NotImplementedError
+
+    class JsonCodec(Codec):
+        def name(self) -> str:
+            return "json"
+
+    class PrettyCodec(Codec):
+        def name(self) -> str:
+            return "pretty"
+
+    class Host:
+        def __init__(
+            self,
+            codec: Annotated[
+                Optional[Codec],
+                Matched(required=["json"]),
+            ] = None,
+        ):
+            self.codec = codec
+
+    class MyConfig(Config):
+        def configure(self):
+            self.register_key(Key(Codec, Named("json")), JsonCodec)
+            self.register_key(Key(Codec, Named(["json", "pretty"])), PrettyCodec)
+
+    with pytest.raises(CreationError, match="Ambiguous") as exc_info:
+        get_injector(MyConfig).inject(Host)
+    assert exc_info.value.ambiguous is True
+
+
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
+def test_annotated_provider_named_is_lazy():
+    from typing import Annotated
+
+    from pyiv.provider import Provider
+
+    created = []
+
+    class CountingEncoder(Encoder):
+        def __init__(self):
+            created.append(1)
+            super().__init__("counted")
+
+    class Host:
+        def __init__(
+            self,
+            encoder: Annotated[Provider[Encoder], Named(["json", "lazy"])],
+        ):
+            self.encoder = encoder
+
+    class MyConfig(Config):
+        def configure(self):
+            self.register_key(
+                Key(Encoder, Named(["json", "lazy"])),
+                CountingEncoder,
+            )
+
+    host = get_injector(MyConfig).inject(Host)
+    assert created == []
+    assert host.encoder.get().kind == "counted"
+    assert created == [1]
+
+
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
+def test_annotated_two_qualifiers_raises():
+    from typing import Annotated
+
+    class Host:
+        def __init__(
+            self,
+            enc: Annotated[Encoder, Named("json"), Matched(required=["json"])],
+        ):
+            self.enc = enc
+
+    class MyConfig(Config):
+        def configure(self):
+            self.register_key(Key(Encoder, Named("json")), JSONEncoder)
+
+    with pytest.raises(CreationError, match="at most one Named or Matched"):
+        get_injector(MyConfig).inject(Host)

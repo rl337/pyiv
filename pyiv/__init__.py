@@ -7,7 +7,8 @@ Key Features:
 
 - Type-based constructor injection from annotations
 - Scopes (per-injector and process-wide singletons, plus custom Scope)
-- Qualified keys with tag sets (``Named``), nearest match (``Matched``), and Binder
+- Qualified keys with tag sets (``Named``), nearest match (``Matched``),
+  ``Annotated`` constructor injection, and Binder
 - Module install, private modules, child injectors, and config override
 - Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
@@ -52,6 +53,9 @@ Quick Start:
     'pretty'
     >>> inj.inject(Encoder).kind
     'pretty'
+
+    Constructor ``Annotated[T, Named|Matched]`` (Python 3.9+) is documented in
+    the keys guide; use ``inject(Key(...))`` when you need an explicit lookup.
 """
 
 from pyiv.binder import Binder, BindingBuilder

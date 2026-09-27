@@ -2,7 +2,8 @@ Binding
 =======
 
 Register an abstract type once. The injector builds constructor arguments from
-annotations.
+annotations (including ``Annotated[T, Named(...)]`` /
+``Annotated[T, Matched(...)]`` — see :doc:`keys`).
 
 ``Config.register``
 -------------------
@@ -119,8 +120,10 @@ If you ``inject()`` a **concrete** class that was never registered, the
 injector still constructs it and fills its annotated parameters (unless
 ``require_explicit_bindings()`` is set). Interfaces and ABCs must be bound
 (or marked optional — see :doc:`keys`). For multiple implementations of one
-type, use :doc:`keys` (``Named`` tag sets / ``Matched``), not a second
-unqualified ``register``. Concrete constructor dependencies
+type, use :doc:`keys` (``Named`` tag sets / ``Matched``, including
+``Annotated`` on constructor parameters). Field injection via
+``inject_members`` does **not** honor Annotated qualifiers — use a
+constructor or ``inject(Key(...))``. Concrete constructor dependencies
 are also just-in-time constructed when explicit mode is off.
 
 See also :doc:`/pyiv/pyiv.config` and :doc:`/pyiv/pyiv.binder`.

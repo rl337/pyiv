@@ -12,6 +12,8 @@ Keys solve the "multiple implementations" problem:
 - **Tag sets**: ``Named`` accepts a string or list/tuple of tags (stored as a set)
 - **Strict vs nearest match**: inject with ``Named`` (exact tags) or ``Matched``
   (required + prefer scoring, with ``default=True`` tie-breaks)
+- **Constructor Annotated**: ``Annotated[T, Named(...)]`` /
+  ``Annotated[T, Matched(...)]`` (also with ``Optional`` / ``Provider``)
 - **Clear Intent**: Makes it explicit which implementation is being used
 
 **Real-World Use Cases:**
@@ -189,6 +191,10 @@ class Named:
 
     Register with ``Named`` only. For nearest-match inject, use :class:`Matched`.
 
+    **Constructor injection:** use ``Annotated[T, Named(...)]`` on ``__init__``
+    parameters (also with ``Optional[T]`` / ``Provider[T]``). This does **not**
+    apply to field / ``inject_members`` injection — see the keys guide.
+
     Example:
         >>> from pyiv.key import Named
         >>>
@@ -255,6 +261,10 @@ class Matched:
 
     Do **not** pass ``Matched`` to ``register_key`` / ``bind_key`` — registration
     uses ``Named`` only.
+
+    **Constructor injection:** ``Annotated[T, Matched(...)]`` on ``__init__``
+    (including ``Annotated[Optional[T], Matched(...)]``). Not supported on
+    field / ``inject_members`` paths.
 
     Resolution ladder (candidates = all Named bindings for the key type):
 
@@ -332,6 +342,10 @@ class Key(Generic[T]):
     implementations of one type can coexist. Use :class:`Named` when binding
     (and for strict inject). Use :class:`Matched` only when injecting for
     nearest-match resolution.
+
+    Prefer ``Annotated[T, Named|Matched]`` on constructors when the dependency
+    is a parameter; use ``inject(Key(...))`` for explicit lookups. Annotated
+    qualifiers are **not** applied during ``inject_members`` field injection.
 
     Example:
         >>> from pyiv.key import Key, Named

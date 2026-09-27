@@ -10,7 +10,9 @@ Optional dependencies solve the "graceful degradation" problem:
 
 - **Feature Flags**: Support optional features that may or may not be available
 - **Plugin Systems**: Optional plugins that enhance functionality if present
-  (ambiguous Named resolution still raises; it is not treated as missing)
+  (ambiguous Named / Matched resolution still raises; it is not treated as
+  missing). Constructor ``Annotated[Optional[T], Named|Matched]`` follows the
+  same rule — ``None`` only when there is no candidate.
 - **Environment-Specific Dependencies**: Different dependencies in dev vs production
 - **Backward Compatibility**: Add new optional dependencies without breaking existing code
 - **Type Safety**: Use Optional[T] instead of manual None checks
@@ -93,7 +95,8 @@ class OptionalProvider(Generic[T]):
     **Why this exists:** Optional dependencies (plugins, caches, monitors) should
     degrade to ``None`` instead of failing injection. Wrap a provider when you
     need ``Provider``-style lazy access with Optional semantics; constructor
-    ``Optional[T]`` params are handled by the injector automatically.
+    ``Optional[T]`` and ``Annotated[Optional[T], Named|Matched]`` params are
+    handled by the injector automatically (ambiguity still errors).
 
     Example:
         >>> from abc import ABC, abstractmethod

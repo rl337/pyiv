@@ -6,6 +6,21 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+### Added
+
+- Constructor injection via ``Annotated[T, Named(...)]`` /
+  ``Annotated[T, Matched(...)]``, including ``Optional[T]`` (``None`` only
+  when there is no candidate; ambiguity still errors) and
+  ``Annotated[Provider[T], Named|Matched]`` for lazy qualified lookup.
+- ``InjectorProvider`` accepts a ``Key`` as well as a bare type.
+
+### Notes
+
+- Annotated Named/Matched applies to **constructor** (and callable factory)
+  parameters only. ``inject_members`` / field injection still resolve bare
+  types; use ``inject(Key(...))`` for qualified field wiring.
+- ``Matched`` remains inject-only (not valid on ``register_key`` / ``bind_key``).
+
 ## 0.4.1 - 2026-09-27
 
 ### Added
