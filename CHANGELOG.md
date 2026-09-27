@@ -6,6 +6,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+## 0.4.1 - 2026-09-27
+
 ### Added
 
 - `Named` accepts a string or list/tuple of tags (normalized to a set);
