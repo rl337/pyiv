@@ -306,43 +306,12 @@ Named bindings (required ⊆ tags, max prefer overlap, then default)</p></li>
 <p>Ambiguous Named resolution raises <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> (including when
 resolving <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> constructor deps — ambiguity is not absence).</p>
 <p>Constructor parameters may use <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> with <code class="docutils literal notranslate"><span class="pre">Named</span></code> or
-<code class="docutils literal notranslate"><span class="pre">Matched</span></code> (and optionally <code class="docutils literal notranslate"><span class="pre">Provider[T]</span></code> / <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code>).
-Annotated qualifiers apply only when resolving constructor / factory
-parameters — not on <code class="docutils literal notranslate"><span class="pre">inject_members</span></code> fields, not as the argument to
-<code class="docutils literal notranslate"><span class="pre">inject()</span></code> itself, and <code class="docutils literal notranslate"><span class="pre">Matched</span></code> is never valid at registration.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Named</span><span class="p">,</span> <span class="n">Matched</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Completer</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">DeepCompleter</span><span class="p">(</span><span class="n">Completer</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"deep"</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Host</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<span class="gp">... </span>        <span class="bp">self</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="n">inference</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Completer</span><span class="p">,</span> <span class="n">Named</span><span class="p">([</span><span class="s2">"reason"</span><span class="p">,</span> <span class="s2">"code"</span><span class="p">,</span> <span class="s2">"deep"</span><span class="p">])],</span>
-<span class="gp">... </span>        <span class="n">summarize</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
-<span class="gp">... </span>            <span class="n">Optional</span><span class="p">[</span><span class="n">Completer</span><span class="p">],</span>
-<span class="gp">... </span>            <span class="n">Matched</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="p">[</span><span class="s2">"reason"</span><span class="p">,</span> <span class="s2">"summarize"</span><span class="p">]),</span>
-<span class="gp">... </span>        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="p">):</span>
-<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">inference</span> <span class="o">=</span> <span class="n">inference</span>
-<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">summarize</span> <span class="o">=</span> <span class="n">summarize</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register_key</span><span class="p">(</span>
-<span class="gp">... </span>            <span class="n">Key</span><span class="p">(</span><span class="n">Completer</span><span class="p">,</span> <span class="n">Named</span><span class="p">([</span><span class="s2">"reason"</span><span class="p">,</span> <span class="s2">"code"</span><span class="p">,</span> <span class="s2">"deep"</span><span class="p">])),</span>
-<span class="gp">... </span>            <span class="n">DeepCompleter</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Host</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">inference</span><span class="o">.</span><span class="n">kind</span>
-<span class="go">'deep'</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">summarize</span> <span class="ow">is</span> <span class="kc">None</span>
-<span class="go">True</span>
-</pre></div>
-</div>
+<code class="docutils literal notranslate"><span class="pre">Matched</span></code> (and optionally <code class="docutils literal notranslate"><span class="pre">Provider[T]</span></code> / <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code>) on
+Python 3.9+ (or with <code class="docutils literal notranslate"><span class="pre">typing_extensions.Annotated</span></code> on 3.8). Annotated
+qualifiers apply only when resolving constructor / factory parameters —
+not on <code class="docutils literal notranslate"><span class="pre">inject_members</span></code> fields, not as the argument to <code class="docutils literal notranslate"><span class="pre">inject()</span></code>
+itself, and <code class="docutils literal notranslate"><span class="pre">Matched</span></code> is never valid at registration. See the keys
+guide for full examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

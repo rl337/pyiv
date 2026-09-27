@@ -306,9 +306,9 @@ individual deps, or use map multibinder keys separately.</p></li>
 <li><p><strong>Custom ``Qualifier`` types</strong> — only <code class="docutils literal notranslate"><span class="pre">Named</span></code> and <code class="docutils literal notranslate"><span class="pre">Matched</span></code> are read
 from Annotated metadata. Other qualifier objects still work only via
 exact <code class="docutils literal notranslate"><span class="pre">Key(T,</span> <span class="pre">qualifier)</span></code> lookup.</p></li>
-<li><p><strong>Python 3.8 without ``typing.Annotated``</strong> — use
-<code class="docutils literal notranslate"><span class="pre">typing_extensions.Annotated</span></code> in <em>your</em> code if needed; pyiv does not
-depend on <code class="docutils literal notranslate"><span class="pre">typing_extensions</span></code>. On 3.9+, <code class="docutils literal notranslate"><span class="pre">typing.Annotated</span></code> is enough.</p></li>
+<li><p><strong>Python 3.8</strong>: <code class="docutils literal notranslate"><span class="pre">typing.Annotated</span></code> is 3.9+. On 3.8 use
+<code class="docutils literal notranslate"><span class="pre">typing_extensions.Annotated</span></code> in application code (pyiv does not depend
+on <code class="docutils literal notranslate"><span class="pre">typing_extensions</span></code>). Detection of either Annotated origin is supported.</p></li>
 </ul>
 </section>
 <section id="when-to-use-multibinder-instead">

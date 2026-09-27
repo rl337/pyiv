@@ -187,6 +187,8 @@
 <span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_typing</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
@@ -214,13 +216,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.singleton</span><span class="w"> </span><span class="kn">import</span> <span class="n">GlobalSingletonRegistry</span><span class="p">,</span> <span class="n">SingletonType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.stage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stage</span>
 
+<span class="c1"># Annotated landed in typing in 3.9; detect at runtime without mypy-attr on typing.Annotated</span>
 <span class="n">_ANNOTATED_ORIGINS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span> <span class="k">as</span> <span class="n">_TypingAnnotated</span>
-
+<span class="n">_TypingAnnotated</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_typing</span><span class="p">,</span> <span class="s2">"Annotated"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">_TypingAnnotated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">_ANNOTATED_ORIGINS</span> <span class="o">=</span> <span class="p">(</span><span class="n">_TypingAnnotated</span><span class="p">,)</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover - Python &lt; 3.9</span>
-    <span class="n">_TypingAnnotated</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[misc, assignment]</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span> <span class="k">as</span> <span class="n">_ExtAnnotated</span>
 
@@ -396,42 +396,12 @@
 <span class="sd">        resolving ``Optional[T]`` constructor deps — ambiguity is not absence).</span>
 
 <span class="sd">        Constructor parameters may use ``Annotated`` with ``Named`` or</span>
-<span class="sd">        ``Matched`` (and optionally ``Provider[T]`` / ``Optional[T]``).</span>
-<span class="sd">        Annotated qualifiers apply only when resolving constructor / factory</span>
-<span class="sd">        parameters — not on ``inject_members`` fields, not as the argument to</span>
-<span class="sd">        ``inject()`` itself, and ``Matched`` is never valid at registration.</span>
-
-<span class="sd">            &gt;&gt;&gt; from typing import Annotated, Optional</span>
-<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
-<span class="sd">            &gt;&gt;&gt; from pyiv.key import Key, Named, Matched</span>
-<span class="sd">            &gt;&gt;&gt; class Completer:</span>
-<span class="sd">            ...     def __init__(self, kind: str = ""):</span>
-<span class="sd">            ...         self.kind = kind</span>
-<span class="sd">            &gt;&gt;&gt; class DeepCompleter(Completer):</span>
-<span class="sd">            ...     def __init__(self):</span>
-<span class="sd">            ...         super().__init__("deep")</span>
-<span class="sd">            &gt;&gt;&gt; class Host:</span>
-<span class="sd">            ...     def __init__(</span>
-<span class="sd">            ...         self,</span>
-<span class="sd">            ...         inference: Annotated[Completer, Named(["reason", "code", "deep"])],</span>
-<span class="sd">            ...         summarize: Annotated[</span>
-<span class="sd">            ...             Optional[Completer],</span>
-<span class="sd">            ...             Matched(required=["reason", "summarize"]),</span>
-<span class="sd">            ...         ] = None,</span>
-<span class="sd">            ...     ):</span>
-<span class="sd">            ...         self.inference = inference</span>
-<span class="sd">            ...         self.summarize = summarize</span>
-<span class="sd">            &gt;&gt;&gt; class C(Config):</span>
-<span class="sd">            ...     def configure(self):</span>
-<span class="sd">            ...         self.register_key(</span>
-<span class="sd">            ...             Key(Completer, Named(["reason", "code", "deep"])),</span>
-<span class="sd">            ...             DeepCompleter,</span>
-<span class="sd">            ...         )</span>
-<span class="sd">            &gt;&gt;&gt; h = get_injector(C).inject(Host)</span>
-<span class="sd">            &gt;&gt;&gt; h.inference.kind</span>
-<span class="sd">            'deep'</span>
-<span class="sd">            &gt;&gt;&gt; h.summarize is None</span>
-<span class="sd">            True</span>
+<span class="sd">        ``Matched`` (and optionally ``Provider[T]`` / ``Optional[T]``) on</span>
+<span class="sd">        Python 3.9+ (or with ``typing_extensions.Annotated`` on 3.8). Annotated</span>
+<span class="sd">        qualifiers apply only when resolving constructor / factory parameters —</span>
+<span class="sd">        not on ``inject_members`` fields, not as the argument to ``inject()``</span>
+<span class="sd">        itself, and ``Matched`` is never valid at registration. See the keys</span>
+<span class="sd">        guide for full examples.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cls_or_key: The class to instantiate or a :class:`~pyiv.key.Key`</span>
@@ -729,8 +699,9 @@
             <span class="n">bound_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_dependencies</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">concrete</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">concrete</span><span class="p">(</span><span class="o">**</span><span class="n">bound_kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">concrete</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
-            <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">concrete</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>  <span class="c1"># type: ignore[misc]</span>
-            <span class="n">bound_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_dependencies</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">concrete</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+            <span class="n">init_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">concrete</span><span class="p">,</span> <span class="s2">"__init__"</span><span class="p">)</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">init_fn</span><span class="p">)</span>
+            <span class="n">bound_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_dependencies</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">init_fn</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">concrete</span><span class="p">(</span><span class="o">**</span><span class="n">bound_kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot instantiate </span><span class="si">{</span><span class="n">concrete</span><span class="si">}</span><span class="s2">, must be a class or callable"</span><span class="p">)</span>
@@ -887,8 +858,12 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_type_hints_for</span><span class="p">(</span><span class="n">owner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Resolve annotations, preserving Annotated metadata when possible."""</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># include_extras keeps Annotated metadata; available on 3.9+</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">"include_extras"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">include_extras</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">owner</span><span class="p">)</span>

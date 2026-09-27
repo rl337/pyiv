@@ -175,9 +175,9 @@ These are intentional limits (use ``inject(Key(...))`` or redesign instead):
 - **Custom ``Qualifier`` types** — only ``Named`` and ``Matched`` are read
   from Annotated metadata. Other qualifier objects still work only via
   exact ``Key(T, qualifier)`` lookup.
-- **Python 3.8 without ``typing.Annotated``** — use
-  ``typing_extensions.Annotated`` in *your* code if needed; pyiv does not
-  depend on ``typing_extensions``. On 3.9+, ``typing.Annotated`` is enough.
+- **Python 3.8**: ``typing.Annotated`` is 3.9+. On 3.8 use
+  ``typing_extensions.Annotated`` in application code (pyiv does not depend
+  on ``typing_extensions``). Detection of either Annotated origin is supported.
 
 When to use multibinder instead
 -------------------------------
