@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.optional &mdash; pyiv 0.4.0 documentation</title>
+  <title>pyiv.optional &mdash; pyiv 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=75b4fac4" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/documentation_options.js?v=c87aa342"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -150,7 +150,9 @@
 
 <span class="sd">- **Feature Flags**: Support optional features that may or may not be available</span>
 <span class="sd">- **Plugin Systems**: Optional plugins that enhance functionality if present</span>
-<span class="sd">  (ambiguous Named resolution still raises; it is not treated as missing)</span>
+<span class="sd">  (ambiguous Named / Matched resolution still raises; it is not treated as</span>
+<span class="sd">  missing). Constructor ``Annotated[Optional[T], Named|Matched]`` follows the</span>
+<span class="sd">  same rule — ``None`` only when there is no candidate.</span>
 <span class="sd">- **Environment-Specific Dependencies**: Different dependencies in dev vs production</span>
 <span class="sd">- **Backward Compatibility**: Add new optional dependencies without breaking existing code</span>
 <span class="sd">- **Type Safety**: Use Optional[T] instead of manual None checks</span>
@@ -235,7 +237,8 @@
 <span class="sd">    **Why this exists:** Optional dependencies (plugins, caches, monitors) should</span>
 <span class="sd">    degrade to ``None`` instead of failing injection. Wrap a provider when you</span>
 <span class="sd">    need ``Provider``-style lazy access with Optional semantics; constructor</span>
-<span class="sd">    ``Optional[T]`` params are handled by the injector automatically.</span>
+<span class="sd">    ``Optional[T]`` and ``Annotated[Optional[T], Named|Matched]`` params are</span>
+<span class="sd">    handled by the injector automatically (ambiguity still errors).</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from abc import ABC, abstractmethod</span>

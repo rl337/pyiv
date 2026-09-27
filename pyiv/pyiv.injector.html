@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.injector &mdash; pyiv 0.4.0 documentation</title>
+  <title>pyiv.injector &mdash; pyiv 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../_static/documentation_options.js?v=c87aa342"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -159,6 +159,7 @@ and managing singleton lifecycles based on configuration.</p>
 resolve dependencies. It supports:</p>
 <ul class="simple">
 <li><p>Constructor injection via type annotations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named(...)]</span></code> / <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Matched(...)]</span></code> qualified deps</p></li>
 <li><p>Singleton lifecycle management</p></li>
 <li><p>Qualified keys: strict <code class="docutils literal notranslate"><span class="pre">Named</span></code> tag sets and inject-only <code class="docutils literal notranslate"><span class="pre">Matched</span></code></p></li>
 <li><p>Bare <code class="docutils literal notranslate"><span class="pre">inject(Type)</span></code> fallback to <code class="docutils literal notranslate"><span class="pre">Named(...,</span> <span class="pre">default=True)</span></code> / sole Named</p></li>
@@ -304,6 +305,13 @@ Named bindings (required ⊆ tags, max prefer overlap, then default)</p></li>
 </ul>
 <p>Ambiguous Named resolution raises <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> (including when
 resolving <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> constructor deps — ambiguity is not absence).</p>
+<p>Constructor parameters may use <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> with <code class="docutils literal notranslate"><span class="pre">Named</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Matched</span></code> (and optionally <code class="docutils literal notranslate"><span class="pre">Provider[T]</span></code> / <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code>) on
+Python 3.9+ (or with <code class="docutils literal notranslate"><span class="pre">typing_extensions.Annotated</span></code> on 3.8). Annotated
+qualifiers apply only when resolving constructor / factory parameters —
+not on <code class="docutils literal notranslate"><span class="pre">inject_members</span></code> fields, not as the argument to <code class="docutils literal notranslate"><span class="pre">inject()</span></code>
+itself, and <code class="docutils literal notranslate"><span class="pre">Matched</span></code> is never valid at registration. See the keys
+guide for full examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -370,6 +378,9 @@ resolving <code class="docutils literal notranslate"><span class="pre">Optional[
 <dt class="sig sig-object py" id="pyiv.injector.Injector.inject_members">
 <span class="sig-name descname"><span class="pre">inject_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/injector.html#Injector.inject_members"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.injector.Injector.inject_members" title="Link to this definition"></a></dt>
 <dd><p>Inject dependencies into an existing instance.</p>
+<p>Resolves <strong>bare</strong> field type annotations only. <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named]</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">Matched</span></code> on fields is ignored — use constructor Annotated params
+or assign <code class="docutils literal notranslate"><span class="pre">self.inject(Key(...))</span></code> manually.</p>
 </dd></dl>
 
 <dl class="py property">

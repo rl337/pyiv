@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.key &mdash; pyiv 0.4.0 documentation</title>
+  <title>pyiv.key &mdash; pyiv 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=75b4fac4" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/documentation_options.js?v=c87aa342"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -152,6 +152,8 @@
 <span class="sd">- **Tag sets**: ``Named`` accepts a string or list/tuple of tags (stored as a set)</span>
 <span class="sd">- **Strict vs nearest match**: inject with ``Named`` (exact tags) or ``Matched``</span>
 <span class="sd">  (required + prefer scoring, with ``default=True`` tie-breaks)</span>
+<span class="sd">- **Constructor Annotated**: ``Annotated[T, Named(...)]`` /</span>
+<span class="sd">  ``Annotated[T, Matched(...)]`` (also with ``Optional`` / ``Provider``)</span>
 <span class="sd">- **Clear Intent**: Makes it explicit which implementation is being used</span>
 
 <span class="sd">**Real-World Use Cases:**</span>
@@ -337,6 +339,10 @@
 
 <span class="sd">    Register with ``Named`` only. For nearest-match inject, use :class:`Matched`.</span>
 
+<span class="sd">    **Constructor injection:** use ``Annotated[T, Named(...)]`` on ``__init__``</span>
+<span class="sd">    parameters (also with ``Optional[T]`` / ``Provider[T]``). This does **not**</span>
+<span class="sd">    apply to field / ``inject_members`` injection — see the keys guide.</span>
+
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv.key import Named</span>
 <span class="sd">        &gt;&gt;&gt;</span>
@@ -409,6 +415,10 @@
 
 <span class="sd">    Do **not** pass ``Matched`` to ``register_key`` / ``bind_key`` — registration</span>
 <span class="sd">    uses ``Named`` only.</span>
+
+<span class="sd">    **Constructor injection:** ``Annotated[T, Matched(...)]`` on ``__init__``</span>
+<span class="sd">    (including ``Annotated[Optional[T], Matched(...)]``). Not supported on</span>
+<span class="sd">    field / ``inject_members`` paths.</span>
 
 <span class="sd">    Resolution ladder (candidates = all Named bindings for the key type):</span>
 
@@ -492,6 +502,10 @@
 <span class="sd">    implementations of one type can coexist. Use :class:`Named` when binding</span>
 <span class="sd">    (and for strict inject). Use :class:`Matched` only when injecting for</span>
 <span class="sd">    nearest-match resolution.</span>
+
+<span class="sd">    Prefer ``Annotated[T, Named|Matched]`` on constructors when the dependency</span>
+<span class="sd">    is a parameter; use ``inject(Key(...))`` for explicit lookups. Annotated</span>
+<span class="sd">    qualifiers are **not** applied during ``inject_members`` field injection.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv.key import Key, Named</span>

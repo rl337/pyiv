@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv &mdash; pyiv 0.4.0 documentation</title>
+  <title>pyiv &mdash; pyiv 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../_static/documentation_options.js?v=c87aa342"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -149,7 +149,8 @@ built-in test doubles. Runtime has zero third-party dependencies. Python 3.8+.</
 <ul class="simple">
 <li><p>Type-based constructor injection from annotations</p></li>
 <li><p>Scopes (per-injector and process-wide singletons, plus custom Scope)</p></li>
-<li><p>Qualified keys with tag sets (<code class="docutils literal notranslate"><span class="pre">Named</span></code>), nearest match (<code class="docutils literal notranslate"><span class="pre">Matched</span></code>), and Binder</p></li>
+<li><p>Qualified keys with tag sets (<code class="docutils literal notranslate"><span class="pre">Named</span></code>), nearest match (<code class="docutils literal notranslate"><span class="pre">Matched</span></code>),
+<code class="docutils literal notranslate"><span class="pre">Annotated</span></code> constructor injection, and Binder</p></li>
 <li><p>Module install, private modules, child injectors, and config override</p></li>
 <li><p>Map/Set/List multibinders; Stage.PRODUCTION eager singletons</p></li>
 <li><p>Reflection to discover implementations in a package</p></li>
@@ -196,6 +197,8 @@ built-in test doubles. Runtime has zero third-party dependencies. Python 3.8+.</
 <span class="go">'pretty'</span>
 </pre></div>
 </div>
+<p>Constructor <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named|Matched]</span></code> (Python 3.9+) is documented in
+the keys guide; use <code class="docutils literal notranslate"><span class="pre">inject(Key(...))</span></code> when you need an explicit lookup.</p>
 </div></blockquote>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.Base64SerDe">
@@ -3168,6 +3171,13 @@ Named bindings (required ⊆ tags, max prefer overlap, then default)</p></li>
 </ul>
 <p>Ambiguous Named resolution raises <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> (including when
 resolving <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> constructor deps — ambiguity is not absence).</p>
+<p>Constructor parameters may use <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> with <code class="docutils literal notranslate"><span class="pre">Named</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Matched</span></code> (and optionally <code class="docutils literal notranslate"><span class="pre">Provider[T]</span></code> / <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code>) on
+Python 3.9+ (or with <code class="docutils literal notranslate"><span class="pre">typing_extensions.Annotated</span></code> on 3.8). Annotated
+qualifiers apply only when resolving constructor / factory parameters —
+not on <code class="docutils literal notranslate"><span class="pre">inject_members</span></code> fields, not as the argument to <code class="docutils literal notranslate"><span class="pre">inject()</span></code>
+itself, and <code class="docutils literal notranslate"><span class="pre">Matched</span></code> is never valid at registration. See the keys
+guide for full examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3234,6 +3244,9 @@ resolving <code class="docutils literal notranslate"><span class="pre">Optional[
 <dt class="sig sig-object py" id="pyiv.Injector.inject_members">
 <span class="sig-name descname"><span class="pre">inject_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/injector.html#Injector.inject_members"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Injector.inject_members" title="Link to this definition"></a></dt>
 <dd><p>Inject dependencies into an existing instance.</p>
+<p>Resolves <strong>bare</strong> field type annotations only. <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named]</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">Matched</span></code> on fields is ignored — use constructor Annotated params
+or assign <code class="docutils literal notranslate"><span class="pre">self.inject(Key(...))</span></code> manually.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -3260,6 +3273,9 @@ the injector. Use this (or <code class="docutils literal notranslate"><span clas
 injection is impractical—dataclasses, third-party types, or migration.</p>
 <p>Supports field injection (dataclasses, attrs, regular classes) and method
 injection for annotated methods.</p>
+<p><strong>Does not honor</strong> <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named(...)]</span></code> / <code class="docutils literal notranslate"><span class="pre">Matched(...)</span></code> on
+fields. Those work on constructor parameters only; for qualified fields
+call <code class="docutils literal notranslate"><span class="pre">injector.inject(Key(...))</span></code> and assign the result.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.members</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectorMembersInjector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
@@ -3321,39 +3337,50 @@ injection for annotated methods.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.InjectorProvider">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">InjectorProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.InjectorProvider" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">InjectorProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_or_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.InjectorProvider" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>Provider that uses an injector to create instances.</p>
-<p>This provider wraps an injector and a type, delegating instance
-creation to the injector. This is useful when you need a Provider
-interface but want to use the injector’s full dependency resolution.</p>
-<p><strong>Why this exists:</strong> Provider that asks an Injector for T on each get() — lazy graph lookup.</p>
+<p>This provider wraps an injector and a type or <a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><code class="xref py py-class docutils literal notranslate"><span class="pre">Key</span></code></a>,
+delegating instance creation to the injector. Useful for lazy lookup
+and for <code class="docutils literal notranslate"><span class="pre">Annotated[Provider[T],</span> <span class="pre">Named(...)]</span></code> constructor params
+(field / members injection does not unwrap that Annotated form).</p>
+<p><strong>Why this exists:</strong> Provider that asks an Injector for T (or a qualified
+Key) on each get() — lazy graph lookup.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Named</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectorProvider</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"postgresql"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">Database</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register_key</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"primary"</span><span class="p">)),</span> <span class="n">PostgreSQL</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">db_provider</span> <span class="o">=</span> <span class="n">InjectorProvider</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">injector</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">db_provider</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>  <span class="c1"># Uses injector.inject(Database)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">Database</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">db_provider</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">Database</span><span class="p">)</span>
 <span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">named</span> <span class="o">=</span> <span class="n">InjectorProvider</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"primary"</span><span class="p">)),</span> <span class="n">injector</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">named</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+<span class="go">'postgresql'</span>
 </pre></div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.InjectorProvider.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.InjectorProvider.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialize provider with a type and injector.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_or_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.InjectorProvider.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize provider with a type or Key and injector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cls</strong> – The type to provide instances of</p></li>
+<li><p><strong>cls_or_key</strong> – The type or qualified Key to provide instances of</p></li>
 <li><p><strong>injector</strong> – The injector to use for instance creation</p></li>
 </ul>
 </dd>
@@ -3366,7 +3393,7 @@ interface but want to use the injector’s full dependency resolution.</p>
 <dd><p>Get an instance using the injector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An instance of type T created by the injector</p>
+<dd class="field-odd"><p>An instance created by <code class="docutils literal notranslate"><span class="pre">injector.inject</span></code> of the type or Key</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3493,6 +3520,9 @@ this over pickle whenever the data is text-safe and interoperable.</p>
 implementations of one type can coexist. Use <a class="reference internal" href="#pyiv.Named" title="pyiv.Named"><code class="xref py py-class docutils literal notranslate"><span class="pre">Named</span></code></a> when binding
 (and for strict inject). Use <a class="reference internal" href="#pyiv.Matched" title="pyiv.Matched"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matched</span></code></a> only when injecting for
 nearest-match resolution.</p>
+<p>Prefer <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named|Matched]</span></code> on constructors when the dependency
+is a parameter; use <code class="docutils literal notranslate"><span class="pre">inject(Key(...))</span></code> for explicit lookups. Annotated
+qualifiers are <strong>not</strong> applied during <code class="docutils literal notranslate"><span class="pre">inject_members</span></code> field injection.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Named</span>
 <span class="gp">&gt;&gt;&gt;</span>
@@ -3676,6 +3706,9 @@ share tags. <code class="docutils literal notranslate"><span class="pre">Matched
 <code class="docutils literal notranslate"><span class="pre">prefer</span></code> overlap wins; <code class="docutils literal notranslate"><span class="pre">Named(...,</span> <span class="pre">default=True)</span></code> breaks remaining ties.</p>
 <p>Do <strong>not</strong> pass <code class="docutils literal notranslate"><span class="pre">Matched</span></code> to <code class="docutils literal notranslate"><span class="pre">register_key</span></code> / <code class="docutils literal notranslate"><span class="pre">bind_key</span></code> — registration
 uses <code class="docutils literal notranslate"><span class="pre">Named</span></code> only.</p>
+<p><strong>Constructor injection:</strong> <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Matched(...)]</span></code> on <code class="docutils literal notranslate"><span class="pre">__init__</span></code>
+(including <code class="docutils literal notranslate"><span class="pre">Annotated[Optional[T],</span> <span class="pre">Matched(...)]</span></code>). Not supported on
+field / <code class="docutils literal notranslate"><span class="pre">inject_members</span></code> paths.</p>
 <p>Resolution ladder (candidates = all Named bindings for the key type):</p>
 <ol class="arabic simple">
 <li><p>Keep bindings where <code class="docutils literal notranslate"><span class="pre">required</span> <span class="pre">⊆</span> <span class="pre">binding.tags</span></code></p></li>
@@ -4688,6 +4721,9 @@ for compound keys. <code class="docutils literal notranslate"><span class="pre">
 <code class="docutils literal notranslate"><span class="pre">Named(&quot;json&quot;)</span> <span class="pre">==</span> <span class="pre">Named([&quot;json&quot;])</span></code>. Equality and hashing use the tag set
 only — <code class="docutils literal notranslate"><span class="pre">default</span></code> is binding metadata, not part of key identity.</p>
 <p>Register with <code class="docutils literal notranslate"><span class="pre">Named</span></code> only. For nearest-match inject, use <a class="reference internal" href="#pyiv.Matched" title="pyiv.Matched"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matched</span></code></a>.</p>
+<p><strong>Constructor injection:</strong> use <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named(...)]</span></code> on <code class="docutils literal notranslate"><span class="pre">__init__</span></code>
+parameters (also with <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> / <code class="docutils literal notranslate"><span class="pre">Provider[T]</span></code>). This does <strong>not</strong>
+apply to field / <code class="docutils literal notranslate"><span class="pre">inject_members</span></code> injection — see the keys guide.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Named</span>
 <span class="gp">&gt;&gt;&gt;</span>

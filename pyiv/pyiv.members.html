@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.members &mdash; pyiv 0.4.0 documentation</title>
+  <title>pyiv.members &mdash; pyiv 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../_static/documentation_options.js?v=c87aa342"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -156,6 +156,10 @@ is not possible.</p>
 <li><p><strong>Data Classes</strong>: Field injection for dataclasses and attrs classes</p></li>
 <li><p><strong>Flexibility</strong>: Use field injection when constructor injection is impractical</p></li>
 </ul>
+<p><strong>Limitation — qualified keys:</strong> Field injection resolves <strong>bare types</strong> only.
+<code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named(...)]</span></code> / <code class="docutils literal notranslate"><span class="pre">Matched(...)</span></code> on a field or dataclass
+annotation is <strong>not</strong> honored. For tagged bindings use constructor
+<code class="docutils literal notranslate"><span class="pre">Annotated</span></code> params, or assign <code class="docutils literal notranslate"><span class="pre">injector.inject(Key(...))</span></code> yourself.</p>
 <p><strong>Real-World Use Cases:</strong></p>
 <ul class="simple">
 <li><p><strong>Django Models</strong>: Inject services into Django model instances</p></li>
@@ -246,6 +250,9 @@ the injector. Use this (or <code class="docutils literal notranslate"><span clas
 injection is impractical—dataclasses, third-party types, or migration.</p>
 <p>Supports field injection (dataclasses, attrs, regular classes) and method
 injection for annotated methods.</p>
+<p><strong>Does not honor</strong> <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named(...)]</span></code> / <code class="docutils literal notranslate"><span class="pre">Matched(...)</span></code> on
+fields. Those work on constructor parameters only; for qualified fields
+call <code class="docutils literal notranslate"><span class="pre">injector.inject(Key(...))</span></code> and assign the result.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.members</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectorMembersInjector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>

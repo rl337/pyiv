@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.provider &mdash; pyiv 0.4.0 documentation</title>
+  <title>pyiv.provider &mdash; pyiv 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../_static/documentation_options.js?v=c87aa342"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -238,7 +238,7 @@ lazy initialization, injector access, and deferred creation.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.provider.FactoryProvider" title="pyiv.provider.FactoryProvider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FactoryProvider</span></code></a>(factory)</p></td>
 <td><p>Provider that wraps a factory function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.provider.InjectorProvider" title="pyiv.provider.InjectorProvider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InjectorProvider</span></code></a>(cls, injector)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.provider.InjectorProvider" title="pyiv.provider.InjectorProvider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InjectorProvider</span></code></a>(cls_or_key, injector)</p></td>
 <td><p>Provider that uses an injector to create instances.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyiv.provider.InstanceProvider" title="pyiv.provider.InstanceProvider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InstanceProvider</span></code></a>(instance)</p></td>
@@ -341,39 +341,50 @@ Useful for creating new instances on demand.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.provider.InjectorProvider">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.provider.</span></span><span class="sig-name descname"><span class="pre">InjectorProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.provider.InjectorProvider" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.provider.</span></span><span class="sig-name descname"><span class="pre">InjectorProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_or_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.provider.InjectorProvider" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>Provider that uses an injector to create instances.</p>
-<p>This provider wraps an injector and a type, delegating instance
-creation to the injector. This is useful when you need a Provider
-interface but want to use the injector’s full dependency resolution.</p>
-<p><strong>Why this exists:</strong> Provider that asks an Injector for T on each get() — lazy graph lookup.</p>
+<p>This provider wraps an injector and a type or <a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><code class="xref py py-class docutils literal notranslate"><span class="pre">Key</span></code></a>,
+delegating instance creation to the injector. Useful for lazy lookup
+and for <code class="docutils literal notranslate"><span class="pre">Annotated[Provider[T],</span> <span class="pre">Named(...)]</span></code> constructor params
+(field / members injection does not unwrap that Annotated form).</p>
+<p><strong>Why this exists:</strong> Provider that asks an Injector for T (or a qualified
+Key) on each get() — lazy graph lookup.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Named</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectorProvider</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default"</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PostgreSQL</span><span class="p">(</span><span class="n">Database</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"postgresql"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">Database</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register_key</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"primary"</span><span class="p">)),</span> <span class="n">PostgreSQL</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">db_provider</span> <span class="o">=</span> <span class="n">InjectorProvider</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">injector</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">db_provider</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>  <span class="c1"># Uses injector.inject(Database)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">Database</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">db_provider</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">Database</span><span class="p">)</span>
 <span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">named</span> <span class="o">=</span> <span class="n">InjectorProvider</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"primary"</span><span class="p">)),</span> <span class="n">injector</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">named</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+<span class="go">'postgresql'</span>
 </pre></div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.provider.InjectorProvider.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.provider.InjectorProvider.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialize provider with a type and injector.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_or_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/provider.html#InjectorProvider.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.provider.InjectorProvider.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize provider with a type or Key and injector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cls</strong> – The type to provide instances of</p></li>
+<li><p><strong>cls_or_key</strong> – The type or qualified Key to provide instances of</p></li>
 <li><p><strong>injector</strong> – The injector to use for instance creation</p></li>
 </ul>
 </dd>
@@ -386,7 +397,7 @@ interface but want to use the injector’s full dependency resolution.</p>
 <dd><p>Get an instance using the injector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An instance of type T created by the injector</p>
+<dd class="field-odd"><p>An instance created by <code class="docutils literal notranslate"><span class="pre">injector.inject</span></code> of the type or Key</p>
 </dd>
 </dl>
 </dd></dl>

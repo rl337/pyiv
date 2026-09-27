@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Binding &mdash; pyiv 0.4.0 documentation</title>
+  <title>Binding &mdash; pyiv 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=75b4fac4" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../_static/documentation_options.js?v=c87aa342"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -143,7 +143,8 @@
   <section id="binding">
 <h1>Binding<a class="headerlink" href="#binding" title="Link to this heading"></a></h1>
 <p>Register an abstract type once. The injector builds constructor arguments from
-annotations.</p>
+annotations (including <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named(...)]</span></code> /
+<code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Matched(...)]</span></code> — see <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a>).</p>
 <section id="config-register">
 <h2><code class="docutils literal notranslate"><span class="pre">Config.register</span></code><a class="headerlink" href="#config-register" title="Link to this heading"></a></h2>
 <p>The direct API. <code class="docutils literal notranslate"><span class="pre">concrete</span></code> can be a class or a zero-argument factory:</p>
@@ -246,8 +247,10 @@ The default is <code class="docutils literal notranslate"><span class="pre">Stag
 injector still constructs it and fills its annotated parameters (unless
 <code class="docutils literal notranslate"><span class="pre">require_explicit_bindings()</span></code> is set). Interfaces and ABCs must be bound
 (or marked optional — see <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a>). For multiple implementations of one
-type, use <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a> (<code class="docutils literal notranslate"><span class="pre">Named</span></code> tag sets / <code class="docutils literal notranslate"><span class="pre">Matched</span></code>), not a second
-unqualified <code class="docutils literal notranslate"><span class="pre">register</span></code>. Concrete constructor dependencies
+type, use <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a> (<code class="docutils literal notranslate"><span class="pre">Named</span></code> tag sets / <code class="docutils literal notranslate"><span class="pre">Matched</span></code>, including
+<code class="docutils literal notranslate"><span class="pre">Annotated</span></code> on constructor parameters). Field injection via
+<code class="docutils literal notranslate"><span class="pre">inject_members</span></code> does <strong>not</strong> honor Annotated qualifiers — use a
+constructor or <code class="docutils literal notranslate"><span class="pre">inject(Key(...))</span></code>. Concrete constructor dependencies
 are also just-in-time constructed when explicit mode is off.</p>
 <p>See also <a class="reference internal" href="../pyiv/pyiv.config.html"><span class="doc">pyiv.config</span></a> and <a class="reference internal" href="../pyiv/pyiv.binder.html"><span class="doc">pyiv.binder</span></a>.</p>
 </section>
