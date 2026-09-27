@@ -7,7 +7,7 @@ Key Features:
 
 - Type-based constructor injection from annotations
 - Scopes (per-injector and process-wide singletons, plus custom Scope)
-- Qualified keys and a fluent Binder API
+- Qualified keys with tag sets (``Named``), nearest match (``Matched``), and Binder
 - Module install, private modules, child injectors, and config override
 - Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
@@ -27,6 +27,31 @@ Quick Start:
     >>> injector = get_injector(MyConfig)
     >>> isinstance(injector.inject(Database), PostgreSQL)
     True
+
+    Multiple Implementations With Tags:
+
+    >>> from pyiv import Config, get_injector, Key, Named, Matched
+    >>> class Encoder:
+    ...     def __init__(self, kind: str = ""):
+    ...         self.kind = kind
+    >>> class JSONEncoder(Encoder):
+    ...     def __init__(self):
+    ...         super().__init__("json")
+    >>> class PrettyJSONEncoder(Encoder):
+    ...     def __init__(self):
+    ...         super().__init__("pretty")
+    >>> class EncoderConfig(Config):
+    ...     def configure(self):
+    ...         self.register_key(Key(Encoder, Named("json")), JSONEncoder)
+    ...         self.register_key(
+    ...             Key(Encoder, Named(["json", "pretty"], default=True)),
+    ...             PrettyJSONEncoder,
+    ...         )
+    >>> inj = get_injector(EncoderConfig)
+    >>> inj.inject(Key(Encoder, Matched(required=["json"], prefer=["pretty"]))).kind
+    'pretty'
+    >>> inj.inject(Encoder).kind
+    'pretty'
 """
 
 from pyiv.binder import Binder, BindingBuilder
@@ -47,7 +72,7 @@ from pyiv.errors import CreationError
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
 from pyiv.injector import Injector, get_injector
-from pyiv.key import Key, Named, Qualifier
+from pyiv.key import Key, Matched, Named, Qualifier
 from pyiv.members import InjectorMembersInjector, MembersInjector
 from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
 from pyiv.network import HTTPClient, HTTPSClient, NetworkClient
@@ -128,6 +153,7 @@ __all__ = [
     "GlobalSingletonScope",
     "Key",
     "Named",
+    "Matched",
     "Qualifier",
     "Binder",
     "BindingBuilder",

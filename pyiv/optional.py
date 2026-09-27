@@ -10,6 +10,7 @@ Optional dependencies solve the "graceful degradation" problem:
 
 - **Feature Flags**: Support optional features that may or may not be available
 - **Plugin Systems**: Optional plugins that enhance functionality if present
+  (ambiguous Named resolution still raises; it is not treated as missing)
 - **Environment-Specific Dependencies**: Different dependencies in dev vs production
 - **Backward Compatibility**: Add new optional dependencies without breaking existing code
 - **Type Safety**: Use Optional[T] instead of manual None checks

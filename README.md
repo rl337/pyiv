@@ -1,7 +1,7 @@
 # pyiv
 
 Guice-style dependency injection for Python: type-based constructor injection,
-scopes, qualified keys, and built-in test doubles. Zero runtime dependencies.
+scopes, qualified keys (tag sets and matched inject), and built-in test doubles. Zero runtime dependencies.
 Python 3.8+.
 
 **Docs:** [https://rl337.org/pyiv/](https://rl337.org/pyiv/) ·

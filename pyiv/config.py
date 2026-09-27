@@ -46,7 +46,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVa
 
 from pyiv.binder import Binder
 from pyiv.chain import ChainHandler, ChainType
-from pyiv.key import Key
+from pyiv.key import Key, Matched, Named
 from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
 from pyiv.provider import Provider
 from pyiv.scope import Scope
@@ -458,14 +458,39 @@ class Config:
         implementation: Union[Type, Provider[Any]],
         *,
         scope: Optional[Scope] = None,
+        replace: bool = False,
     ) -> None:
         """Register a qualified binding using a Key.
 
+        Use :class:`~pyiv.key.Named` (scalar or tag list/tuple) when binding.
+        :class:`~pyiv.key.Matched` is inject-only and rejected here.
+
+        For ``Named`` keys of the same type:
+
+        - Duplicate tag sets raise ``ValueError`` unless ``replace=True``
+          (used by ``install`` / merge).
+        - At most one ``Named(..., default=True)`` per type is allowed.
+
         Args:
-            key: The qualified key
+            key: The qualified key (``Named`` for multi-impl; not ``Matched``)
             implementation: The implementation class or provider
             scope: Optional scope for lifecycle management
+            replace: If True, overwrite an existing identical Named tag set
+
+        Raises:
+            TypeError: If implementation is not a type or Provider, or key
+                uses ``Matched``
+            ValueError: On duplicate Named tag set (without replace) or a
+                second ``default=True`` for the same type
         """
+        if isinstance(key.qualifier, Matched):
+            raise TypeError(
+                "Matched is inject-only; register bindings with Named, " f"got key {key!r}"
+            )
+
+        if isinstance(key.qualifier, Named):
+            self._validate_named_registration(key, replace=replace)
+
         # Classes may define get(); treat types as implementations, not providers.
         if isinstance(implementation, type):
             self._qualified_bindings[key] = (implementation, None, scope)
@@ -474,6 +499,31 @@ class Config:
             self._qualified_bindings[key] = (key.type, implementation, scope)
             return
         raise TypeError(f"implementation must be a type or Provider, got {type(implementation)}")
+
+    def _validate_named_registration(self, key: Key[Any], *, replace: bool) -> None:
+        """Enforce unique Named tag sets and at most one default per type."""
+        named = key.qualifier
+        assert isinstance(named, Named)
+
+        if key in self._qualified_bindings and not replace:
+            raise ValueError(
+                f"Duplicate Named binding for {key.type.__name__} with tags "
+                f"{sorted(named.tags)!r}; use a distinct tag set or replace=True"
+            )
+
+        if named.default:
+            for other_key in self._qualified_bindings:
+                if other_key.type is not key.type:
+                    continue
+                other_q = other_key.qualifier
+                if not isinstance(other_q, Named) or not other_q.default:
+                    continue
+                if other_key == key:
+                    continue
+                raise ValueError(
+                    f"At most one Named(..., default=True) binding allowed "
+                    f"for {key.type.__name__}; already have {other_key!r}"
+                )
 
     def get_key_binding(
         self, key: Key[Any]
@@ -487,6 +537,29 @@ class Config:
             Tuple of (type, provider, scope) or None if not found
         """
         return self._qualified_bindings.get(key)
+
+    def get_named_bindings(
+        self, binding_type: Type
+    ) -> List[Tuple[Key[Any], Named, Tuple[Type, Optional[Provider[Any]], Optional[Scope]]]]:
+        """Return all Named-qualified bindings for a type.
+
+        Used by Matched resolution and bare ``inject(Type)`` fallback.
+
+        Args:
+            binding_type: The type whose Named bindings to list
+
+        Returns:
+            List of (key, named_qualifier, binding_tuple) for each Named key
+        """
+        result: List[
+            Tuple[Key[Any], Named, Tuple[Type, Optional[Provider[Any]], Optional[Scope]]]
+        ] = []
+        for key, binding in self._qualified_bindings.items():
+            if key.type is not binding_type:
+                continue
+            if isinstance(key.qualifier, Named):
+                result.append((key, key.qualifier, binding))
+        return result
 
     def multibinder(self, interface: Type[T], as_set: bool = True) -> Multibinder[T]:
         """Create a multibinder for multiple implementations.
@@ -617,10 +690,12 @@ class Config:
     def install(self, other: Union[Type["Config"], "Config"]) -> None:
         """Install another config module into this one.
 
-        Regular configs are merged immediately (last wins for the same type or
-        key). :class:`PrivateConfig` instances are queued and wired when the
-        injector is created so exposed bindings can delegate into a child
-        environment.
+        Regular configs are merged immediately. Unqualified type bindings
+        last-wins. For identical :class:`~pyiv.key.Named` tag sets,
+        ``replace=True`` overwrites; two ``default=True`` Named bindings for
+        the same type raise. :class:`PrivateConfig` instances are queued and
+        wired when the injector is created so exposed bindings can delegate
+        into a child environment.
         """
         cfg = other() if isinstance(other, type) else other
         if not isinstance(cfg, Config):
@@ -643,7 +718,7 @@ class Config:
         self._merge_dict(self._singleton_types, other._singleton_types, replace)
         self._merge_dict(self._scopes, other._scopes, replace)
         self._merge_dict(self._providers, other._providers, replace)
-        self._merge_dict(self._qualified_bindings, other._qualified_bindings, replace)
+        self._merge_qualified_bindings(other._qualified_bindings, replace=replace)
         self._merge_dict(self._chain_by_type, other._chain_by_type, replace)
         self._merge_dict(self._chain_by_name, other._chain_by_name, replace)
         self._merge_dict(self._chain_instances, other._chain_instances, replace)
@@ -693,6 +768,41 @@ class Config:
         for key, value in source.items():
             if replace or key not in target:
                 target[key] = value
+
+    def _merge_qualified_bindings(
+        self,
+        source: Dict[Key[Any], Tuple[Type, Optional[Provider[Any]], Optional[Scope]]],
+        *,
+        replace: bool,
+    ) -> None:
+        """Merge qualified bindings with Named uniqueness / default rules.
+
+        Same Named tag set: overwrite only when ``replace=True``; otherwise
+        raise. Two different tag sets both marked ``default=True`` for the
+        same type always raise.
+        """
+        for key, binding in source.items():
+            if isinstance(key.qualifier, Matched):
+                raise TypeError(f"Matched is inject-only; cannot merge key {key!r}")
+            if key in self._qualified_bindings and not replace:
+                if isinstance(key.qualifier, Named):
+                    raise ValueError(
+                        f"Duplicate Named binding for {key.type.__name__} with tags "
+                        f"{sorted(key.qualifier.tags)!r}"
+                    )
+                continue
+            if isinstance(key.qualifier, Named) and key.qualifier.default:
+                for other_key in self._qualified_bindings:
+                    if other_key.type is not key.type:
+                        continue
+                    other_q = other_key.qualifier
+                    if isinstance(other_q, Named) and other_q.default and other_key != key:
+                        raise ValueError(
+                            f"At most one Named(..., default=True) binding allowed "
+                            f"for {key.type.__name__}; conflict merging {key!r} "
+                            f"with existing {other_key!r}"
+                        )
+            self._qualified_bindings[key] = binding
 
     def singleton_bindings(self) -> List[Type]:
         """Return types that should be eagerly created in Stage.PRODUCTION."""

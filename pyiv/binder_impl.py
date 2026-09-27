@@ -146,12 +146,14 @@ class ConfigKeyBindingBuilder(BindingBuilder[T]):
 
         if self._instance is not None:
             self._config.register_key(
-                self._key, InstanceProvider(self._instance), scope=self._scope
+                self._key, InstanceProvider(self._instance), scope=self._scope, replace=True
             )
         elif self._provider is not None:
-            self._config.register_key(self._key, self._provider, scope=self._scope)
+            self._config.register_key(self._key, self._provider, scope=self._scope, replace=True)
         elif self._implementation is not None:
-            self._config.register_key(self._key, self._implementation, scope=self._scope)
+            self._config.register_key(
+                self._key, self._implementation, scope=self._scope, replace=True
+            )
         else:
             return
 
