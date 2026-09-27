@@ -15,6 +15,11 @@ MembersInjector solves the "framework-managed objects" problem:
 - **Data Classes**: Field injection for dataclasses and attrs classes
 - **Flexibility**: Use field injection when constructor injection is impractical
 
+**Limitation — qualified keys:** Field injection resolves **bare types** only.
+``Annotated[T, Named(...)]`` / ``Matched(...)`` on a field or dataclass
+annotation is **not** honored. For tagged bindings use constructor
+``Annotated`` params, or assign ``injector.inject(Key(...))`` yourself.
+
 **Real-World Use Cases:**
 
 - **Django Models**: Inject services into Django model instances
@@ -119,6 +124,10 @@ class InjectorMembersInjector(Generic[T]):
 
     Supports field injection (dataclasses, attrs, regular classes) and method
     injection for annotated methods.
+
+    **Does not honor** ``Annotated[T, Named(...)]`` / ``Matched(...)`` on
+    fields. Those work on constructor parameters only; for qualified fields
+    call ``injector.inject(Key(...))`` and assign the result.
 
     Example:
         >>> from pyiv.members import InjectorMembersInjector

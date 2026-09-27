@@ -91,12 +91,102 @@ Strict vs matched injection
 
 Do not pass ``Matched`` to ``register_key`` / ``bind_key``.
 
+Annotated constructor injection
+-------------------------------
+
+Constructor parameters can carry ``Named`` or ``Matched`` via
+``typing.Annotated`` so you do not call ``inject(Key(...))`` by hand:
+
+.. code-block:: python
+
+   from typing import Annotated, Optional
+
+   from pyiv import Config, Provider, get_injector
+   from pyiv.key import Key, Named, Matched
+
+   class Completer:
+       def __init__(self, kind: str = ""):
+           self.kind = kind
+
+   class DeepCompleter(Completer):
+       def __init__(self):
+           super().__init__("deep")
+
+   class CodeReviewHarness:
+       def __init__(
+           self,
+           inference: Annotated[Completer, Named(["reason", "code", "deep"])],
+           judge: Annotated[Provider[Completer], Named(["judge", "heavy"])],
+           summarize: Annotated[
+               Optional[Completer],
+               Matched(required=["reason", "summarize"]),
+           ] = None,
+       ):
+           self.inference = inference
+           self.judge = judge
+           self.summarize = summarize
+
+   class HarnessConfig(Config):
+       def configure(self):
+           self.register_key(
+               Key(Completer, Named(["reason", "code", "deep"])),
+               DeepCompleter,
+           )
+           self.register_key(
+               Key(Completer, Named(["judge", "heavy"])),
+               DeepCompleter,
+           )
+
+   host = get_injector(HarnessConfig).inject(CodeReviewHarness)
+   # host.inference is DeepCompleter; summarize is None (no candidate);
+   # host.judge.get() lazily resolves the Named binding
+
+Rules:
+
+- ``Annotated[T, Named(...)]`` — strict tag-set match
+- ``Annotated[T, Matched(...)]`` — nearest-match ladder
+- ``Annotated[Optional[T], Q]`` / ``Annotated[T | None, Q]`` — ``None`` only
+  when there is **no** candidate; ambiguity still raises
+- ``Annotated[Provider[T], Q]`` — lazy ``Provider`` that still qualifies on
+  ``get()``
+- At most one ``Named`` or ``Matched`` in the Annotated metadata; a second
+  qualifier raises ``CreationError``. Other metadata is ignored.
+
+You can still call ``injector.inject(Key(...))`` explicitly; Annotated is
+sugar for constructor (and factory) parameters.
+
+Where Annotated Named / Matched does **not** work
+-------------------------------------------------
+
+These are intentional limits (use ``inject(Key(...))`` or redesign instead):
+
+- **Field / members injection** — ``inject_members`` / ``MembersInjector``
+  resolve bare field types only. ``Annotated[T, Named(...)]`` on a dataclass
+  or class attribute is **not** honored. Prefer constructor injection, or
+  assign ``injector.inject(Key(...))`` yourself after construction.
+- **Registration** — ``Matched`` is inject-only. Never pass ``Matched`` (or
+  ``Annotated``) to ``register_key`` / ``bind_key``; register with ``Named``.
+- **Bare ``inject(Annotated[...])``** — call ``inject(Key(T, Named|Matched))``
+  or inject a host class whose constructor uses Annotated. Passing an
+  ``Annotated`` alias as the inject target is not supported.
+- **Multibinder collections** — ``Set[T]`` / ``List[T]`` / ``Dict[K, V]``
+  constructor params are not combined with Named/Matched metadata. Qualify
+  individual deps, or use map multibinder keys separately.
+- **Custom ``Qualifier`` types** — only ``Named`` and ``Matched`` are read
+  from Annotated metadata. Other qualifier objects still work only via
+  exact ``Key(T, qualifier)`` lookup.
+- **Python 3.8 without ``typing.Annotated``** — use
+  ``typing_extensions.Annotated`` in *your* code if needed; pyiv does not
+  depend on ``typing_extensions``. On 3.9+, ``typing.Annotated`` is enough.
+
 When to use multibinder instead
 -------------------------------
 
 Use **Named / Matched** when the caller wants **one** implementation selected
-by tags. Use a **multibinder** when the caller wants **all** implementations
-as a ``Set``, ``List``, or ``Dict``.
+by tags (via ``Key``, ``Annotated`` on a constructor param, or bare
+``inject(Type)`` with ``default=True``). Use a **multibinder** when the
+caller wants **all** implementations as a ``Set``, ``List``, or ``Dict``.
+Do not put Named/Matched metadata on the collection annotation itself.
 
 Multibinder
 -----------
@@ -173,8 +263,10 @@ Optional dependencies
 
 ``Optional[T]`` injects the binding or ``None``. Use an **ABC** (or another
 type the injector cannot construct) for ``T``. A concrete class with no
-binding is still built. Ambiguous Named resolution (multiple tags, no unique
-default) raises ``CreationError`` — ambiguity is not treated as missing.
+binding is still built. Ambiguous Named / Matched resolution (multiple
+candidates, no unique default) raises ``CreationError`` — ambiguity is not
+treated as missing. The same rule applies to
+``Annotated[Optional[T], Named|Matched]`` on constructors.
 
 .. code-block:: python
 

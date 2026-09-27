@@ -7,7 +7,8 @@ Key Features:
 
 - Type-based constructor injection from annotations
 - Scopes (per-injector and process-wide singletons, plus custom Scope)
-- Qualified keys with tag sets (``Named``), nearest match (``Matched``), and Binder
+- Qualified keys with tag sets (``Named``), nearest match (``Matched``),
+  ``Annotated`` constructor injection, and Binder
 - Module install, private modules, child injectors, and config override
 - Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
@@ -52,6 +53,19 @@ Quick Start:
     'pretty'
     >>> inj.inject(Encoder).kind
     'pretty'
+
+    Constructor Annotated (see the keys guide for limits — not on fields):
+
+    >>> from typing import Annotated
+    >>> from pyiv import Config, get_injector, Key, Named
+    >>> class Host:
+    ...     def __init__(self, enc: Annotated[Encoder, Named("json")]):
+    ...         self.enc = enc
+    >>> class HostConfig(Config):
+    ...     def configure(self):
+    ...         self.register_key(Key(Encoder, Named("json")), JSONEncoder)
+    >>> get_injector(HostConfig).inject(Host).enc.kind
+    'json'
 """
 
 from pyiv.binder import Binder, BindingBuilder

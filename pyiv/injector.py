@@ -14,6 +14,7 @@ The injector uses type annotations and Config registrations to automatically
 resolve dependencies. It supports:
 
 - Constructor injection via type annotations
+- ``Annotated[T, Named(...)]`` / ``Annotated[T, Matched(...)]`` qualified deps
 - Singleton lifecycle management
 - Qualified keys: strict ``Named`` tag sets and inject-only ``Matched``
 - Bare ``inject(Type)`` fallback to ``Named(..., default=True)`` / sole Named
@@ -59,6 +60,7 @@ from typing import (
     Union,
     get_args,
     get_origin,
+    get_type_hints,
 )
 
 from pyiv.chain import ChainHandler, ChainType
@@ -71,6 +73,21 @@ from pyiv.provider import InjectorProvider, Provider
 from pyiv.scope import GlobalSingletonScope, NoScope, Scope, SingletonScope
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 from pyiv.stage import Stage
+
+_ANNOTATED_ORIGINS: Tuple[Any, ...] = ()
+try:
+    from typing import Annotated as _TypingAnnotated
+
+    _ANNOTATED_ORIGINS = (_TypingAnnotated,)
+except ImportError:  # pragma: no cover - Python < 3.9
+    _TypingAnnotated = None  # type: ignore[misc, assignment]
+try:
+    from typing_extensions import Annotated as _ExtAnnotated
+
+    if _ExtAnnotated not in _ANNOTATED_ORIGINS:
+        _ANNOTATED_ORIGINS = _ANNOTATED_ORIGINS + (_ExtAnnotated,)
+except ImportError:
+    pass
 
 _BUILTIN_TYPES = (
     str,
@@ -227,6 +244,44 @@ class Injector:
 
         Ambiguous Named resolution raises ``CreationError`` (including when
         resolving ``Optional[T]`` constructor deps — ambiguity is not absence).
+
+        Constructor parameters may use ``Annotated`` with ``Named`` or
+        ``Matched`` (and optionally ``Provider[T]`` / ``Optional[T]``).
+        Annotated qualifiers apply only when resolving constructor / factory
+        parameters — not on ``inject_members`` fields, not as the argument to
+        ``inject()`` itself, and ``Matched`` is never valid at registration.
+
+            >>> from typing import Annotated, Optional
+            >>> from pyiv import Config, get_injector
+            >>> from pyiv.key import Key, Named, Matched
+            >>> class Completer:
+            ...     def __init__(self, kind: str = ""):
+            ...         self.kind = kind
+            >>> class DeepCompleter(Completer):
+            ...     def __init__(self):
+            ...         super().__init__("deep")
+            >>> class Host:
+            ...     def __init__(
+            ...         self,
+            ...         inference: Annotated[Completer, Named(["reason", "code", "deep"])],
+            ...         summarize: Annotated[
+            ...             Optional[Completer],
+            ...             Matched(required=["reason", "summarize"]),
+            ...         ] = None,
+            ...     ):
+            ...         self.inference = inference
+            ...         self.summarize = summarize
+            >>> class C(Config):
+            ...     def configure(self):
+            ...         self.register_key(
+            ...             Key(Completer, Named(["reason", "code", "deep"])),
+            ...             DeepCompleter,
+            ...         )
+            >>> h = get_injector(C).inject(Host)
+            >>> h.inference.kind
+            'deep'
+            >>> h.summarize is None
+            True
 
         Args:
             cls_or_key: The class to instantiate or a :class:`~pyiv.key.Key`
@@ -520,19 +575,24 @@ class Injector:
             if "injector" in sig.parameters:
                 kwargs = dict(kwargs)
                 kwargs["injector"] = self
-            bound_kwargs = self._resolve_dependencies(sig, kwargs)
+            bound_kwargs = self._resolve_dependencies(sig, kwargs, owner=concrete)
             return concrete(**bound_kwargs)
         elif isinstance(concrete, type):
             sig = inspect.signature(concrete.__init__)  # type: ignore[misc]
-            bound_kwargs = self._resolve_dependencies(sig, kwargs)
+            bound_kwargs = self._resolve_dependencies(sig, kwargs, owner=concrete.__init__)
             return concrete(**bound_kwargs)
         else:
             raise TypeError(f"Cannot instantiate {concrete}, must be a class or callable")
 
     def _resolve_dependencies(
-        self, sig: inspect.Signature, provided_kwargs: Dict[str, Any]
+        self,
+        sig: inspect.Signature,
+        provided_kwargs: Dict[str, Any],
+        *,
+        owner: Optional[Callable[..., Any]] = None,
     ) -> Dict[str, Any]:
         resolved = {}
+        hints = self._type_hints_for(owner) if owner is not None else {}
 
         for param_name, param in sig.parameters.items():
             if param_name == "self":
@@ -547,85 +607,121 @@ class Injector:
                 resolved[param_name] = provided_kwargs[param_name]
                 continue
 
-            if param.annotation != inspect.Parameter.empty:
-                annotation = param.annotation
+            annotation = hints.get(param_name, param.annotation)
+            if annotation == inspect.Parameter.empty:
+                if param.default != inspect.Parameter.empty:
+                    resolved[param_name] = param.default
+                elif param_name not in resolved:
+                    raise CreationError(
+                        f"Missing required parameter '{param_name}' for {sig}",
+                        path=list(self._path),
+                    )
+                continue
 
-                if self._is_injector_type(annotation):
-                    resolved[param_name] = self
+            try:
+                annotation, qualifier, is_optional = self._unwrap_injection_annotation(annotation)
+            except CreationError:
+                raise
+
+            if self._is_injector_type(annotation):
+                resolved[param_name] = self
+                continue
+
+            if self._is_provider_type(annotation):
+                provider_type = self._extract_provider_type(annotation)
+                if provider_type:
+                    target: Union[Type, Key[Any]] = (
+                        Key(provider_type, qualifier) if qualifier is not None else provider_type
+                    )
+                    try:
+                        resolved[param_name] = InjectorProvider(target, self)
+                        continue
+                    except (ValueError, TypeError, CreationError):
+                        pass
+
+            if is_optional:
+                if not isinstance(annotation, type):
+                    raise CreationError(
+                        f"Optional injection requires a type, got {annotation!r} "
+                        f"for parameter '{param_name}'",
+                        path=list(self._path),
+                    )
+                target = Key(annotation, qualifier) if qualifier is not None else annotation
+                try:
+                    resolved[param_name] = self.inject(target)
+                    continue
+                except CreationError as exc:
+                    if getattr(exc, "ambiguous", False):
+                        raise
+                    resolved[param_name] = None
                     continue
 
-                if self._is_provider_type(annotation):
-                    provider_type = self._extract_provider_type(annotation)
-                    if provider_type:
-                        try:
-                            provider = InjectorProvider(provider_type, self)
-                            resolved[param_name] = provider
+            origin = get_origin(annotation)
+            if qualifier is None and origin in (set, Set, list, List):
+                args = get_args(annotation)
+                if args:
+                    element_type = args[0]
+                    multibinding = self._config.get_multibinding(element_type)
+                    if multibinding:
+                        set_impls, list_impls, set_instances, list_instances = multibinding
+                        if origin in (set, Set):
+                            instances: Set[Any] = set(set_instances)
+                            for impl in set_impls:
+                                try:
+                                    instances.add(self.inject(impl))
+                                except CreationError:
+                                    pass
+                            resolved[param_name] = instances
                             continue
-                        except (ValueError, TypeError, CreationError):
-                            pass
-
-                if is_optional_type(annotation):
-                    optional_type = get_optional_type(annotation)
-                    if optional_type:
-                        try:
-                            resolved[param_name] = self.inject(optional_type)
-                            continue
-                        except CreationError as exc:
-                            if getattr(exc, "ambiguous", False):
-                                raise
-                            resolved[param_name] = None
-                            continue
-
-                origin = get_origin(annotation)
-                if origin in (set, Set, list, List):
-                    args = get_args(annotation)
-                    if args:
-                        element_type = args[0]
-                        multibinding = self._config.get_multibinding(element_type)
-                        if multibinding:
-                            set_impls, list_impls, set_instances, list_instances = multibinding
-                            if origin in (set, Set):
-                                instances: Set[Any] = set(set_instances)
-                                for impl in set_impls:
-                                    try:
-                                        instances.add(self.inject(impl))
-                                    except CreationError:
-                                        pass
-                                resolved[param_name] = instances
-                                continue
-                            else:
-                                list_instances_result: List[Any] = list(list_instances)
-                                for impl in list_impls:
-                                    try:
-                                        list_instances_result.append(self.inject(impl))
-                                    except CreationError:
-                                        pass
-                                resolved[param_name] = list_instances_result
-                                continue
-
-                if origin in (dict, Dict, Mapping):
-                    args = get_args(annotation)
-                    if len(args) == 2:
-                        _key_type, value_type = args
-                        map_binding = self._config.get_map_multibinding(value_type)
-                        if map_binding:
-                            impls, map_instances = map_binding
-                            result: Dict[Any, Any] = dict(map_instances)
-                            for map_key, impl in impls.items():
-                                result[map_key] = self.inject(impl)
-                            resolved[param_name] = result
+                        else:
+                            list_instances_result: List[Any] = list(list_instances)
+                            for impl in list_impls:
+                                try:
+                                    list_instances_result.append(self.inject(impl))
+                                except CreationError:
+                                    pass
+                            resolved[param_name] = list_instances_result
                             continue
 
-                is_builtin = annotation in _BUILTIN_TYPES
-                if not is_builtin and isinstance(annotation, type):
-                    try:
-                        resolved[param_name] = self.inject(annotation)
+            if qualifier is None and origin in (dict, Dict, Mapping):
+                args = get_args(annotation)
+                if len(args) == 2:
+                    _key_type, value_type = args
+                    map_binding = self._config.get_map_multibinding(value_type)
+                    if map_binding:
+                        impls, map_instances = map_binding
+                        result: Dict[Any, Any] = dict(map_instances)
+                        for map_key, impl in impls.items():
+                            result[map_key] = self.inject(impl)
+                        resolved[param_name] = result
                         continue
-                    except CreationError:
-                        if param.default != inspect.Parameter.empty:
-                            resolved[param_name] = param.default
-                            continue
-                        raise
+
+            if qualifier is not None:
+                if not isinstance(annotation, type):
+                    raise CreationError(
+                        f"Annotated Named/Matched requires a concrete type, "
+                        f"got {annotation!r} for parameter '{param_name}'",
+                        path=list(self._path),
+                    )
+                try:
+                    resolved[param_name] = self.inject(Key(annotation, qualifier))
+                    continue
+                except CreationError:
+                    if param.default != inspect.Parameter.empty:
+                        resolved[param_name] = param.default
+                        continue
+                    raise
+
+            is_builtin = annotation in _BUILTIN_TYPES
+            if not is_builtin and isinstance(annotation, type):
+                try:
+                    resolved[param_name] = self.inject(annotation)
+                    continue
+                except CreationError:
+                    if param.default != inspect.Parameter.empty:
+                        resolved[param_name] = param.default
+                        continue
+                    raise
 
             if param.default != inspect.Parameter.empty:
                 resolved[param_name] = param.default
@@ -636,6 +732,74 @@ class Injector:
                 )
 
         return resolved
+
+    @staticmethod
+    def _type_hints_for(owner: Callable[..., Any]) -> Dict[str, Any]:
+        """Resolve annotations, preserving Annotated metadata when possible."""
+        try:
+            return get_type_hints(owner, include_extras=True)
+        except TypeError:
+            try:
+                return get_type_hints(owner)
+            except Exception:
+                return {}
+        except Exception:
+            return {}
+
+    def _unwrap_injection_annotation(
+        self, annotation: Any
+    ) -> Tuple[Any, Optional[Union[Named, Matched]], bool]:
+        """Peel Annotated / Optional layers into (type, qualifier, is_optional).
+
+        ``get_type_hints`` may rewrite ``Annotated[Optional[T], Q]`` into
+        ``Optional[Annotated[T, Q]]`` (or nest them). Peel until neither
+        Annotated nor Optional remains.
+        """
+        qualifier: Optional[Union[Named, Matched]] = None
+        is_optional = False
+        while True:
+            annotation, nested_q = self._split_annotated(annotation)
+            if nested_q is not None:
+                if qualifier is not None:
+                    raise CreationError(
+                        "Annotated may contain at most one Named or Matched qualifier",
+                        path=list(self._path),
+                    )
+                qualifier = nested_q
+                continue
+            if is_optional_type(annotation):
+                inner = get_optional_type(annotation)
+                if inner is None:
+                    break
+                is_optional = True
+                annotation = inner
+                continue
+            break
+        return annotation, qualifier, is_optional
+
+    def _split_annotated(self, annotation: Any) -> Tuple[Any, Optional[Union[Named, Matched]]]:
+        """Unwrap one Annotated[T, ...] layer and extract Named/Matched."""
+        origin = get_origin(annotation)
+        if origin is None:
+            return annotation, None
+        if origin not in _ANNOTATED_ORIGINS and getattr(origin, "__name__", None) != "Annotated":
+            return annotation, None
+
+        args = get_args(annotation)
+        if not args:
+            return annotation, None
+
+        base = args[0]
+        qualifier: Optional[Union[Named, Matched]] = None
+        for meta in args[1:]:
+            if isinstance(meta, (Named, Matched)):
+                if qualifier is not None:
+                    raise CreationError(
+                        "Annotated may contain at most one Named or Matched qualifier",
+                        path=list(self._path),
+                    )
+                qualifier = meta
+        return base, qualifier
 
     @staticmethod
     def _is_concrete_type(cls: Type) -> bool:
@@ -771,7 +935,12 @@ class Injector:
         return instance
 
     def inject_members(self, instance: Any) -> None:
-        """Inject dependencies into an existing instance."""
+        """Inject dependencies into an existing instance.
+
+        Resolves **bare** field type annotations only. ``Annotated[T, Named]``
+        / ``Matched`` on fields is ignored — use constructor Annotated params
+        or assign ``self.inject(Key(...))`` manually.
+        """
         cls = type(instance)
         members_injector = InjectorMembersInjector(cls, self)
         members_injector.inject_members(instance)
