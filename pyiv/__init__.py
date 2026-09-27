@@ -54,18 +54,8 @@ Quick Start:
     >>> inj.inject(Encoder).kind
     'pretty'
 
-    Constructor Annotated (see the keys guide for limits — not on fields):
-
-    >>> from typing import Annotated
-    >>> from pyiv import Config, get_injector, Key, Named
-    >>> class Host:
-    ...     def __init__(self, enc: Annotated[Encoder, Named("json")]):
-    ...         self.enc = enc
-    >>> class HostConfig(Config):
-    ...     def configure(self):
-    ...         self.register_key(Key(Encoder, Named("json")), JSONEncoder)
-    >>> get_injector(HostConfig).inject(Host).enc.kind
-    'json'
+    Constructor ``Annotated[T, Named|Matched]`` (Python 3.9+) is documented in
+    the keys guide; use ``inject(Key(...))`` when you need an explicit lookup.
 """
 
 from pyiv.binder import Binder, BindingBuilder

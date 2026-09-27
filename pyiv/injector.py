@@ -47,6 +47,8 @@ Usage:
 """
 
 import inspect
+import sys
+import typing as _typing
 from typing import (
     Any,
     Callable,
@@ -74,13 +76,11 @@ from pyiv.scope import GlobalSingletonScope, NoScope, Scope, SingletonScope
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 from pyiv.stage import Stage
 
+# Annotated landed in typing in 3.9; detect at runtime without mypy-attr on typing.Annotated
 _ANNOTATED_ORIGINS: Tuple[Any, ...] = ()
-try:
-    from typing import Annotated as _TypingAnnotated
-
+_TypingAnnotated = getattr(_typing, "Annotated", None)
+if _TypingAnnotated is not None:
     _ANNOTATED_ORIGINS = (_TypingAnnotated,)
-except ImportError:  # pragma: no cover - Python < 3.9
-    _TypingAnnotated = None  # type: ignore[misc, assignment]
 try:
     from typing_extensions import Annotated as _ExtAnnotated
 
@@ -246,42 +246,12 @@ class Injector:
         resolving ``Optional[T]`` constructor deps — ambiguity is not absence).
 
         Constructor parameters may use ``Annotated`` with ``Named`` or
-        ``Matched`` (and optionally ``Provider[T]`` / ``Optional[T]``).
-        Annotated qualifiers apply only when resolving constructor / factory
-        parameters — not on ``inject_members`` fields, not as the argument to
-        ``inject()`` itself, and ``Matched`` is never valid at registration.
-
-            >>> from typing import Annotated, Optional
-            >>> from pyiv import Config, get_injector
-            >>> from pyiv.key import Key, Named, Matched
-            >>> class Completer:
-            ...     def __init__(self, kind: str = ""):
-            ...         self.kind = kind
-            >>> class DeepCompleter(Completer):
-            ...     def __init__(self):
-            ...         super().__init__("deep")
-            >>> class Host:
-            ...     def __init__(
-            ...         self,
-            ...         inference: Annotated[Completer, Named(["reason", "code", "deep"])],
-            ...         summarize: Annotated[
-            ...             Optional[Completer],
-            ...             Matched(required=["reason", "summarize"]),
-            ...         ] = None,
-            ...     ):
-            ...         self.inference = inference
-            ...         self.summarize = summarize
-            >>> class C(Config):
-            ...     def configure(self):
-            ...         self.register_key(
-            ...             Key(Completer, Named(["reason", "code", "deep"])),
-            ...             DeepCompleter,
-            ...         )
-            >>> h = get_injector(C).inject(Host)
-            >>> h.inference.kind
-            'deep'
-            >>> h.summarize is None
-            True
+        ``Matched`` (and optionally ``Provider[T]`` / ``Optional[T]``) on
+        Python 3.9+ (or with ``typing_extensions.Annotated`` on 3.8). Annotated
+        qualifiers apply only when resolving constructor / factory parameters —
+        not on ``inject_members`` fields, not as the argument to ``inject()``
+        itself, and ``Matched`` is never valid at registration. See the keys
+        guide for full examples.
 
         Args:
             cls_or_key: The class to instantiate or a :class:`~pyiv.key.Key`
@@ -578,8 +548,9 @@ class Injector:
             bound_kwargs = self._resolve_dependencies(sig, kwargs, owner=concrete)
             return concrete(**bound_kwargs)
         elif isinstance(concrete, type):
-            sig = inspect.signature(concrete.__init__)  # type: ignore[misc]
-            bound_kwargs = self._resolve_dependencies(sig, kwargs, owner=concrete.__init__)
+            init_fn = getattr(concrete, "__init__")
+            sig = inspect.signature(init_fn)
+            bound_kwargs = self._resolve_dependencies(sig, kwargs, owner=init_fn)
             return concrete(**bound_kwargs)
         else:
             raise TypeError(f"Cannot instantiate {concrete}, must be a class or callable")
@@ -736,8 +707,12 @@ class Injector:
     @staticmethod
     def _type_hints_for(owner: Callable[..., Any]) -> Dict[str, Any]:
         """Resolve annotations, preserving Annotated metadata when possible."""
+        kwargs: Dict[str, Any] = {}
+        # include_extras keeps Annotated metadata; available on 3.9+
+        if sys.version_info >= (3, 9):
+            kwargs["include_extras"] = True
         try:
-            return get_type_hints(owner, include_extras=True)
+            return get_type_hints(owner, **kwargs)
         except TypeError:
             try:
                 return get_type_hints(owner)

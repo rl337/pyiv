@@ -1,11 +1,14 @@
 """Tests for qualified Key bindings, Named tag sets, and Matched resolution."""
 
+import sys
 from abc import ABC
 
 import pytest
 
 from pyiv import Config, CreationError, get_injector
 from pyiv.key import Key, Matched, Named
+
+_ANNOTATED_REQUIRES_39 = sys.version_info < (3, 9)
 
 
 class Database:
@@ -290,9 +293,10 @@ def test_named_scalar_name_and_repr_back_compat():
     assert repr(named) == "Named('primary')"
 
 
-# --- Annotated constructor injection ---
+# --- Annotated constructor injection (typing.Annotated is 3.9+) ---
 
 
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
 def test_annotated_named_and_matched_constructor():
     from typing import Annotated
 
@@ -318,6 +322,7 @@ def test_annotated_named_and_matched_constructor():
     assert isinstance(host.nearest, PrettyJSONEncoder)
 
 
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
 def test_annotated_optional_matched_missing_is_none():
     from typing import Annotated, Optional
 
@@ -338,6 +343,7 @@ def test_annotated_optional_matched_missing_is_none():
     assert get_injector(MyConfig).inject(Host).summarize is None
 
 
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
 def test_annotated_optional_matched_ambiguous_raises():
     from abc import abstractmethod
     from typing import Annotated, Optional
@@ -375,6 +381,7 @@ def test_annotated_optional_matched_ambiguous_raises():
     assert exc_info.value.ambiguous is True
 
 
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
 def test_annotated_provider_named_is_lazy():
     from typing import Annotated
 
@@ -407,6 +414,7 @@ def test_annotated_provider_named_is_lazy():
     assert created == [1]
 
 
+@pytest.mark.skipif(_ANNOTATED_REQUIRES_39, reason="typing.Annotated requires Python 3.9+")
 def test_annotated_two_qualifiers_raises():
     from typing import Annotated
 
