@@ -15,6 +15,8 @@ resolve dependencies. It supports:
 
 - Constructor injection via type annotations
 - Singleton lifecycle management
+- Qualified keys: strict ``Named`` tag sets and inject-only ``Matched``
+- Bare ``inject(Type)`` fallback to ``Named(..., default=True)`` / sole Named
 - Factory functions for complex object creation
 - Circular dependency detection with path-aware CreationError
 - Child injectors and private modules
@@ -62,7 +64,7 @@ from typing import (
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.config import Config, PrivateConfig
 from pyiv.errors import CreationError, type_name
-from pyiv.key import Key
+from pyiv.key import Key, Matched, Named
 from pyiv.members import InjectorMembersInjector
 from pyiv.optional import get_optional_type, is_optional_type
 from pyiv.provider import InjectorProvider, Provider
@@ -200,15 +202,34 @@ class Injector:
             for item in exposed:
                 provider = _ChildDelegatingProvider(child, item)
                 if isinstance(item, Key):
-                    self._config.register_key(item, provider)
+                    self._config.register_key(item, provider, replace=True)
                 else:
                     self._config.register_provider(item, provider)
 
     def inject(self, cls_or_key: Union[Type, Key[Any]], **kwargs) -> Any:
         """Inject and create an instance of the given class or key.
 
+        **Resolution for types (bare ``inject(Encoder)``):**
+
+        1. Unqualified registration / instance / provider for the type
+        2. Else :class:`~pyiv.key.Named` bindings for that type: the sole
+           ``default=True`` binding, or the only Named binding if there is
+           exactly one; multiple Named bindings without a unique default raise
+        3. Else parent injector (if any)
+        4. Else JIT for concrete types (unless explicit bindings required)
+
+        **Resolution for keys:**
+
+        - ``Key(T, Named(...))`` — **strict** exact tag-set match
+        - ``Key(T, Matched(required=..., prefer=...))`` — nearest match among
+          Named bindings (required ⊆ tags, max prefer overlap, then default)
+        - Custom qualifiers — exact ``Key`` lookup only
+
+        Ambiguous Named resolution raises ``CreationError`` (including when
+        resolving ``Optional[T]`` constructor deps — ambiguity is not absence).
+
         Args:
-            cls_or_key: The class to instantiate (can be abstract or concrete) or a Key
+            cls_or_key: The class to instantiate or a :class:`~pyiv.key.Key`
             **kwargs: Additional keyword arguments to pass to the constructor
 
         Returns:
@@ -216,6 +237,33 @@ class Injector:
 
         Raises:
             CreationError: If the binding cannot be resolved (with path context)
+
+        Example:
+            >>> from pyiv import Config, get_injector
+            >>> from pyiv.key import Key, Named, Matched
+            >>> class Encoder:
+            ...     def __init__(self, kind: str = "base"):
+            ...         self.kind = kind
+            >>> class JSONEncoder(Encoder):
+            ...     def __init__(self):
+            ...         super().__init__("json")
+            >>> class PrettyJSONEncoder(Encoder):
+            ...     def __init__(self):
+            ...         super().__init__("pretty")
+            >>> class C(Config):
+            ...     def configure(self):
+            ...         self.register_key(Key(Encoder, Named("json")), JSONEncoder)
+            ...         self.register_key(
+            ...             Key(Encoder, Named(["json", "pretty"], default=True)),
+            ...             PrettyJSONEncoder,
+            ...         )
+            >>> inj = get_injector(C)
+            >>> inj.inject(Key(Encoder, Named("json"))).kind
+            'json'
+            >>> inj.inject(Key(Encoder, Matched(required=["json"], prefer=["pretty"]))).kind
+            'pretty'
+            >>> inj.inject(Encoder).kind
+            'pretty'
         """
         identity: Any = cls_or_key
         path_label = type_name(cls_or_key)
@@ -259,6 +307,11 @@ class Injector:
                 return self._inject_scoped(cls, scope, **kwargs)
             return self._create_unscoped(cls, **kwargs)
 
+        # Named-qualified fallback when no unqualified binding exists
+        named_bindings = self._config.get_named_bindings(cls)
+        if named_bindings:
+            return self._inject_from_named_candidates(cls, named_bindings, **kwargs)
+
         # Parent fallback for hierarchical injectors
         if self._parent is not None:
             try:
@@ -283,12 +336,110 @@ class Injector:
         )
 
     def _inject_key(self, key: Key[Any], **kwargs) -> Any:
+        if isinstance(key.qualifier, Matched):
+            return self._inject_matched(key, **kwargs)
+
         binding = self._config.get_key_binding(key)
         if binding is None:
             if self._parent is not None:
                 return self._parent.inject(key, **kwargs)
             raise CreationError(f"No binding found for key {key}", path=list(self._path))
 
+        return self._materialize_binding(key, binding, **kwargs)
+
+    def _inject_matched(self, key: Key[Any], **kwargs) -> Any:
+        matched = key.qualifier
+        assert isinstance(matched, Matched)
+
+        named_bindings = self._config.get_named_bindings(key.type)
+        if not named_bindings:
+            if self._parent is not None:
+                return self._parent.inject(key, **kwargs)
+            raise CreationError(
+                f"No Named bindings found for {type_name(key.type)} " f"to resolve {key!r}",
+                path=list(self._path),
+            )
+
+        candidates = [
+            (k, named, binding)
+            for k, named, binding in named_bindings
+            if matched.required <= named.tags
+        ]
+        if not candidates:
+            if self._parent is not None:
+                return self._parent.inject(key, **kwargs)
+            raise CreationError(
+                f"No Named binding for {type_name(key.type)} satisfies "
+                f"required tags {sorted(matched.required)!r}",
+                path=list(self._path),
+            )
+
+        scored: Dict[int, List[Tuple[Key[Any], Named, Any]]] = {}
+        for item in candidates:
+            _, named, _ = item
+            score = len(matched.prefer & named.tags)
+            scored.setdefault(score, []).append(item)
+
+        best = scored[max(scored)]
+        if len(best) > 1:
+            defaults = [item for item in best if item[1].default]
+            if len(defaults) == 1:
+                best = defaults
+            elif len(defaults) > 1:
+                default_keys = [k for k, _, _ in defaults]
+                raise CreationError(
+                    f"Ambiguous Matched resolution for {key!r}: multiple "
+                    f"default=True candidates {default_keys!r}",
+                    path=list(self._path),
+                    ambiguous=True,
+                )
+            else:
+                candidate_keys = [k for k, _, _ in best]
+                raise CreationError(
+                    f"Ambiguous Matched resolution for {key!r}: candidates "
+                    f"{candidate_keys!r} (mark one Named(..., default=True))",
+                    path=list(self._path),
+                    ambiguous=True,
+                )
+
+        _, _, binding = best[0]
+        return self._materialize_binding(key, binding, **kwargs)
+
+    def _inject_from_named_candidates(
+        self,
+        cls: Type,
+        named_bindings: List[Tuple[Key[Any], Named, Any]],
+        **kwargs,
+    ) -> Any:
+        defaults = [(k, n, b) for k, n, b in named_bindings if n.default]
+        if len(defaults) == 1:
+            _, _, binding = defaults[0]
+            return self._materialize_binding(Key(cls), binding, **kwargs)
+        if len(defaults) > 1:
+            raise CreationError(
+                f"Ambiguous injection for {type_name(cls)}: multiple "
+                f"Named(..., default=True) bindings",
+                path=list(self._path),
+                ambiguous=True,
+            )
+        if len(named_bindings) == 1:
+            _, _, binding = named_bindings[0]
+            return self._materialize_binding(Key(cls), binding, **kwargs)
+        candidate_keys = [k for k, _, _ in named_bindings]
+        raise CreationError(
+            f"Ambiguous injection for {type_name(cls)}: {len(named_bindings)} "
+            f"Named bindings and no unique default=True "
+            f"(candidates {candidate_keys!r})",
+            path=list(self._path),
+            ambiguous=True,
+        )
+
+    def _materialize_binding(
+        self,
+        key: Key[Any],
+        binding: Tuple[Type, Optional[Any], Optional[Scope]],
+        **kwargs,
+    ) -> Any:
         type_, provider, scope = binding
 
         if provider is not None:
@@ -419,7 +570,9 @@ class Injector:
                         try:
                             resolved[param_name] = self.inject(optional_type)
                             continue
-                        except CreationError:
+                        except CreationError as exc:
+                            if getattr(exc, "ambiguous", False):
+                                raise
                             resolved[param_name] = None
                             continue
 

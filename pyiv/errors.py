@@ -34,6 +34,8 @@ class CreationError(Exception):
         message: Human-readable failure reason
         path: Resolution path from the root request to the failing type
         causes: Nested failures (e.g. eager singleton warmup aggregation)
+        ambiguous: If True, multiple Named bindings matched and none was unique;
+            ``Optional[T]`` must not treat this as a missing binding
 
     Example:
         >>> err = CreationError("No binding", path=["Service", "Database"])
@@ -47,10 +49,12 @@ class CreationError(Exception):
         *,
         path: Optional[Sequence[str]] = None,
         causes: Optional[Sequence[BaseException]] = None,
+        ambiguous: bool = False,
     ):
         self.message = message
         self.path: List[str] = list(path) if path else []
         self.causes: List[BaseException] = list(causes) if causes else []
+        self.ambiguous = ambiguous
         super().__init__(self._format())
 
     def _format(self) -> str:

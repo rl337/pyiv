@@ -7,7 +7,9 @@ Several implementations of one type need a qualifier. Several implementations
 Qualified keys
 --------------
 
-``Key(Type, Named("..."))`` is the Guice-style named binding:
+``Key(Type, Named("..."))`` is the Guice-style named binding. ``Named`` accepts
+a string **or** a list/tuple of tags (stored as a set). Scalar and singleton
+list are the same key: ``Named("json") == Named(["json"])``.
 
 .. code-block:: python
 
@@ -36,6 +38,65 @@ Qualified keys
    injector.inject(Key(Database, Named("replica")))  # MySQL
 
 Binder equivalent: ``binder.bind_key(Key(Database, Named("primary"))).to(...)``.
+
+Compound tags and defaults
+--------------------------
+
+Register multiple tag sets for the same type. Mark at most one with
+``default=True`` for bare ``inject(Type)`` and ``Matched`` tie-breaks.
+Identical tag sets for the same type raise at registration (unless an
+``install`` merge replaces them).
+
+.. code-block:: python
+
+   from pyiv import Config, get_injector
+   from pyiv.key import Key, Named, Matched
+
+   class Encoder:
+       def __init__(self, kind: str):
+           self.kind = kind
+
+   class JSONEncoder(Encoder):
+       def __init__(self):
+           super().__init__("json")
+
+   class PrettyJSONEncoder(Encoder):
+       def __init__(self):
+           super().__init__("pretty")
+
+   class EncoderConfig(Config):
+       def configure(self):
+           self.register_key(Key(Encoder, Named("json")), JSONEncoder)
+           self.register_key(
+               Key(Encoder, Named(["json", "pretty"], default=True)),
+               PrettyJSONEncoder,
+           )
+
+   inj = get_injector(EncoderConfig)
+   inj.inject(Key(Encoder, Named("json")))  # JSONEncoder (strict)
+   inj.inject(Key(Encoder, Matched(required=["json"], prefer=["pretty"])))
+   inj.inject(Encoder)  # PrettyJSONEncoder via default=True
+
+Strict vs matched injection
+---------------------------
+
+- **``Named`` on inject** — exact tag-set equality.
+- **``Matched(required=..., prefer=...)``** — inject-only. Candidates are Named
+  bindings for the type where ``required ⊆ tags``. Among those, maximize
+  ``|prefer ∩ tags|``; remaining ties use ``default=True``; still ambiguous
+  raises ``CreationError``.
+- **Bare ``inject(Type)``** — unqualified binding first (if any); else the
+  unique ``default=True`` Named binding, or the sole Named binding; otherwise
+  ambiguous / missing.
+
+Do not pass ``Matched`` to ``register_key`` / ``bind_key``.
+
+When to use multibinder instead
+-------------------------------
+
+Use **Named / Matched** when the caller wants **one** implementation selected
+by tags. Use a **multibinder** when the caller wants **all** implementations
+as a ``Set``, ``List``, or ``Dict``.
 
 Multibinder
 -----------
@@ -112,7 +173,8 @@ Optional dependencies
 
 ``Optional[T]`` injects the binding or ``None``. Use an **ABC** (or another
 type the injector cannot construct) for ``T``. A concrete class with no
-binding is still built:
+binding is still built. Ambiguous Named resolution (multiple tags, no unique
+default) raises ``CreationError`` — ambiguity is not treated as missing.
 
 .. code-block:: python
 

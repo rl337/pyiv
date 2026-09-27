@@ -184,8 +184,13 @@ class Binder(Protocol):
     def bind_key(self, key: Key[T]) -> BindingBuilder[T]:
         """Start a binding configuration with a qualified key.
 
+        Register with :class:`~pyiv.key.Named` (scalar or tag list/tuple).
+        :class:`~pyiv.key.Matched` is inject-only and rejected at registration.
+        Duplicate Named tag sets for the same type raise; at most one
+        ``Named(..., default=True)`` per type is allowed.
+
         Args:
-            key: The qualified key to bind
+            key: The qualified key to bind (``Named``, not ``Matched``)
 
         Returns:
             A binding builder for fluent configuration

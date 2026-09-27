@@ -6,6 +6,25 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+### Added
+
+- `Named` accepts a string or list/tuple of tags (normalized to a set);
+  `Named("json") == Named(["json"])`.
+- `Named(..., default=True)` marks the preferred binding for bare
+  `inject(Type)` and for `Matched` tie-breaks (at most one per type).
+- `Matched(required=..., prefer=...)` inject-only qualifier: required tags
+  must match, then maximize prefer overlap, then `default=True`.
+- Bare `inject(Type)` falls back to Named bindings when no unqualified
+  registration exists (default, sole candidate, or ambiguous error).
+
+### Changed
+
+- Duplicate identical `Named` tag sets for the same type raise at
+  registration (no silent last-wins). `install` / merge with replace still
+  overwrites the same tag set.
+- Ambiguous Named/`Matched` resolution raises `CreationError` with
+  `ambiguous=True`; `Optional[T]` does not treat that as a missing binding.
+
 ## 0.4.0 - 2026-09-25
 
 ### Added
