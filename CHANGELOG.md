@@ -6,6 +6,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+## 0.4.2 - 2026-09-27
+
 ### Added
 
 - Constructor injection via ``Annotated[T, Named(...)]`` /
