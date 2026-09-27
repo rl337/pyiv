@@ -346,8 +346,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">bind_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Key</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BindingBuilder</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Start a binding configuration with a qualified key.</span>
 
+<span class="sd">        Register with :class:`~pyiv.key.Named` (scalar or tag list/tuple).</span>
+<span class="sd">        :class:`~pyiv.key.Matched` is inject-only and rejected at registration.</span>
+<span class="sd">        Duplicate Named tag sets for the same type raise; at most one</span>
+<span class="sd">        ``Named(..., default=True)`` per type is allowed.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            key: The qualified key to bind</span>
+<span class="sd">            key: The qualified key to bind (``Named``, not ``Matched``)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A binding builder for fluent configuration</span>

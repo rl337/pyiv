@@ -146,7 +146,9 @@
 <strong>as a set or list</strong> use a multibinder.</p>
 <section id="qualified-keys">
 <h2>Qualified keys<a class="headerlink" href="#qualified-keys" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">Key(Type,</span> <span class="pre">Named(&quot;...&quot;))</span></code> is the Guice-style named binding:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Key(Type,</span> <span class="pre">Named(&quot;...&quot;))</span></code> is the Guice-style named binding. <code class="docutils literal notranslate"><span class="pre">Named</span></code> accepts
+a string <strong>or</strong> a list/tuple of tags (stored as a set). Scalar and singleton
+list are the same key: <code class="docutils literal notranslate"><span class="pre">Named(&quot;json&quot;)</span> <span class="pre">==</span> <span class="pre">Named([&quot;json&quot;])</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Named</span>
 
@@ -173,6 +175,62 @@
 </pre></div>
 </div>
 <p>Binder equivalent: <code class="docutils literal notranslate"><span class="pre">binder.bind_key(Key(Database,</span> <span class="pre">Named(&quot;primary&quot;))).to(...)</span></code>.</p>
+</section>
+<section id="compound-tags-and-defaults">
+<h2>Compound tags and defaults<a class="headerlink" href="#compound-tags-and-defaults" title="Link to this heading"></a></h2>
+<p>Register multiple tag sets for the same type. Mark at most one with
+<code class="docutils literal notranslate"><span class="pre">default=True</span></code> for bare <code class="docutils literal notranslate"><span class="pre">inject(Type)</span></code> and <code class="docutils literal notranslate"><span class="pre">Matched</span></code> tie-breaks.
+Identical tag sets for the same type raise at registration (unless an
+<code class="docutils literal notranslate"><span class="pre">install</span></code> merge replaces them).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Named</span><span class="p">,</span> <span class="n">Matched</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Encoder</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">JSONEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"json"</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PrettyJSONEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"pretty"</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EncoderConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_key</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"json"</span><span class="p">)),</span> <span class="n">JSONEncoder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_key</span><span class="p">(</span>
+            <span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Named</span><span class="p">([</span><span class="s2">"json"</span><span class="p">,</span> <span class="s2">"pretty"</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+            <span class="n">PrettyJSONEncoder</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="n">inj</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">EncoderConfig</span><span class="p">)</span>
+<span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"json"</span><span class="p">)))</span>  <span class="c1"># JSONEncoder (strict)</span>
+<span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Matched</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="p">[</span><span class="s2">"json"</span><span class="p">],</span> <span class="n">prefer</span><span class="o">=</span><span class="p">[</span><span class="s2">"pretty"</span><span class="p">])))</span>
+<span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span>  <span class="c1"># PrettyJSONEncoder via default=True</span>
+</pre></div>
+</div>
+</section>
+<section id="strict-vs-matched-injection">
+<h2>Strict vs matched injection<a class="headerlink" href="#strict-vs-matched-injection" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>``Named`` on inject</strong> — exact tag-set equality.</p></li>
+<li><p><strong>``Matched(required=…, prefer=…)``</strong> — inject-only. Candidates are Named
+bindings for the type where <code class="docutils literal notranslate"><span class="pre">required</span> <span class="pre">⊆</span> <span class="pre">tags</span></code>. Among those, maximize
+<code class="docutils literal notranslate"><span class="pre">|prefer</span> <span class="pre">∩</span> <span class="pre">tags|</span></code>; remaining ties use <code class="docutils literal notranslate"><span class="pre">default=True</span></code>; still ambiguous
+raises <code class="docutils literal notranslate"><span class="pre">CreationError</span></code>.</p></li>
+<li><p><strong>Bare ``inject(Type)``</strong> — unqualified binding first (if any); else the
+unique <code class="docutils literal notranslate"><span class="pre">default=True</span></code> Named binding, or the sole Named binding; otherwise
+ambiguous / missing.</p></li>
+</ul>
+<p>Do not pass <code class="docutils literal notranslate"><span class="pre">Matched</span></code> to <code class="docutils literal notranslate"><span class="pre">register_key</span></code> / <code class="docutils literal notranslate"><span class="pre">bind_key</span></code>.</p>
+</section>
+<section id="when-to-use-multibinder-instead">
+<h2>When to use multibinder instead<a class="headerlink" href="#when-to-use-multibinder-instead" title="Link to this heading"></a></h2>
+<p>Use <strong>Named / Matched</strong> when the caller wants <strong>one</strong> implementation selected
+by tags. Use a <strong>multibinder</strong> when the caller wants <strong>all</strong> implementations
+as a <code class="docutils literal notranslate"><span class="pre">Set</span></code>, <code class="docutils literal notranslate"><span class="pre">List</span></code>, or <code class="docutils literal notranslate"><span class="pre">Dict</span></code>.</p>
 </section>
 <section id="multibinder">
 <h2>Multibinder<a class="headerlink" href="#multibinder" title="Link to this heading"></a></h2>
@@ -243,7 +301,8 @@ the collection through a <strong>host class constructor</strong>, not
 <h2>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> injects the binding or <code class="docutils literal notranslate"><span class="pre">None</span></code>. Use an <strong>ABC</strong> (or another
 type the injector cannot construct) for <code class="docutils literal notranslate"><span class="pre">T</span></code>. A concrete class with no
-binding is still built:</p>
+binding is still built. Ambiguous Named resolution (multiple tags, no unique
+default) raises <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> — ambiguity is not treated as missing.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 

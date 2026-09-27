@@ -147,11 +147,34 @@ order. Install with <code class="docutils literal notranslate"><span class="pre"
 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/rl337/pyiv.git</span></code>.</p>
 <section id="unreleased">
 <h2>Unreleased<a class="headerlink" href="#unreleased" title="Link to this heading"></a></h2>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Named</span></code> accepts a string or list/tuple of tags (normalized to a set);
+<code class="docutils literal notranslate"><span class="pre">Named(&quot;json&quot;)</span> <span class="pre">==</span> <span class="pre">Named([&quot;json&quot;])</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Named(...,</span> <span class="pre">default=True)</span></code> marks the preferred binding for bare
+<code class="docutils literal notranslate"><span class="pre">inject(Type)</span></code> and for <code class="docutils literal notranslate"><span class="pre">Matched</span></code> tie-breaks (at most one per type).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Matched(required=...,</span> <span class="pre">prefer=...)</span></code> inject-only qualifier: required tags
+must match, then maximize prefer overlap, then <code class="docutils literal notranslate"><span class="pre">default=True</span></code>.</p></li>
+<li><p>Bare <code class="docutils literal notranslate"><span class="pre">inject(Type)</span></code> falls back to Named bindings when no unqualified
+registration exists (default, sole candidate, or ambiguous error).</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Duplicate identical <code class="docutils literal notranslate"><span class="pre">Named</span></code> tag sets for the same type raise at
+registration (no silent last-wins). <code class="docutils literal notranslate"><span class="pre">install</span></code> / merge with replace still
+overwrites the same tag set.</p></li>
+<li><p>Ambiguous Named/<code class="docutils literal notranslate"><span class="pre">Matched</span></code> resolution raises <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> with
+<code class="docutils literal notranslate"><span class="pre">ambiguous=True</span></code>; <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> does not treat that as a missing binding.</p></li>
+</ul>
+</section>
 </section>
 <section id="id1">
 <h2>0.4.0 - 2026-09-25<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<section id="added">
-<h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<section id="id2">
+<h3>Added<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code> extra package (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv-common</span></code> or
 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv[common]</span></code>): <code class="docutils literal notranslate"><span class="pre">YAMLSerDe</span></code> (PyYAML) and <code class="docutils literal notranslate"><span class="pre">RequestsClient</span></code>
@@ -168,8 +191,8 @@ hierarchical injectors.</p></li>
 qualified keys; inject <code class="docutils literal notranslate"><span class="pre">Injector</span></code> by type annotation.</p></li>
 </ul>
 </section>
-<section id="changed">
-<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading"></a></h3>
+<section id="id3">
+<h3>Changed<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">YAMLSerDe</span></code> moved from core to <code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code>. <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyiv.serde</span> <span class="pre">import</span> <span class="pre">YAMLSerDe</span></code> still works if the extra is installed.</p></li>
 <li><p>Missing bindings and injection failures raise <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> (with path)
@@ -181,28 +204,28 @@ runnable usage examples (doctest-backed) across core DI and test doubles.</p></l
 </ul>
 </section>
 </section>
-<section id="id2">
-<h2>0.3.0 - 2026-09-07<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id4">
+<h2>0.3.0 - 2026-09-07<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <p>First public PyPI release.</p>
-<section id="id3">
-<h3>Added<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id5">
+<h3>Added<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv</span></code> (Python 3.8–3.13).</p></li>
 <li><p>Changelog on the docs site and in package metadata.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py.typed</span></code> so type checkers treat pyiv as typed.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h3>Changed<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id6">
+<h3>Changed<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>README, docs, and GitHub Releases use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv</span></code> instead of a git URL.</p></li>
 </ul>
 </section>
 </section>
-<section id="id5">
-<h2>0.2.24 - 2026-08-29<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<section id="id6">
-<h3>Added<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id7">
+<h2>0.2.24 - 2026-08-29<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>Added<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>User guide: binding, scopes, keys and collections, testing with doubles.</p></li>
 <li><p>Homepage version badge from the package version.</p></li>
@@ -217,10 +240,10 @@ doubles), not factory-first copy.</p></li>
 </ul>
 </section>
 </section>
-<section id="id7">
-<h2>0.2.22 - 2026-08-28<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<section id="id8">
-<h3>Changed<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<section id="id9">
+<h2>0.2.22 - 2026-08-28<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<section id="id10">
+<h3>Changed<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Package metadata: author Richard Lee, documentation
 <a class="reference external" href="https://rl337.org/pyiv/">https://rl337.org/pyiv/</a>.</p></li>
@@ -228,28 +251,28 @@ doubles), not factory-first copy.</p></li>
 </ul>
 </section>
 </section>
-<section id="id9">
-<h2>0.2.21 - 2026-08-28<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
-<section id="id10">
-<h3>Added<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<section id="id11">
+<h2>0.2.21 - 2026-08-28<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<section id="id12">
+<h3>Added<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Product docs at <a class="reference external" href="https://rl337.org/pyiv/">https://rl337.org/pyiv/</a> (git
 install, grouped API nav).</p></li>
 <li><p>Doctests in CI for examples in <code class="docutils literal notranslate"><span class="pre">pyiv</span></code> module docstrings.</p></li>
 </ul>
 </section>
-<section id="id11">
-<h3>Fixed<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<section id="id13">
+<h3>Fixed<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">register_key</span></code> keeps the implementation class.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Multibinder.add</span></code> registers the binding.</p></li>
 </ul>
 </section>
 </section>
-<section id="id12">
-<h2>0.2.20 - 2026-08-28<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
-<section id="id13">
-<h3>Fixed<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<section id="id14">
+<h2>0.2.20 - 2026-08-28<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<section id="id15">
+<h3>Fixed<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Singleton resolution no longer recurses into itself.</p></li>
 <li><p>CI fails when pytest exits 2 (collection errors), not only on test failures.</p></li>
@@ -259,8 +282,8 @@ install, grouped API nav).</p></li>
 <section id="earlier-0-2-x">
 <h2>Earlier 0.2.x<a class="headerlink" href="#earlier-0-2-x" title="Link to this heading"></a></h2>
 <p>Pre-PyPI history. Not every auto-bump is listed.</p>
-<section id="id14">
-<h3>Added<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<section id="id16">
+<h3>Added<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Guice-style Provider, Scope, Key, Binder, MembersInjector, Optional, and
 Multibinder.</p></li>

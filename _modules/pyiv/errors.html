@@ -176,6 +176,8 @@
 <span class="sd">        message: Human-readable failure reason</span>
 <span class="sd">        path: Resolution path from the root request to the failing type</span>
 <span class="sd">        causes: Nested failures (e.g. eager singleton warmup aggregation)</span>
+<span class="sd">        ambiguous: If True, multiple Named bindings matched and none was unique;</span>
+<span class="sd">            ``Optional[T]`` must not treat this as a missing binding</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; err = CreationError("No binding", path=["Service", "Database"])</span>
@@ -191,10 +193,12 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">causes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ambiguous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">causes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">causes</span><span class="p">)</span> <span class="k">if</span> <span class="n">causes</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ambiguous</span> <span class="o">=</span> <span class="n">ambiguous</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">())</span></div>
 
 

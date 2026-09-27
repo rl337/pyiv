@@ -160,6 +160,8 @@ resolve dependencies. It supports:</p>
 <ul class="simple">
 <li><p>Constructor injection via type annotations</p></li>
 <li><p>Singleton lifecycle management</p></li>
+<li><p>Qualified keys: strict <code class="docutils literal notranslate"><span class="pre">Named</span></code> tag sets and inject-only <code class="docutils literal notranslate"><span class="pre">Matched</span></code></p></li>
+<li><p>Bare <code class="docutils literal notranslate"><span class="pre">inject(Type)</span></code> fallback to <code class="docutils literal notranslate"><span class="pre">Named(...,</span> <span class="pre">default=True)</span></code> / sole Named</p></li>
 <li><p>Factory functions for complex object creation</p></li>
 <li><p>Circular dependency detection with path-aware CreationError</p></li>
 <li><p>Child injectors and private modules</p></li>
@@ -284,10 +286,28 @@ bindings. Singletons created in the child are local to the child.</p>
 <dt class="sig sig-object py" id="pyiv.injector.Injector.inject">
 <span class="sig-name descname"><span class="pre">inject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_or_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.14)"><span class="pre">Type</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><span class="pre">Key</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/pyiv/injector.html#Injector.inject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.injector.Injector.inject" title="Link to this definition"></a></dt>
 <dd><p>Inject and create an instance of the given class or key.</p>
+<p><strong>Resolution for types (bare ``inject(Encoder)``):</strong></p>
+<ol class="arabic simple">
+<li><p>Unqualified registration / instance / provider for the type</p></li>
+<li><p>Else <a class="reference internal" href="pyiv.key.html#pyiv.key.Named" title="pyiv.key.Named"><code class="xref py py-class docutils literal notranslate"><span class="pre">Named</span></code></a> bindings for that type: the sole
+<code class="docutils literal notranslate"><span class="pre">default=True</span></code> binding, or the only Named binding if there is
+exactly one; multiple Named bindings without a unique default raise</p></li>
+<li><p>Else parent injector (if any)</p></li>
+<li><p>Else JIT for concrete types (unless explicit bindings required)</p></li>
+</ol>
+<p><strong>Resolution for keys:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Key(T,</span> <span class="pre">Named(...))</span></code> — <strong>strict</strong> exact tag-set match</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Key(T,</span> <span class="pre">Matched(required=...,</span> <span class="pre">prefer=...))</span></code> — nearest match among
+Named bindings (required ⊆ tags, max prefer overlap, then default)</p></li>
+<li><p>Custom qualifiers — exact <code class="docutils literal notranslate"><span class="pre">Key</span></code> lookup only</p></li>
+</ul>
+<p>Ambiguous Named resolution raises <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> (including when
+resolving <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> constructor deps — ambiguity is not absence).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cls_or_key</strong> – The class to instantiate (can be abstract or concrete) or a Key</p></li>
+<li><p><strong>cls_or_key</strong> – The class to instantiate or a <a class="reference internal" href="pyiv.key.html#pyiv.key.Key" title="pyiv.key.Key"><code class="xref py py-class docutils literal notranslate"><span class="pre">Key</span></code></a></p></li>
 <li><p><strong>**kwargs</strong> – Additional keyword arguments to pass to the constructor</p></li>
 </ul>
 </dd>
@@ -298,6 +318,34 @@ bindings. Singletons created in the child are local to the child.</p>
 <dd class="field-odd"><p><a class="reference internal" href="pyiv.html#pyiv.CreationError" title="pyiv.CreationError"><strong>CreationError</strong></a> – If the binding cannot be resolved (with path context)</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Named</span><span class="p">,</span> <span class="n">Matched</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Encoder</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"base"</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">JSONEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"json"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PrettyJSONEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"pretty"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register_key</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"json"</span><span class="p">)),</span> <span class="n">JSONEncoder</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register_key</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Named</span><span class="p">([</span><span class="s2">"json"</span><span class="p">,</span> <span class="s2">"pretty"</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+<span class="gp">... </span>            <span class="n">PrettyJSONEncoder</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inj</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Named</span><span class="p">(</span><span class="s2">"json"</span><span class="p">)))</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'json'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Key</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="n">Matched</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="p">[</span><span class="s2">"json"</span><span class="p">],</span> <span class="n">prefer</span><span class="o">=</span><span class="p">[</span><span class="s2">"pretty"</span><span class="p">])))</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'pretty'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'pretty'</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">

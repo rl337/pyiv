@@ -186,7 +186,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.binder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Binder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.chain</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainHandler</span><span class="p">,</span> <span class="n">ChainType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.key</span><span class="w"> </span><span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Matched</span><span class="p">,</span> <span class="n">Named</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.multibinder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListMultibinder</span><span class="p">,</span> <span class="n">MapMultibinder</span><span class="p">,</span> <span class="n">Multibinder</span><span class="p">,</span> <span class="n">SetMultibinder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provider</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scope</span>
@@ -662,14 +662,39 @@
         <span class="n">implementation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Provider</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">scope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Scope</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Register a qualified binding using a Key.</span>
 
+<span class="sd">        Use :class:`~pyiv.key.Named` (scalar or tag list/tuple) when binding.</span>
+<span class="sd">        :class:`~pyiv.key.Matched` is inject-only and rejected here.</span>
+
+<span class="sd">        For ``Named`` keys of the same type:</span>
+
+<span class="sd">        - Duplicate tag sets raise ``ValueError`` unless ``replace=True``</span>
+<span class="sd">          (used by ``install`` / merge).</span>
+<span class="sd">        - At most one ``Named(..., default=True)`` per type is allowed.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            key: The qualified key</span>
+<span class="sd">            key: The qualified key (``Named`` for multi-impl; not ``Matched``)</span>
 <span class="sd">            implementation: The implementation class or provider</span>
 <span class="sd">            scope: Optional scope for lifecycle management</span>
+<span class="sd">            replace: If True, overwrite an existing identical Named tag set</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If implementation is not a type or Provider, or key</span>
+<span class="sd">                uses ``Matched``</span>
+<span class="sd">            ValueError: On duplicate Named tag set (without replace) or a</span>
+<span class="sd">                second ``default=True`` for the same type</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="p">,</span> <span class="n">Matched</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"Matched is inject-only; register bindings with Named, "</span> <span class="sa">f</span><span class="s2">"got key </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="p">,</span> <span class="n">Named</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_named_registration</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">)</span>
+
         <span class="c1"># Classes may define get(); treat types as implementations, not providers.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="p">)</span>
@@ -679,6 +704,31 @@
             <span class="k">return</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"implementation must be a type or Provider, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">implementation</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_named_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Enforce unique Named tag sets and at most one default per type."""</span>
+        <span class="n">named</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">qualifier</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">named</span><span class="p">,</span> <span class="n">Named</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">replace</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Duplicate Named binding for </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with tags "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">named</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span><span class="si">!r}</span><span class="s2">; use a distinct tag set or replace=True"</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">named</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">other_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">other_key</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">other_q</span> <span class="o">=</span> <span class="n">other_key</span><span class="o">.</span><span class="n">qualifier</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_q</span><span class="p">,</span> <span class="n">Named</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">other_q</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">other_key</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"At most one Named(..., default=True) binding allowed "</span>
+                    <span class="sa">f</span><span class="s2">"for </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">; already have </span><span class="si">{</span><span class="n">other_key</span><span class="si">!r}</span><span class="s2">"</span>
+                <span class="p">)</span>
 
 <div class="viewcode-block" id="Config.get_key_binding">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.get_key_binding">[docs]</a>
@@ -694,6 +744,32 @@
 <span class="sd">            Tuple of (type, provider, scope) or None if not found</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.get_named_bindings">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.get_named_bindings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_named_bindings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">binding_type</span><span class="p">:</span> <span class="n">Type</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Named</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Provider</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Scope</span><span class="p">]]]]:</span>
+<span class="w">        </span><span class="sd">"""Return all Named-qualified bindings for a type.</span>
+
+<span class="sd">        Used by Matched resolution and bare ``inject(Type)`` fallback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            binding_type: The type whose Named bindings to list</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of (key, named_qualifier, binding_tuple) for each Named key</span>
+<span class="sd">        """</span>
+        <span class="n">result</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+            <span class="n">Tuple</span><span class="p">[</span><span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Named</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Provider</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Scope</span><span class="p">]]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">binding</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">binding_type</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="p">,</span> <span class="n">Named</span><span class="p">):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="p">,</span> <span class="n">binding</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="Config.multibinder">
@@ -863,10 +939,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">"Config"</span><span class="p">],</span> <span class="s2">"Config"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Install another config module into this one.</span>
 
-<span class="sd">        Regular configs are merged immediately (last wins for the same type or</span>
-<span class="sd">        key). :class:`PrivateConfig` instances are queued and wired when the</span>
-<span class="sd">        injector is created so exposed bindings can delegate into a child</span>
-<span class="sd">        environment.</span>
+<span class="sd">        Regular configs are merged immediately. Unqualified type bindings</span>
+<span class="sd">        last-wins. For identical :class:`~pyiv.key.Named` tag sets,</span>
+<span class="sd">        ``replace=True`` overwrites; two ``default=True`` Named bindings for</span>
+<span class="sd">        the same type raise. :class:`PrivateConfig` instances are queued and</span>
+<span class="sd">        wired when the injector is created so exposed bindings can delegate</span>
+<span class="sd">        into a child environment.</span>
 <span class="sd">        """</span>
         <span class="n">cfg</span> <span class="o">=</span> <span class="n">other</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">other</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">Config</span><span class="p">):</span>
@@ -892,7 +970,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_singleton_types</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_singleton_types</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scopes</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_scopes</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_providers</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_qualified_bindings</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain_by_type</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain_by_type</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain_by_name</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain_by_name</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain_instances</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_chain_instances</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
@@ -943,6 +1021,41 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">replace</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
                 <span class="n">target</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_merge_qualified_bindings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Provider</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Scope</span><span class="p">]]],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Merge qualified bindings with Named uniqueness / default rules.</span>
+
+<span class="sd">        Same Named tag set: overwrite only when ``replace=True``; otherwise</span>
+<span class="sd">        raise. Two different tag sets both marked ``default=True`` for the</span>
+<span class="sd">        same type always raise.</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="p">,</span> <span class="n">Matched</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Matched is inject-only; cannot merge key </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">replace</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="p">,</span> <span class="n">Named</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Duplicate Named binding for </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with tags "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span><span class="si">!r}</span><span class="s2">"</span>
+                    <span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="p">,</span> <span class="n">Named</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">qualifier</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">other_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">other_key</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">other_q</span> <span class="o">=</span> <span class="n">other_key</span><span class="o">.</span><span class="n">qualifier</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_q</span><span class="p">,</span> <span class="n">Named</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other_q</span><span class="o">.</span><span class="n">default</span> <span class="ow">and</span> <span class="n">other_key</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">"At most one Named(..., default=True) binding allowed "</span>
+                            <span class="sa">f</span><span class="s2">"for </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">; conflict merging </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> "</span>
+                            <span class="sa">f</span><span class="s2">"with existing </span><span class="si">{</span><span class="n">other_key</span><span class="si">!r}</span><span class="s2">"</span>
+                        <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_qualified_bindings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">binding</span>
 
 <div class="viewcode-block" id="Config.singleton_bindings">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.singleton_bindings">[docs]</a>

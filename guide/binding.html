@@ -245,7 +245,9 @@ The default is <code class="docutils literal notranslate"><span class="pre">Stag
 <p>If you <code class="docutils literal notranslate"><span class="pre">inject()</span></code> a <strong>concrete</strong> class that was never registered, the
 injector still constructs it and fills its annotated parameters (unless
 <code class="docutils literal notranslate"><span class="pre">require_explicit_bindings()</span></code> is set). Interfaces and ABCs must be bound
-(or marked optional — see <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a>). Concrete constructor dependencies
+(or marked optional — see <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a>). For multiple implementations of one
+type, use <a class="reference internal" href="keys.html"><span class="doc">Keys and collections</span></a> (<code class="docutils literal notranslate"><span class="pre">Named</span></code> tag sets / <code class="docutils literal notranslate"><span class="pre">Matched</span></code>), not a second
+unqualified <code class="docutils literal notranslate"><span class="pre">register</span></code>. Concrete constructor dependencies
 are also just-in-time constructed when explicit mode is off.</p>
 <p>See also <a class="reference internal" href="../pyiv/pyiv.config.html"><span class="doc">pyiv.config</span></a> and <a class="reference internal" href="../pyiv/pyiv.binder.html"><span class="doc">pyiv.binder</span></a>.</p>
 </section>

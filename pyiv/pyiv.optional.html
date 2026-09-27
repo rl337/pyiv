@@ -150,7 +150,8 @@ dependency if available, or None if not registered.</p>
 <p>Optional dependencies solve the “graceful degradation” problem:</p>
 <ul class="simple">
 <li><p><strong>Feature Flags</strong>: Support optional features that may or may not be available</p></li>
-<li><p><strong>Plugin Systems</strong>: Optional plugins that enhance functionality if present</p></li>
+<li><p><strong>Plugin Systems</strong>: Optional plugins that enhance functionality if present
+(ambiguous Named resolution still raises; it is not treated as missing)</p></li>
 <li><p><strong>Environment-Specific Dependencies</strong>: Different dependencies in dev vs production</p></li>
 <li><p><strong>Backward Compatibility</strong>: Add new optional dependencies without breaking existing code</p></li>
 <li><p><strong>Type Safety</strong>: Use Optional[T] instead of manual None checks</p></li>
