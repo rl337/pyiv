@@ -8,6 +8,16 @@
     --pyiv-dark-gray: #666;
 }
 
+/* Sidebar logo (html_logo) — match mechaharness placement in the RTD nav header */
+.wy-side-nav-search .logo,
+.wy-side-nav-search > a img.logo {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin: 8px auto 0;
+    border-radius: 6px;
+}
+
 /* Style the quick links box */
 .rst-content .raw-html {
     margin: 20px 0;

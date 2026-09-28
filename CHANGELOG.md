@@ -6,6 +6,11 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+### Added
+
+- Project logo in the documentation sidebar (RTD left nav header).
+- Documentation favicon generated from ``icon.png``.
+
 ## 0.4.2 - 2026-09-27
 
 ### Added

@@ -55,7 +55,8 @@ napoleon_include_private_with_doc = False
 # HTML theme
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    "style_nav_header_background": "#0066cc",
+    # Match the logo's black field (same role as mechaharness blue + light logo).
+    "style_nav_header_background": "#000000",
     "collapse_navigation": False,
     "sticky_navigation": True,
     "navigation_depth": 2,
@@ -65,6 +66,8 @@ html_theme_options = {
 # HTML output options
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
+html_logo = "logo.png"
+html_favicon = "favicon.ico"
 
 # HTML context
 html_context = {
