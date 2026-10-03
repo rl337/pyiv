@@ -4,6 +4,13 @@ This module contains the core dependency injection engine. The Injector
 class is responsible for creating instances, resolving dependencies,
 and managing singleton lifecycles based on configuration.
 
+**What Problem Does This Solve?**
+
+Manual ``new`` / factory wiring couples construction to every call site.
+The injector builds objects from ``Config`` bindings and constructor
+annotations so you register once and request by type — including
+contextual overrides for a specific requesting class.
+
 Architecture:
     - Injector: Main dependency injection engine
     - get_injector(): Factory function for creating injectors from Config
@@ -15,6 +22,8 @@ resolve dependencies. It supports:
 
 - Constructor injection via type annotations
 - ``Annotated[T, Named(...)]`` / ``Annotated[T, Matched(...)]`` qualified deps
+- Contextual bindings: while constructing owner ``C``, bare deps can resolve
+  via ``when_injected_into(C)``; manual lookups use ``inject(T, from_=C)``
 - Singleton lifecycle management
 - Qualified keys: strict ``Named`` tag sets and inject-only ``Matched``
 - Bare ``inject(Type)`` fallback to ``Named(..., default=True)`` / sole Named
@@ -44,6 +53,42 @@ Usage:
         True
         >>> db = injector.inject(Database)
         >>> logger = injector.inject(Logger)
+
+    Contextual Lookup (Automatic Stack And Manual ``from_``):
+
+    Useful when a helper method or factory needs the same override the
+    owner would get during construction — pass ``from_=Owner`` so the
+    injector does not require ``Named`` at the call site.
+
+        >>> from pyiv import Config, get_injector
+        >>> class Transport:
+        ...     def __init__(self, kind: str = "http"):
+        ...         self.kind = kind
+        >>> class HttpTransport(Transport):
+        ...     def __init__(self):
+        ...         super().__init__("http")
+        >>> class GrpcTransport(Transport):
+        ...     def __init__(self):
+        ...         super().__init__("grpc")
+        >>> class RpcClient:
+        ...     def __init__(self, transport: Transport):
+        ...         self.transport = transport
+        ...     def fresh_transport(self, injector):
+        ...         # Same override as constructor injection for RpcClient
+        ...         return injector.inject(Transport, from_=RpcClient)
+        >>> class ClientConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Transport, HttpTransport)
+        ...         self.register(Transport, GrpcTransport, when_injected_into=RpcClient)
+        ...         self.register(RpcClient, RpcClient)
+        >>> inj = get_injector(ClientConfig)
+        >>> client = inj.inject(RpcClient)
+        >>> client.transport.kind
+        'grpc'
+        >>> client.fresh_transport(inj).kind
+        'grpc'
+        >>> inj.inject(Transport).kind
+        'http'
 """
 
 import inspect
@@ -119,7 +164,10 @@ class Injector:
 
     **Why this exists:** Manual wiring (``new`` / factories everywhere) couples
     construction to call sites. The injector builds objects from bindings and
-    constructor annotations so you register once and request by type.
+    constructor annotations so you register once and request by type —
+    including contextual ``when_injected_into`` overrides (automatic owner
+    stack or ``inject(T, from_=Owner)``). See the module docstring for a
+    Transport / RpcClient walkthrough.
 
     Example:
         >>> from pyiv import Config, get_injector
@@ -159,6 +207,7 @@ class Injector:
         self._scoped_instances: Dict[Scope, Dict[Any, Any]] = {}
         self._resolving: Set[Any] = set()
         self._path: List[str] = []
+        self._owners: List[Type] = []
         self._children: List["Injector"] = []
         if wire_private:
             self._wire_private_modules()
@@ -223,17 +272,25 @@ class Injector:
                 else:
                     self._config.register_provider(item, provider)
 
-    def inject(self, cls_or_key: Union[Type, Key[Any]], **kwargs) -> Any:
+    def inject(
+        self,
+        cls_or_key: Union[Type, Key[Any]],
+        *,
+        from_: Optional[Type] = None,
+        **kwargs,
+    ) -> Any:
         """Inject and create an instance of the given class or key.
 
         **Resolution for types (bare ``inject(Encoder)``):**
 
-        1. Unqualified registration / instance / provider for the type
-        2. Else :class:`~pyiv.key.Named` bindings for that type: the sole
+        1. Contextual binding for ``from_`` (explicit) or the current owner on
+           the injection stack (automatic while constructing a class)
+        2. Unqualified registration / instance / provider for the type
+        3. Else :class:`~pyiv.key.Named` bindings for that type: the sole
            ``default=True`` binding, or the only Named binding if there is
            exactly one; multiple Named bindings without a unique default raise
-        3. Else parent injector (if any)
-        4. Else JIT for concrete types (unless explicit bindings required)
+        4. Else parent injector (if any)
+        5. Else JIT for concrete types (unless explicit bindings required)
 
         **Resolution for keys:**
 
@@ -241,6 +298,7 @@ class Injector:
         - ``Key(T, Matched(required=..., prefer=...))`` — nearest match among
           Named bindings (required ⊆ tags, max prefer overlap, then default)
         - Custom qualifiers — exact ``Key`` lookup only
+        - ``from_`` is ignored for keys (contextual bindings are type-only)
 
         Ambiguous Named resolution raises ``CreationError`` (including when
         resolving ``Optional[T]`` constructor deps — ambiguity is not absence).
@@ -255,6 +313,8 @@ class Injector:
 
         Args:
             cls_or_key: The class to instantiate or a :class:`~pyiv.key.Key`
+            from_: Optional requesting type for contextual (when-injected-into)
+                bindings. Reserved by the injector; never forwarded to constructors.
             **kwargs: Additional keyword arguments to pass to the constructor
 
         Returns:
@@ -303,7 +363,7 @@ class Injector:
         self._resolving.add(identity)
         self._path.append(path_label)
         try:
-            return self._inject_inner(cls_or_key, **kwargs)
+            return self._inject_inner(cls_or_key, from_=from_, **kwargs)
         except CreationError:
             raise
         except Exception as exc:
@@ -316,11 +376,23 @@ class Injector:
             if self._path:
                 self._path.pop()
 
-    def _inject_inner(self, cls_or_key: Union[Type, Key[Any]], **kwargs) -> Any:
+    def _inject_inner(
+        self,
+        cls_or_key: Union[Type, Key[Any]],
+        *,
+        from_: Optional[Type] = None,
+        **kwargs,
+    ) -> Any:
         if isinstance(cls_or_key, Key):
             return self._inject_key(cls_or_key, **kwargs)
 
         cls = cls_or_key
+
+        requester = from_ if from_ is not None else (self._owners[-1] if self._owners else None)
+        if requester is not None:
+            contextual = self._config.get_contextual_binding(cls, requester)
+            if contextual is not None:
+                return self._materialize_contextual(cls, requester, contextual, **kwargs)
 
         provider = self._config.get_provider(cls)
         if provider is not None:
@@ -340,7 +412,7 @@ class Injector:
         # Parent fallback for hierarchical injectors
         if self._parent is not None:
             try:
-                return self._parent.inject(cls, **kwargs)
+                return self._parent.inject(cls, from_=requester, **kwargs)
             except CreationError:
                 pass
 
@@ -478,6 +550,60 @@ class Injector:
             return self._inject_scoped(type_, scope, **kwargs)
         return self.inject(type_, **kwargs)
 
+    def _materialize_contextual(
+        self,
+        abstract: Type,
+        owner: Type,
+        binding: Tuple[Optional[Type], Optional[Any], Optional[Any], Optional[Scope]],
+        **kwargs,
+    ) -> Any:
+        implementation, provider, instance, scope = binding
+        scope_key: Tuple[Type, Type] = (abstract, owner)
+
+        if instance is not None:
+            return instance
+
+        if provider is not None:
+            if scope is not None and not isinstance(scope, NoScope):
+                scoped_provider = scope.scope(scope_key, provider)
+                return scoped_provider.get()
+            return provider.get()
+
+        if implementation is None:
+            raise CreationError(
+                f"Contextual binding for {type_name(abstract)} when injected into "
+                f"{type_name(owner)} has no implementation",
+                path=list(self._path),
+            )
+
+        if scope is not None and not isinstance(scope, NoScope):
+            return self._inject_scoped_key(scope_key, implementation, scope, **kwargs)
+        return self.inject(implementation, **kwargs)
+
+    def _inject_scoped_key(
+        self,
+        scope_key: Any,
+        concrete: Type,
+        scope: Scope,
+        **kwargs,
+    ) -> Any:
+        """Scoped construction keyed by ``scope_key`` (e.g. contextual owner)."""
+        if scope not in self._scoped_instances:
+            self._scoped_instances[scope] = {}
+
+        scope_cache = self._scoped_instances[scope]
+        if scope_key in scope_cache:
+            return scope_cache[scope_key]
+
+        unscoped = _UnscopedProvider(lambda: self._instantiate(concrete, **kwargs))
+        scoped_provider = scope.scope(scope_key, unscoped)
+        instance = scoped_provider.get()
+
+        if isinstance(scope, (SingletonScope, GlobalSingletonScope)):
+            scope_cache[scope_key] = instance
+
+        return instance
+
     def _inject_scoped(self, cls: Type, scope: Scope, **kwargs) -> Any:
         if scope not in self._scoped_instances:
             self._scoped_instances[scope] = {}
@@ -550,8 +676,12 @@ class Injector:
         elif isinstance(concrete, type):
             init_fn = getattr(concrete, "__init__")
             sig = inspect.signature(init_fn)
-            bound_kwargs = self._resolve_dependencies(sig, kwargs, owner=init_fn)
-            return concrete(**bound_kwargs)
+            self._owners.append(concrete)
+            try:
+                bound_kwargs = self._resolve_dependencies(sig, kwargs, owner=init_fn)
+                return concrete(**bound_kwargs)
+            finally:
+                self._owners.pop()
         else:
             raise TypeError(f"Cannot instantiate {concrete}, must be a class or callable")
 
@@ -605,7 +735,8 @@ class Injector:
                         Key(provider_type, qualifier) if qualifier is not None else provider_type
                     )
                     try:
-                        resolved[param_name] = InjectorProvider(target, self)
+                        owner_from = self._owners[-1] if self._owners else None
+                        resolved[param_name] = InjectorProvider(target, self, from_=owner_from)
                         continue
                     except (ValueError, TypeError, CreationError):
                         pass

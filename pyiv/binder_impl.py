@@ -14,6 +14,8 @@ from pyiv.scope import NoScope, Scope
 
 T = TypeVar("T")
 
+_MISSING = object()
+
 
 class ConfigBindingBuilder(BindingBuilder[T]):
     """Binding builder implementation for Config."""
@@ -31,7 +33,15 @@ class ConfigBindingBuilder(BindingBuilder[T]):
         self._instance: Optional[T] = None
         self._provider: Optional[Provider[T]] = None
         self._scope: Optional[Scope] = None
+        self._when_injected_into: Optional[Type] = None
         self._finalized = False
+        # Snapshot prior unqualified state so when_injected_into can restore it
+        # after the untargeted self-binding below.
+        self._prior_registration = config._registrations.get(abstract, _MISSING)
+        self._prior_instance = config._instances.get(abstract, _MISSING)
+        self._prior_provider = config._providers.get(abstract, _MISSING)
+        self._prior_scope = config._scopes.get(abstract, _MISSING)
+        self._prior_singleton_type = config._singleton_types.get(abstract, _MISSING)
         # Untargeted self-binding; replaced by to / to_instance / to_provider.
         self._config.register(self._abstract, self._abstract)
 
@@ -65,12 +75,64 @@ class ConfigBindingBuilder(BindingBuilder[T]):
     def in_scope(self, scope: Scope) -> "ConfigBindingBuilder[T]":
         """Set the scope for this binding."""
         self._scope = scope
-        self._config._scopes[self._abstract] = scope
+        if self._when_injected_into is not None:
+            self._finalized = False
+            self._finalize()
+        else:
+            self._config._scopes[self._abstract] = scope
         return self
+
+    def when_injected_into(self, owner: Type) -> "ConfigBindingBuilder[T]":
+        """Limit this binding to injections into ``owner`` (exact type match)."""
+        if not isinstance(owner, type):
+            raise TypeError(f"when_injected_into owner must be a type, got {type(owner)}")
+        self._when_injected_into = owner
+        self._restore_prior_unqualified()
+        self._finalized = False
+        if (
+            self._implementation is not None
+            or self._instance is not None
+            or self._provider is not None
+        ):
+            self._finalize()
+        return self
+
+    def _restore_prior_unqualified(self) -> None:
+        """Undo unqualified writes from this builder so defaults stay intact."""
+        self._restore_dict_entry(
+            self._config._registrations, self._abstract, self._prior_registration
+        )
+        self._restore_dict_entry(self._config._instances, self._abstract, self._prior_instance)
+        self._restore_dict_entry(self._config._providers, self._abstract, self._prior_provider)
+        self._restore_dict_entry(self._config._scopes, self._abstract, self._prior_scope)
+        self._restore_dict_entry(
+            self._config._singleton_types, self._abstract, self._prior_singleton_type
+        )
+
+    @staticmethod
+    def _restore_dict_entry(store: dict, key: Any, prior: Any) -> None:
+        if prior is _MISSING:
+            store.pop(key, None)
+        else:
+            store[key] = prior
 
     def _finalize(self) -> None:
         """Finalize the binding registration."""
         if self._finalized:
+            return
+
+        if self._when_injected_into is not None:
+            if self._implementation is None and self._instance is None and self._provider is None:
+                return
+            self._config.register_contextual(
+                self._abstract,
+                self._when_injected_into,
+                implementation=self._implementation,
+                provider=self._provider,
+                instance=self._instance,
+                scope=self._scope if self._scope is not None else NoScope(),
+            )
+            self._finalized = True
             return
 
         if self._instance is not None:
@@ -139,6 +201,11 @@ class ConfigKeyBindingBuilder(BindingBuilder[T]):
                 type_, provider, _ = binding
                 self._config._qualified_bindings[self._key] = (type_, provider, scope)
         return self
+
+    def when_injected_into(self, owner: Type) -> "ConfigKeyBindingBuilder[T]":
+        raise TypeError(
+            "when_injected_into applies to type bindings only, not Key / Named bindings"
+        )
 
     def _finalize(self) -> None:
         if self._finalized:

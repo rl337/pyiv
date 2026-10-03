@@ -3,15 +3,32 @@
 This module provides the Config base class that defines how dependencies
 are registered and configured for the dependency injection system.
 
+**What Problem Does This Solve?**
+
+Without a registration surface, every call site must know concrete classes.
+``Config`` is the module of bindings: interfaces map to implementations,
+instances, providers, scopes, qualified keys, and contextual
+(when-injected-into) overrides that apply only for a specific consumer.
+
+**Real-World Use Cases:**
+
+- App modules that bind repositories, clients, and serializers once
+- Test overlays that replace a production binding with a fake
+- Default ``Encoder`` for the process, Avro only for one producer class
+  (``register(..., when_injected_into=AvroProducer)``)
+
 Architecture:
     - Config: Base class for dependency configuration
+    - PrivateConfig: Hidden graph with explicit ``expose``
     - Subclasses override configure() to register dependencies
 
 The Config class manages:
     - Type registrations (abstract -> concrete mappings)
     - Instance registrations (pre-created singletons)
     - Singleton lifecycle configuration
-    - Factory function registrations
+    - Factory / provider registrations
+    - Qualified ``Key`` / ``Named`` bindings
+    - Contextual bindings keyed by ``(abstract, owner)``
 
 Usage:
     Create a Config subclass and override configure() to register dependencies:
@@ -40,6 +57,42 @@ Usage:
         True
         >>> injector.inject(Logger) is injector.inject(Logger)
         True
+
+    Contextual Register (Per-Consumer Override):
+
+    Use when most inject sites should see a default implementation, but one
+    collaborating class needs a different concrete type — without tagging
+    constructor parameters with ``Named``.
+
+        >>> from pyiv import Config, get_injector
+        >>> class Clock:
+        ...     def __init__(self, name: str = "wall"):
+        ...         self.name = name
+        >>> class WallClock(Clock):
+        ...     def __init__(self):
+        ...         super().__init__("wall")
+        >>> class FrozenClock(Clock):
+        ...     def __init__(self):
+        ...         super().__init__("frozen")
+        >>> class ReplayWorker:
+        ...     def __init__(self, clock: Clock):
+        ...         self.clock = clock
+        >>> class LiveWorker:
+        ...     def __init__(self, clock: Clock):
+        ...         self.clock = clock
+        >>> class WorkerConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Clock, WallClock)
+        ...         self.register(Clock, FrozenClock, when_injected_into=ReplayWorker)
+        ...         self.register(ReplayWorker, ReplayWorker)
+        ...         self.register(LiveWorker, LiveWorker)
+        >>> workers = get_injector(WorkerConfig)
+        >>> workers.inject(LiveWorker).clock.name
+        'wall'
+        >>> workers.inject(ReplayWorker).clock.name
+        'frozen'
+        >>> workers.inject(Clock, from_=ReplayWorker).name
+        'frozen'
 """
 
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar, Union
@@ -73,6 +126,30 @@ class Config:
         ...         self.register(Database, PostgreSQL)
         >>> isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)
         True
+
+        Contextual binding with ``when_injected_into``:
+        >>> class Encoder:
+        ...     def __init__(self, kind: str = "base"):
+        ...         self.kind = kind
+        >>> class JSONEncoder(Encoder):
+        ...     def __init__(self):
+        ...         super().__init__("json")
+        >>> class AvroEncoder(Encoder):
+        ...     def __init__(self):
+        ...         super().__init__("avro")
+        >>> class AvroProducer:
+        ...     def __init__(self, encoder: Encoder):
+        ...         self.encoder = encoder
+        >>> class CtxConfig(Config):
+        ...     def configure(self):
+        ...         self.register(Encoder, JSONEncoder)
+        ...         self.register(Encoder, AvroEncoder, when_injected_into=AvroProducer)
+        ...         self.register(AvroProducer, AvroProducer)
+        >>> inj = get_injector(CtxConfig)
+        >>> inj.inject(Encoder).kind
+        'json'
+        >>> inj.inject(AvroProducer).encoder.kind
+        'avro'
     """
 
     def __init__(self):
@@ -89,6 +166,11 @@ class Config:
         self._providers: Dict[Type, Provider[Any]] = {}
         self._qualified_bindings: Dict[
             Key[Any], Tuple[Type, Optional[Provider[Any]], Optional[Scope]]
+        ] = {}
+        # (abstract, owner) -> (implementation, provider, instance, scope)
+        self._contextual_bindings: Dict[
+            Tuple[Type, Type],
+            Tuple[Optional[Type], Optional[Provider[Any]], Optional[Any], Optional[Scope]],
         ] = {}
         self._multibindings: Dict[Type, Tuple[Set[Type], List[Type], Set[Any], List[Any]]] = {}
         # Map multibindings: value_type -> (key -> implementation type, key -> instance)
@@ -121,6 +203,7 @@ class Config:
         singleton_type: SingletonType = SingletonType.NONE,
         scope: Optional[Scope] = None,
         provider: Optional[Provider[Any]] = None,
+        when_injected_into: Optional[Type] = None,
     ):
         """Register a concrete implementation for an abstract type.
 
@@ -131,6 +214,8 @@ class Config:
             singleton_type: Type of singleton behavior (NONE, SINGLETON, or GLOBAL_SINGLETON)
             scope: Scope for lifecycle management (takes precedence over singleton_type)
             provider: Provider to use for instance creation (takes precedence over concrete)
+            when_injected_into: If set, bind only when injecting into this owner type
+                (does not replace the default unqualified binding)
 
         Raises:
             TypeError: If abstract is not a type
@@ -153,6 +238,42 @@ class Config:
                 scope = GlobalSingletonScope()
             elif singleton_type == SingletonType.SINGLETON:
                 scope = SingletonScope()
+
+        if when_injected_into is not None:
+            if not isinstance(when_injected_into, type):
+                raise TypeError(
+                    f"when_injected_into must be a type, got {type(when_injected_into)}"
+                )
+            impl: Optional[Type] = concrete if isinstance(concrete, type) else None
+            if provider is not None:
+                self.register_contextual(
+                    abstract,
+                    when_injected_into,
+                    implementation=impl,
+                    provider=provider,
+                    scope=scope,
+                )
+                return
+            if not isinstance(concrete, type) and not callable(concrete):
+                self.register_contextual(
+                    abstract,
+                    when_injected_into,
+                    instance=concrete,
+                    scope=scope,
+                )
+                return
+            if callable(concrete) and not isinstance(concrete, type):
+                raise TypeError(
+                    "when_injected_into does not support factory callables; "
+                    "use register_provider(..., when_injected_into=...) or a class"
+                )
+            self.register_contextual(
+                abstract,
+                when_injected_into,
+                implementation=concrete,
+                scope=scope,
+            )
+            return
 
         # Store scope
         if scope is not None:
@@ -182,13 +303,30 @@ class Config:
             # It's a class or callable factory
             self._registrations[abstract] = concrete
 
-    def register_instance(self, abstract: Type, instance: Any):
+    def register_instance(
+        self,
+        abstract: Type,
+        instance: Any,
+        *,
+        when_injected_into: Optional[Type] = None,
+        scope: Optional[Scope] = None,
+    ):
         """Register a concrete instance for an abstract type.
 
         Args:
             abstract: The abstract class or interface
             instance: The concrete instance to register
+            when_injected_into: If set, bind only when injecting into this owner type
+            scope: Optional scope (meaningful mainly for contextual bindings)
         """
+        if when_injected_into is not None:
+            self.register_contextual(
+                abstract,
+                when_injected_into,
+                instance=instance,
+                scope=scope,
+            )
+            return
         self._instances[abstract] = instance
         self._registrations[abstract] = type(instance)
 
@@ -441,16 +579,83 @@ class Config:
         """
         return self._providers.get(abstract)
 
-    def register_provider(self, abstract: Type, provider: Provider[Any]) -> None:
+    def register_provider(
+        self,
+        abstract: Type,
+        provider: Provider[Any],
+        *,
+        when_injected_into: Optional[Type] = None,
+        scope: Optional[Scope] = None,
+    ) -> None:
         """Register a provider for a type.
 
         Args:
             abstract: The abstract class or interface
             provider: The provider to use for instance creation
+            when_injected_into: If set, bind only when injecting into this owner type
+            scope: Optional scope for the contextual provider binding
         """
         if not isinstance(abstract, type):
             raise TypeError(f"abstract must be a type, got {type(abstract)}")
+        if when_injected_into is not None:
+            self.register_contextual(
+                abstract,
+                when_injected_into,
+                provider=provider,
+                scope=scope,
+            )
+            return
         self._providers[abstract] = provider
+
+    def register_contextual(
+        self,
+        abstract: Type,
+        owner: Type,
+        *,
+        implementation: Optional[Type] = None,
+        provider: Optional[Provider[Any]] = None,
+        instance: Optional[Any] = None,
+        scope: Optional[Scope] = None,
+    ) -> None:
+        """Register a binding that applies only when injecting into ``owner``.
+
+        Does not replace the default unqualified binding for ``abstract``.
+
+        Args:
+            abstract: The type being bound
+            owner: The requesting type (exact match; no subclass walk)
+            implementation: Concrete class to construct
+            provider: Provider for instance creation
+            instance: Pre-created instance
+            scope: Optional scope for this contextual binding only
+        """
+        if not isinstance(abstract, type):
+            raise TypeError(f"abstract must be a type, got {type(abstract)}")
+        if not isinstance(owner, type):
+            raise TypeError(f"owner must be a type, got {type(owner)}")
+        specified = sum(x is not None for x in (implementation, provider, instance))
+        if specified == 0:
+            raise ValueError("register_contextual requires implementation, provider, or instance")
+        if specified > 1:
+            raise ValueError(
+                "register_contextual accepts only one of implementation, provider, instance"
+            )
+        self._contextual_bindings[(abstract, owner)] = (
+            implementation,
+            provider,
+            instance,
+            scope,
+        )
+
+    def get_contextual_binding(
+        self, abstract: Type, owner: Type
+    ) -> Optional[Tuple[Optional[Type], Optional[Provider[Any]], Optional[Any], Optional[Scope]]]:
+        """Return the contextual binding for ``abstract`` when injected into ``owner``."""
+        return self._contextual_bindings.get((abstract, owner))
+
+    def has_contextual_binding(self, abstract: Type, owner: Type) -> bool:
+        """Return whether a contextual binding exists for ``(abstract, owner)``."""
+        return (abstract, owner) in self._contextual_bindings
 
     def register_key(
         self,
@@ -718,6 +923,7 @@ class Config:
         self._merge_dict(self._singleton_types, other._singleton_types, replace)
         self._merge_dict(self._scopes, other._scopes, replace)
         self._merge_dict(self._providers, other._providers, replace)
+        self._merge_dict(self._contextual_bindings, other._contextual_bindings, replace)
         self._merge_qualified_bindings(other._qualified_bindings, replace=replace)
         self._merge_dict(self._chain_by_type, other._chain_by_type, replace)
         self._merge_dict(self._chain_by_name, other._chain_by_name, replace)

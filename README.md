@@ -27,8 +27,9 @@ stdlib-only):
 pip install pyiv-common
 ```
 
-The [user guide](https://rl337.org/pyiv/) covers Binder, Keys, scopes,
-the Clock / Filesystem / Console / DateTimeService test doubles, and
+The [user guide](https://rl337.org/pyiv/) covers Binder, Keys, contextual
+``when_injected_into`` bindings, scopes, the Clock / Filesystem / Console /
+DateTimeService test doubles, and
 [related packages](https://rl337.org/pyiv/guide/packages.html).
 
 ## Quick start

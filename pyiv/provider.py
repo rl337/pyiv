@@ -81,7 +81,7 @@ Usage Examples:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, Protocol, Type, TypeVar, Union
+from typing import Any, Callable, Generic, Optional, Protocol, Type, TypeVar, Union
 
 from pyiv.key import Key
 
@@ -207,15 +207,23 @@ class InjectorProvider(Generic[T]):
         'postgresql'
     """
 
-    def __init__(self, cls_or_key: Union[Type[T], Key[T]], injector: Any):
+    def __init__(
+        self,
+        cls_or_key: Union[Type[T], Key[T]],
+        injector: Any,
+        *,
+        from_: Optional[Type] = None,
+    ):
         """Initialize provider with a type or Key and injector.
 
         Args:
             cls_or_key: The type or qualified Key to provide instances of
             injector: The injector to use for instance creation
+            from_: Optional requesting type for contextual bindings (bare types only)
         """
         self._cls = cls_or_key
         self._injector = injector
+        self._from = from_
 
     def get(self) -> T:
         """Get an instance using the injector.
@@ -223,6 +231,8 @@ class InjectorProvider(Generic[T]):
         Returns:
             An instance created by ``injector.inject`` of the type or Key
         """
+        if self._from is not None and not isinstance(self._cls, Key):
+            return self._injector.inject(self._cls, from_=self._from)
         return self._injector.inject(self._cls)
 
 

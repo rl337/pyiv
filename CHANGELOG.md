@@ -8,6 +8,12 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ### Added
 
+- Contextual (when-injected-into) bindings: override a type only when
+  requested for a specific owner class via
+  ``binder.bind(T).to(Impl).when_injected_into(Owner)`` or
+  ``register(..., when_injected_into=Owner)``. Resolution uses the
+  construction owner stack automatically; manual lookups use
+  ``inject(T, from_=Owner)``.
 - Project logo in the documentation sidebar (RTD left nav header).
 - Documentation site favicon.
 

@@ -1,7 +1,8 @@
 """Guice-style dependency injection for Python.
 
-pyiv provides type-based constructor injection, scopes, qualified keys, and
-built-in test doubles. Runtime has zero third-party dependencies. Python 3.8+.
+pyiv provides type-based constructor injection, scopes, qualified keys,
+contextual (when-injected-into) bindings, and built-in test doubles. Runtime
+has zero third-party dependencies. Python 3.8+.
 
 Key Features:
 
@@ -9,6 +10,8 @@ Key Features:
 - Scopes (per-injector and process-wide singletons, plus custom Scope)
 - Qualified keys with tag sets (``Named``), nearest match (``Matched``),
   ``Annotated`` constructor injection, and Binder
+- Contextual bindings: override a type only for a specific consumer via
+  ``when_injected_into`` / ``inject(..., from_=...)``
 - Module install, private modules, child injectors, and config override
 - Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
@@ -56,6 +59,46 @@ Quick Start:
 
     Constructor ``Annotated[T, Named|Matched]`` (Python 3.9+) is documented in
     the keys guide; use ``inject(Key(...))`` when you need an explicit lookup.
+
+**When Contextual Bindings Help:**
+
+    Tags (``Named``) are right when *call sites* choose an implementation
+    (``Annotated[Encoder, Named("avro")]``). Contextual bindings are right when
+    the *consumer class* should decide — most of the app gets a default
+    ``Encoder``, but ``AvroProducer`` always gets ``AvroEncoder`` without
+    annotating its constructor. The injector applies the override while
+    constructing that owner; manual code can pass ``from_=`` explicitly.
+
+    >>> from pyiv import Config, get_injector
+    >>> class Encoder:
+    ...     def __init__(self, kind: str = "base"):
+    ...         self.kind = kind
+    >>> class JSONEncoder(Encoder):
+    ...     def __init__(self):
+    ...         super().__init__("json")
+    >>> class AvroEncoder(Encoder):
+    ...     def __init__(self):
+    ...         super().__init__("avro")
+    >>> class AvroProducer:
+    ...     def __init__(self, encoder: Encoder):
+    ...         self.encoder = encoder
+    >>> class MetricsReporter:
+    ...     def __init__(self, encoder: Encoder):
+    ...         self.encoder = encoder
+    >>> class PipelineConfig(Config):
+    ...     def configure(self):
+    ...         binder = self.get_binder()
+    ...         binder.bind(Encoder).to(JSONEncoder)  # app-wide default
+    ...         binder.bind(Encoder).to(AvroEncoder).when_injected_into(AvroProducer)
+    ...         binder.bind(AvroProducer).to(AvroProducer)
+    ...         binder.bind(MetricsReporter).to(MetricsReporter)
+    >>> pipe = get_injector(PipelineConfig)
+    >>> pipe.inject(MetricsReporter).encoder.kind  # default
+    'json'
+    >>> pipe.inject(AvroProducer).encoder.kind  # automatic for that owner
+    'avro'
+    >>> pipe.inject(Encoder, from_=AvroProducer).kind  # manual lookup
+    'avro'
 """
 
 from pyiv.binder import Binder, BindingBuilder

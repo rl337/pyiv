@@ -89,6 +89,51 @@ want an explicit base/override overlay for tests.
 
    get_injector(AppConfig).inject(Database)  # PostgreSQL
 
+Contextual bindings (when-injected-into)
+----------------------------------------
+
+Bind a default implementation, then override it **only** when the type is
+requested while constructing a specific owner class (exact type match; no
+subclass walk). This is orthogonal to :doc:`keys` (``Named`` / ``Matched``).
+
+.. code-block:: python
+
+   from pyiv import Config, get_injector
+
+   class Encoder:
+       def __init__(self, kind: str = "base"):
+           self.kind = kind
+
+   class JSONEncoder(Encoder):
+       def __init__(self):
+           super().__init__("json")
+
+   class AvroEncoder(Encoder):
+       def __init__(self):
+           super().__init__("avro")
+
+   class AvroProducer:
+       def __init__(self, encoder: Encoder):
+           self.encoder = encoder
+
+   class MyConfig(Config):
+       def configure(self):
+           binder = self.get_binder()
+           binder.bind(Encoder).to(JSONEncoder)
+           binder.bind(Encoder).to(AvroEncoder).when_injected_into(AvroProducer)
+           binder.bind(AvroProducer).to(AvroProducer)
+
+   inj = get_injector(MyConfig)
+   inj.inject(Encoder)  # JSONEncoder (default)
+   inj.inject(AvroProducer).encoder  # AvroEncoder (automatic via owner stack)
+   inj.inject(Encoder, from_=AvroProducer)  # AvroEncoder (manual)
+
+``Config.register(..., when_injected_into=Owner)`` and
+``register_instance`` / ``register_provider`` accept the same flag.
+``from_`` on ``inject()`` is reserved by the injector and is never forwarded
+to constructors. Contextual bindings apply to **bare types** only; they do
+not affect ``inject(Key(...))``.
+
 Untargeted bindings
 -------------------
 
@@ -121,7 +166,8 @@ injector still constructs it and fills its annotated parameters (unless
 ``require_explicit_bindings()`` is set). Interfaces and ABCs must be bound
 (or marked optional — see :doc:`keys`). For multiple implementations of one
 type, use :doc:`keys` (``Named`` tag sets / ``Matched``, including
-``Annotated`` on constructor parameters). Field injection via
+``Annotated`` on constructor parameters) or contextual
+``when_injected_into`` bindings above. Field injection via
 ``inject_members`` does **not** honor Annotated qualifiers — use a
 constructor or ``inject(Key(...))``. Concrete constructor dependencies
 are also just-in-time constructed when explicit mode is off.
