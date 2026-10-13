@@ -21,6 +21,7 @@ resolve dependencies. It supports:
 - Factory functions for complex object creation
 - Circular dependency detection with path-aware CreationError
 - Child injectors and private modules
+- Catalog introspection: ``catalog_keys`` / ``named_keys`` without constructing
 
 Usage:
     Create a Config subclass, register dependencies, then create an injector:
@@ -44,6 +45,71 @@ Usage:
         True
         >>> db = injector.inject(Database)
         >>> logger = injector.inject(Logger)
+
+    List Plugin Catalog Keys Without Constructing:
+
+    Map multibinds are the DI-owned catalog. ``catalog_keys`` returns membership
+    for CLI / docs before any heavy plugin is built.
+
+        >>> from pyiv import Config, get_injector
+        >>> class Recipe:
+        ...     name: str = "recipe"
+        ...     def __init__(self):
+        ...         raise RuntimeError("construct only on demand")
+        >>> class HarnessRun(Recipe):
+        ...     name = "harness_run"
+        ...     def __init__(self):
+        ...         self.name = "harness_run"
+        >>> class VerifyRepair(Recipe):
+        ...     name = "verify_repair"
+        ...     def __init__(self):
+        ...         self.name = "verify_repair"
+        >>> class CatalogConfig(Config):
+        ...     def configure(self):
+        ...         mb = self.map_multibinder(Recipe)
+        ...         mb.add("harness_run", HarnessRun)
+        ...         mb.add("verify_repair", VerifyRepair)
+        >>> get_injector(CatalogConfig).catalog_keys(Recipe)
+        ['harness_run', 'verify_repair']
+
+    Thin Catalog Facade (List Without Constructing):
+
+    Membership lives in the map multibind. A facade can take the injector and
+    use ``catalog_keys`` for CLI listing; inject a host with ``Dict[str, T]``
+    only when ``get()`` needs instances.
+
+        >>> from typing import Dict
+        >>> from pyiv import Config, Injector, get_injector
+        >>> class Plugin:
+        ...     def __init__(self, label: str = "base"):
+        ...         self.label = label
+        >>> class Alpha(Plugin):
+        ...     def __init__(self):
+        ...         super().__init__("alpha")
+        >>> class Beta(Plugin):
+        ...     def __init__(self):
+        ...         super().__init__("beta")
+        >>> class _PluginMap:
+        ...     def __init__(self, plugins: Dict[str, Plugin]):
+        ...         self.plugins = plugins
+        >>> class PluginCatalog:
+        ...     def __init__(self, injector: Injector):
+        ...         self._injector = injector
+        ...     def names(self):
+        ...         return self._injector.catalog_keys(Plugin)
+        ...     def get(self, name: str):
+        ...         return self._injector.inject(_PluginMap).plugins[name]
+        >>> class FacadeConfig(Config):
+        ...     def configure(self):
+        ...         mb = self.map_multibinder(Plugin)
+        ...         mb.add("alpha", Alpha)
+        ...         mb.add("beta", Beta)
+        ...         self.register(PluginCatalog, PluginCatalog)
+        >>> catalog = get_injector(FacadeConfig).inject(PluginCatalog)
+        >>> catalog.names()
+        ['alpha', 'beta']
+        >>> catalog.get("alpha").label
+        'alpha'
 """
 
 import inspect
@@ -59,11 +125,14 @@ from typing import (
     Set,
     Tuple,
     Type,
+    TypeVar,
     Union,
     get_args,
     get_origin,
     get_type_hints,
 )
+
+T = TypeVar("T")
 
 from pyiv.chain import ChainHandler, ChainType
 from pyiv.config import Config, PrivateConfig
@@ -120,6 +189,9 @@ class Injector:
     **Why this exists:** Manual wiring (``new`` / factories everywhere) couples
     construction to call sites. The injector builds objects from bindings and
     constructor annotations so you register once and request by type.
+    Catalog helpers (:meth:`catalog_keys`, :meth:`named_keys`) list membership
+    without constructing plugins — see the module docstring for CLI / facade
+    walkthroughs.
 
     Example:
         >>> from pyiv import Config, get_injector
@@ -919,6 +991,82 @@ class Injector:
         cls = type(instance)
         members_injector = InjectorMembersInjector(cls, self)
         members_injector.inject_members(instance)
+
+    def catalog_keys(self, value_type: Type[T]) -> List[Any]:
+        """Return map-multibind catalog keys for ``value_type`` without constructing.
+
+        Reads the local config's map multibinding (implementation and instance
+        maps). Does not call :meth:`inject`. Empty list when nothing is bound.
+
+        Keys are sorted when all are mutually comparable; otherwise insertion
+        order is preserved (implementations first, then instance-only keys).
+
+        Example:
+            >>> from pyiv import Config, get_injector
+            >>> class Tool:
+            ...     def __init__(self):
+            ...         raise RuntimeError("must not construct for listing")
+            >>> class GrepTool(Tool):
+            ...     def __init__(self):
+            ...         pass
+            >>> class LintTool(Tool):
+            ...     def __init__(self):
+            ...         pass
+            >>> class ToolConfig(Config):
+            ...     def configure(self):
+            ...         mb = self.map_multibinder(Tool)
+            ...         mb.add("lint", LintTool)
+            ...         mb.add("grep", GrepTool)
+            >>> get_injector(ToolConfig).catalog_keys(Tool)
+            ['grep', 'lint']
+        """
+        map_binding = self._config.get_map_multibinding(value_type)
+        if map_binding is None:
+            return []
+        impls, instances = map_binding
+        seen: Dict[Any, None] = {}
+        for key in impls:
+            seen.setdefault(key, None)
+        for key in instances:
+            seen.setdefault(key, None)
+        keys = list(seen.keys())
+        try:
+            return sorted(keys)
+        except TypeError:
+            return keys
+
+    def named_keys(self, binding_type: Type[T]) -> List[Named]:
+        """Return ``Named`` qualifiers bound for ``binding_type`` without constructing.
+
+        Lists Named-qualified keys from the local config (same store used by
+        Matched resolution). Does not construct implementations. Order is
+        stable by sorted tag tuples.
+
+        Example:
+            >>> from pyiv import Config, get_injector
+            >>> from pyiv.key import Key, Named
+            >>> class Encoder:
+            ...     def encode(self, data: str) -> str:
+            ...         raise NotImplementedError
+            >>> class JsonEncoder(Encoder):
+            ...     def encode(self, data: str) -> str:
+            ...         return f"json:{data}"
+            >>> class XmlEncoder(Encoder):
+            ...     def encode(self, data: str) -> str:
+            ...         return f"xml:{data}"
+            >>> class NamedCatalogConfig(Config):
+            ...     def configure(self):
+            ...         self.register_key(Key(Encoder, Named("json")), JsonEncoder)
+            ...         self.register_key(Key(Encoder, Named("xml")), XmlEncoder)
+            >>> tags = [
+            ...     sorted(n.tags) for n in get_injector(NamedCatalogConfig).named_keys(Encoder)
+            ... ]
+            >>> tags
+            [['json'], ['xml']]
+        """
+        named_bindings = self._config.get_named_bindings(binding_type)
+        named_list = [named for _key, named, _binding in named_bindings]
+        return sorted(named_list, key=lambda n: tuple(sorted(n.tags)))
 
     def eager_singletons(self) -> None:
         """Create all singleton-scoped bindings now (used by Stage.PRODUCTION)."""
