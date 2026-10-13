@@ -814,9 +814,7 @@ class Config:
             ['grep', 'lint']
         """
         for key, implementation in mapping.items():
-            self.contribute_map(
-                value_type, key, implementation, on_conflict=on_conflict
-            )
+            self.contribute_map(value_type, key, implementation, on_conflict=on_conflict)
 
     def require_explicit_bindings(self) -> None:
         """Disable just-in-time construction of unregistered concrete types."""

@@ -153,9 +153,7 @@ def test_contribute_map_error_on_conflict():
     class Host(Config):
         def configure(self):
             self.install(Lib)
-            self.contribute_map(
-                Recipe, "harness_run", VerifyRepair, on_conflict="error"
-            )
+            self.contribute_map(Recipe, "harness_run", VerifyRepair, on_conflict="error")
 
     with pytest.raises(ValueError, match="harness_run"):
         Host()
@@ -169,9 +167,7 @@ def test_contribute_map_keep_on_conflict():
     class Host(Config):
         def configure(self):
             self.install(Lib)
-            self.contribute_map(
-                Recipe, "harness_run", VerifyRepair, on_conflict="keep"
-            )
+            self.contribute_map(Recipe, "harness_run", VerifyRepair, on_conflict="keep")
 
     binding = Host().get_map_multibinding(Recipe)
     assert binding is not None

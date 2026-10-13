@@ -277,9 +277,7 @@ class ReflectionConfig(Config):
                         f"required for as_multibind='map'"
                     )
                 key = getattr(impl_class, key_attr)
-                self.contribute_map(
-                    interface, key, impl_class, on_conflict=on_conflict
-                )
+                self.contribute_map(interface, key, impl_class, on_conflict=on_conflict)
             return
 
         as_set = as_multibind == "set"
@@ -434,7 +432,7 @@ class ReflectionConfig(Config):
         Returns:
             Dictionary mapping submodule names to modules
         """
-        submodules = {}
+        submodules: Dict[str, Any] = {}
 
         if not hasattr(package, "__file__") or package.__file__ is None:
             return submodules
