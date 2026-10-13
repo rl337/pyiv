@@ -674,3 +674,192 @@ class CreateHandler(Handler):
             modules_to_remove = [m for m in sys.modules.keys() if m.startswith("test_package")]
             for m in modules_to_remove:
                 del sys.modules[m]
+
+
+class TestReflectionAsMultibind:
+    """Tests for register_module as_multibind catalog path."""
+
+    def test_as_multibind_map_requires_key_attr(self, tmp_path):
+        test_package_dir = tmp_path / "test_package"
+        test_package_dir.mkdir()
+        (test_package_dir / "__init__.py").write_text("")
+        (test_package_dir / "recipes.py").write_text(
+            """
+from tests.test_reflection import Handler
+
+class CreateHandler(Handler):
+    name = "create"
+    def handle(self, data: str) -> str:
+        return data
+"""
+        )
+        import sys
+
+        sys.path.insert(0, str(tmp_path))
+        try:
+            config = ReflectionConfig()
+            with pytest.raises(ValueError, match="key_attr"):
+                config.register_module(
+                    Handler, "test_package.recipes", as_multibind="map", recursive=False
+                )
+        finally:
+            sys.path.remove(str(tmp_path))
+            for m in [k for k in sys.modules if k.startswith("test_package")]:
+                del sys.modules[m]
+
+    def test_as_multibind_map_fills_catalog(self, tmp_path):
+        test_package_dir = tmp_path / "test_package"
+        test_package_dir.mkdir()
+        (test_package_dir / "__init__.py").write_text("")
+        (test_package_dir / "recipes.py").write_text(
+            """
+from tests.test_reflection import Handler
+
+class CreateHandler(Handler):
+    name = "create"
+    def handle(self, data: str) -> str:
+        return f"created: {data}"
+
+class UpdateHandler(Handler):
+    name = "update"
+    def handle(self, data: str) -> str:
+        return f"updated: {data}"
+"""
+        )
+        import sys
+
+        sys.path.insert(0, str(tmp_path))
+        try:
+
+            class MapConfig(ReflectionConfig):
+                def configure(self):
+                    self.register_module(
+                        Handler,
+                        "test_package.recipes",
+                        pattern="*Handler",
+                        as_multibind="map",
+                        key_attr="name",
+                        recursive=False,
+                    )
+
+            injector = get_injector(MapConfig)
+            assert injector.catalog_keys(Handler) == ["create", "update"]
+            # Unqualified Handler is not bound by map multibind path
+            with pytest.raises(Exception):
+                injector.inject(Handler)
+        finally:
+            sys.path.remove(str(tmp_path))
+            for m in [k for k in sys.modules if k.startswith("test_package")]:
+                del sys.modules[m]
+
+    def test_as_multibind_map_duplicate_key_errors(self, tmp_path):
+        test_package_dir = tmp_path / "test_package"
+        test_package_dir.mkdir()
+        (test_package_dir / "__init__.py").write_text("")
+        (test_package_dir / "recipes.py").write_text(
+            """
+from tests.test_reflection import Handler
+
+class CreateHandler(Handler):
+    name = "same"
+    def handle(self, data: str) -> str:
+        return data
+
+class OtherHandler(Handler):
+    name = "same"
+    def handle(self, data: str) -> str:
+        return data
+"""
+        )
+        import sys
+
+        sys.path.insert(0, str(tmp_path))
+        try:
+            config = ReflectionConfig()
+            with pytest.raises(ValueError, match="same"):
+                config.register_module(
+                    Handler,
+                    "test_package.recipes",
+                    pattern="*Handler",
+                    as_multibind="map",
+                    key_attr="name",
+                    recursive=False,
+                )
+        finally:
+            sys.path.remove(str(tmp_path))
+            for m in [k for k in sys.modules if k.startswith("test_package")]:
+                del sys.modules[m]
+
+    def test_as_multibind_list_accumulates(self, tmp_path):
+        test_package_dir = tmp_path / "test_package"
+        test_package_dir.mkdir()
+        (test_package_dir / "__init__.py").write_text("")
+        (test_package_dir / "handlers.py").write_text(
+            """
+from tests.test_reflection import Handler
+
+class CreateHandler(Handler):
+    def handle(self, data: str) -> str:
+        return data
+
+class UpdateHandler(Handler):
+    def handle(self, data: str) -> str:
+        return data
+"""
+        )
+        import sys
+
+        sys.path.insert(0, str(tmp_path))
+        try:
+            config = ReflectionConfig()
+            config.register_module(
+                Handler,
+                "test_package.handlers",
+                pattern="*Handler",
+                as_multibind="list",
+                recursive=False,
+            )
+            mb = config.get_multibinding(Handler)
+            assert mb is not None
+            _set_impls, list_impls, _set_inst, _list_inst = mb
+            assert {c.__name__ for c in list_impls} == {"CreateHandler", "UpdateHandler"}
+        finally:
+            sys.path.remove(str(tmp_path))
+            for m in [k for k in sys.modules if k.startswith("test_package")]:
+                del sys.modules[m]
+
+    def test_legacy_register_module_still_last_wins(self, tmp_path):
+        test_package_dir = tmp_path / "test_package"
+        test_package_dir.mkdir()
+        (test_package_dir / "__init__.py").write_text("")
+        (test_package_dir / "handlers.py").write_text(
+            """
+from tests.test_reflection import Handler
+
+class CreateHandler(Handler):
+    def handle(self, data: str) -> str:
+        return "create"
+
+class UpdateHandler(Handler):
+    def handle(self, data: str) -> str:
+        return "update"
+"""
+        )
+        import sys
+
+        sys.path.insert(0, str(tmp_path))
+        try:
+
+            class LegacyConfig(ReflectionConfig):
+                def configure(self):
+                    self.register_module(
+                        Handler, "test_package.handlers", pattern="*Handler", recursive=False
+                    )
+
+            injector = get_injector(LegacyConfig)
+            # Last registered wins for unqualified inject
+            assert injector.inject(Handler).handle("x") in ("create", "update")
+        finally:
+            sys.path.remove(str(tmp_path))
+            for m in [k for k in sys.modules if k.startswith("test_package")]:
+                del sys.modules[m]
