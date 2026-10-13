@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Keys and collections &mdash; pyiv 0.4.2 documentation</title>
+  <title>Keys and collections &mdash; pyiv 0.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=981266f8" />
@@ -15,13 +15,13 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ff822928"></script>
+      <script src="../_static/documentation_options.js?v=5bfaad31"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Hierarchy and private modules" href="hierarchy.html" />
+    <link rel="next" title="Catalogs without registries" href="catalogs.html" />
     <link rel="prev" title="Scopes" href="scopes.html" /> 
 </head>
 
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scopes.html">Scopes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages.html">Packages and extras</a></li>
@@ -111,6 +112,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -320,6 +325,8 @@ by tags (via <code class="docutils literal notranslate"><span class="pre">Key</s
 <code class="docutils literal notranslate"><span class="pre">inject(Type)</span></code> with <code class="docutils literal notranslate"><span class="pre">default=True</span></code>). Use a <strong>multibinder</strong> when the
 caller wants <strong>all</strong> implementations as a <code class="docutils literal notranslate"><span class="pre">Set</span></code>, <code class="docutils literal notranslate"><span class="pre">List</span></code>, or <code class="docutils literal notranslate"><span class="pre">Dict</span></code>.
 Do not put Named/Matched metadata on the collection annotation itself.</p>
+<p>For plugin / recipe catalogs (list without constructing, host contrib,
+reflection into multibinds), see <a class="reference internal" href="catalogs.html"><span class="doc">Catalogs without registries</span></a>.</p>
 </section>
 <section id="multibinder">
 <h2>Multibinder<a class="headerlink" href="#multibinder" title="Link to this heading"></a></h2>
@@ -385,6 +392,9 @@ the collection through a <strong>host class constructor</strong>, not
 <span class="c1"># host.encoders["json"] is JsonEncoder</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">injector.catalog_keys(Encoder)</span></code> lists map keys without constructing
+values. Hosts extending a library catalog should prefer
+<code class="docutils literal notranslate"><span class="pre">contribute_map(...,</span> <span class="pre">on_conflict=...)</span></code> — see <a class="reference internal" href="catalogs.html"><span class="doc">Catalogs without registries</span></a>.</p>
 </section>
 <section id="optional-dependencies">
 <h2>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading"></a></h2>
@@ -423,7 +433,7 @@ treated as missing. The same rule applies to
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="scopes.html" class="btn btn-neutral float-left" title="Scopes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hierarchy.html" class="btn btn-neutral float-right" title="Hierarchy and private modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="catalogs.html" class="btn btn-neutral float-right" title="Catalogs without registries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyIV Documentation &mdash; pyiv 0.4.2 documentation</title>
+  <title>PyIV Documentation &mdash; pyiv 0.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=981266f8" />
@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=ff822928"></script>
+      <script src="_static/documentation_options.js?v=5bfaad31"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -49,6 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
@@ -111,6 +112,10 @@
 <li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
@@ -148,7 +153,7 @@ inject by type, and swap production implementations for test doubles without
 mocking the world.</p>
 <div class="hero-meta docutils container">
 <div class="version-badge docutils container">
-<p>0.4.2</p>
+<p>0.4.3</p>
 </div>
 <p>Zero runtime dependencies. Python 3.8+.</p>
 </div>
@@ -239,6 +244,7 @@ Filesystem / Console / DateTimeService in tests:</p>
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
@@ -304,6 +310,12 @@ docstrings in the <code class="docutils literal notranslate"><span class="pre">p
 <li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.html">pyiv_common</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">

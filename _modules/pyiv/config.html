@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.config &mdash; pyiv 0.4.2 documentation</title>
+  <title>pyiv.config &mdash; pyiv 0.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ff822928"></script>
+      <script src="../../_static/documentation_options.js?v=5bfaad31"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
@@ -109,6 +110,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
@@ -154,6 +159,7 @@
 <span class="sd">    - Instance registrations (pre-created singletons)</span>
 <span class="sd">    - Singleton lifecycle configuration</span>
 <span class="sd">    - Factory function registrations</span>
+<span class="sd">    - Map multibind catalogs with explicit contribute / conflict policy</span>
 
 <span class="sd">Usage:</span>
 <span class="sd">    Create a Config subclass and override configure() to register dependencies:</span>
@@ -182,9 +188,43 @@
 <span class="sd">        True</span>
 <span class="sd">        &gt;&gt;&gt; injector.inject(Logger) is injector.inject(Logger)</span>
 <span class="sd">        True</span>
+
+<span class="sd">    Host Extends A Library Catalog With Conflict Policy:</span>
+
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Recipe:</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class HarnessRun(Recipe):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class WidgetLoop(Recipe):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; class LibraryConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.contribute_map(Recipe, "harness_run", HarnessRun)</span>
+<span class="sd">        &gt;&gt;&gt; class HostConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         self.install(LibraryConfig)</span>
+<span class="sd">        ...         self.contribute_map(</span>
+<span class="sd">        ...             Recipe, "acme.widget_loop", WidgetLoop, on_conflict="error"</span>
+<span class="sd">        ...         )</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(HostConfig).catalog_keys(Recipe)</span>
+<span class="sd">        ['acme.widget_loop', 'harness_run']</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.binder</span><span class="w"> </span><span class="kn">import</span> <span class="n">Binder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.chain</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainHandler</span><span class="p">,</span> <span class="n">ChainType</span>
@@ -196,6 +236,8 @@
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
 
+<span class="n">MapConflictPolicy</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"replace"</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">,</span> <span class="s2">"keep"</span><span class="p">]</span>
+
 
 <div class="viewcode-block" id="Config">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config">[docs]</a>
@@ -205,6 +247,8 @@
 <span class="sd">    **Why this exists:** Without a registration surface, every call site must</span>
 <span class="sd">    know concrete classes. Subclass ``Config``, override ``configure()``, and</span>
 <span class="sd">    register interfaces → implementations (or use :meth:`get_binder`).</span>
+<span class="sd">    For plugin catalogs, prefer :meth:`contribute_map` / ``map_multibinder``</span>
+<span class="sd">    so hosts can extend membership with an explicit conflict policy.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
@@ -902,6 +946,122 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">impls</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">instances</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">impls</span><span class="p">,</span> <span class="n">instances</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.contribute_map">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.contribute_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contribute_map</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">implementation</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">on_conflict</span><span class="p">:</span> <span class="n">MapConflictPolicy</span> <span class="o">=</span> <span class="s2">"replace"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add a keyed implementation to a map multibind with conflict policy.</span>
+
+<span class="sd">        Prefer this over silent ``map_multibinder(...).add`` when hosts extend</span>
+<span class="sd">        a library catalog and need an explicit rule for duplicate keys.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value_type: Catalog value type (map multibind bucket)</span>
+<span class="sd">            key: Catalog id (dict key)</span>
+<span class="sd">            implementation: Implementation class for the key</span>
+<span class="sd">            on_conflict: ``"replace"`` (default, same as bare add),</span>
+<span class="sd">                ``"error"`` if the key already exists, or ``"keep"`` to</span>
+<span class="sd">                leave the existing binding untouched</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">            &gt;&gt;&gt; class Handler:</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">            &gt;&gt;&gt; class DefaultHandler(Handler):</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">            &gt;&gt;&gt; class OverrideHandler(Handler):</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">            &gt;&gt;&gt; class Lib(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         self.contribute_map(Handler, "default", DefaultHandler)</span>
+<span class="sd">            &gt;&gt;&gt; class StrictHost(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         self.install(Lib)</span>
+<span class="sd">            ...         self.contribute_map(</span>
+<span class="sd">            ...             Handler, "extra", OverrideHandler, on_conflict="error"</span>
+<span class="sd">            ...         )</span>
+<span class="sd">            &gt;&gt;&gt; get_injector(StrictHost).catalog_keys(Handler)</span>
+<span class="sd">            ['default', 'extra']</span>
+<span class="sd">            &gt;&gt;&gt; class Clash(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         self.install(Lib)</span>
+<span class="sd">            ...         self.contribute_map(</span>
+<span class="sd">            ...             Handler, "default", OverrideHandler, on_conflict="error"</span>
+<span class="sd">            ...         )</span>
+<span class="sd">            &gt;&gt;&gt; try:</span>
+<span class="sd">            ...     Clash()</span>
+<span class="sd">            ... except ValueError as exc:</span>
+<span class="sd">            ...     "default" in str(exc)</span>
+<span class="sd">            True</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"implementation must be a type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">implementation</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">implementation</span><span class="p">,</span> <span class="n">value_type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">implementation</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must be a subclass of </span><span class="si">{</span><span class="n">value_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_conflict</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"replace"</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">,</span> <span class="s2">"keep"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"on_conflict must be 'replace', 'error', or 'keep', got </span><span class="si">{</span><span class="n">on_conflict</span><span class="si">!r}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+        <span class="n">impls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">instances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_multibinding_instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">existing_impl</span> <span class="o">=</span> <span class="n">impls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">existing_instance</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing_impl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">existing_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">on_conflict</span> <span class="o">==</span> <span class="s2">"keep"</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">on_conflict</span> <span class="o">==</span> <span class="s2">"error"</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">existing_impl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">existing_name</span> <span class="o">=</span> <span class="n">existing_impl</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">existing_name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">existing_instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Map multibind key </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> for </span><span class="si">{</span><span class="n">value_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> already bound "</span>
+                    <span class="sa">f</span><span class="s2">"to </span><span class="si">{</span><span class="n">existing_name</span><span class="si">}</span><span class="s2">; cannot contribute </span><span class="si">{</span><span class="n">implementation</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_map_multibinding</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">implementation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.contribute_map_entries">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.contribute_map_entries">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contribute_map_entries</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">on_conflict</span><span class="p">:</span> <span class="n">MapConflictPolicy</span> <span class="o">=</span> <span class="s2">"replace"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Contribute multiple map-multibind entries with the same conflict policy.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">            &gt;&gt;&gt; class Tool:</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">            &gt;&gt;&gt; class Grep(Tool):</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">            &gt;&gt;&gt; class Lint(Tool):</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">            &gt;&gt;&gt; class ToolsConfig(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         self.contribute_map_entries(</span>
+<span class="sd">            ...             Tool, {"grep": Grep, "lint": Lint}, on_conflict="error"</span>
+<span class="sd">            ...         )</span>
+<span class="sd">            &gt;&gt;&gt; get_injector(ToolsConfig).catalog_keys(Tool)</span>
+<span class="sd">            ['grep', 'lint']</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">implementation</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contribute_map</span><span class="p">(</span><span class="n">value_type</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="n">on_conflict</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Config.require_explicit_bindings">

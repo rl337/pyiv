@@ -120,6 +120,7 @@ Filesystem / Console / DateTimeService in tests:
    Binding <guide/binding>
    Scopes <guide/scopes>
    Keys and collections <guide/keys>
+   Catalogs without registries <guide/catalogs>
    Hierarchy and private modules <guide/hierarchy>
    Testing with doubles <guide/testing>
    Packages and extras <guide/packages>
@@ -186,6 +187,12 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    pyiv_common/pyiv_common
    pyiv_common/pyiv_common.serde
    pyiv_common/pyiv_common.network
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Inspiration
+
+   inspiration/plugin-catalog-discovery-inspiration
 
 .. toctree::
    :maxdepth: 1

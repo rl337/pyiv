@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.injector &mdash; pyiv 0.4.2 documentation</title>
+  <title>pyiv.injector &mdash; pyiv 0.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ff822928"></script>
+      <script src="../../_static/documentation_options.js?v=5bfaad31"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
@@ -109,6 +110,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
@@ -163,6 +168,7 @@
 <span class="sd">- Factory functions for complex object creation</span>
 <span class="sd">- Circular dependency detection with path-aware CreationError</span>
 <span class="sd">- Child injectors and private modules</span>
+<span class="sd">- Catalog introspection: ``catalog_keys`` / ``named_keys`` without constructing</span>
 
 <span class="sd">Usage:</span>
 <span class="sd">    Create a Config subclass, register dependencies, then create an injector:</span>
@@ -186,6 +192,71 @@
 <span class="sd">        True</span>
 <span class="sd">        &gt;&gt;&gt; db = injector.inject(Database)</span>
 <span class="sd">        &gt;&gt;&gt; logger = injector.inject(Logger)</span>
+
+<span class="sd">    List Plugin Catalog Keys Without Constructing:</span>
+
+<span class="sd">    Map multibinds are the DI-owned catalog. ``catalog_keys`` returns membership</span>
+<span class="sd">    for CLI / docs before any heavy plugin is built.</span>
+
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Recipe:</span>
+<span class="sd">        ...     name: str = "recipe"</span>
+<span class="sd">        ...     def __init__(self):</span>
+<span class="sd">        ...         raise RuntimeError("construct only on demand")</span>
+<span class="sd">        &gt;&gt;&gt; class HarnessRun(Recipe):</span>
+<span class="sd">        ...     name = "harness_run"</span>
+<span class="sd">        ...     def __init__(self):</span>
+<span class="sd">        ...         self.name = "harness_run"</span>
+<span class="sd">        &gt;&gt;&gt; class VerifyRepair(Recipe):</span>
+<span class="sd">        ...     name = "verify_repair"</span>
+<span class="sd">        ...     def __init__(self):</span>
+<span class="sd">        ...         self.name = "verify_repair"</span>
+<span class="sd">        &gt;&gt;&gt; class CatalogConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         mb = self.map_multibinder(Recipe)</span>
+<span class="sd">        ...         mb.add("harness_run", HarnessRun)</span>
+<span class="sd">        ...         mb.add("verify_repair", VerifyRepair)</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(CatalogConfig).catalog_keys(Recipe)</span>
+<span class="sd">        ['harness_run', 'verify_repair']</span>
+
+<span class="sd">    Thin Catalog Facade (List Without Constructing):</span>
+
+<span class="sd">    Membership lives in the map multibind. A facade can take the injector and</span>
+<span class="sd">    use ``catalog_keys`` for CLI listing; inject a host with ``Dict[str, T]``</span>
+<span class="sd">    only when ``get()`` needs instances.</span>
+
+<span class="sd">        &gt;&gt;&gt; from typing import Dict</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, Injector, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Plugin:</span>
+<span class="sd">        ...     def __init__(self, label: str = "base"):</span>
+<span class="sd">        ...         self.label = label</span>
+<span class="sd">        &gt;&gt;&gt; class Alpha(Plugin):</span>
+<span class="sd">        ...     def __init__(self):</span>
+<span class="sd">        ...         super().__init__("alpha")</span>
+<span class="sd">        &gt;&gt;&gt; class Beta(Plugin):</span>
+<span class="sd">        ...     def __init__(self):</span>
+<span class="sd">        ...         super().__init__("beta")</span>
+<span class="sd">        &gt;&gt;&gt; class _PluginMap:</span>
+<span class="sd">        ...     def __init__(self, plugins: Dict[str, Plugin]):</span>
+<span class="sd">        ...         self.plugins = plugins</span>
+<span class="sd">        &gt;&gt;&gt; class PluginCatalog:</span>
+<span class="sd">        ...     def __init__(self, injector: Injector):</span>
+<span class="sd">        ...         self._injector = injector</span>
+<span class="sd">        ...     def names(self):</span>
+<span class="sd">        ...         return self._injector.catalog_keys(Plugin)</span>
+<span class="sd">        ...     def get(self, name: str):</span>
+<span class="sd">        ...         return self._injector.inject(_PluginMap).plugins[name]</span>
+<span class="sd">        &gt;&gt;&gt; class FacadeConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         mb = self.map_multibinder(Plugin)</span>
+<span class="sd">        ...         mb.add("alpha", Alpha)</span>
+<span class="sd">        ...         mb.add("beta", Beta)</span>
+<span class="sd">        ...         self.register(PluginCatalog, PluginCatalog)</span>
+<span class="sd">        &gt;&gt;&gt; catalog = get_injector(FacadeConfig).inject(PluginCatalog)</span>
+<span class="sd">        &gt;&gt;&gt; catalog.names()</span>
+<span class="sd">        ['alpha', 'beta']</span>
+<span class="sd">        &gt;&gt;&gt; catalog.get("alpha").label</span>
+<span class="sd">        'alpha'</span>
 <span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
@@ -201,11 +272,14 @@
     <span class="n">Set</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">Type</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">get_args</span><span class="p">,</span>
     <span class="n">get_origin</span><span class="p">,</span>
     <span class="n">get_type_hints</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.chain</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainHandler</span><span class="p">,</span> <span class="n">ChainType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">PrivateConfig</span>
@@ -264,6 +338,9 @@
 <span class="sd">    **Why this exists:** Manual wiring (``new`` / factories everywhere) couples</span>
 <span class="sd">    construction to call sites. The injector builds objects from bindings and</span>
 <span class="sd">    constructor annotations so you register once and request by type.</span>
+<span class="sd">    Catalog helpers (:meth:`catalog_keys`, :meth:`named_keys`) list membership</span>
+<span class="sd">    without constructing plugins — see the module docstring for CLI / facade</span>
+<span class="sd">    walkthroughs.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
@@ -1083,6 +1160,88 @@
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
         <span class="n">members_injector</span> <span class="o">=</span> <span class="n">InjectorMembersInjector</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">members_injector</span><span class="o">.</span><span class="n">inject_members</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Injector.catalog_keys">
+<a class="viewcode-back" href="../../pyiv/pyiv.injector.html#pyiv.Injector.catalog_keys">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">catalog_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return map-multibind catalog keys for ``value_type`` without constructing.</span>
+
+<span class="sd">        Reads the local config's map multibinding (implementation and instance</span>
+<span class="sd">        maps). Does not call :meth:`inject`. Empty list when nothing is bound.</span>
+
+<span class="sd">        Keys are sorted when all are mutually comparable; otherwise insertion</span>
+<span class="sd">        order is preserved (implementations first, then instance-only keys).</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">            &gt;&gt;&gt; class Tool:</span>
+<span class="sd">            ...     def __init__(self):</span>
+<span class="sd">            ...         raise RuntimeError("must not construct for listing")</span>
+<span class="sd">            &gt;&gt;&gt; class GrepTool(Tool):</span>
+<span class="sd">            ...     def __init__(self):</span>
+<span class="sd">            ...         pass</span>
+<span class="sd">            &gt;&gt;&gt; class LintTool(Tool):</span>
+<span class="sd">            ...     def __init__(self):</span>
+<span class="sd">            ...         pass</span>
+<span class="sd">            &gt;&gt;&gt; class ToolConfig(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         mb = self.map_multibinder(Tool)</span>
+<span class="sd">            ...         mb.add("lint", LintTool)</span>
+<span class="sd">            ...         mb.add("grep", GrepTool)</span>
+<span class="sd">            &gt;&gt;&gt; get_injector(ToolConfig).catalog_keys(Tool)</span>
+<span class="sd">            ['grep', 'lint']</span>
+<span class="sd">        """</span>
+        <span class="n">map_binding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get_map_multibinding</span><span class="p">(</span><span class="n">value_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">map_binding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">impls</span><span class="p">,</span> <span class="n">instances</span> <span class="o">=</span> <span class="n">map_binding</span>
+        <span class="n">seen</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">impls</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">seen</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">keys</span></div>
+
+
+<div class="viewcode-block" id="Injector.named_keys">
+<a class="viewcode-back" href="../../pyiv/pyiv.injector.html#pyiv.Injector.named_keys">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">named_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binding_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Named</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return ``Named`` qualifiers bound for ``binding_type`` without constructing.</span>
+
+<span class="sd">        Lists Named-qualified keys from the local config (same store used by</span>
+<span class="sd">        Matched resolution). Does not construct implementations. Order is</span>
+<span class="sd">        stable by sorted tag tuples.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv.key import Key, Named</span>
+<span class="sd">            &gt;&gt;&gt; class Encoder:</span>
+<span class="sd">            ...     def encode(self, data: str) -&gt; str:</span>
+<span class="sd">            ...         raise NotImplementedError</span>
+<span class="sd">            &gt;&gt;&gt; class JsonEncoder(Encoder):</span>
+<span class="sd">            ...     def encode(self, data: str) -&gt; str:</span>
+<span class="sd">            ...         return f"json:{data}"</span>
+<span class="sd">            &gt;&gt;&gt; class XmlEncoder(Encoder):</span>
+<span class="sd">            ...     def encode(self, data: str) -&gt; str:</span>
+<span class="sd">            ...         return f"xml:{data}"</span>
+<span class="sd">            &gt;&gt;&gt; class NamedCatalogConfig(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         self.register_key(Key(Encoder, Named("json")), JsonEncoder)</span>
+<span class="sd">            ...         self.register_key(Key(Encoder, Named("xml")), XmlEncoder)</span>
+<span class="sd">            &gt;&gt;&gt; tags = [</span>
+<span class="sd">            ...     sorted(n.tags) for n in get_injector(NamedCatalogConfig).named_keys(Encoder)</span>
+<span class="sd">            ... ]</span>
+<span class="sd">            &gt;&gt;&gt; tags</span>
+<span class="sd">            [['json'], ['xml']]</span>
+<span class="sd">        """</span>
+        <span class="n">named_bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get_named_bindings</span><span class="p">(</span><span class="n">binding_type</span><span class="p">)</span>
+        <span class="n">named_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">named</span> <span class="k">for</span> <span class="n">_key</span><span class="p">,</span> <span class="n">named</span><span class="p">,</span> <span class="n">_binding</span> <span class="ow">in</span> <span class="n">named_bindings</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">named_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">tags</span><span class="p">)))</span></div>
 
 
 <div class="viewcode-block" id="Injector.eager_singletons">

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; pyiv 0.4.2 documentation</title>
+  <title>Index &mdash; pyiv 0.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=ff822928"></script>
+      <script src="_static/documentation_options.js?v=5bfaad31"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
@@ -108,6 +109,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -517,6 +522,12 @@
         <li><a href="pyiv/pyiv.html#pyiv.Timer.cancel">(pyiv.Timer method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Injector.catalog_keys">catalog_keys() (pyiv.Injector method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.catalog_keys">(pyiv.injector.Injector method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.chain.html#pyiv.chain.ChainHandler.chain_type">chain_type (pyiv.chain.ChainHandler property)</a>
 
       <ul>
@@ -719,6 +730,18 @@
 
       <ul>
         <li><a href="pyiv/pyiv.console.html#pyiv.console.Console">(class in pyiv.console)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.contribute_map">contribute_map() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.contribute_map">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.contribute_map_entries">contribute_map_entries() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.contribute_map_entries">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.copy">copy() (pyiv.Filesystem method)</a>
@@ -2186,6 +2209,12 @@
         <li><a href="pyiv/pyiv.key.html#pyiv.key.Named">(class in pyiv.key)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Injector.named_keys">named_keys() (pyiv.Injector method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.named_keys">(pyiv.injector.Injector method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.chain.html#pyiv.chain.ChainType.NETWORK_CLIENT">NETWORK_CLIENT (pyiv.chain.ChainType attribute)</a>
 
       <ul>
@@ -2214,10 +2243,10 @@
         <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.NoOpSerDe">(class in pyiv.serde.encodings)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.key.html#pyiv.key.normalize_tags">normalize_tags() (in module pyiv.key)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.key.html#pyiv.key.normalize_tags">normalize_tags() (in module pyiv.key)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.NoScope">NoScope (class in pyiv)</a>
 
       <ul>
