@@ -188,6 +188,9 @@ by tags (via ``Key``, ``Annotated`` on a constructor param, or bare
 caller wants **all** implementations as a ``Set``, ``List``, or ``Dict``.
 Do not put Named/Matched metadata on the collection annotation itself.
 
+For plugin / recipe catalogs (list without constructing, host contrib,
+reflection into multibinds), see :doc:`catalogs`.
+
 Multibinder
 -----------
 
@@ -257,6 +260,10 @@ Keyed implementations inject as ``Dict[K, V]`` through a host constructor:
 
    host = get_injector(MyConfig).inject(EncoderHost)
    # host.encoders["json"] is JsonEncoder
+
+``injector.catalog_keys(Encoder)`` lists map keys without constructing
+values. Hosts extending a library catalog should prefer
+``contribute_map(..., on_conflict=...)`` — see :doc:`catalogs`.
 
 Optional dependencies
 ---------------------

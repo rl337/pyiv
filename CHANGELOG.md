@@ -8,6 +8,17 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ### Added
 
+- ``Injector.catalog_keys(value_type)`` lists map-multibind catalog ids
+  without constructing plugins (CLI / docs over DI-owned catalogs).
+- ``Injector.named_keys(binding_type)`` lists ``Named`` qualifiers bound for
+  a type without constructing.
+- ``Config.contribute_map`` / ``contribute_map_entries`` with
+  ``on_conflict="replace"|"error"|"keep"`` for explicit catalog merges.
+- ``ReflectionConfig.register_module(..., as_multibind=..., key_attr=...)``
+  opt-in path that accumulates discoveries into map/set/list multibinds
+  instead of last-wins unqualified ``register``.
+- Guide page "Catalogs without registries" (facade pattern, host contrib,
+  reflection into catalogs).
 - Project logo in the documentation sidebar (RTD left nav header).
 - Documentation site favicon.
 

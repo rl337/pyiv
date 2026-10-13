@@ -329,10 +329,11 @@ class ListMultibinder(Generic[T]):
 class MapMultibinder(Generic[K, V]):
     """Multibinder that binds to a Dict[K, V].
 
-    **Why this exists:** Collect keyed implementations for Dict[K, V] injection.
-
-    Collects keyed implementations for injection as a mapping. Inject the
-    dict through a host class constructor, not ``injector.inject(Dict[...])``.
+    **Why this exists:** Collect keyed implementations for Dict[K, V] injection
+    (plugin / recipe catalogs). Inject the dict through a host class
+    constructor, not ``injector.inject(Dict[...])``. For host extension with
+    an explicit conflict policy, prefer
+    :meth:`~pyiv.config.Config.contribute_map`.
 
     Example:
         >>> from typing import Dict
