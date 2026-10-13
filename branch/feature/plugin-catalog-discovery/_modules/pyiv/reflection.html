@@ -435,9 +435,7 @@
                         <span class="sa">f</span><span class="s2">"required for as_multibind='map'"</span>
                     <span class="p">)</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">impl_class</span><span class="p">,</span> <span class="n">key_attr</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">contribute_map</span><span class="p">(</span>
-                    <span class="n">interface</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">impl_class</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="n">on_conflict</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contribute_map</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">impl_class</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="n">on_conflict</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">as_set</span> <span class="o">=</span> <span class="n">as_multibind</span> <span class="o">==</span> <span class="s2">"set"</span>
@@ -592,7 +590,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Dictionary mapping submodule names to modules</span>
 <span class="sd">        """</span>
-        <span class="n">submodules</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">submodules</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="s2">"__file__"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">package</span><span class="o">.</span><span class="vm">__file__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">submodules</span>
