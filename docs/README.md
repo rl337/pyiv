@@ -20,7 +20,9 @@ Open `docs/_build/html/index.html`.
 
 - `conf.py` — Sphinx config (RTD theme, autodoc)
 - `index.rst` — homepage, install, quick start, sidebar toctrees
+- `guide/` — user guide pages
 - `pyiv/` — per-module autodoc pages
+- `inspiration/` — non-normative design asks (not the API contract)
 - `_static/` — custom CSS
 
 ## Publishing
