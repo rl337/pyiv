@@ -6,6 +6,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+## 0.4.3 - 2026-10-13
+
 ### Added
 
 - ``Injector.catalog_keys(value_type)`` lists map-multibind catalog ids
