@@ -127,3 +127,68 @@ def test_named_keys_empty_when_unbound():
             pass
 
     assert get_injector(EmptyConfig).named_keys(Encoder) == []
+
+
+def test_contribute_map_replace_default():
+    class Lib(Config):
+        def configure(self):
+            self.contribute_map(Recipe, "harness_run", HarnessRun)
+
+    class Host(Config):
+        def configure(self):
+            self.install(Lib)
+            self.contribute_map(Recipe, "harness_run", VerifyRepair)
+
+    binding = Host().get_map_multibinding(Recipe)
+    assert binding is not None
+    impls, _instances = binding
+    assert impls["harness_run"] is VerifyRepair
+
+
+def test_contribute_map_error_on_conflict():
+    class Lib(Config):
+        def configure(self):
+            self.contribute_map(Recipe, "harness_run", HarnessRun)
+
+    class Host(Config):
+        def configure(self):
+            self.install(Lib)
+            self.contribute_map(
+                Recipe, "harness_run", VerifyRepair, on_conflict="error"
+            )
+
+    with pytest.raises(ValueError, match="harness_run"):
+        Host()
+
+
+def test_contribute_map_keep_on_conflict():
+    class Lib(Config):
+        def configure(self):
+            self.contribute_map(Recipe, "harness_run", HarnessRun)
+
+    class Host(Config):
+        def configure(self):
+            self.install(Lib)
+            self.contribute_map(
+                Recipe, "harness_run", VerifyRepair, on_conflict="keep"
+            )
+
+    binding = Host().get_map_multibinding(Recipe)
+    assert binding is not None
+    impls, _instances = binding
+    assert impls["harness_run"] is HarnessRun
+
+
+def test_contribute_map_entries():
+    class ToolsConfig(Config):
+        def configure(self):
+            self.contribute_map_entries(
+                Recipe,
+                {"harness_run": HarnessRun, "verify_repair": VerifyRepair},
+                on_conflict="error",
+            )
+
+    assert get_injector(ToolsConfig).catalog_keys(Recipe) == [
+        "harness_run",
+        "verify_repair",
+    ]

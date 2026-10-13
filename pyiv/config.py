@@ -12,6 +12,7 @@ The Config class manages:
     - Instance registrations (pre-created singletons)
     - Singleton lifecycle configuration
     - Factory function registrations
+    - Map multibind catalogs with explicit contribute / conflict policy
 
 Usage:
     Create a Config subclass and override configure() to register dependencies:
@@ -40,9 +41,43 @@ Usage:
         True
         >>> injector.inject(Logger) is injector.inject(Logger)
         True
+
+    Host Extends A Library Catalog With Conflict Policy:
+
+        >>> from pyiv import Config, get_injector
+        >>> class Recipe:
+        ...     pass
+        >>> class HarnessRun(Recipe):
+        ...     pass
+        >>> class WidgetLoop(Recipe):
+        ...     pass
+        >>> class LibraryConfig(Config):
+        ...     def configure(self):
+        ...         self.contribute_map(Recipe, "harness_run", HarnessRun)
+        >>> class HostConfig(Config):
+        ...     def configure(self):
+        ...         self.install(LibraryConfig)
+        ...         self.contribute_map(
+        ...             Recipe, "acme.widget_loop", WidgetLoop, on_conflict="error"
+        ...         )
+        >>> get_injector(HostConfig).catalog_keys(Recipe)
+        ['acme.widget_loop', 'harness_run']
 """
 
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from pyiv.binder import Binder
 from pyiv.chain import ChainHandler, ChainType
@@ -54,6 +89,8 @@ from pyiv.singleton import SingletonType
 
 T = TypeVar("T")
 
+MapConflictPolicy = Literal["replace", "error", "keep"]
+
 
 class Config:
     """Module of bindings that describe how to build an object graph.
@@ -61,6 +98,8 @@ class Config:
     **Why this exists:** Without a registration surface, every call site must
     know concrete classes. Subclass ``Config``, override ``configure()``, and
     register interfaces → implementations (or use :meth:`get_binder`).
+    For plugin catalogs, prefer :meth:`contribute_map` / ``map_multibinder``
+    so hosts can extend membership with an explicit conflict policy.
 
     Example:
         >>> from pyiv import Config, get_injector
@@ -666,6 +705,118 @@ class Config:
         if not impls and not instances:
             return None
         return (impls, instances)
+
+    def contribute_map(
+        self,
+        value_type: Type[T],
+        key: Any,
+        implementation: Type[T],
+        *,
+        on_conflict: MapConflictPolicy = "replace",
+    ) -> None:
+        """Add a keyed implementation to a map multibind with conflict policy.
+
+        Prefer this over silent ``map_multibinder(...).add`` when hosts extend
+        a library catalog and need an explicit rule for duplicate keys.
+
+        Args:
+            value_type: Catalog value type (map multibind bucket)
+            key: Catalog id (dict key)
+            implementation: Implementation class for the key
+            on_conflict: ``"replace"`` (default, same as bare add),
+                ``"error"`` if the key already exists, or ``"keep"`` to
+                leave the existing binding untouched
+
+        Example:
+            >>> from pyiv import Config, get_injector
+            >>> class Handler:
+            ...     pass
+            >>> class DefaultHandler(Handler):
+            ...     pass
+            >>> class OverrideHandler(Handler):
+            ...     pass
+            >>> class Lib(Config):
+            ...     def configure(self):
+            ...         self.contribute_map(Handler, "default", DefaultHandler)
+            >>> class StrictHost(Config):
+            ...     def configure(self):
+            ...         self.install(Lib)
+            ...         self.contribute_map(
+            ...             Handler, "extra", OverrideHandler, on_conflict="error"
+            ...         )
+            >>> get_injector(StrictHost).catalog_keys(Handler)
+            ['default', 'extra']
+            >>> class Clash(Config):
+            ...     def configure(self):
+            ...         self.install(Lib)
+            ...         self.contribute_map(
+            ...             Handler, "default", OverrideHandler, on_conflict="error"
+            ...         )
+            >>> try:
+            ...     Clash()
+            ... except ValueError as exc:
+            ...     "default" in str(exc)
+            True
+        """
+        if not isinstance(implementation, type):
+            raise TypeError(f"implementation must be a type, got {type(implementation)}")
+        if not issubclass(implementation, value_type):
+            raise TypeError(
+                f"{implementation.__name__} must be a subclass of {value_type.__name__}"
+            )
+        if on_conflict not in ("replace", "error", "keep"):
+            raise ValueError(
+                f"on_conflict must be 'replace', 'error', or 'keep', got {on_conflict!r}"
+            )
+
+        impls = self._map_multibindings.get(value_type, {})
+        instances = self._map_multibinding_instances.get(value_type, {})
+        existing_impl = impls.get(key)
+        existing_instance = instances.get(key)
+        if existing_impl is not None or existing_instance is not None:
+            if on_conflict == "keep":
+                return
+            if on_conflict == "error":
+                if existing_impl is not None:
+                    existing_name = existing_impl.__name__
+                else:
+                    existing_name = type(existing_instance).__name__
+                raise ValueError(
+                    f"Map multibind key {key!r} for {value_type.__name__} already bound "
+                    f"to {existing_name}; cannot contribute {implementation.__name__}"
+                )
+
+        self.register_map_multibinding(value_type, key, implementation)
+
+    def contribute_map_entries(
+        self,
+        value_type: Type[T],
+        mapping: Mapping[Any, Type[T]],
+        *,
+        on_conflict: MapConflictPolicy = "replace",
+    ) -> None:
+        """Contribute multiple map-multibind entries with the same conflict policy.
+
+        Example:
+            >>> from pyiv import Config, get_injector
+            >>> class Tool:
+            ...     pass
+            >>> class Grep(Tool):
+            ...     pass
+            >>> class Lint(Tool):
+            ...     pass
+            >>> class ToolsConfig(Config):
+            ...     def configure(self):
+            ...         self.contribute_map_entries(
+            ...             Tool, {"grep": Grep, "lint": Lint}, on_conflict="error"
+            ...         )
+            >>> get_injector(ToolsConfig).catalog_keys(Tool)
+            ['grep', 'lint']
+        """
+        for key, implementation in mapping.items():
+            self.contribute_map(
+                value_type, key, implementation, on_conflict=on_conflict
+            )
 
     def require_explicit_bindings(self) -> None:
         """Disable just-in-time construction of unregistered concrete types."""
