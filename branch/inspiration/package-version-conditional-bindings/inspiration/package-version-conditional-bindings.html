@@ -204,6 +204,23 @@
 <p>Avro schema fingerprints, registry IDs, and Protobuf descriptor identities are not necessarily ordered version numbers. A registry subject’s explicit revision number or an application-defined compatibility epoch may provide a valid ordered domain. In Protobuf, a message’s generated type does not automatically reveal an ordered schema revision. Where no meaningful total order exists, use exact-match identities or a separate compatibility predicate rather than inventing an ordering.</p>
 </section>
 </section>
+<section id="python-interpreter-version-specialization">
+<h2>Python interpreter version specialization<a class="headerlink" href="#python-interpreter-version-specialization" title="Link to this heading"></a></h2>
+<p>The running interpreter is another stable, environment-scoped version source. Expose a convenience method on the existing fluent Binder builder:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+<span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">AsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">LegacyAsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&lt;3.11"</span><span class="p">)</span>
+<span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">AsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">TaskGroupAsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&gt;=3.11"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">for_python_version(specifier)</span></code> should use the same generic version-condition selector as <code class="docutils literal notranslate"><span class="pre">for_version</span></code> and <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, with an interpreter-version provider based on <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code> and a documented comparison policy. It must not mistake the installed interpreter version for a package distribution version.</p>
+<p>User stories:</p>
+<ul class="simple">
+<li><p>Select compatible implementations for Python 3.8 through current supported interpreters without callers branching on <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code>.</p></li>
+<li><p>Permit testing simulated Python versions through injected version providers, not by changing the actual runtime.</p></li>
+<li><p>Respect Python’s parsing and import limitations: version-specific modules containing unsupported syntax or unavailable imports must be loaded lazily or otherwise isolated. Conditional injection alone cannot make invalid syntax importable.</p></li>
+<li><p>Preserve the existing pyiv Python 3.8+ baseline; introducing this feature must not itself require newer syntax.</p></li>
+</ul>
+</section>
 <section id="user-stories-and-acceptance-criteria">
 <h2>User stories and acceptance criteria<a class="headerlink" href="#user-stories-and-acceptance-criteria" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
@@ -243,7 +260,7 @@
 <section id="suggested-tests">
 <h2>Suggested tests<a class="headerlink" href="#suggested-tests" title="Link to this heading"></a></h2>
 <p>Add tests for inclusive/exclusive boundaries, open-ended ranges, numeric ordering (9 vs 10), schema revisions varying between consecutive messages, version-context-scoped singleton behavior, custom comparators, exact-match-only identifiers, and package adapters using the generic selector.</p>
-<p>Parameterized cases for older/current versions, exact pins, boundary versions, prereleases, absent packages, unmatched versions, overlapping ranges, conditional + unconditional bindings, scopes, providers, config installation, private configs, qualified keys, and deterministic resolver overrides. Verify that diagnostics are actionable and that the zero-dependency core remains installable.</p>
+<p>Parameterized cases for simulated Python 3.8, 3.10, 3.11 and later, plus older/current package versions, exact pins, boundary versions, prereleases, absent packages, unmatched versions, overlapping ranges, conditional + unconditional bindings, scopes, providers, config installation, private configs, qualified keys, and deterministic resolver overrides. Verify that diagnostics are actionable and that the zero-dependency core remains installable.</p>
 </section>
 <section id="open-questions">
 <h2>Open questions<a class="headerlink" href="#open-questions" title="Link to this heading"></a></h2>

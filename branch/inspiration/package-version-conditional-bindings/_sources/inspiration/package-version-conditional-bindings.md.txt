@@ -63,6 +63,24 @@ For example, an application might conceptually resolve `EventDecoder` with `{"ev
 
 Avro schema fingerprints, registry IDs, and Protobuf descriptor identities are not necessarily ordered version numbers. A registry subject's explicit revision number or an application-defined compatibility epoch may provide a valid ordered domain. In Protobuf, a message's generated type does not automatically reveal an ordered schema revision. Where no meaningful total order exists, use exact-match identities or a separate compatibility predicate rather than inventing an ordering.
 
+## Python interpreter version specialization
+
+The running interpreter is another stable, environment-scoped version source. Expose a convenience method on the existing fluent Binder builder:
+
+```python
+binder = self.get_binder()
+binder.bind(AsyncRunner).to(LegacyAsyncRunner).for_python_version("<3.11")
+binder.bind(AsyncRunner).to(TaskGroupAsyncRunner).for_python_version(">=3.11")
+```
+
+`for_python_version(specifier)` should use the same generic version-condition selector as `for_version` and `for_package_version`, with an interpreter-version provider based on `sys.version_info` and a documented comparison policy. It must not mistake the installed interpreter version for a package distribution version.
+
+User stories:
+- Select compatible implementations for Python 3.8 through current supported interpreters without callers branching on `sys.version_info`.
+- Permit testing simulated Python versions through injected version providers, not by changing the actual runtime.
+- Respect Python's parsing and import limitations: version-specific modules containing unsupported syntax or unavailable imports must be loaded lazily or otherwise isolated. Conditional injection alone cannot make invalid syntax importable.
+- Preserve the existing pyiv Python 3.8+ baseline; introducing this feature must not itself require newer syntax.
+
 ## User stories and acceptance criteria
 
 1. **Arbitrary version domains.** Bind implementations over named version domains with explicit inclusive/exclusive ranges and domain-specific comparators.
@@ -100,7 +118,7 @@ Avro schema fingerprints, registry IDs, and Protobuf descriptor identities are n
 
 Add tests for inclusive/exclusive boundaries, open-ended ranges, numeric ordering (9 vs 10), schema revisions varying between consecutive messages, version-context-scoped singleton behavior, custom comparators, exact-match-only identifiers, and package adapters using the generic selector.
 
-Parameterized cases for older/current versions, exact pins, boundary versions, prereleases, absent packages, unmatched versions, overlapping ranges, conditional + unconditional bindings, scopes, providers, config installation, private configs, qualified keys, and deterministic resolver overrides. Verify that diagnostics are actionable and that the zero-dependency core remains installable.
+Parameterized cases for simulated Python 3.8, 3.10, 3.11 and later, plus older/current package versions, exact pins, boundary versions, prereleases, absent packages, unmatched versions, overlapping ranges, conditional + unconditional bindings, scopes, providers, config installation, private configs, qualified keys, and deterministic resolver overrides. Verify that diagnostics are actionable and that the zero-dependency core remains installable.
 
 ## Open questions
 
