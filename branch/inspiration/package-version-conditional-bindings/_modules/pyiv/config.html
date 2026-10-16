@@ -45,6 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/catalogs.html">Catalogs without registries</a></li>
@@ -69,6 +70,7 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.version.html">pyiv.version</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -113,6 +115,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -160,6 +163,7 @@
 <span class="sd">    - Singleton lifecycle configuration</span>
 <span class="sd">    - Factory function registrations</span>
 <span class="sd">    - Map multibind catalogs with explicit contribute / conflict policy</span>
+<span class="sd">    - Version-conditioned binding candidates (see :mod:`pyiv.version`)</span>
 
 <span class="sd">Usage:</span>
 <span class="sd">    Create a Config subclass and override configure() to register dependencies:</span>
@@ -292,6 +296,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_require_explicit_bindings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_private</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">"PrivateConfig"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Key</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># Version-conditioned binding candidates and domain collaborators.</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">VersionBindingCandidate</span><span class="p">,</span> <span class="n">VersionComparer</span><span class="p">,</span> <span class="n">VersionSource</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_candidates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">VersionBindingCandidate</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">VersionSource</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_comparers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">VersionComparer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_selection_applied</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Config.configure">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.configure">[docs]</a>
@@ -1175,7 +1186,12 @@
         <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_exposed</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_exposed</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exposed</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_exposed</span><span class="p">)</span>
+
+        <span class="c1"># Version candidates accumulate (like multibinds); sources/comparers merge.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_version_candidates</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_version_sources</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_version_sources</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_version_comparers</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_version_comparers</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span></div>
 
 
     <span class="nd">@staticmethod</span>
@@ -1240,6 +1256,160 @@
                 <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
+
+<div class="viewcode-block" id="Config.register_version_source">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.register_version_source">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_version_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register how to read the current version for ``domain``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            domain: Named version domain (e.g. ``\"python\"``, ``\"alpine\"``)</span>
+<span class="sd">            source: A :class:`~pyiv.version.VersionSource`</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_sources</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span></div>
+
+
+<div class="viewcode-block" id="Config.register_version_comparer">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.register_version_comparer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_version_comparer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">comparer</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register a :class:`~pyiv.version.VersionComparer` for ``domain``.</span>
+
+<span class="sd">        When omitted, version selection uses :class:`~pyiv.version.Pep440VersionComparer`.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_comparers</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">comparer</span></div>
+
+
+<div class="viewcode-block" id="Config.add_version_candidate">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.add_version_candidate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_version_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Append a version-conditioned binding candidate.</span>
+
+<span class="sd">        Prefer the Binder ``for_version`` / ``for_package_version`` /</span>
+<span class="sd">        ``for_python_version`` helpers over calling this directly.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Config.apply_version_selection">
+<a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.apply_version_selection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_version_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Resolve env-stable version candidates into ordinary bindings.</span>
+
+<span class="sd">        Called once at injector construction. For each abstract type with</span>
+<span class="sd">        candidates:</span>
+
+<span class="sd">        - filter by domain :class:`~pyiv.version.VersionSource` + comparer</span>
+<span class="sd">        - exactly one match → register that binding (scope/provider preserved)</span>
+<span class="sd">        - zero matches → keep any unconditional binding as fallback; otherwise</span>
+<span class="sd">          raise :class:`~pyiv.errors.CreationError`</span>
+<span class="sd">        - two or more matches → raise ambiguous :class:`~pyiv.errors.CreationError`</span>
+
+<span class="sd">        Idempotent: a second call is a no-op.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version_selection_applied</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version_candidates</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_version_selection_applied</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreationError</span><span class="p">,</span> <span class="n">type_name</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pep440VersionComparer</span>
+
+        <span class="n">default_comparer</span> <span class="o">=</span> <span class="n">Pep440VersionComparer</span><span class="p">()</span>
+        <span class="n">by_abstract</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version_candidates</span><span class="p">:</span>
+            <span class="n">by_abstract</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">abstract</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">abstract</span><span class="p">,</span> <span class="n">candidates</span> <span class="ow">in</span> <span class="n">by_abstract</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">diagnostics</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version_sources</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">diagnostics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">candidate</span><span class="o">.</span><span class="n">specifier</span><span class="si">!r}</span><span class="s2"> on domain </span><span class="si">{</span><span class="n">candidate</span><span class="o">.</span><span class="n">domain</span><span class="si">!r}</span><span class="s2"> "</span>
+                        <span class="sa">f</span><span class="s2">"(no VersionSource registered)"</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">diagnostics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">candidate</span><span class="o">.</span><span class="n">specifier</span><span class="si">!r}</span><span class="s2"> on domain </span><span class="si">{</span><span class="n">candidate</span><span class="o">.</span><span class="n">domain</span><span class="si">!r}</span><span class="s2"> "</span>
+                        <span class="sa">f</span><span class="s2">"(version absent/unknown)"</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">comparer</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">candidate</span><span class="o">.</span><span class="n">comparer</span>
+                    <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version_comparers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">default_comparer</span>
+                <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ok</span> <span class="o">=</span> <span class="n">comparer</span><span class="o">.</span><span class="n">is_version_compatible</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">candidate</span><span class="o">.</span><span class="n">specifier</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">CreationError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Invalid version condition for </span><span class="si">{</span><span class="n">type_name</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+                <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+                    <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">candidate</span><span class="p">,</span> <span class="n">current</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">diagnostics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">candidate</span><span class="o">.</span><span class="n">specifier</span><span class="si">!r}</span><span class="s2"> on domain </span><span class="si">{</span><span class="n">candidate</span><span class="o">.</span><span class="n">domain</span><span class="si">!r}</span><span class="s2"> "</span>
+                        <span class="sa">f</span><span class="s2">"(installed </span><span class="si">{</span><span class="n">current</span><span class="si">!r}</span><span class="s2">)"</span>
+                    <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">detail</span> <span class="o">=</span> <span class="s2">"; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">specifier</span><span class="si">!r}</span><span class="s2">@</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">domain</span><span class="si">!r}</span><span class="s2"> (version </span><span class="si">{</span><span class="n">ver</span><span class="si">!r}</span><span class="s2">)"</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">ver</span> <span class="ow">in</span> <span class="n">matches</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">CreationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Ambiguous version binding for </span><span class="si">{</span><span class="n">type_name</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span><span class="si">}</span><span class="s2">: "</span>
+                    <span class="sa">f</span><span class="s2">"multiple candidates match (</span><span class="si">{</span><span class="n">detail</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+                    <span class="n">ambiguous</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">winner</span><span class="p">,</span> <span class="n">_ver</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_materialize_version_candidate</span><span class="p">(</span><span class="n">winner</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Zero matches: keep unconditional fallback if present.</span>
+            <span class="n">has_fallback</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">abstract</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrations</span>
+                <span class="ow">or</span> <span class="n">abstract</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">has_fallback</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">reasons</span> <span class="o">=</span> <span class="s2">"; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diagnostics</span><span class="p">)</span> <span class="k">if</span> <span class="n">diagnostics</span> <span class="k">else</span> <span class="s2">"no candidates"</span>
+            <span class="k">raise</span> <span class="n">CreationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"No version-compatible binding for </span><span class="si">{</span><span class="n">type_name</span><span class="p">(</span><span class="n">abstract</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">reasons</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version_selection_applied</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_materialize_version_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Write a winning version candidate into ordinary binding stores."""</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">abstract</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="n">abstract</span><span class="p">,</span> <span class="n">candidate</span><span class="o">.</span><span class="n">provider</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scopes</span><span class="p">[</span><span class="n">abstract</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">scope</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="n">abstract</span><span class="p">,</span> <span class="n">candidate</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scopes</span><span class="p">[</span><span class="n">abstract</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">scope</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">implementation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+                <span class="n">abstract</span><span class="p">,</span>
+                <span class="n">candidate</span><span class="o">.</span><span class="n">implementation</span><span class="p">,</span>
+                <span class="n">scope</span><span class="o">=</span><span class="n">candidate</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Version candidate for </span><span class="si">{</span><span class="n">abstract</span><span class="si">!r}</span><span class="s2"> has no implementation, "</span> <span class="sa">f</span><span class="s2">"instance, or provider"</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Config.get_binder">
 <a class="viewcode-back" href="../../pyiv/pyiv.config.html#pyiv.Config.get_binder">[docs]</a>

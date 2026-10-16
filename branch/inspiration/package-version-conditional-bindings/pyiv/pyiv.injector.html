@@ -48,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/catalogs.html">Catalogs without registries</a></li>
@@ -72,6 +73,7 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.version.html">pyiv.version</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.factory.html">pyiv.factory</a></li>
@@ -116,6 +118,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -171,6 +174,7 @@ resolve dependencies. It supports:</p>
 <li><p>Qualified keys: strict <code class="docutils literal notranslate"><span class="pre">Named</span></code> tag sets and inject-only <code class="docutils literal notranslate"><span class="pre">Matched</span></code></p></li>
 <li><p>Bare <code class="docutils literal notranslate"><span class="pre">inject(Type)</span></code> fallback to <code class="docutils literal notranslate"><span class="pre">Named(...,</span> <span class="pre">default=True)</span></code> / sole Named</p></li>
 <li><p>Factory functions for complex object creation</p></li>
+<li><p>Version-conditioned binding selection at construction (see <a class="reference internal" href="pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a>)</p></li>
 <li><p>Circular dependency detection with path-aware CreationError</p></li>
 <li><p>Child injectors and private modules</p></li>
 <li><p>Catalog introspection: <code class="docutils literal notranslate"><span class="pre">catalog_keys</span></code> / <code class="docutils literal notranslate"><span class="pre">named_keys</span></code> without constructing</p></li>

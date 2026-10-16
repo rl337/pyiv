@@ -48,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/catalogs.html">Catalogs without registries</a></li>
@@ -72,6 +73,7 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.version.html">pyiv.version</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.factory.html">pyiv.factory</a></li>
@@ -116,6 +118,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -158,6 +161,8 @@ built-in test doubles. Runtime has zero third-party dependencies. Python 3.8+.</
 <li><p>Scopes (per-injector and process-wide singletons, plus custom Scope)</p></li>
 <li><p>Qualified keys with tag sets (<code class="docutils literal notranslate"><span class="pre">Named</span></code>), nearest match (<code class="docutils literal notranslate"><span class="pre">Matched</span></code>),
 <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> constructor injection, and Binder</p></li>
+<li><p>Version-conditioned bindings (<code class="docutils literal notranslate"><span class="pre">for_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> /
+<code class="docutils literal notranslate"><span class="pre">for_python_version</span></code>) over named version domains</p></li>
 <li><p>Module install, private modules, child injectors, and config override</p></li>
 <li><p>Map/Set/List multibinders; Stage.PRODUCTION eager singletons</p></li>
 <li><p>Reflection to discover implementations in a package</p></li>
@@ -206,6 +211,27 @@ built-in test doubles. Runtime has zero third-party dependencies. Python 3.8+.</
 </div>
 <p>Constructor <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named|Matched]</span></code> (Python 3.9+) is documented in
 the keys guide; use <code class="docutils literal notranslate"><span class="pre">inject(Key(...))</span></code> when you need an explicit lookup.</p>
+<p>Version-conditioned bindings:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">FixedPythonVersionProvider</span><span class="p">,</span> <span class="n">PythonVersionProvider</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Runner</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"base"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">LegacyRunner</span><span class="p">(</span><span class="n">Runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"legacy"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">ModernRunner</span><span class="p">(</span><span class="n">Runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"modern"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">RunnerConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span><span class="o">.</span><span class="n">to_instance</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">FixedPythonVersionProvider</span><span class="p">(</span><span class="s2">"3.10.0"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Runner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">LegacyRunner</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&lt;3.11"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Runner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ModernRunner</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&gt;=3.11"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_injector</span><span class="p">(</span><span class="n">RunnerConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Runner</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'legacy'</span>
+</pre></div>
+</div>
 </div></blockquote>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.Base64SerDe">
@@ -650,7 +676,8 @@ instantiated. Subclasses should implement the <cite>get()</cite> method.</p>
 <p>Fluent configuration API for contributing bindings to a <code class="docutils literal notranslate"><span class="pre">Config</span></code>.</p>
 <p><strong>Why this exists:</strong> Direct <code class="docutils literal notranslate"><span class="pre">Config.register*</span></code> calls work, but complex
 graphs read better as <code class="docutils literal notranslate"><span class="pre">bind(X).to(Y).in_scope(Z)</span></code>. The binder also
-supports <code class="docutils literal notranslate"><span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">expose</span></code>, and <code class="docutils literal notranslate"><span class="pre">require_explicit_bindings</span></code>.</p>
+supports <code class="docutils literal notranslate"><span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">expose</span></code>, version-conditioned bindings, and
+<code class="docutils literal notranslate"><span class="pre">require_explicit_bindings</span></code>.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
@@ -662,6 +689,27 @@ supports <code class="docutils literal notranslate"><span class="pre">install</s
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Database</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">PostgreSQL</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Database</span><span class="p">),</span> <span class="n">PostgreSQL</span><span class="p">)</span>
 <span class="go">True</span>
+</pre></div>
+</div>
+<p>Version-conditioned bindings (env-stable selection at injector build):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">FixedPythonVersionProvider</span><span class="p">,</span> <span class="n">PythonVersionProvider</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Runner</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"base"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Legacy</span><span class="p">(</span><span class="n">Runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"legacy"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Modern</span><span class="p">(</span><span class="n">Runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"modern"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">RunnerConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span><span class="o">.</span><span class="n">to_instance</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">FixedPythonVersionProvider</span><span class="p">(</span><span class="s2">"3.12.0"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Runner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Legacy</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&lt;3.11"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Runner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Modern</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&gt;=3.11"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_injector</span><span class="p">(</span><span class="n">RunnerConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Runner</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'modern'</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -740,16 +788,29 @@ Later installs overwrite the same type/key (last wins).</p>
 <dd><p>Require every injectable type to be bound explicitly (no JIT).</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Binder.version_comparer">
+<span class="sig-name descname"><span class="pre">version_comparer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder.html#Binder.version_comparer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Binder.version_comparer" title="Link to this definition"></a></dt>
+<dd><p>Register a <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionComparer</span></code></a> for <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Binder.version_source">
+<span class="sig-name descname"><span class="pre">version_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/binder.html#Binder.version_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Binder.version_source" title="Link to this definition"></a></dt>
+<dd><p>Register a <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> for <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.BindingBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">BindingBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/binder.html#BindingBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.BindingBuilder" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>Fluent steps after <a class="reference internal" href="#pyiv.Binder.bind" title="pyiv.Binder.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Binder.bind()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">.to</span></code> / <code class="docutils literal notranslate"><span class="pre">.in_scope</span></code> / …).</p>
-<p><strong>Why this exists:</strong> A single <code class="docutils literal notranslate"><span class="pre">register(...)</span></code> call buries scope and
-provider choices in kwargs. The builder makes the binding shape readable
-as a chain while still writing the same <code class="docutils literal notranslate"><span class="pre">Config</span></code> store.</p>
+<p>Fluent steps after <a class="reference internal" href="#pyiv.Binder.bind" title="pyiv.Binder.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Binder.bind()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">.to</span></code> / <code class="docutils literal notranslate"><span class="pre">.in_scope</span></code> / <code class="docutils literal notranslate"><span class="pre">.for_version</span></code> / …).</p>
+<p><strong>Why this exists:</strong> A single <code class="docutils literal notranslate"><span class="pre">register(...)</span></code> call buries scope,
+provider, and version-condition choices in kwargs. The builder makes the
+binding shape readable as a chain while still writing the same <code class="docutils literal notranslate"><span class="pre">Config</span></code>
+store (or a version-candidate list).</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingletonScope</span>
@@ -764,10 +825,86 @@ as a chain while still writing the same <code class="docutils literal notranslat
 <span class="go">True</span>
 </pre></div>
 </div>
+<p>Version condition (see <a class="reference internal" href="pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a> for full examples):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">FixedPythonVersionProvider</span><span class="p">,</span> <span class="n">PythonVersionProvider</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Api</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">tag</span> <span class="o">=</span> <span class="s2">"base"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">V1</span><span class="p">(</span><span class="n">Api</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">tag</span> <span class="o">=</span> <span class="s2">"v1"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">V2</span><span class="p">(</span><span class="n">Api</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">tag</span> <span class="o">=</span> <span class="s2">"v2"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">ApiConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span><span class="o">.</span><span class="n">to_instance</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">FixedPythonVersionProvider</span><span class="p">(</span><span class="s2">"3.12.0"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Api</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">V1</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&lt;3.11"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Api</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">V2</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&gt;=3.11"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_injector</span><span class="p">(</span><span class="n">ApiConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Api</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+<span class="go">'v2'</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.BindingBuilder.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.BindingBuilder.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.BindingBuilder.for_package_version">
+<span class="sig-name descname"><span class="pre">for_package_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyiv.binder.html#pyiv.binder.BindingBuilder" title="pyiv.binder.BindingBuilder"><span class="pre">BindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder.html#BindingBuilder.for_package_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.BindingBuilder.for_package_version" title="Link to this definition"></a></dt>
+<dd><p>Restrict this binding to an installed distribution’s PEP 440 version.</p>
+<p>Convenience for <code class="docutils literal notranslate"><span class="pre">for_version</span></code> with
+<a class="reference internal" href="pyiv.version.html#pyiv.version.PackageVersionSource" title="pyiv.version.PackageVersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">PackageVersionSource</span></code></a> and
+<a class="reference internal" href="pyiv.version.html#pyiv.version.Pep440VersionComparer" title="pyiv.version.Pep440VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pep440VersionComparer</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>distribution</strong> – Distribution name (<code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code>), not
+necessarily the import package name</p></li>
+<li><p><strong>specifier</strong> – PEP 440 version specifier</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Self for method chaining</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.BindingBuilder.for_python_version">
+<span class="sig-name descname"><span class="pre">for_python_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyiv.binder.html#pyiv.binder.BindingBuilder" title="pyiv.binder.BindingBuilder"><span class="pre">BindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder.html#BindingBuilder.for_python_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.BindingBuilder.for_python_version" title="Link to this definition"></a></dt>
+<dd><p>Restrict this binding to the running interpreter’s PEP 440 version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>specifier</strong> – PEP 440 version specifier against <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Self for method chaining</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.BindingBuilder.for_version">
+<span class="sig-name descname"><span class="pre">for_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyiv.binder.html#pyiv.binder.BindingBuilder" title="pyiv.binder.BindingBuilder"><span class="pre">BindingBuilder</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/binder.html#BindingBuilder.for_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.BindingBuilder.for_version" title="Link to this definition"></a></dt>
+<dd><p>Restrict this binding to a named version domain + specifier.</p>
+<p>Registers a version <strong>candidate</strong> instead of an unconditional binding.
+See <a class="reference internal" href="pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a> and the version-bindings guide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>domain</strong> – Named version domain (must have a <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a>)</p></li>
+<li><p><strong>specifier</strong> – Domain-specific version constraint string</p></li>
+<li><p><strong>comparer</strong> – Optional per-candidate <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionComparer</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Self for method chaining</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyiv.BindingBuilder.in_scope">
@@ -1368,6 +1505,30 @@ so hosts can extend membership with an explicit conflict policy.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Config.add_version_candidate">
+<span class="sig-name descname"><span class="pre">add_version_candidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.add_version_candidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Config.add_version_candidate" title="Link to this definition"></a></dt>
+<dd><p>Append a version-conditioned binding candidate.</p>
+<p>Prefer the Binder <code class="docutils literal notranslate"><span class="pre">for_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> /
+<code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> helpers over calling this directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Config.apply_version_selection">
+<span class="sig-name descname"><span class="pre">apply_version_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.apply_version_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Config.apply_version_selection" title="Link to this definition"></a></dt>
+<dd><p>Resolve env-stable version candidates into ordinary bindings.</p>
+<p>Called once at injector construction. For each abstract type with
+candidates:</p>
+<ul class="simple">
+<li><p>filter by domain <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> + comparer</p></li>
+<li><p>exactly one match → register that binding (scope/provider preserved)</p></li>
+<li><p>zero matches → keep any unconditional binding as fallback; otherwise
+raise <a class="reference internal" href="pyiv.errors.html#pyiv.errors.CreationError" title="pyiv.errors.CreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreationError</span></code></a></p></li>
+<li><p>two or more matches → raise ambiguous <a class="reference internal" href="pyiv.errors.html#pyiv.errors.CreationError" title="pyiv.errors.CreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreationError</span></code></a></p></li>
+</ul>
+<p>Idempotent: a second call is a no-op.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyiv.Config.configure">
 <span class="sig-name descname"><span class="pre">configure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/config.html#Config.configure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Config.configure" title="Link to this definition"></a></dt>
 <dd><p>Override this method to register dependencies.</p>
@@ -1962,6 +2123,27 @@ with different behaviors (e.g., “json-input”, “json-output”,
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>abstract</strong> – The abstract class or interface</p></li>
 <li><p><strong>provider</strong> – The provider to use for instance creation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Config.register_version_comparer">
+<span class="sig-name descname"><span class="pre">register_version_comparer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.register_version_comparer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Config.register_version_comparer" title="Link to this definition"></a></dt>
+<dd><p>Register a <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionComparer</span></code></a> for <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+<p>When omitted, version selection uses <a class="reference internal" href="pyiv.version.html#pyiv.version.Pep440VersionComparer" title="pyiv.version.Pep440VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pep440VersionComparer</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Config.register_version_source">
+<span class="sig-name descname"><span class="pre">register_version_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.register_version_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Config.register_version_source" title="Link to this definition"></a></dt>
+<dd><p>Register how to read the current version for <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>domain</strong> – Named version domain (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;python&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;alpine&quot;</span></code>)</p></li>
+<li><p><strong>source</strong> – A <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -2877,6 +3059,38 @@ Depend on <code class="docutils literal notranslate"><span class="pre">Filesyste
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.FixedPythonVersionProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">FixedPythonVersionProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#FixedPythonVersionProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.FixedPythonVersionProvider" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyiv.version.html#pyiv.version.PythonVersionProvider" title="pyiv.version.PythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code></a></p>
+<p>Test double that returns a fixed interpreter version string.</p>
+<p><strong>Why this exists:</strong> Exercise version-conditioned bindings under many
+Python versions without changing the real runtime. Bind with
+<code class="docutils literal notranslate"><span class="pre">binder.bind(PythonVersionProvider).to_instance(...)</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">FixedPythonVersionProvider</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">FixedPythonVersionProvider</span><span class="p">(</span><span class="s2">"3.8.18"</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="go">'3.8.18'</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.FixedPythonVersionProvider.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#FixedPythonVersionProvider.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.FixedPythonVersionProvider.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>version</strong> – PEP 440 version string to report (e.g. <code class="docutils literal notranslate"><span class="pre">3.10.12</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.FixedPythonVersionProvider.get_version">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#FixedPythonVersionProvider.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.FixedPythonVersionProvider.get_version" title="Link to this definition"></a></dt>
+<dd><p>Return the fixed version passed to the constructor.</p>
 </dd></dl>
 
 </dd></dl>
@@ -3842,6 +4056,44 @@ an explicit conflict policy, prefer
 <dt class="sig sig-object py" id="pyiv.MapMultibinder.get_instances">
 <span class="sig-name descname"><span class="pre">get_instances</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.15)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><span class="pre">K</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">V</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv/multibinder.html#MapMultibinder.get_instances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.MapMultibinder.get_instances" title="Link to this definition"></a></dt>
 <dd><p>Get all registered keyed instances.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.MapVersionSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">MapVersionSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">versions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#MapVersionSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.MapVersionSource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Fixed version map for tests and host-supplied environment snapshots.</p>
+<p><strong>Why this exists:</strong> Selection must be deterministic in unit tests without
+monkeypatching <code class="docutils literal notranslate"><span class="pre">sys</span></code> or <code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code>. Bind one domain key, or
+pass a multi-key map and select with <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">MapVersionSource</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MapVersionSource</span><span class="p">({</span><span class="s2">"requests"</span><span class="p">:</span> <span class="s2">"2.31.0"</span><span class="p">},</span> <span class="n">domain</span><span class="o">=</span><span class="s2">"requests"</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="go">'2.31.0'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MapVersionSource</span><span class="p">({</span><span class="s2">"alpine"</span><span class="p">:</span> <span class="s2">"3.19"</span><span class="p">})</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="go">'3.19'</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.MapVersionSource.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">versions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#MapVersionSource.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.MapVersionSource.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>versions</strong> – Mapping of domain name → version string.</p></li>
+<li><p><strong>domain</strong> – Domain to read. When omitted and <code class="docutils literal notranslate"><span class="pre">versions</span></code> has exactly
+one entry, that entry is used.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.MapVersionSource.get_version">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#MapVersionSource.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.MapVersionSource.get_version" title="Link to this definition"></a></dt>
+<dd><p>Return the configured version for this source’s domain, if any.</p>
 </dd></dl>
 
 </dd></dl>
@@ -5443,6 +5695,80 @@ terminal. Use this for testing programs that require TTY behavior.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="pyiv.PackageVersionSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">PackageVersionSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#PackageVersionSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PackageVersionSource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Read an installed distribution version via <code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code>.</p>
+<p><strong>Why this exists:</strong> <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> needs the <strong>distribution</strong>
+name (as on PyPI), which is not always the import package name. This
+source never imports the library — it only consults packaging metadata.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageVersionSource</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># ``pyiv`` itself is installed in the test / docs environment</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ver</span> <span class="o">=</span> <span class="n">PackageVersionSource</span><span class="p">(</span><span class="s2">"pyiv"</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ver</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ver</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.PackageVersionSource.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#PackageVersionSource.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PackageVersionSource.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>distribution</strong> – Distribution name (<code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code> name).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.PackageVersionSource.get_version">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#PackageVersionSource.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PackageVersionSource.get_version" title="Link to this definition"></a></dt>
+<dd><p>Return the installed version, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the dist is absent.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.Pep440VersionComparer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">Pep440VersionComparer</span></span><a class="reference internal" href="../_modules/pyiv/version.html#Pep440VersionComparer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Pep440VersionComparer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Default <a class="reference internal" href="#pyiv.VersionComparer" title="pyiv.VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionComparer</span></code></a> using <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0440/"><strong>PEP 440</strong></a> rules.</p>
+<p><strong>Why this exists:</strong> Package and interpreter convenience APIs
+(<code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code>) need a standards-based
+matcher without adding a third-party runtime dependency. Custom domains
+may reuse this when their versions are already PEP 440 strings.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pep440VersionComparer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Pep440VersionComparer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">is_version_compatible</span><span class="p">(</span><span class="s2">"3.11.5"</span><span class="p">,</span> <span class="s2">"&gt;=3.11,&lt;3.12"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">is_version_compatible</span><span class="p">(</span><span class="s2">"3.10.9"</span><span class="p">,</span> <span class="s2">"&gt;=3.11"</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">is_version_less</span><span class="p">(</span><span class="s2">"3.10"</span><span class="p">,</span> <span class="s2">"3.11"</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Pep440VersionComparer.is_version_compatible">
+<span class="sig-name descname"><span class="pre">is_version_compatible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#Pep440VersionComparer.is_version_compatible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Pep440VersionComparer.is_version_compatible" title="Link to this definition"></a></dt>
+<dd><p>Return whether <code class="docutils literal notranslate"><span class="pre">version</span></code> satisfies the PEP 440 <code class="docutils literal notranslate"><span class="pre">specifier</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Pep440VersionComparer.is_version_greater">
+<span class="sig-name descname"><span class="pre">is_version_greater</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#Pep440VersionComparer.is_version_greater"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Pep440VersionComparer.is_version_greater" title="Link to this definition"></a></dt>
+<dd><p>Return whether PEP 440 version <code class="docutils literal notranslate"><span class="pre">a</span></code> is strictly greater than <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.Pep440VersionComparer.is_version_less">
+<span class="sig-name descname"><span class="pre">is_version_less</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#Pep440VersionComparer.is_version_less"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Pep440VersionComparer.is_version_less" title="Link to this definition"></a></dt>
+<dd><p>Return whether PEP 440 version <code class="docutils literal notranslate"><span class="pre">a</span></code> is strictly less than <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="pyiv.PickleSerDe">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">PickleSerDe</span></span><a class="reference internal" href="../_modules/pyiv/serde/encodings.html#PickleSerDe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PickleSerDe" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="pyiv.serde.base.html#pyiv.serde.base.SerDe" title="pyiv.serde.base.SerDe"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerDe</span></code></a></p>
@@ -5632,6 +5958,72 @@ for lazy initialization and multiple instance creation.</p>
 <dd class="field-odd"><p>Current datetime in UTC as ISO format string</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.PythonVersionProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">PythonVersionProvider</span></span><a class="reference internal" href="../_modules/pyiv/version.html#PythonVersionProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PythonVersionProvider" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Injectable source of the running (or simulated) Python version.</p>
+<p><strong>Why this exists:</strong> <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> and application code that
+branches on the interpreter must not hard-code <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code>. Bind
+<a class="reference internal" href="#pyiv.SysPythonVersionProvider" title="pyiv.SysPythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code></a> in production and
+<a class="reference internal" href="#pyiv.FixedPythonVersionProvider" title="pyiv.FixedPythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">FixedPythonVersionProvider</span></code></a> in tests so the same graph can be
+exercised under 3.8, 3.10, 3.11, etc.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">FixedPythonVersionProvider</span><span class="p">,</span> <span class="n">PythonVersionProvider</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span><span class="o">.</span><span class="n">to_instance</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">FixedPythonVersionProvider</span><span class="p">(</span><span class="s2">"3.11.0"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_injector</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="go">'3.11.0'</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.PythonVersionProvider.get_version">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#PythonVersionProvider.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PythonVersionProvider.get_version" title="Link to this definition"></a></dt>
+<dd><p>Return the interpreter version as a PEP 440 string (e.g. <code class="docutils literal notranslate"><span class="pre">3.11.5</span></code>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.PythonVersionSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">PythonVersionSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyiv.PythonVersionProvider" title="pyiv.PythonVersionProvider"><span class="pre">PythonVersionProvider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Config'</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#PythonVersionSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PythonVersionSource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><a class="reference internal" href="#pyiv.VersionSource" title="pyiv.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> that delegates to a <a class="reference internal" href="#pyiv.PythonVersionProvider" title="pyiv.PythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code></a>.</p>
+<p><strong>Why this exists:</strong> <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> registers this as the
+<code class="docutils literal notranslate"><span class="pre">python</span></code> domain source. At selection time it resolves (in order): an
+explicit constructor provider, a <code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code> bound on the
+config, then <a class="reference internal" href="#pyiv.SysPythonVersionProvider" title="pyiv.SysPythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code></a>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">FixedPythonVersionProvider</span><span class="p">,</span> <span class="n">PythonVersionSource</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PythonVersionSource</span><span class="p">(</span><span class="n">FixedPythonVersionProvider</span><span class="p">(</span><span class="s2">"3.9.0"</span><span class="p">))</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="go">'3.9.0'</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.PythonVersionSource.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyiv.PythonVersionProvider" title="pyiv.PythonVersionProvider"><span class="pre">PythonVersionProvider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Config'</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#PythonVersionSource.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PythonVersionSource.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>provider</strong> – Explicit provider (wins over config bindings).</p></li>
+<li><p><strong>config</strong> – Config used to look up a bound <code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.PythonVersionSource.get_version">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#PythonVersionSource.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.PythonVersionSource.get_version" title="Link to this definition"></a></dt>
+<dd><p>Return the resolved provider’s version string.</p>
 </dd></dl>
 
 </dd></dl>
@@ -7122,6 +7514,29 @@ Time advances only when you call advance() or set_time().</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="pyiv.SysPythonVersionProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">SysPythonVersionProvider</span></span><a class="reference internal" href="../_modules/pyiv/version.html#SysPythonVersionProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.SysPythonVersionProvider" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyiv.version.html#pyiv.version.PythonVersionProvider" title="pyiv.version.PythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code></a></p>
+<p>Production <a class="reference internal" href="#pyiv.PythonVersionProvider" title="pyiv.PythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code></a> backed by <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code>.</p>
+<p><strong>Why this exists:</strong> Default for <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> when no test
+provider is bound. Prefer injecting <a class="reference internal" href="#pyiv.PythonVersionProvider" title="pyiv.PythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code></a> over
+calling this class directly.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">SysPythonVersionProvider</span><span class="p">,</span> <span class="n">Pep440VersionComparer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ver</span> <span class="o">=</span> <span class="n">SysPythonVersionProvider</span><span class="p">()</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Pep440VersionComparer</span><span class="p">()</span><span class="o">.</span><span class="n">is_version_compatible</span><span class="p">(</span><span class="n">ver</span><span class="p">,</span> <span class="s2">"&gt;=3.8"</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.SysPythonVersionProvider.get_version">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#SysPythonVersionProvider.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.SysPythonVersionProvider.get_version" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">major.minor.micro</span></code> for <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.version_info" title="(in Python v3.15)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.version_info</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="pyiv.Timer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">Timer</span></span><a class="reference internal" href="../_modules/pyiv/clock.html#Timer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.Timer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
@@ -7162,6 +7577,153 @@ only when you call <code class="docutils literal notranslate"><span class="pre">
 <dd class="field-odd"><p>True if active, False otherwise</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">VersionBindingCandidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abstract</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.15)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.15)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.provider.html#pyiv.provider.Provider" title="pyiv.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.scope.html#pyiv.scope.Scope" title="pyiv.scope.Scope"><span class="pre">Scope</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><span class="pre">VersionComparer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#VersionBindingCandidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.VersionBindingCandidate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>One version-conditioned alternative for an abstract type.</p>
+<p><strong>Why this exists:</strong> Unconditional <code class="docutils literal notranslate"><span class="pre">Config</span></code> registrations are last-wins
+dictionaries. Version alternatives must accumulate as candidates and be
+selected after config composition. Hosts rarely construct this type
+directly — prefer <code class="docutils literal notranslate"><span class="pre">binder.bind(...).to(...).for_version(...)</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">VersionBindingCandidate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">HttpClient</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">LegacyClient</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">VersionBindingCandidate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">abstract</span><span class="o">=</span><span class="n">HttpClient</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">domain</span><span class="o">=</span><span class="s2">"package:requests"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">specifier</span><span class="o">=</span><span class="s2">"&lt;2.30"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">implementation</span><span class="o">=</span><span class="n">LegacyClient</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">specifier</span>
+<span class="go">'&lt;2.30'</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abstract</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.15)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.15)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.provider.html#pyiv.provider.Provider" title="pyiv.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.scope.html#pyiv.scope.Scope" title="pyiv.scope.Scope"><span class="pre">Scope</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><span class="pre">VersionComparer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#pyiv.VersionBindingCandidate.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.abstract">
+<span class="sig-name descname"><span class="pre">abstract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.15)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.abstract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.comparer">
+<span class="sig-name descname"><span class="pre">comparer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><span class="pre">VersionComparer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.comparer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.domain" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.implementation">
+<span class="sig-name descname"><span class="pre">implementation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.15)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.implementation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.instance">
+<span class="sig-name descname"><span class="pre">instance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.instance" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.provider">
+<span class="sig-name descname"><span class="pre">provider</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pyiv.provider.html#pyiv.provider.Provider" title="pyiv.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.provider" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.scope">
+<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="pyiv.scope.html#pyiv.scope.Scope" title="pyiv.scope.Scope"><span class="pre">Scope</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.scope" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyiv.VersionBindingCandidate.specifier">
+<span class="sig-name descname"><span class="pre">specifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv.VersionBindingCandidate.specifier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.VersionComparer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">VersionComparer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#VersionComparer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.VersionComparer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Compares and matches version strings for a domain.</p>
+<p><strong>Why this exists:</strong> Python package and interpreter versions follow
+<span class="target" id="index-1"></span><a class="pep reference external" href="https://peps.python.org/pep-0440/"><strong>PEP 440</strong></a>, but hosts often condition bindings on OS releases, wire
+protocols, or schema epochs that do not. Depend on this protocol when you
+need a custom ordering or specifier grammar; register it with
+<a class="reference internal" href="pyiv.binder.html#pyiv.binder.Binder.version_comparer" title="pyiv.binder.Binder.version_comparer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyiv.binder.Binder.version_comparer()</span></code></a>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pep440VersionComparer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Pep440VersionComparer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">is_version_compatible</span><span class="p">(</span><span class="s2">"2.31.0"</span><span class="p">,</span> <span class="s2">"&gt;=2.30,&lt;3"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">is_version_less</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="s2">"2.0"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">is_version_greater</span><span class="p">(</span><span class="s2">"2.0"</span><span class="p">,</span> <span class="s2">"1.0"</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.VersionComparer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.VersionComparer.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.VersionComparer.is_version_compatible">
+<span class="sig-name descname"><span class="pre">is_version_compatible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#VersionComparer.is_version_compatible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.VersionComparer.is_version_compatible" title="Link to this definition"></a></dt>
+<dd><p>Return True if <code class="docutils literal notranslate"><span class="pre">version</span></code> satisfies <code class="docutils literal notranslate"><span class="pre">specifier</span></code> for this domain.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.VersionComparer.is_version_greater">
+<span class="sig-name descname"><span class="pre">is_version_greater</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#VersionComparer.is_version_greater"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.VersionComparer.is_version_greater" title="Link to this definition"></a></dt>
+<dd><p>Return True if <code class="docutils literal notranslate"><span class="pre">a</span></code> is strictly greater than <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.VersionComparer.is_version_less">
+<span class="sig-name descname"><span class="pre">is_version_less</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#VersionComparer.is_version_less"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.VersionComparer.is_version_less" title="Link to this definition"></a></dt>
+<dd><p>Return True if <code class="docutils literal notranslate"><span class="pre">a</span></code> is strictly less than <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.VersionSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">VersionSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#VersionSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.VersionSource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Provides the current version string for a named domain.</p>
+<p><strong>Why this exists:</strong> Selection must read <em>environment</em> state (installed
+distribution, interpreter, host OS) without baking discovery into the
+binder. Implement this for custom domains, or use
+<a class="reference internal" href="#pyiv.MapVersionSource" title="pyiv.MapVersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapVersionSource</span></code></a> in tests.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">MapVersionSource</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src</span> <span class="o">=</span> <span class="n">MapVersionSource</span><span class="p">({</span><span class="s2">"alpine"</span><span class="p">:</span> <span class="s2">"3.19.0"</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="go">'3.19.0'</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.VersionSource.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyiv.VersionSource.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.VersionSource.get_version">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#VersionSource.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.VersionSource.get_version" title="Link to this definition"></a></dt>
+<dd><p>Return the current version, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if absent / unknown.</p>
 </dd></dl>
 
 </dd></dl>
@@ -7296,6 +7858,12 @@ lists become <code class="docutils literal notranslate"><span class="pre">item</
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">get_injector</span><span class="p">(</span><span class="n">override</span><span class="p">(</span><span class="n">ProdConfig</span><span class="p">)</span><span class="o">.</span><span class="n">with_</span><span class="p">(</span><span class="n">TestConfig</span><span class="p">))</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyiv.package_version_domain">
+<span class="sig-prename descclassname"><span class="pre">pyiv.</span></span><span class="sig-name descname"><span class="pre">package_version_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#package_version_domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.package_version_domain" title="Link to this definition"></a></dt>
+<dd><p>Return the version-domain key for an installed distribution name.</p>
 </dd></dl>
 
 </section>

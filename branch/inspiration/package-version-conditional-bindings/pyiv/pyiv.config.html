@@ -48,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/catalogs.html">Catalogs without registries</a></li>
@@ -72,6 +73,7 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.version.html">pyiv.version</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv.factory.html">pyiv.factory</a></li>
@@ -116,6 +118,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -164,6 +167,7 @@ are registered and configured for the dependency injection system.</p>
 <li><p>Singleton lifecycle configuration</p></li>
 <li><p>Factory function registrations</p></li>
 <li><p>Map multibind catalogs with explicit contribute / conflict policy</p></li>
+<li><p>Version-conditioned binding candidates (see <a class="reference internal" href="pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a>)</p></li>
 </ul>
 </dd>
 <dt>Usage:</dt><dd><p>Create a Config subclass and override configure() to register dependencies:</p>
@@ -253,6 +257,30 @@ so hosts can extend membership with an explicit conflict policy.</p>
 <dt class="sig sig-object py" id="pyiv.config.Config.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/config.html#Config.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize the configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.config.Config.add_version_candidate">
+<span class="sig-name descname"><span class="pre">add_version_candidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.add_version_candidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config.add_version_candidate" title="Link to this definition"></a></dt>
+<dd><p>Append a version-conditioned binding candidate.</p>
+<p>Prefer the Binder <code class="docutils literal notranslate"><span class="pre">for_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> /
+<code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> helpers over calling this directly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.config.Config.apply_version_selection">
+<span class="sig-name descname"><span class="pre">apply_version_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.apply_version_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config.apply_version_selection" title="Link to this definition"></a></dt>
+<dd><p>Resolve env-stable version candidates into ordinary bindings.</p>
+<p>Called once at injector construction. For each abstract type with
+candidates:</p>
+<ul class="simple">
+<li><p>filter by domain <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> + comparer</p></li>
+<li><p>exactly one match → register that binding (scope/provider preserved)</p></li>
+<li><p>zero matches → keep any unconditional binding as fallback; otherwise
+raise <a class="reference internal" href="pyiv.errors.html#pyiv.errors.CreationError" title="pyiv.errors.CreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreationError</span></code></a></p></li>
+<li><p>two or more matches → raise ambiguous <a class="reference internal" href="pyiv.errors.html#pyiv.errors.CreationError" title="pyiv.errors.CreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreationError</span></code></a></p></li>
+</ul>
+<p>Idempotent: a second call is a no-op.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -850,6 +878,27 @@ with different behaviors (e.g., “json-input”, “json-output”,
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>abstract</strong> – The abstract class or interface</p></li>
 <li><p><strong>provider</strong> – The provider to use for instance creation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.config.Config.register_version_comparer">
+<span class="sig-name descname"><span class="pre">register_version_comparer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.register_version_comparer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config.register_version_comparer" title="Link to this definition"></a></dt>
+<dd><p>Register a <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionComparer</span></code></a> for <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+<p>When omitted, version selection uses <a class="reference internal" href="pyiv.version.html#pyiv.version.Pep440VersionComparer" title="pyiv.version.Pep440VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pep440VersionComparer</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.config.Config.register_version_source">
+<span class="sig-name descname"><span class="pre">register_version_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.register_version_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config.register_version_source" title="Link to this definition"></a></dt>
+<dd><p>Register how to read the current version for <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>domain</strong> – Named version domain (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;python&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;alpine&quot;</span></code>)</p></li>
+<li><p><strong>source</strong> – A <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a></p></li>
 </ul>
 </dd>
 </dl>

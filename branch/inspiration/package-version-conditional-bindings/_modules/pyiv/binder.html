@@ -45,6 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/catalogs.html">Catalogs without registries</a></li>
@@ -69,6 +70,7 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.version.html">pyiv.version</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -113,6 +115,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -161,6 +164,9 @@
 <span class="sd">- **Testability**: Mock binders for testing configuration logic</span>
 <span class="sd">- **Programmatic Configuration**: Build configurations dynamically</span>
 <span class="sd">- **Better Readability**: ``binder.bind(X).to(Y).in_scope(Z)`` is clearer than nested calls</span>
+<span class="sd">- **Version conditions**: ``.for_version`` / ``.for_package_version`` /</span>
+<span class="sd">  ``.for_python_version`` select among implementations from named version domains</span>
+<span class="sd">  (see :mod:`pyiv.version`)</span>
 
 <span class="sd">**Real-World Use Cases:**</span>
 
@@ -168,6 +174,7 @@
 <span class="sd">- **Configuration Testing**: Mock binders to test configuration logic</span>
 <span class="sd">- **Modular Configuration**: Compose configurations from multiple sources</span>
 <span class="sd">- **Framework Integration**: Provide fluent APIs for framework-specific configuration</span>
+<span class="sd">- **Environment adapters**: Bind different implementations for Python or package versions</span>
 
 <span class="sd">Architecture:</span>
 <span class="sd">    - Binder: Protocol defining the binder interface</span>
@@ -234,11 +241,12 @@
 <div class="viewcode-block" id="BindingBuilder">
 <a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BindingBuilder</span><span class="p">(</span><span class="n">Protocol</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">"""Fluent steps after :meth:`Binder.bind` (``.to`` / ``.in_scope`` / …).</span>
+<span class="w">    </span><span class="sd">"""Fluent steps after :meth:`Binder.bind` (``.to`` / ``.in_scope`` / ``.for_version`` / …).</span>
 
-<span class="sd">    **Why this exists:** A single ``register(...)`` call buries scope and</span>
-<span class="sd">    provider choices in kwargs. The builder makes the binding shape readable</span>
-<span class="sd">    as a chain while still writing the same ``Config`` store.</span>
+<span class="sd">    **Why this exists:** A single ``register(...)`` call buries scope,</span>
+<span class="sd">    provider, and version-condition choices in kwargs. The builder makes the</span>
+<span class="sd">    binding shape readable as a chain while still writing the same ``Config``</span>
+<span class="sd">    store (or a version-candidate list).</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
@@ -252,6 +260,27 @@
 <span class="sd">        ...         self.get_binder().bind(Database).to(PostgreSQL).in_scope(SingletonScope())</span>
 <span class="sd">        &gt;&gt;&gt; isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)</span>
 <span class="sd">        True</span>
+
+<span class="sd">    Version condition (see :mod:`pyiv.version` for full examples)::</span>
+
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import FixedPythonVersionProvider, PythonVersionProvider</span>
+<span class="sd">        &gt;&gt;&gt; class Api:</span>
+<span class="sd">        ...     tag = "base"</span>
+<span class="sd">        &gt;&gt;&gt; class V1(Api):</span>
+<span class="sd">        ...     tag = "v1"</span>
+<span class="sd">        &gt;&gt;&gt; class V2(Api):</span>
+<span class="sd">        ...     tag = "v2"</span>
+<span class="sd">        &gt;&gt;&gt; class ApiConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         b = self.get_binder()</span>
+<span class="sd">        ...         b.bind(PythonVersionProvider).to_instance(</span>
+<span class="sd">        ...             FixedPythonVersionProvider("3.12.0")</span>
+<span class="sd">        ...         )</span>
+<span class="sd">        ...         b.bind(Api).to(V1).for_python_version("&lt;3.11")</span>
+<span class="sd">        ...         b.bind(Api).to(V2).for_python_version("&gt;=3.11")</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(ApiConfig).inject(Api).tag</span>
+<span class="sd">        'v2'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="BindingBuilder.to">
@@ -308,6 +337,69 @@
 <span class="sd">            Self for method chaining</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="BindingBuilder.for_version">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder.for_version">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_version</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">comparer</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"BindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrict this binding to a named version domain + specifier.</span>
+
+<span class="sd">        Registers a version **candidate** instead of an unconditional binding.</span>
+<span class="sd">        See :mod:`pyiv.version` and the version-bindings guide.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            domain: Named version domain (must have a :class:`~pyiv.version.VersionSource`)</span>
+<span class="sd">            specifier: Domain-specific version constraint string</span>
+<span class="sd">            comparer: Optional per-candidate :class:`~pyiv.version.VersionComparer`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="BindingBuilder.for_package_version">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder.for_package_version">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_package_version</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"BindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrict this binding to an installed distribution's PEP 440 version.</span>
+
+<span class="sd">        Convenience for ``for_version`` with</span>
+<span class="sd">        :class:`~pyiv.version.PackageVersionSource` and</span>
+<span class="sd">        :class:`~pyiv.version.Pep440VersionComparer`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            distribution: Distribution name (``importlib.metadata``), not</span>
+<span class="sd">                necessarily the import package name</span>
+<span class="sd">            specifier: PEP 440 version specifier</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="BindingBuilder.for_python_version">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder.for_python_version">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_python_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"BindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrict this binding to the running interpreter's PEP 440 version.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            specifier: PEP 440 version specifier against ``sys.version_info``</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
 </div>
 
 
@@ -319,7 +411,8 @@
 
 <span class="sd">    **Why this exists:** Direct ``Config.register*`` calls work, but complex</span>
 <span class="sd">    graphs read better as ``bind(X).to(Y).in_scope(Z)``. The binder also</span>
-<span class="sd">    supports ``install``, ``expose``, and ``require_explicit_bindings``.</span>
+<span class="sd">    supports ``install``, ``expose``, version-conditioned bindings, and</span>
+<span class="sd">    ``require_explicit_bindings``.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
@@ -332,6 +425,27 @@
 <span class="sd">        ...         self.get_binder().bind(Database).to(PostgreSQL)</span>
 <span class="sd">        &gt;&gt;&gt; isinstance(get_injector(MyConfig).inject(Database), PostgreSQL)</span>
 <span class="sd">        True</span>
+
+<span class="sd">    Version-conditioned bindings (env-stable selection at injector build):</span>
+
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import FixedPythonVersionProvider, PythonVersionProvider</span>
+<span class="sd">        &gt;&gt;&gt; class Runner:</span>
+<span class="sd">        ...     kind = "base"</span>
+<span class="sd">        &gt;&gt;&gt; class Legacy(Runner):</span>
+<span class="sd">        ...     kind = "legacy"</span>
+<span class="sd">        &gt;&gt;&gt; class Modern(Runner):</span>
+<span class="sd">        ...     kind = "modern"</span>
+<span class="sd">        &gt;&gt;&gt; class RunnerConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         b = self.get_binder()</span>
+<span class="sd">        ...         b.bind(PythonVersionProvider).to_instance(</span>
+<span class="sd">        ...             FixedPythonVersionProvider("3.12.0")</span>
+<span class="sd">        ...         )</span>
+<span class="sd">        ...         b.bind(Runner).to(Legacy).for_python_version("&lt;3.11")</span>
+<span class="sd">        ...         b.bind(Runner).to(Modern).for_python_version("&gt;=3.11")</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(RunnerConfig).inject(Runner).kind</span>
+<span class="sd">        'modern'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Binder.bind">
@@ -405,6 +519,20 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.Binder.require_explicit_bindings">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">require_explicit_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Require every injectable type to be bound explicitly (no JIT)."""</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Binder.version_source">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.Binder.version_source">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">version_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register a :class:`~pyiv.version.VersionSource` for ``domain``."""</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Binder.version_comparer">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.Binder.version_comparer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">version_comparer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">comparer</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register a :class:`~pyiv.version.VersionComparer` for ``domain``."""</span>
         <span class="o">...</span></div>
 </div>
 

@@ -20,7 +20,9 @@
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changelog" href="../changelog.html" />
+    <link rel="prev" title="Plugin catalog discovery (inspiration)" href="plugin-catalog-discovery-inspiration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/catalogs.html">Catalogs without registries</a></li>
@@ -70,6 +73,7 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.version.html">pyiv.version</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -112,8 +116,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -147,15 +152,32 @@
              
   <section id="inspiration-generalized-version-aware-conditional-bindings">
 <h1>Inspiration: generalized version-aware conditional bindings<a class="headerlink" href="#inspiration-generalized-version-aware-conditional-bindings" title="Link to this heading"></a></h1>
-<p>Status: proposal, not implemented.</p>
-<p>The central abstraction is <strong>version-conditioned bindings over named version sources</strong>, not specifically Python package versions. Package-version conditions are a convenience adapter over that core.</p>
+<p><strong>Status:</strong> env-stable core is implemented (see <code class="docutils literal notranslate"><span class="pre">pyiv.version</span></code> and the
+user-guide page “Version-conditioned bindings”). Message-scoped /
+per-request version context remains open.</p>
+<p>The central abstraction is <strong>version-conditioned bindings over named version
+sources</strong>, not specifically Python package versions. Package-version and
+interpreter-version conditions are convenience adapters over that core.</p>
+<section id="implemented-env-stable">
+<h2>Implemented (env-stable)<a class="headerlink" href="#implemented-env-stable" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fluent Binder: <code class="docutils literal notranslate"><span class="pre">for_version</span></code>, <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VersionSource</span></code> / <code class="docutils literal notranslate"><span class="pre">VersionComparer</span></code> with <code class="docutils literal notranslate"><span class="pre">Pep440VersionComparer</span></code>
+(PEP 440, stdlib-only private helper)</p></li>
+<li><p>Injectable <code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code> (<code class="docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code> /
+<code class="docutils literal notranslate"><span class="pre">FixedPythonVersionProvider</span></code>) so tests simulate many interpreters</p></li>
+<li><p>Custom domains via host sources + comparers</p></li>
+<li><p>Selection at injector construction; ambiguity / absent / fallback diagnostics</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MapVersionSource</span></code> for non-Python domain tests</p></li>
+</ul>
+</section>
 <section id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
 <p>A host application may inherit a package such as <code class="docutils literal notranslate"><span class="pre">requests</span></code> transitively, with a version chosen by other dependencies. An adapter library should be able to register implementations compatible with different installed versions without requiring the host to select the adapter manually.</p>
 <p>pyiv already provides Guice-style configuration, <code class="docutils literal notranslate"><span class="pre">Config.register</span></code>, and a fluent <code class="docutils literal notranslate"><span class="pre">self.get_binder().bind(Abstract).to(Concrete)</span></code> API. Extend that existing Binder surface rather than introducing a new binding dialect.</p>
 </section>
-<section id="proposed-developer-experience">
-<h2>Proposed developer experience<a class="headerlink" href="#proposed-developer-experience" title="Link to this heading"></a></h2>
+<section id="developer-experience">
+<h2>Developer experience<a class="headerlink" href="#developer-experience" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">HttpConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
@@ -169,111 +191,37 @@
         <span class="p">)</span>
 </pre></div>
 </div>
-<p>This syntax is illustrative and must be validated against BindingBuilder internals. The method should be available on the builder and coexist with <code class="docutils literal notranslate"><span class="pre">.in_scope(...)</span></code> and other binding options. Version specifiers should follow PEP 440, preferably using an optional integration with <code class="docutils literal notranslate"><span class="pre">packaging</span></code> or a documented small stdlib-only strategy that preserves pyiv’s zero-runtime-dependency promise. Do not implement an incomplete custom PEP 440 parser silently.</p>
-</section>
-<section id="generalized-version-binding-design">
-<h2>Generalized version binding design<a class="headerlink" href="#generalized-version-binding-design" title="Link to this heading"></a></h2>
-<p>Proposed fluent Binder usage (illustrative, not yet implemented):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
-<span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">EventDecoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">AvroDecoderV1</span><span class="p">)</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span>
-    <span class="s2">"event-schema"</span><span class="p">,</span> <span class="n">from_version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">to_version</span><span class="o">=</span><span class="mi">3</span>
-<span class="p">)</span>
-<span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">EventDecoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">AvroDecoderV2</span><span class="p">)</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span>
-    <span class="s2">"event-schema"</span><span class="p">,</span> <span class="n">from_version</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">to_version</span><span class="o">=</span><span class="mi">7</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>The API must define whether <code class="docutils literal notranslate"><span class="pre">to_version</span></code> is inclusive; for integer schema revisions, inclusive bounds are intuitive. Also support open-ended intervals, exact versions, and explicit exclusive endpoints. Avoid implicit conversion between arbitrary version types.</p>
-<p>Separate three responsibilities:</p>
-<ul class="simple">
-<li><p><strong>Version source</strong>: obtains the current value for a named domain, such as <code class="docutils literal notranslate"><span class="pre">event-schema</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">protobuf-message</span></code>, or <code class="docutils literal notranslate"><span class="pre">wire-protocol</span></code>.</p></li>
-<li><p><strong>Version comparator / range</strong>: compares values within that domain. Integer schema revisions, semantic versions, and PEP 440 package versions have different ordering rules. Never assume lexicographic string ordering.</p></li>
-<li><p><strong>Conditional binding selector</strong>: filters candidate implementations and applies documented ambiguity/fallback policy.</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">for_package_version(distribution,</span> <span class="pre">specifier)</span></code> should compile to the same internal conditional-binding representation, using <code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code> as the source and a PEP 440-compliant matcher. Avoid a second package-specific selection engine.</p>
-<section id="two-resolution-lifetimes">
-<h3>Two resolution lifetimes<a class="headerlink" href="#two-resolution-lifetimes" title="Link to this heading"></a></h3>
-<ol class="arabic simple">
-<li><p><strong>Environment-scoped</strong>: installed package versions or static application versions are stable for an injector. Selection may be finalized at injector construction.</p></li>
-<li><p><strong>Request/message-scoped</strong>: Avro writer schema IDs, Protobuf envelope schema revisions, or negotiated protocol versions may differ between successive resolutions. Supply a version context to the relevant resolution or create an explicitly scoped child injector. Never cache a schema-specific singleton across incompatible version contexts.</p></li>
-</ol>
-<p>For example, an application might conceptually resolve <code class="docutils literal notranslate"><span class="pre">EventDecoder</span></code> with <code class="docutils literal notranslate"><span class="pre">{&quot;event-schema&quot;:</span> <span class="pre">5}</span></code> for one message and <code class="docutils literal notranslate"><span class="pre">{&quot;event-schema&quot;:</span> <span class="pre">2}</span></code> for the next. The final public context-passing API should follow pyiv’s existing injector and scope conventions rather than inventing a separate container.</p>
-</section>
-<section id="avro-protobuf-caveats">
-<h3>Avro / Protobuf caveats<a class="headerlink" href="#avro-protobuf-caveats" title="Link to this heading"></a></h3>
-<p>Avro schema fingerprints, registry IDs, and Protobuf descriptor identities are not necessarily ordered version numbers. A registry subject’s explicit revision number or an application-defined compatibility epoch may provide a valid ordered domain. In Protobuf, a message’s generated type does not automatically reveal an ordered schema revision. Where no meaningful total order exists, use exact-match identities or a separate compatibility predicate rather than inventing an ordering.</p>
-</section>
-</section>
-<section id="python-interpreter-version-specialization">
-<h2>Python interpreter version specialization<a class="headerlink" href="#python-interpreter-version-specialization" title="Link to this heading"></a></h2>
-<p>The running interpreter is another stable, environment-scoped version source. Expose a convenience method on the existing fluent Binder builder:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+<p>Version specifiers for Python/package domains follow PEP 440 via a stdlib-only
+matcher (no third-party runtime dependency).</p>
+<p>Interpreter specialization uses an injectable provider:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span><span class="o">.</span><span class="n">to_instance</span><span class="p">(</span><span class="n">FixedPythonVersionProvider</span><span class="p">(</span><span class="s2">"3.10.12"</span><span class="p">))</span>
 <span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">AsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">LegacyAsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&lt;3.11"</span><span class="p">)</span>
 <span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">AsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">TaskGroupAsyncRunner</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&gt;=3.11"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">for_python_version(specifier)</span></code> should use the same generic version-condition selector as <code class="docutils literal notranslate"><span class="pre">for_version</span></code> and <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, with an interpreter-version provider based on <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code> and a documented comparison policy. It must not mistake the installed interpreter version for a package distribution version.</p>
-<p>User stories:</p>
+</section>
+<section id="still-open">
+<h2>Still open<a class="headerlink" href="#still-open" title="Link to this heading"></a></h2>
+<section id="request-message-scoped-versions">
+<h3>Request/message-scoped versions<a class="headerlink" href="#request-message-scoped-versions" title="Link to this heading"></a></h3>
+<p>Avro writer schema IDs, Protobuf envelope schema revisions, or negotiated
+protocol versions may differ between successive resolutions. Supply a version
+context to the relevant resolution or create an explicitly scoped child
+injector. Never cache a schema-specific singleton across incompatible version
+contexts.</p>
+<p>Avro schema fingerprints, registry IDs, and Protobuf descriptor identities are
+not necessarily ordered version numbers. Where no meaningful total order
+exists, use exact-match identities or a separate compatibility predicate.</p>
+</section>
+<section id="other-follow-ups">
+<h3>Other follow-ups<a class="headerlink" href="#other-follow-ups" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Select compatible implementations for Python 3.8 through current supported interpreters without callers branching on <code class="docutils literal notranslate"><span class="pre">sys.version_info</span></code>.</p></li>
-<li><p>Permit testing simulated Python versions through injected version providers, not by changing the actual runtime.</p></li>
-<li><p>Respect Python’s parsing and import limitations: version-specific modules containing unsupported syntax or unavailable imports must be loaded lazily or otherwise isolated. Conditional injection alone cannot make invalid syntax importable.</p></li>
-<li><p>Preserve the existing pyiv Python 3.8+ baseline; introducing this feature must not itself require newer syntax.</p></li>
+<li><p>Version-conditioned <code class="docutils literal notranslate"><span class="pre">bind_key</span></code> / qualified keys</p></li>
+<li><p>Multi-package predicates on one binding</p></li>
+<li><p>Richer inspection APIs for candidate predicates and rejection reasons</p></li>
+<li><p>Optional <code class="docutils literal notranslate"><span class="pre">from_version</span></code> / <code class="docutils literal notranslate"><span class="pre">to_version</span></code> range sugar vs specifier strings only</p></li>
 </ul>
 </section>
-<section id="user-stories-and-acceptance-criteria">
-<h2>User stories and acceptance criteria<a class="headerlink" href="#user-stories-and-acceptance-criteria" title="Link to this heading"></a></h2>
-<ol class="arabic simple">
-<li><p><strong>Arbitrary version domains.</strong> Bind implementations over named version domains with explicit inclusive/exclusive ranges and domain-specific comparators.</p></li>
-<li><p><strong>Schema-aware construction.</strong> Select Avro or Protobuf adapters using a caller-supplied schema version, including different versions in consecutive messages.</p></li>
-<li><p><strong>Reusable core.</strong> Implement package-version matching as an adapter over the same general conditional-binding engine, without duplicate selection logic.</p></li>
-<li><p><strong>Version lifetime safety.</strong> Keep environment-stable and message-scoped versions distinct, including cache and singleton semantics.</p></li>
-<li><p><strong>Transitive dependency compatibility.</strong> Given multiple conditional bindings for the same interface, select the implementation whose package constraint matches the installed distribution version, including when the package is only transitively installed.</p></li>
-<li><p><strong>Version ranges.</strong> Support meaningful constraints such as <code class="docutils literal notranslate"><span class="pre">&lt;2.30</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=2.30,&lt;3</span></code>, and exact pins, with clear handling of prereleases according to the chosen standards-compliant matcher.</p></li>
-<li><p><strong>No matching version.</strong> Report the package name, detected version, requested interface, and available constraints; never silently select an incompatible implementation.</p></li>
-<li><p><strong>Package absent.</strong> Report a distinct missing-distribution diagnostic. Avoid importing the target library merely to discover its version.</p></li>
-<li><p><strong>Overlapping matches.</strong> Reject ambiguous competing matches unless an explicit and documented precedence mechanism is introduced. Do not depend on registration order.</p></li>
-<li><p><strong>Unconditional fallback.</strong> Define explicit semantics for a normal binding alongside conditional candidates: use it only when no conditional match exists, if this behavior is opted into or documented. Never mask an unsupported version accidentally.</p></li>
-<li><p><strong>Scopes and providers.</strong> Ensure version-filtered bindings retain existing scope, provider, qualifier, and lifecycle behavior.</p></li>
-<li><p><strong>Testability.</strong> Permit injecting a version resolver or installed-distribution map in tests; exercise selection without monkeypatching global package metadata or installing multiple distributions.</p></li>
-<li><p><strong>Determinism.</strong> Resolve conditions at injector construction or a clearly specified stable phase, and cache per-injector results. Do not unexpectedly switch implementations during a running injector lifetime.</p></li>
-<li><p><strong>Diagnostics.</strong> Offer inspection of candidate bindings, version predicates, selected binding, and rejection reasons.</p></li>
-</ol>
-</section>
-<section id="architecture-considerations">
-<h2>Architecture considerations<a class="headerlink" href="#architecture-considerations" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Treat version-source lookup and comparison as injectable collaborators so tests can provide deterministic values.</p></li>
-<li><p>Support numeric revision ranges and PEP 440 specifiers through separate comparison strategies; do not use string comparison for numbers or semantic versions.</p></li>
-<li><p>Decide how to detect overlap of ranges (at configuration time when possible, otherwise reject multiple matching candidates at resolution).</p></li>
-<li><p>Define behavior when a version context is absent, and distinguish that from an explicitly unknown schema revision.</p></li>
-<li><p>Preserve scopes and qualified keys while preventing cross-version cache contamination.</p></li>
-<li><p>Python <code class="docutils literal notranslate"><span class="pre">importlib.metadata.version(&quot;requests&quot;)</span></code> is an appropriate metadata source (with the Python 3.8 baseline), but distribution names and import names are not always identical. Accept the <strong>distribution name</strong>, normalize it per packaging conventions, and document this distinction.</p></li>
-<li><p>Conditional registrations cannot simply overwrite <code class="docutils literal notranslate"><span class="pre">Config._registrations[abstract]</span></code>: store candidate records independently and select after composing installed Config modules, private bindings, and overrides.</p></li>
-<li><p>Inspect <code class="docutils literal notranslate"><span class="pre">pyiv/binder.py</span></code> (<code class="docutils literal notranslate"><span class="pre">BindingBuilder</span></code> / <code class="docutils literal notranslate"><span class="pre">ConfigBinder</span></code>), <code class="docutils literal notranslate"><span class="pre">pyiv/config.py</span></code> (<code class="docutils literal notranslate"><span class="pre">register</span></code> and configuration composition), and <code class="docutils literal notranslate"><span class="pre">pyiv/injector.py</span></code> (resolution). Preserve existing unconditional binding semantics.</p></li>
-<li><p>Consider how a library config installed into a host config can contribute version alternatives without collision, and whether a host’s explicit override takes precedence.</p></li>
-<li><p>A package version condition concerns the <strong>environment</strong> running the injector, not the version of the library declaring the binding.</p></li>
-<li><p>Do not imply multiple versions of the same distribution can be simultaneously loaded in one ordinary Python environment. The feature chooses among adapters for the one installed version.</p></li>
-<li><p>Consider extending conditions to multiple package predicates in a future iteration, but keep the first implementation focused on one distribution per binding.</p></li>
-</ul>
-</section>
-<section id="suggested-tests">
-<h2>Suggested tests<a class="headerlink" href="#suggested-tests" title="Link to this heading"></a></h2>
-<p>Add tests for inclusive/exclusive boundaries, open-ended ranges, numeric ordering (9 vs 10), schema revisions varying between consecutive messages, version-context-scoped singleton behavior, custom comparators, exact-match-only identifiers, and package adapters using the generic selector.</p>
-<p>Parameterized cases for simulated Python 3.8, 3.10, 3.11 and later, plus older/current package versions, exact pins, boundary versions, prereleases, absent packages, unmatched versions, overlapping ranges, conditional + unconditional bindings, scopes, providers, config installation, private configs, qualified keys, and deterministic resolver overrides. Verify that diagnostics are actionable and that the zero-dependency core remains installable.</p>
-</section>
-<section id="open-questions">
-<h2>Open questions<a class="headerlink" href="#open-questions" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Should the fluent API use <code class="docutils literal notranslate"><span class="pre">for_version(domain,</span> <span class="pre">from_version=...,</span> <span class="pre">to_version=...)</span></code>, a reusable <code class="docutils literal notranslate"><span class="pre">VersionRange</span></code> object, or both?</p></li>
-<li><p>How is per-message version context passed through pyiv injection, including nested dependencies?</p></li>
-<li><p>Should non-ordered schema identifiers use a separate exact-match predicate rather than a range?</p></li>
-<li><p>Should schema adapters be chosen by writer schema version, reader schema version, or an explicit application compatibility epoch?</p></li>
-<li><p>Should a normal unconditional binding be a fallback by default or require an explicit fallback designation?</p></li>
-<li><p>Is version selection at configuration finalization or first injection a better fit for pyiv’s overlays and overrides?</p></li>
-<li><p>Should version predicates be reusable objects for eventual OS, Python-version, and optional-feature predicates?</p></li>
-<li><p>How should the <code class="docutils literal notranslate"><span class="pre">packaging</span></code> dependency be handled while keeping core stdlib-only?</p></li>
-</ul>
 </section>
 <section id="source">
 <h2>Source<a class="headerlink" href="#source" title="Link to this heading"></a></h2>
@@ -284,7 +232,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plugin-catalog-discovery-inspiration.html" class="btn btn-neutral float-left" title="Plugin catalog discovery (inspiration)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
