@@ -41,7 +41,7 @@ Key Features
    </div>
    <div style="padding: 20px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #0066cc;">
    <h4 style="margin-top: 0; color: #0066cc;">Keys and Binder</h4>
-   <p style="margin: 0;">Qualified bindings with tag sets (<code>Named</code>), nearest-match inject (<code>Matched</code>), <code>Annotated</code> constructor params, and a fluent Binder API.</p>
+   <p style="margin: 0;">Qualified bindings with tag sets (<code>Named</code>), nearest-match inject (<code>Matched</code>), <code>Annotated</code> constructor params, version-conditioned bindings, and a fluent Binder API.</p>
    </div>
    <div style="padding: 20px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #0066cc;">
    <h4 style="margin-top: 0; color: #0066cc;">Reflection</h4>
@@ -110,14 +110,16 @@ Quick Start
 User Guide
 ----------
 
-Binder vs ``register``, scopes, qualified keys, and swapping Clock /
-Filesystem / Console / DateTimeService in tests:
+Binder vs ``register``, scopes, qualified keys, version-conditioned
+bindings, and swapping Clock / Filesystem / Console / DateTimeService in
+tests:
 
 .. toctree::
    :maxdepth: 1
    :caption: User guide
 
    Binding <guide/binding>
+   Version-conditioned bindings <guide/version-bindings>
    Scopes <guide/scopes>
    Keys and collections <guide/keys>
    Catalogs without registries <guide/catalogs>
@@ -152,6 +154,7 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    :caption: Bindings
 
    pyiv/pyiv.optional
+   pyiv/pyiv.version
    pyiv/pyiv.multibinder
    pyiv/pyiv.members
    pyiv/pyiv.factory
@@ -193,6 +196,7 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    :caption: Inspiration
 
    inspiration/plugin-catalog-discovery-inspiration
+   inspiration/package-version-conditional-bindings
 
 .. toctree::
    :maxdepth: 1

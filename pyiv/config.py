@@ -13,6 +13,7 @@ The Config class manages:
     - Singleton lifecycle configuration
     - Factory function registrations
     - Map multibind catalogs with explicit contribute / conflict policy
+    - Version-conditioned binding candidates (see :mod:`pyiv.version`)
 
 Usage:
     Create a Config subclass and override configure() to register dependencies:
@@ -140,6 +141,13 @@ class Config:
         self._require_explicit_bindings: bool = False
         self._pending_private: List["PrivateConfig"] = []
         self._exposed: Set[Union[Type, Key[Any]]] = set()
+        # Version-conditioned binding candidates and domain collaborators.
+        from pyiv.version import VersionBindingCandidate, VersionComparer, VersionSource
+
+        self._version_candidates: List[VersionBindingCandidate] = []
+        self._version_sources: Dict[str, VersionSource] = {}
+        self._version_comparers: Dict[str, VersionComparer] = {}
+        self._version_selection_applied: bool = False
 
     def configure(self):
         """Override this method to register dependencies.
@@ -912,6 +920,11 @@ class Config:
         else:
             self._exposed.update(other._exposed)
 
+        # Version candidates accumulate (like multibinds); sources/comparers merge.
+        self._version_candidates.extend(other._version_candidates)
+        self._merge_dict(self._version_sources, other._version_sources, replace)
+        self._merge_dict(self._version_comparers, other._version_comparers, replace)
+
     @staticmethod
     def _merge_dict(target: Dict[Any, Any], source: Dict[Any, Any], replace: bool) -> None:
         for key, value in source.items():
@@ -971,6 +984,148 @@ class Config:
                 result.append(abstract)
                 seen.add(abstract)
         return result
+
+    def register_version_source(self, domain: str, source: Any) -> None:
+        """Register how to read the current version for ``domain``.
+
+        Args:
+            domain: Named version domain (e.g. ``\"python\"``, ``\"alpine\"``)
+            source: A :class:`~pyiv.version.VersionSource`
+        """
+        self._version_sources[domain] = source
+
+    def register_version_comparer(self, domain: str, comparer: Any) -> None:
+        """Register a :class:`~pyiv.version.VersionComparer` for ``domain``.
+
+        When omitted, version selection uses :class:`~pyiv.version.Pep440VersionComparer`.
+        """
+        self._version_comparers[domain] = comparer
+
+    def add_version_candidate(self, candidate: Any) -> None:
+        """Append a version-conditioned binding candidate.
+
+        Prefer the Binder ``for_version`` / ``for_package_version`` /
+        ``for_python_version`` helpers over calling this directly.
+        """
+        self._version_candidates.append(candidate)
+
+    def apply_version_selection(self) -> None:
+        """Resolve env-stable version candidates into ordinary bindings.
+
+        Called once at injector construction. For each abstract type with
+        candidates:
+
+        - filter by domain :class:`~pyiv.version.VersionSource` + comparer
+        - exactly one match → register that binding (scope/provider preserved)
+        - zero matches → keep any unconditional binding as fallback; otherwise
+          raise :class:`~pyiv.errors.CreationError`
+        - two or more matches → raise ambiguous :class:`~pyiv.errors.CreationError`
+
+        Idempotent: a second call is a no-op.
+        """
+        if self._version_selection_applied or not self._version_candidates:
+            self._version_selection_applied = True
+            return
+
+        from pyiv.errors import CreationError, type_name
+        from pyiv.version import Pep440VersionComparer
+
+        default_comparer = Pep440VersionComparer()
+        by_abstract: Dict[Type, List[Any]] = {}
+        for candidate in self._version_candidates:
+            by_abstract.setdefault(candidate.abstract, []).append(candidate)
+
+        for abstract, candidates in by_abstract.items():
+            matches = []
+            diagnostics = []
+            for candidate in candidates:
+                source = self._version_sources.get(candidate.domain)
+                if source is None:
+                    diagnostics.append(
+                        f"{candidate.specifier!r} on domain {candidate.domain!r} "
+                        f"(no VersionSource registered)"
+                    )
+                    continue
+                current = source.get_version()
+                if current is None:
+                    diagnostics.append(
+                        f"{candidate.specifier!r} on domain {candidate.domain!r} "
+                        f"(version absent/unknown)"
+                    )
+                    continue
+                comparer = (
+                    candidate.comparer
+                    or self._version_comparers.get(candidate.domain)
+                    or default_comparer
+                )
+                try:
+                    ok = comparer.is_version_compatible(current, candidate.specifier)
+                except ValueError as exc:
+                    raise CreationError(
+                        f"Invalid version condition for {type_name(abstract)}: {exc}",
+                    ) from exc
+                if ok:
+                    matches.append((candidate, current))
+                else:
+                    diagnostics.append(
+                        f"{candidate.specifier!r} on domain {candidate.domain!r} "
+                        f"(installed {current!r})"
+                    )
+
+            if len(matches) > 1:
+                detail = "; ".join(
+                    f"{c.specifier!r}@{c.domain!r} (version {ver!r})" for c, ver in matches
+                )
+                raise CreationError(
+                    f"Ambiguous version binding for {type_name(abstract)}: "
+                    f"multiple candidates match ({detail})",
+                    ambiguous=True,
+                )
+
+            if len(matches) == 1:
+                winner, _ver = matches[0]
+                self._materialize_version_candidate(winner)
+                continue
+
+            # Zero matches: keep unconditional fallback if present.
+            has_fallback = (
+                abstract in self._registrations
+                or abstract in self._providers
+                or self._instances.get(abstract) is not None
+            )
+            if has_fallback:
+                continue
+
+            reasons = "; ".join(diagnostics) if diagnostics else "no candidates"
+            raise CreationError(
+                f"No version-compatible binding for {type_name(abstract)}: {reasons}"
+            )
+
+        self._version_selection_applied = True
+
+    def _materialize_version_candidate(self, candidate: Any) -> None:
+        """Write a winning version candidate into ordinary binding stores."""
+        abstract = candidate.abstract
+        if candidate.provider is not None:
+            self.register_provider(abstract, candidate.provider)
+            if candidate.scope is not None:
+                self._scopes[abstract] = candidate.scope
+            return
+        if candidate.instance is not None:
+            self.register_instance(abstract, candidate.instance)
+            if candidate.scope is not None:
+                self._scopes[abstract] = candidate.scope
+            return
+        if candidate.implementation is not None:
+            self.register(
+                abstract,
+                candidate.implementation,
+                scope=candidate.scope,
+            )
+            return
+        raise ValueError(
+            f"Version candidate for {abstract!r} has no implementation, " f"instance, or provider"
+        )
 
     def get_binder(self) -> Binder:
         """Get a binder for fluent configuration.

@@ -19,6 +19,7 @@ resolve dependencies. It supports:
 - Qualified keys: strict ``Named`` tag sets and inject-only ``Matched``
 - Bare ``inject(Type)`` fallback to ``Named(..., default=True)`` / sole Named
 - Factory functions for complex object creation
+- Version-conditioned binding selection at construction (see :mod:`pyiv.version`)
 - Circular dependency detection with path-aware CreationError
 - Child injectors and private modules
 - Catalog introspection: ``catalog_keys`` / ``named_keys`` without constructing
@@ -232,6 +233,8 @@ class Injector:
         self._resolving: Set[Any] = set()
         self._path: List[str] = []
         self._children: List["Injector"] = []
+        # Resolve env-stable version candidates before private wiring / inject.
+        self._config.apply_version_selection()
         if wire_private:
             self._wire_private_modules()
 

@@ -62,6 +62,14 @@ expression:
 ``register`` and Binder write the same config. Pick one style per project;
 mixing them in one ``configure()`` is fine.
 
+Version-conditioned bindings
+----------------------------
+
+``binder.bind(T).to(Impl).for_python_version(...)`` (and
+``for_package_version`` / ``for_version``) register **candidates** selected
+at injector construction. See :doc:`version-bindings` and
+:mod:`pyiv.version`.
+
 Installing modules
 ------------------
 

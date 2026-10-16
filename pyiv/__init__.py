@@ -9,6 +9,8 @@ Key Features:
 - Scopes (per-injector and process-wide singletons, plus custom Scope)
 - Qualified keys with tag sets (``Named``), nearest match (``Matched``),
   ``Annotated`` constructor injection, and Binder
+- Version-conditioned bindings (``for_version`` / ``for_package_version`` /
+  ``for_python_version``) over named version domains
 - Module install, private modules, child injectors, and config override
 - Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
@@ -56,6 +58,27 @@ Quick Start:
 
     Constructor ``Annotated[T, Named|Matched]`` (Python 3.9+) is documented in
     the keys guide; use ``inject(Key(...))`` when you need an explicit lookup.
+
+    Version-conditioned bindings:
+
+    >>> from pyiv import Config, get_injector
+    >>> from pyiv.version import FixedPythonVersionProvider, PythonVersionProvider
+    >>> class Runner:
+    ...     kind = "base"
+    >>> class LegacyRunner(Runner):
+    ...     kind = "legacy"
+    >>> class ModernRunner(Runner):
+    ...     kind = "modern"
+    >>> class RunnerConfig(Config):
+    ...     def configure(self):
+    ...         b = self.get_binder()
+    ...         b.bind(PythonVersionProvider).to_instance(
+    ...             FixedPythonVersionProvider("3.10.0")
+    ...         )
+    ...         b.bind(Runner).to(LegacyRunner).for_python_version("<3.11")
+    ...         b.bind(Runner).to(ModernRunner).for_python_version(">=3.11")
+    >>> get_injector(RunnerConfig).inject(Runner).kind
+    'legacy'
 """
 
 from pyiv.binder import Binder, BindingBuilder
@@ -94,6 +117,20 @@ from pyiv.scope import GlobalSingletonScope, NoScope, Scope, SingletonScope
 from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XMLSerDe
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 from pyiv.stage import Stage
+from pyiv.version import (
+    PYTHON_VERSION_DOMAIN,
+    FixedPythonVersionProvider,
+    MapVersionSource,
+    PackageVersionSource,
+    Pep440VersionComparer,
+    PythonVersionProvider,
+    PythonVersionSource,
+    SysPythonVersionProvider,
+    VersionBindingCandidate,
+    VersionComparer,
+    VersionSource,
+    package_version_domain,
+)
 
 # Command interface (optional import)
 try:
@@ -169,6 +206,18 @@ __all__ = [
     "MapMultibinder",
     "is_optional_type",
     "get_optional_type",
+    "VersionComparer",
+    "VersionSource",
+    "Pep440VersionComparer",
+    "PackageVersionSource",
+    "PythonVersionProvider",
+    "SysPythonVersionProvider",
+    "FixedPythonVersionProvider",
+    "PythonVersionSource",
+    "MapVersionSource",
+    "VersionBindingCandidate",
+    "PYTHON_VERSION_DOMAIN",
+    "package_version_domain",
 ]
 
 if _has_commands:
