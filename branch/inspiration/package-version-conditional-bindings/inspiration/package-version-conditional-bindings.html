@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspiration: package-version-aware conditional bindings &mdash; pyiv 0.4.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=981266f8" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5bfaad31"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #000000" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyiv
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/catalogs.html">Catalogs without registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/hierarchy.html">Hierarchy and private modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/packages.html">Packages and extras</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.html">pyiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.config.html">pyiv.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.injector.html">pyiv.injector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.binder.html">pyiv.binder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.key.html">pyiv.key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.scope.html">pyiv.scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.provider.html">pyiv.provider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.override.html">pyiv.override</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.members.html">pyiv.members</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.factory.html">pyiv.factory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Discovery</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.chain.html">pyiv.chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.command.html">pyiv.command</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.network.html">pyiv.network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Module listing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #000000" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyiv</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Inspiration: package-version-aware conditional bindings</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rl337/pyiv/blob/main/docs/inspiration/package-version-conditional-bindings.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="inspiration-package-version-aware-conditional-bindings">
+<h1>Inspiration: package-version-aware conditional bindings<a class="headerlink" href="#inspiration-package-version-aware-conditional-bindings" title="Link to this heading"></a></h1>
+<p>Status: proposal, not implemented.</p>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
+<p>A host application may inherit a package such as <code class="docutils literal notranslate"><span class="pre">requests</span></code> transitively, with a version chosen by other dependencies. An adapter library should be able to register implementations compatible with different installed versions without requiring the host to select the adapter manually.</p>
+<p>pyiv already provides Guice-style configuration, <code class="docutils literal notranslate"><span class="pre">Config.register</span></code>, and a fluent <code class="docutils literal notranslate"><span class="pre">self.get_binder().bind(Abstract).to(Concrete)</span></code> API. Extend that existing Binder surface rather than introducing a new binding dialect.</p>
+</section>
+<section id="proposed-developer-experience">
+<h2>Proposed developer experience<a class="headerlink" href="#proposed-developer-experience" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">HttpConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">binder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+        <span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">RequestHttpClientLegacy</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_version</span><span class="p">(</span>
+            <span class="s2">"requests"</span><span class="p">,</span> <span class="s2">"&lt;2.30"</span>
+        <span class="p">)</span>
+        <span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">RequestHttpClientModern</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_version</span><span class="p">(</span>
+            <span class="s2">"requests"</span><span class="p">,</span> <span class="s2">"&gt;=2.30,&lt;3"</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>This syntax is illustrative and must be validated against BindingBuilder internals. The method should be available on the builder and coexist with <code class="docutils literal notranslate"><span class="pre">.in_scope(...)</span></code> and other binding options. Version specifiers should follow PEP 440, preferably using an optional integration with <code class="docutils literal notranslate"><span class="pre">packaging</span></code> or a documented small stdlib-only strategy that preserves pyiv’s zero-runtime-dependency promise. Do not implement an incomplete custom PEP 440 parser silently.</p>
+</section>
+<section id="user-stories-and-acceptance-criteria">
+<h2>User stories and acceptance criteria<a class="headerlink" href="#user-stories-and-acceptance-criteria" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Transitive dependency compatibility.</strong> Given multiple conditional bindings for the same interface, select the implementation whose package constraint matches the installed distribution version, including when the package is only transitively installed.</p></li>
+<li><p><strong>Version ranges.</strong> Support meaningful constraints such as <code class="docutils literal notranslate"><span class="pre">&lt;2.30</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=2.30,&lt;3</span></code>, and exact pins, with clear handling of prereleases according to the chosen standards-compliant matcher.</p></li>
+<li><p><strong>No matching version.</strong> Report the package name, detected version, requested interface, and available constraints; never silently select an incompatible implementation.</p></li>
+<li><p><strong>Package absent.</strong> Report a distinct missing-distribution diagnostic. Avoid importing the target library merely to discover its version.</p></li>
+<li><p><strong>Overlapping matches.</strong> Reject ambiguous competing matches unless an explicit and documented precedence mechanism is introduced. Do not depend on registration order.</p></li>
+<li><p><strong>Unconditional fallback.</strong> Define explicit semantics for a normal binding alongside conditional candidates: use it only when no conditional match exists, if this behavior is opted into or documented. Never mask an unsupported version accidentally.</p></li>
+<li><p><strong>Scopes and providers.</strong> Ensure version-filtered bindings retain existing scope, provider, qualifier, and lifecycle behavior.</p></li>
+<li><p><strong>Testability.</strong> Permit injecting a version resolver or installed-distribution map in tests; exercise selection without monkeypatching global package metadata or installing multiple distributions.</p></li>
+<li><p><strong>Determinism.</strong> Resolve conditions at injector construction or a clearly specified stable phase, and cache per-injector results. Do not unexpectedly switch implementations during a running injector lifetime.</p></li>
+<li><p><strong>Diagnostics.</strong> Offer inspection of candidate bindings, version predicates, selected binding, and rejection reasons.</p></li>
+</ol>
+</section>
+<section id="architecture-considerations">
+<h2>Architecture considerations<a class="headerlink" href="#architecture-considerations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Python <code class="docutils literal notranslate"><span class="pre">importlib.metadata.version(&quot;requests&quot;)</span></code> is an appropriate metadata source (with the Python 3.8 baseline), but distribution names and import names are not always identical. Accept the <strong>distribution name</strong>, normalize it per packaging conventions, and document this distinction.</p></li>
+<li><p>Conditional registrations cannot simply overwrite <code class="docutils literal notranslate"><span class="pre">Config._registrations[abstract]</span></code>: store candidate records independently and select after composing installed Config modules, private bindings, and overrides.</p></li>
+<li><p>Inspect <code class="docutils literal notranslate"><span class="pre">pyiv/binder.py</span></code> (<code class="docutils literal notranslate"><span class="pre">BindingBuilder</span></code> / <code class="docutils literal notranslate"><span class="pre">ConfigBinder</span></code>), <code class="docutils literal notranslate"><span class="pre">pyiv/config.py</span></code> (<code class="docutils literal notranslate"><span class="pre">register</span></code> and configuration composition), and <code class="docutils literal notranslate"><span class="pre">pyiv/injector.py</span></code> (resolution). Preserve existing unconditional binding semantics.</p></li>
+<li><p>Consider how a library config installed into a host config can contribute version alternatives without collision, and whether a host’s explicit override takes precedence.</p></li>
+<li><p>A package version condition concerns the <strong>environment</strong> running the injector, not the version of the library declaring the binding.</p></li>
+<li><p>Do not imply multiple versions of the same distribution can be simultaneously loaded in one ordinary Python environment. The feature chooses among adapters for the one installed version.</p></li>
+<li><p>Consider extending conditions to multiple package predicates in a future iteration, but keep the first implementation focused on one distribution per binding.</p></li>
+</ul>
+</section>
+<section id="suggested-tests">
+<h2>Suggested tests<a class="headerlink" href="#suggested-tests" title="Link to this heading"></a></h2>
+<p>Parameterized cases for older/current versions, exact pins, boundary versions, prereleases, absent packages, unmatched versions, overlapping ranges, conditional + unconditional bindings, scopes, providers, config installation, private configs, qualified keys, and deterministic resolver overrides. Verify that diagnostics are actionable and that the zero-dependency core remains installable.</p>
+</section>
+<section id="open-questions">
+<h2>Open questions<a class="headerlink" href="#open-questions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Should a normal unconditional binding be a fallback by default or require an explicit fallback designation?</p></li>
+<li><p>Is version selection at configuration finalization or first injection a better fit for pyiv’s overlays and overrides?</p></li>
+<li><p>Should version predicates be reusable objects for eventual OS, Python-version, and optional-feature predicates?</p></li>
+<li><p>How should the <code class="docutils literal notranslate"><span class="pre">packaging</span></code> dependency be handled while keeping core stdlib-only?</p></li>
+</ul>
+</section>
+<section id="source">
+<h2>Source<a class="headerlink" href="#source" title="Link to this heading"></a></h2>
+<p>Original design inspiration: user-proposed <code class="docutils literal notranslate"><span class="pre">bind(HttpClient,</span> <span class="pre">to=...).for_package_version(X)</span></code> compatibility selection for transitive Python dependencies (2026-10-15). Adapted to pyiv’s existing fluent Binder API.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
