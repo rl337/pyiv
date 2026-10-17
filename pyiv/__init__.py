@@ -98,10 +98,6 @@ from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDa
 from pyiv.errors import CreationError
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
 from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
-from pyiv.injector import Injector, get_injector
-from pyiv.key import Key, Matched, Named, Qualifier
-from pyiv.members import InjectorMembersInjector, MembersInjector
-from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
 from pyiv.http import (
     AsyncHttpClient,
     AsyncUrllibHttpClient,
@@ -114,6 +110,10 @@ from pyiv.http import (
     MemoryHttpClient,
     UrllibHttpClient,
 )
+from pyiv.injector import Injector, get_injector
+from pyiv.key import Key, Matched, Named, Qualifier
+from pyiv.members import InjectorMembersInjector, MembersInjector
+from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
 from pyiv.optional import get_optional_type, is_optional_type
 from pyiv.override import override
 from pyiv.pep440 import Pep440VersionParser  # after version (InvalidVersion base)
