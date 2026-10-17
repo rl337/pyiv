@@ -11,6 +11,14 @@ from pyiv.config import Config
 from pyiv.key import Key
 from pyiv.provider import InstanceProvider, Provider
 from pyiv.scope import NoScope, Scope
+from pyiv.version import (
+    PEP440,
+    PYTHON_VERSION_DOMAIN,
+    PackageVersionSource,
+    PythonVersionSource,
+    VersionBindingCandidate,
+    package_version_domain,
+)
 
 T = TypeVar("T")
 
@@ -32,6 +40,7 @@ class ConfigBindingBuilder(BindingBuilder[T]):
         self._provider: Optional[Provider[T]] = None
         self._scope: Optional[Scope] = None
         self._finalized = False
+        self._version_conditioned = False
         # Untargeted self-binding; replaced by to / to_instance / to_provider.
         self._config.register(self._abstract, self._abstract)
 
@@ -65,12 +74,121 @@ class ConfigBindingBuilder(BindingBuilder[T]):
     def in_scope(self, scope: Scope) -> "ConfigBindingBuilder[T]":
         """Set the scope for this binding."""
         self._scope = scope
-        self._config._scopes[self._abstract] = scope
+        if self._version_conditioned:
+            # Scope is stored on the candidate; patch the last candidate for
+            # this abstract/domain/specifier if present.
+            self._patch_last_candidate_scope(scope)
+        else:
+            self._config._scopes[self._abstract] = scope
         return self
+
+    def for_version(
+        self,
+        domain: str,
+        specifier: str,
+        *,
+        parser: Optional[str] = None,
+    ) -> "ConfigBindingBuilder[T]":
+        """Restrict this binding to a named version domain + specifier."""
+        self._ensure_target()
+        self._retract_unconditional()
+        candidate = VersionBindingCandidate(
+            abstract=self._abstract,
+            domain=domain,
+            specifier=specifier,
+            implementation=self._implementation,
+            instance=self._instance,
+            provider=self._provider,
+            scope=self._scope,
+            parser_name=parser,
+        )
+        self._config.add_version_candidate(candidate)
+        self._version_conditioned = True
+        self._finalized = True
+        return self
+
+    def for_package_version(
+        self,
+        distribution: str,
+        specifier: str,
+    ) -> "ConfigBindingBuilder[T]":
+        """Restrict this binding to an installed distribution version."""
+        domain = package_version_domain(distribution)
+        if domain not in self._config._version_sources:
+            self._config.register_version_source(domain, PackageVersionSource(distribution))
+        if domain not in self._config._version_domain_parsers:
+            self._config.use_version_parser(domain, PEP440)
+        return self.for_version(domain, specifier, parser=PEP440)
+
+    def for_python_version(self, specifier: str) -> "ConfigBindingBuilder[T]":
+        """Restrict this binding to the running interpreter version."""
+        domain = PYTHON_VERSION_DOMAIN
+        # Do not eagerly bind SysPythonVersionProvider here: an override
+        # module's for_python_version would otherwise last-wins wipe a base
+        # FixedPythonVersionProvider on merge. PythonVersionSource falls back
+        # to Sys; apply_version_selection ensures an injectable binding later.
+        if domain not in self._config._version_sources:
+            self._config.register_version_source(domain, PythonVersionSource(config=self._config))
+        if domain not in self._config._version_domain_parsers:
+            self._config.use_version_parser(domain, PEP440)
+        return self.for_version(domain, specifier, parser=PEP440)
+
+    def _ensure_target(self) -> None:
+        if self._implementation is None and self._instance is None and self._provider is None:
+            raise ValueError(
+                "for_version* requires .to(...), .to_instance(...), or "
+                ".to_provider(...) before the version condition"
+            )
+
+    def _retract_unconditional(self) -> None:
+        """Remove the unconditional registration written by ``_finalize``."""
+        abstract = self._abstract
+        if self._provider is not None:
+            if self._config._providers.get(abstract) is self._provider:
+                del self._config._providers[abstract]
+        if self._instance is not None:
+            if self._config._instances.get(abstract) is self._instance:
+                del self._config._instances[abstract]
+        if self._implementation is not None:
+            if self._config._registrations.get(abstract) is self._implementation:
+                del self._config._registrations[abstract]
+        # Drop self-binding left from __init__ when converting early.
+        if (
+            self._implementation is None
+            and self._instance is None
+            and self._provider is None
+            and self._config._registrations.get(abstract) is abstract
+        ):
+            del self._config._registrations[abstract]
+        # Scope stays only if an unconditional binding remains; otherwise clear
+        # the scope entry written for this builder so fallbacks are clean.
+        if abstract not in self._config._registrations and abstract not in self._config._providers:
+            if abstract in self._config._scopes and self._scope is not None:
+                if self._config._scopes.get(abstract) is self._scope:
+                    del self._config._scopes[abstract]
+            if abstract in self._config._instances and self._config._instances[abstract] is None:
+                del self._config._instances[abstract]
+
+    def _patch_last_candidate_scope(self, scope: Scope) -> None:
+        candidates = self._config._version_candidates
+        for i in range(len(candidates) - 1, -1, -1):
+            c = candidates[i]
+            if c.abstract is self._abstract:
+                candidates[i] = VersionBindingCandidate(
+                    abstract=c.abstract,
+                    domain=c.domain,
+                    specifier=c.specifier,
+                    implementation=c.implementation,
+                    instance=c.instance,
+                    provider=c.provider,
+                    scope=scope,
+                    parser_name=c.parser_name,
+                )
+                return
 
     def _finalize(self) -> None:
         """Finalize the binding registration."""
-        if self._finalized:
+        if self._finalized or self._version_conditioned:
             return
 
         if self._instance is not None:
@@ -140,6 +258,32 @@ class ConfigKeyBindingBuilder(BindingBuilder[T]):
                 self._config._qualified_bindings[self._key] = (type_, provider, scope)
         return self
 
+    def for_version(
+        self,
+        domain: str,
+        specifier: str,
+        *,
+        parser: Optional[str] = None,
+    ) -> "ConfigKeyBindingBuilder[T]":
+        raise NotImplementedError(
+            "Version-conditioned bindings are not yet supported on bind_key; "
+            "use bind(Type).for_version(...) for unqualified types"
+        )
+
+    def for_package_version(
+        self, distribution: str, specifier: str
+    ) -> "ConfigKeyBindingBuilder[T]":
+        raise NotImplementedError(
+            "Version-conditioned bindings are not yet supported on bind_key; "
+            "use bind(Type).for_package_version(...) for unqualified types"
+        )
+
+    def for_python_version(self, specifier: str) -> "ConfigKeyBindingBuilder[T]":
+        raise NotImplementedError(
+            "Version-conditioned bindings are not yet supported on bind_key; "
+            "use bind(Type).for_python_version(...) for unqualified types"
+        )
+
     def _finalize(self) -> None:
         if self._finalized:
             return
@@ -199,6 +343,18 @@ class ConfigBinder(Binder):
     def require_explicit_bindings(self) -> None:
         """Disable just-in-time construction of unregistered concrete types."""
         self._config.require_explicit_bindings()
+
+    def version_source(self, domain: str, source: Any) -> None:
+        """Register a VersionSource for a named domain."""
+        self._config.register_version_source(domain, source)
+
+    def version_parser(self, name: str, parser: Any) -> None:
+        """Register a named VersionParser (e.g. custom OS-release grammar)."""
+        self._config.register_version_parser(name, parser)
+
+    def use_version_parser(self, domain: str, parser_name: str) -> None:
+        """Point a version domain at a named VersionParser."""
+        self._config.use_version_parser(domain, parser_name)
 
     def finalize(self) -> None:
         """Finalize all pending bindings."""
