@@ -74,6 +74,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.optional.html">pyiv.optional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -155,13 +156,13 @@
 <p>Select among several implementations of the same interface based on a
 <strong>named version domain</strong> — the running Python interpreter, an installed
 distribution, or any host-defined domain (OS release, wire protocol, …).</p>
-<p>See <a class="reference internal" href="../pyiv/pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a> for the full API (sources, comparers, candidates).
-This page is the how-to.</p>
+<p>See <a class="reference internal" href="../pyiv/pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a> for the full API (sources, parsers, candidates) and
+<a class="reference internal" href="../pyiv/pyiv.pep440.html#module-pyiv.pep440" title="pyiv.pep440"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.pep440</span></code></a> for the built-in <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0440/"><strong>PEP 440</strong></a> engine. This page is the how-to.</p>
 <section id="fluent-api">
 <h2>Fluent API<a class="headerlink" href="#fluent-api" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> and <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> are convenience adapters
-over <code class="docutils literal notranslate"><span class="pre">for_version</span></code>. They use <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0440/"><strong>PEP 440</strong></a> matching via
-<a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.Pep440VersionComparer" title="pyiv.version.Pep440VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pep440VersionComparer</span></code></a>.</p>
+over <code class="docutils literal notranslate"><span class="pre">for_version</span></code>. They use the named parser <code class="docutils literal notranslate"><span class="pre">\&quot;PEP440\&quot;</span></code>
+(<a class="reference internal" href="../pyiv/pyiv.pep440.html#pyiv.pep440.Pep440VersionParser" title="pyiv.pep440.Pep440VersionParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pep440VersionParser</span></code></a>).</p>
 <p>Interpreter version is read through an injectable
 <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.PythonVersionProvider" title="pyiv.version.PythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code></a>. Production defaults to
 <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.SysPythonVersionProvider" title="pyiv.version.SysPythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code></a>. Tests bind
@@ -195,14 +196,15 @@ checked under many Python versions:</p>
 </pre></div>
 </div>
 </section>
-<section id="custom-domains">
-<h2>Custom domains<a class="headerlink" href="#custom-domains" title="Link to this heading"></a></h2>
-<p>Register a <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> for the domain. Optionally
-register a custom <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.VersionComparer" title="pyiv.version.VersionComparer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionComparer</span></code></a> when versions are
-not PEP 440 (for example an OS release string). The comparer exposes
-<code class="docutils literal notranslate"><span class="pre">is_version_compatible</span></code>, <code class="docutils literal notranslate"><span class="pre">is_version_less</span></code>, and <code class="docutils literal notranslate"><span class="pre">is_version_greater</span></code>.</p>
+<section id="custom-domains-and-named-parsers">
+<h2>Custom domains and named parsers<a class="headerlink" href="#custom-domains-and-named-parsers" title="Link to this heading"></a></h2>
+<p>Register a <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> for the domain. Register a
+custom <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.VersionParser" title="pyiv.version.VersionParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionParser</span></code></a> under a name when versions are
+not PEP 440 (for example an OS release string), then point the domain at that
+name. Parsers raise <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.InvalidVersion" title="pyiv.version.InvalidVersion"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidVersion</span></code></a> (or a subclass) on
+bad input.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">MapVersionSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidVersion</span><span class="p">,</span> <span class="n">MapVersionSource</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">FsTool</span><span class="p">:</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">"base"</span>
@@ -210,9 +212,10 @@ not PEP 440 (for example an OS release string). The comparer exposes
 <span class="k">class</span><span class="w"> </span><span class="nc">AlpineFs</span><span class="p">(</span><span class="n">FsTool</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">"alpine"</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">AlpineComparer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AlpineVersionParser</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_version_compatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">specifier</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="n">specifier</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&gt;="</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">specifier</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&gt;="</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidVersion</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unsupported specifier: </span><span class="si">{</span><span class="n">specifier</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tuple</span><span class="p">(</span><span class="n">version</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tuple</span><span class="p">(</span><span class="n">specifier</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_version_less</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
@@ -227,8 +230,9 @@ not PEP 440 (for example an OS release string). The comparer exposes
 <span class="k">class</span><span class="w"> </span><span class="nc">OsConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">binder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+        <span class="n">binder</span><span class="o">.</span><span class="n">version_parser</span><span class="p">(</span><span class="s2">"alpine-release"</span><span class="p">,</span> <span class="n">AlpineVersionParser</span><span class="p">())</span>
         <span class="n">binder</span><span class="o">.</span><span class="n">version_source</span><span class="p">(</span><span class="s2">"alpine"</span><span class="p">,</span> <span class="n">MapVersionSource</span><span class="p">({</span><span class="s2">"alpine"</span><span class="p">:</span> <span class="s2">"3.19.0"</span><span class="p">}))</span>
-        <span class="n">binder</span><span class="o">.</span><span class="n">version_comparer</span><span class="p">(</span><span class="s2">"alpine"</span><span class="p">,</span> <span class="n">AlpineComparer</span><span class="p">())</span>
+        <span class="n">binder</span><span class="o">.</span><span class="n">use_version_parser</span><span class="p">(</span><span class="s2">"alpine"</span><span class="p">,</span> <span class="s2">"alpine-release"</span><span class="p">)</span>
         <span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">FsTool</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">AlpineFs</span><span class="p">)</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span><span class="s2">"alpine"</span><span class="p">,</span> <span class="s2">"&gt;=3.18"</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">OsConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">FsTool</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"alpine"</span>
@@ -249,6 +253,72 @@ binds so <code class="docutils literal notranslate"><span class="pre">.to(...)</
 retracts the conditional registration.</p></li>
 <li><p>Missing distribution / absent version is a distinct diagnostic (not a
 silent wrong pick).</p></li>
+</ul>
+</section>
+<section id="mixing-with-other-bindings">
+<h2>Mixing with other bindings<a class="headerlink" href="#mixing-with-other-bindings" title="Link to this heading"></a></h2>
+<p>Version candidates live in a <strong>separate store</strong> from ordinary
+<code class="docutils literal notranslate"><span class="pre">register</span></code> / <code class="docutils literal notranslate"><span class="pre">bind(...).to(...)</span></code> registrations. At injector
+construction pyiv selects among candidates, then materializes the winner
+into the ordinary stores (or leaves an existing unconditional binding
+alone as fallback). The rules below are locked by
+<code class="docutils literal notranslate"><span class="pre">tests/test_version_binding_mixtures.py</span></code>.</p>
+<p><strong>Match vs fallback</strong></p>
+<ol class="arabic simple">
+<li><p>If exactly one candidate matches the environment, that binding is used
+even when an unconditional binding for the same type also exists.</p></li>
+<li><p>If zero candidates match and an unconditional binding exists, that
+unconditional binding is the fallback.</p></li>
+<li><p>If zero candidates match and there is no unconditional binding,
+construction raises <a class="reference internal" href="../pyiv/pyiv.errors.html#pyiv.errors.CreationError" title="pyiv.errors.CreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreationError</span></code></a>.</p></li>
+<li><p>If two or more candidates match, construction raises an ambiguous
+<a class="reference internal" href="../pyiv/pyiv.errors.html#pyiv.errors.CreationError" title="pyiv.errors.CreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreationError</span></code></a> — an unconditional fallback does
+<strong>not</strong> break the tie.</p></li>
+</ol>
+<p><strong>Ordering (important)</strong></p>
+<p>Register version-conditioned binds first, then the unconditional fallback:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Service</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Legacy</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&lt;3.11"</span><span class="p">)</span>
+<span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Service</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Modern</span><span class="p">)</span><span class="o">.</span><span class="n">for_python_version</span><span class="p">(</span><span class="s2">"&gt;=3.11"</span><span class="p">)</span>
+<span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Service</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Fallback</span><span class="p">)</span>  <span class="c1"># after conditionals</span>
+</pre></div>
+</div>
+<p>Do <strong>not</strong> put the fallback first. <code class="docutils literal notranslate"><span class="pre">bind(Service).to(Fallback)</span></code> followed
+by <code class="docutils literal notranslate"><span class="pre">bind(Service).to(Modern).for_python_version(...)</span></code> loses Fallback:
+<code class="docutils literal notranslate"><span class="pre">.to(Modern)</span></code> last-wins into the ordinary registration map, then
+<code class="docutils literal notranslate"><span class="pre">for_version</span></code> retracts that registration into the candidate list, leaving
+no unconditional binding. The same footgun applies if you
+<code class="docutils literal notranslate"><span class="pre">self.register(Service,</span> <span class="pre">Fallback)</span></code> before a version-conditioned
+<code class="docutils literal notranslate"><span class="pre">.to(...).for_*</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Config.register</span></code> after the version candidates works as a fallback, same
+as a trailing <code class="docutils literal notranslate"><span class="pre">bind(...).to(...)</span></code>.</p>
+<p><strong>Providers, instances, and scopes</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.to_provider(...)</span></code> / <code class="docutils literal notranslate"><span class="pre">.to_instance(...)</span></code> may appear before
+<code class="docutils literal notranslate"><span class="pre">for_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>; the
+winning candidate keeps that target shape.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.in_scope(...)</span></code> on a version-conditioned chain applies to that
+candidate. A scoped unconditional fallback is only used when no
+candidate matches.</p></li>
+<li><p>Unrelated types are unaffected: version selection for <code class="docutils literal notranslate"><span class="pre">Service</span></code> does
+not clear or change bindings for <code class="docutils literal notranslate"><span class="pre">Other</span></code>.</p></li>
+</ul>
+<p><strong>install and override</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">install</span></code> <strong>extends</strong> the candidate list (and merges version sources /
+named parsers). Hosts can add more <code class="docutils literal notranslate"><span class="pre">for_*</span></code> alternatives or a trailing
+unconditional fallback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">override(base).with_(test)</span></code> also extends candidates. Unconditional
+bindings still last-wins: a test module’s <code class="docutils literal notranslate"><span class="pre">bind(Service).to(Fake)</span></code>
+replaces the base fallback when no version candidate matches.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> does <strong>not</strong> eagerly bind
+<a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.SysPythonVersionProvider" title="pyiv.version.SysPythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code></a> during <code class="docutils literal notranslate"><span class="pre">configure</span></code>.
+A default Sys binding is installed only after merge, and only if no
+<code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code> is already present. That way a base
+<a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.FixedPythonVersionProvider" title="pyiv.version.FixedPythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">FixedPythonVersionProvider</span></code></a> survives an override
+module that only adds more <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> candidates.</p></li>
+<li><p>At selection time, every <a class="reference internal" href="../pyiv/pyiv.version.html#pyiv.version.PythonVersionSource" title="pyiv.version.PythonVersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionSource</span></code></a> is
+rebound to the <strong>merged</strong> config so it sees the final
+<code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code> (not a submodule’s empty graph).</p></li>
 </ul>
 </section>
 <section id="package-versions">

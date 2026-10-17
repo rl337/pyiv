@@ -155,6 +155,7 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
 
    pyiv/pyiv.optional
    pyiv/pyiv.version
+   pyiv/pyiv.pep440
    pyiv/pyiv.multibinder
    pyiv/pyiv.members
    pyiv/pyiv.factory

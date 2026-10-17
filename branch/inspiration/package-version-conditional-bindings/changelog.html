@@ -74,6 +74,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.optional.html">pyiv.optional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -162,11 +163,13 @@ order. Install with <code class="docutils literal notranslate"><span class="pre"
 <ul class="simple">
 <li><p>Version-conditioned bindings on the fluent Binder:
 <code class="docutils literal notranslate"><span class="pre">for_version</span></code>, <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, and <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code>.</p></li>
-<li><p>:mod:<code class="docutils literal notranslate"><span class="pre">pyiv.version</span></code> — <code class="docutils literal notranslate"><span class="pre">VersionSource</span></code> / <code class="docutils literal notranslate"><span class="pre">VersionComparer</span></code> protocols,
-<code class="docutils literal notranslate"><span class="pre">Pep440VersionComparer</span></code>, <code class="docutils literal notranslate"><span class="pre">PackageVersionSource</span></code>, injectable
-<code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code> (<code class="docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code> /
-<code class="docutils literal notranslate"><span class="pre">FixedPythonVersionProvider</span></code>), <code class="docutils literal notranslate"><span class="pre">PythonVersionSource</span></code>,
-<code class="docutils literal notranslate"><span class="pre">MapVersionSource</span></code>, and candidate records.</p></li>
+<li><p>:mod:<code class="docutils literal notranslate"><span class="pre">pyiv.version</span></code> — <code class="docutils literal notranslate"><span class="pre">VersionSource</span></code> / <code class="docutils literal notranslate"><span class="pre">VersionParser</span></code> protocols,
+named parser registry (<code class="docutils literal notranslate"><span class="pre">PEP440</span></code> default), <code class="docutils literal notranslate"><span class="pre">InvalidVersion</span></code> /
+<code class="docutils literal notranslate"><span class="pre">InvalidSpecifier</span></code>, injectable <code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code>
+(<code class="docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code> / <code class="docutils literal notranslate"><span class="pre">FixedPythonVersionProvider</span></code>),
+<code class="docutils literal notranslate"><span class="pre">PackageVersionSource</span></code>, <code class="docutils literal notranslate"><span class="pre">MapVersionSource</span></code>, and candidate records.</p></li>
+<li><p>:mod:<code class="docutils literal notranslate"><span class="pre">pyiv.pep440</span></code> — public PEP 440 engine and
+<code class="docutils literal notranslate"><span class="pre">Pep440VersionParser</span></code> (raises subclasses of <code class="docutils literal notranslate"><span class="pre">InvalidVersion</span></code>).</p></li>
 <li><p>Guide page “Version-conditioned bindings” for env-stable selection,
 custom domains, and fallback rules.</p></li>
 </ul>

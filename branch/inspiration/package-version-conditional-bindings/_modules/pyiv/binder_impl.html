@@ -71,6 +71,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -162,14 +163,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstanceProvider</span><span class="p">,</span> <span class="n">Provider</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoScope</span><span class="p">,</span> <span class="n">Scope</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PEP440</span><span class="p">,</span>
     <span class="n">PYTHON_VERSION_DOMAIN</span><span class="p">,</span>
     <span class="n">PackageVersionSource</span><span class="p">,</span>
-    <span class="n">Pep440VersionComparer</span><span class="p">,</span>
-    <span class="n">PythonVersionProvider</span><span class="p">,</span>
     <span class="n">PythonVersionSource</span><span class="p">,</span>
-    <span class="n">SysPythonVersionProvider</span><span class="p">,</span>
     <span class="n">VersionBindingCandidate</span><span class="p">,</span>
-    <span class="n">VersionComparer</span><span class="p">,</span>
     <span class="n">package_version_domain</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -259,7 +257,7 @@
         <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">comparer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VersionComparer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Restrict this binding to a named version domain + specifier."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_target</span><span class="p">()</span>
@@ -272,7 +270,7 @@
             <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_instance</span><span class="p">,</span>
             <span class="n">provider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_provider</span><span class="p">,</span>
             <span class="n">scope</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_scope</span><span class="p">,</span>
-            <span class="n">comparer</span><span class="o">=</span><span class="n">comparer</span><span class="p">,</span>
+            <span class="n">parser_name</span><span class="o">=</span><span class="n">parser</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">add_version_candidate</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_version_conditioned</span> <span class="o">=</span> <span class="kc">True</span>
@@ -291,9 +289,9 @@
         <span class="n">domain</span> <span class="o">=</span> <span class="n">package_version_domain</span><span class="p">(</span><span class="n">distribution</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_version_sources</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_version_source</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">PackageVersionSource</span><span class="p">(</span><span class="n">distribution</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_version_comparers</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_version_comparer</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">Pep440VersionComparer</span><span class="p">())</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">specifier</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_version_domain_parsers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">use_version_parser</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">PEP440</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">specifier</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">PEP440</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ConfigBindingBuilder.for_python_version">
@@ -301,24 +299,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">for_python_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Restrict this binding to the running interpreter version."""</span>
         <span class="n">domain</span> <span class="o">=</span> <span class="n">PYTHON_VERSION_DOMAIN</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_python_version_provider</span><span class="p">()</span>
+        <span class="c1"># Do not eagerly bind SysPythonVersionProvider here: an override</span>
+        <span class="c1"># module's for_python_version would otherwise last-wins wipe a base</span>
+        <span class="c1"># FixedPythonVersionProvider on merge. PythonVersionSource falls back</span>
+        <span class="c1"># to Sys; apply_version_selection ensures an injectable binding later.</span>
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_version_sources</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_version_source</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">PythonVersionSource</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_version_comparers</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_version_comparer</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">Pep440VersionComparer</span><span class="p">())</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">specifier</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_version_domain_parsers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">use_version_parser</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">PEP440</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">specifier</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">PEP440</span><span class="p">)</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_python_version_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Bind SysPythonVersionProvider when no PythonVersionProvider exists yet."""</span>
-        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span>
-        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get_provider</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">has_registration</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">):</span>
-            <span class="k">return</span>
-        <span class="n">cfg</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">,</span> <span class="n">SysPythonVersionProvider</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_target</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_implementation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_provider</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -369,7 +359,7 @@
                     <span class="n">instance</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span>
                     <span class="n">provider</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">provider</span><span class="p">,</span>
                     <span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span>
-                    <span class="n">comparer</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">comparer</span><span class="p">,</span>
+                    <span class="n">parser_name</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">parser_name</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
 
@@ -470,7 +460,7 @@
         <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">comparer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VersionComparer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigKeyBindingBuilder[T]"</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">"Version-conditioned bindings are not yet supported on bind_key; "</span>
@@ -589,11 +579,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_version_source</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ConfigBinder.version_comparer">
-<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.version_comparer">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">version_comparer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">comparer</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Register a VersionComparer for a named domain."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_version_comparer</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">comparer</span><span class="p">)</span></div>
+<div class="viewcode-block" id="ConfigBinder.version_parser">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.version_parser">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">version_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register a named VersionParser (e.g. custom OS-release grammar)."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">register_version_parser</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigBinder.use_version_parser">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.use_version_parser">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">use_version_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parser_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Point a version domain at a named VersionParser."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">use_version_parser</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">parser_name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ConfigBinder.finalize">

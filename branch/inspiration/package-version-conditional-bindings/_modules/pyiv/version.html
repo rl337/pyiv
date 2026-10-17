@@ -71,6 +71,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -148,7 +149,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyiv.version</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Version sources, comparers, and version-conditioned bindings.</span>
+<span></span><span class="sd">"""Version sources, parsers, and version-conditioned bindings.</span>
 
 <span class="sd">Select among multiple implementations of the same interface based on a</span>
 <span class="sd">**named version domain** — installed package versions, the running Python</span>
@@ -160,14 +161,14 @@
 <span class="sd">libraries need to register several implementations and let the injector pick</span>
 <span class="sd">the one compatible with the environment. The same mechanism covers interpreter</span>
 <span class="sd">specialization (``async`` APIs that differ by Python version) and non-Python</span>
-<span class="sd">domains when the host supplies a :class:`VersionSource` and optional custom</span>
-<span class="sd">:class:`VersionComparer`.</span>
+<span class="sd">domains when the host supplies a :class:`VersionSource` and a named</span>
+<span class="sd">:class:`VersionParser`.</span>
 
 <span class="sd">**Real-World Use Cases:**</span>
 
 <span class="sd">- Pick an HTTP adapter compatible with the installed ``requests`` distribution</span>
 <span class="sd">- Use ``TaskGroup``-based runners only on Python 3.11+</span>
-<span class="sd">- Bind filesystem helpers based on the host OS release (custom comparer)</span>
+<span class="sd">- Bind filesystem helpers based on the host OS release (custom parser)</span>
 <span class="sd">- Tests bind a :class:`FixedPythonVersionProvider` (or a fixed</span>
 <span class="sd">  :class:`MapVersionSource`) instead of monkeypatching ``sys`` /</span>
 <span class="sd">  ``importlib.metadata``</span>
@@ -175,8 +176,9 @@
 <span class="sd">Architecture:</span>
 
 <span class="sd">- :class:`VersionSource` — obtains the current version string for a domain</span>
-<span class="sd">- :class:`VersionComparer` — ``compatible`` / ``less`` / ``greater`` predicates</span>
-<span class="sd">- :class:`Pep440VersionComparer` — default PEP 440 comparer for Python/package</span>
+<span class="sd">- :class:`VersionParser` — ``compatible`` / ``less`` / ``greater`` predicates</span>
+<span class="sd">- Named parser registry — ``\"PEP440\"`` defaults to</span>
+<span class="sd">  :class:`~pyiv.pep440.Pep440VersionParser`; hosts register others by name</span>
 <span class="sd">- :class:`PythonVersionProvider` — injectable interpreter version (sys or fixed)</span>
 <span class="sd">- Fluent Binder: ``.for_version`` / ``.for_package_version`` /</span>
 <span class="sd">  ``.for_python_version`` register **candidates**; the injector selects one</span>
@@ -208,20 +210,19 @@
 <span class="sd">        &gt;&gt;&gt; inj.inject(PythonVersionProvider).get_version()</span>
 <span class="sd">        '3.10.12'</span>
 
-<span class="sd">    Custom domain with a host comparer::</span>
+<span class="sd">    Custom domain with a named parser::</span>
 
 <span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
-<span class="sd">        &gt;&gt;&gt; from pyiv.version import MapVersionSource, VersionComparer</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import MapVersionSource</span>
 <span class="sd">        &gt;&gt;&gt; class FsTool:</span>
 <span class="sd">        ...     name = "base"</span>
 <span class="sd">        &gt;&gt;&gt; class AlpineFs(FsTool):</span>
 <span class="sd">        ...     name = "alpine"</span>
 <span class="sd">        &gt;&gt;&gt; class DebFs(FsTool):</span>
 <span class="sd">        ...     name = "deb"</span>
-<span class="sd">        &gt;&gt;&gt; class AlpineComparer:</span>
+<span class="sd">        &gt;&gt;&gt; class AlpineVersionParser:</span>
 <span class="sd">        ...     '''Treat dotted release numbers as integer tuples.'''</span>
 <span class="sd">        ...     def is_version_compatible(self, version, specifier):</span>
-<span class="sd">        ...         # Simple demo: specifier is '&gt;=X.Y' only</span>
 <span class="sd">        ...         assert specifier.startswith("&gt;=")</span>
 <span class="sd">        ...         return self._tuple(version) &gt;= self._tuple(specifier[2:])</span>
 <span class="sd">        ...     def is_version_less(self, a, b):</span>
@@ -233,8 +234,9 @@
 <span class="sd">        &gt;&gt;&gt; class OsConfig(Config):</span>
 <span class="sd">        ...     def configure(self):</span>
 <span class="sd">        ...         binder = self.get_binder()</span>
+<span class="sd">        ...         binder.version_parser("alpine-release", AlpineVersionParser())</span>
 <span class="sd">        ...         binder.version_source("alpine", MapVersionSource({"alpine": "3.19.0"}))</span>
-<span class="sd">        ...         binder.version_comparer("alpine", AlpineComparer())</span>
+<span class="sd">        ...         binder.use_version_parser("alpine", "alpine-release")</span>
 <span class="sd">        ...         binder.bind(FsTool).to(AlpineFs).for_version("alpine", "&gt;=3.18")</span>
 <span class="sd">        ...         binder.bind(FsTool).to(DebFs).for_version("alpine", "&gt;=99")</span>
 <span class="sd">        &gt;&gt;&gt; get_injector(OsConfig).inject(FsTool).name</span>
@@ -248,15 +250,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">_pep440</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provider</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scope</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
 
-<span class="c1"># Built-in domain names for convenience adapters.</span>
+<span class="c1"># Built-in domain / parser names.</span>
 <span class="n">PYTHON_VERSION_DOMAIN</span> <span class="o">=</span> <span class="s2">"python"</span>
+<span class="n">PEP440</span> <span class="o">=</span> <span class="s2">"PEP440"</span>
 
 
 <div class="viewcode-block" id="package_version_domain">
@@ -267,10 +269,58 @@
 
 
 
+<div class="viewcode-block" id="InvalidVersion">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.InvalidVersion">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidVersion</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base error for :class:`VersionParser` parse and match failures.</span>
+
+<span class="sd">    **Why this exists:** Call sites and the injector need one exception type</span>
+<span class="sd">    for "this version string / specifier is unusable," regardless of whether</span>
+<span class="sd">    the active parser is PEP 440, an OS-release grammar, or a host-defined</span>
+<span class="sd">    schema epoch. Custom parsers should raise this class or a subclass.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import InvalidVersion</span>
+<span class="sd">        &gt;&gt;&gt; raise InvalidVersion("not a version")</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        pyiv.version.InvalidVersion: not a version</span>
+<span class="sd">    """</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidSpecifier">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.InvalidSpecifier">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidSpecifier</span><span class="p">(</span><span class="n">InvalidVersion</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raised when a version constraint / specifier string is invalid.</span>
+
+<span class="sd">    **Why this exists:** Distinguishes bad constraints (``&gt;&gt;&gt;&gt;1.0``) from bad</span>
+<span class="sd">    version strings while remaining catchable as :class:`InvalidVersion`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import InvalidSpecifier, InvalidVersion</span>
+<span class="sd">        &gt;&gt;&gt; issubclass(InvalidSpecifier, InvalidVersion)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span></div>
+
+
+
+<div class="viewcode-block" id="default_version_parsers">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.default_version_parsers">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_version_parsers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">"VersionParser"</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Return the built-in named parser map (``PEP440`` → Pep440VersionParser)."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.pep440</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pep440VersionParser</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">PEP440</span><span class="p">:</span> <span class="n">Pep440VersionParser</span><span class="p">()}</span></div>
+
+
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">"VersionComparer"</span><span class="p">,</span>
+    <span class="s2">"InvalidVersion"</span><span class="p">,</span>
+    <span class="s2">"InvalidSpecifier"</span><span class="p">,</span>
+    <span class="s2">"VersionParser"</span><span class="p">,</span>
     <span class="s2">"VersionSource"</span><span class="p">,</span>
-    <span class="s2">"Pep440VersionComparer"</span><span class="p">,</span>
+    <span class="s2">"Pep440VersionParser"</span><span class="p">,</span>
     <span class="s2">"PackageVersionSource"</span><span class="p">,</span>
     <span class="s2">"PythonVersionProvider"</span><span class="p">,</span>
     <span class="s2">"SysPythonVersionProvider"</span><span class="p">,</span>
@@ -279,51 +329,66 @@
     <span class="s2">"MapVersionSource"</span><span class="p">,</span>
     <span class="s2">"VersionBindingCandidate"</span><span class="p">,</span>
     <span class="s2">"PYTHON_VERSION_DOMAIN"</span><span class="p">,</span>
+    <span class="s2">"PEP440"</span><span class="p">,</span>
     <span class="s2">"package_version_domain"</span><span class="p">,</span>
+    <span class="s2">"default_version_parsers"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="VersionComparer">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionComparer">[docs]</a>
+<div class="viewcode-block" id="VersionParser">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionParser">[docs]</a>
 <span class="nd">@runtime_checkable</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">VersionComparer</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Compares and matches version strings for a domain.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VersionParser</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Parses and matches version strings for a named grammar.</span>
 
 <span class="sd">    **Why this exists:** Python package and interpreter versions follow</span>
 <span class="sd">    :pep:`440`, but hosts often condition bindings on OS releases, wire</span>
-<span class="sd">    protocols, or schema epochs that do not. Depend on this protocol when you</span>
-<span class="sd">    need a custom ordering or specifier grammar; register it with</span>
-<span class="sd">    :meth:`pyiv.binder.Binder.version_comparer`.</span>
+<span class="sd">    protocols, or schema epochs that do not. Implement this protocol, register</span>
+<span class="sd">    it with :meth:`pyiv.binder.Binder.version_parser` under a name, and point</span>
+<span class="sd">    domains at that name with :meth:`pyiv.binder.Binder.use_version_parser`.</span>
+<span class="sd">    Raise :class:`InvalidVersion` (or a subclass) on unusable input.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; from pyiv.version import Pep440VersionComparer</span>
-<span class="sd">        &gt;&gt;&gt; c = Pep440VersionComparer()</span>
-<span class="sd">        &gt;&gt;&gt; c.is_version_compatible("2.31.0", "&gt;=2.30,&lt;3")</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.pep440 import Pep440VersionParser</span>
+<span class="sd">        &gt;&gt;&gt; p = Pep440VersionParser()</span>
+<span class="sd">        &gt;&gt;&gt; p.is_version_compatible("2.31.0", "&gt;=2.30,&lt;3")</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; c.is_version_less("1.0", "2.0")</span>
+<span class="sd">        &gt;&gt;&gt; p.is_version_less("1.0", "2.0")</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; c.is_version_greater("2.0", "1.0")</span>
+<span class="sd">        &gt;&gt;&gt; p.is_version_greater("2.0", "1.0")</span>
 <span class="sd">        True</span>
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="VersionComparer.is_version_compatible">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionComparer.is_version_compatible">[docs]</a>
+<div class="viewcode-block" id="VersionParser.is_version_compatible">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionParser.is_version_compatible">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_version_compatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return True if ``version`` satisfies ``specifier`` for this domain."""</span>
+<span class="w">        </span><span class="sd">"""Return True if ``version`` satisfies ``specifier`` for this grammar.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            InvalidVersion: If ``version`` or ``specifier`` cannot be parsed.</span>
+<span class="sd">        """</span>
         <span class="o">...</span></div>
 
 
-<div class="viewcode-block" id="VersionComparer.is_version_less">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionComparer.is_version_less">[docs]</a>
+<div class="viewcode-block" id="VersionParser.is_version_less">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionParser.is_version_less">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_version_less</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return True if ``a`` is strictly less than ``b``."""</span>
+<span class="w">        </span><span class="sd">"""Return True if ``a`` is strictly less than ``b``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            InvalidVersion: If either string cannot be parsed.</span>
+<span class="sd">        """</span>
         <span class="o">...</span></div>
 
 
-<div class="viewcode-block" id="VersionComparer.is_version_greater">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionComparer.is_version_greater">[docs]</a>
+<div class="viewcode-block" id="VersionParser.is_version_greater">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.VersionParser.is_version_greater">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_version_greater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return True if ``a`` is strictly greater than ``b``."""</span>
+<span class="w">        </span><span class="sd">"""Return True if ``a`` is strictly greater than ``b``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            InvalidVersion: If either string cannot be parsed.</span>
+<span class="sd">        """</span>
         <span class="o">...</span></div>
 </div>
 
@@ -352,59 +417,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return the current version, or ``None`` if absent / unknown."""</span>
         <span class="o">...</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="Pep440VersionComparer">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.Pep440VersionComparer">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Pep440VersionComparer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Default :class:`VersionComparer` using :pep:`440` rules.</span>
-
-<span class="sd">    **Why this exists:** Package and interpreter convenience APIs</span>
-<span class="sd">    (``for_package_version``, ``for_python_version``) need a standards-based</span>
-<span class="sd">    matcher without adding a third-party runtime dependency. Custom domains</span>
-<span class="sd">    may reuse this when their versions are already PEP 440 strings.</span>
-
-<span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; from pyiv.version import Pep440VersionComparer</span>
-<span class="sd">        &gt;&gt;&gt; c = Pep440VersionComparer()</span>
-<span class="sd">        &gt;&gt;&gt; c.is_version_compatible("3.11.5", "&gt;=3.11,&lt;3.12")</span>
-<span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; c.is_version_compatible("3.10.9", "&gt;=3.11")</span>
-<span class="sd">        False</span>
-<span class="sd">        &gt;&gt;&gt; c.is_version_less("3.10", "3.11")</span>
-<span class="sd">        True</span>
-<span class="sd">    """</span>
-
-<div class="viewcode-block" id="Pep440VersionComparer.is_version_compatible">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.Pep440VersionComparer.is_version_compatible">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_version_compatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return whether ``version`` satisfies the PEP 440 ``specifier``."""</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">SpecifierSet</span><span class="p">(</span><span class="n">specifier</span><span class="p">)</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">_pep440</span><span class="o">.</span><span class="n">InvalidVersion</span><span class="p">,</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">InvalidSpecifier</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
-
-
-<div class="viewcode-block" id="Pep440VersionComparer.is_version_less">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.Pep440VersionComparer.is_version_less">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_version_less</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return whether PEP 440 version ``a`` is strictly less than ``b``."""</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">InvalidVersion</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
-
-
-<div class="viewcode-block" id="Pep440VersionComparer.is_version_greater">
-<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.Pep440VersionComparer.is_version_greater">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_version_greater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return whether PEP 440 version ``a`` is strictly greater than ``b``."""</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">_pep440</span><span class="o">.</span><span class="n">InvalidVersion</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
 </div>
 
 
@@ -495,9 +507,10 @@
 <span class="sd">    calling this class directly.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; from pyiv.version import SysPythonVersionProvider, Pep440VersionComparer</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import SysPythonVersionProvider</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.pep440 import Pep440VersionParser</span>
 <span class="sd">        &gt;&gt;&gt; ver = SysPythonVersionProvider().get_version()</span>
-<span class="sd">        &gt;&gt;&gt; Pep440VersionComparer().is_version_compatible(ver, "&gt;=3.8")</span>
+<span class="sd">        &gt;&gt;&gt; Pep440VersionParser().is_version_compatible(ver, "&gt;=3.8")</span>
 <span class="sd">        True</span>
 <span class="sd">    """</span>
 
@@ -575,6 +588,18 @@
 <span class="sd">            config: Config used to look up a bound ``PythonVersionProvider``.</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_provider</span> <span class="o">=</span> <span class="n">provider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span></div>
+
+
+<div class="viewcode-block" id="PythonVersionSource.attach_config">
+<a class="viewcode-back" href="../../pyiv/pyiv.version.html#pyiv.PythonVersionSource.attach_config">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">attach_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">"Config"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Point this source at the (possibly merged) config used for selection.</span>
+
+<span class="sd">        ``install`` / ``override`` may replace a submodule's</span>
+<span class="sd">        ``PythonVersionSource`` whose ``config=`` still references that</span>
+<span class="sd">        submodule. Selection rebinds sources to the final merged config.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span></div>
 
 
@@ -682,8 +707,21 @@
     <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Provider</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">scope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Scope</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">comparer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VersionComparer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">parser_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Lazy re-export of :class:`~pyiv.pep440.Pep440VersionParser`.</span>
+
+<span class="sd">    Keeps :mod:`pyiv.pep440` free to subclass :class:`InvalidVersion` without</span>
+<span class="sd">    a circular import at module load.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"Pep440VersionParser"</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.pep440</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pep440VersionParser</span>
+
+        <span class="k">return</span> <span class="n">Pep440VersionParser</span>
+    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 
            </div>
