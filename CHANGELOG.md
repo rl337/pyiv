@@ -10,11 +10,13 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 - Version-conditioned bindings on the fluent Binder:
   ``for_version``, ``for_package_version``, and ``for_python_version``.
-- :mod:`pyiv.version` — ``VersionSource`` / ``VersionComparer`` protocols,
-  ``Pep440VersionComparer``, ``PackageVersionSource``, injectable
-  ``PythonVersionProvider`` (``SysPythonVersionProvider`` /
-  ``FixedPythonVersionProvider``), ``PythonVersionSource``,
-  ``MapVersionSource``, and candidate records.
+- :mod:`pyiv.version` — ``VersionSource`` / ``VersionParser`` protocols,
+  named parser registry (``PEP440`` default), ``InvalidVersion`` /
+  ``InvalidSpecifier``, injectable ``PythonVersionProvider``
+  (``SysPythonVersionProvider`` / ``FixedPythonVersionProvider``),
+  ``PackageVersionSource``, ``MapVersionSource``, and candidate records.
+- :mod:`pyiv.pep440` — public PEP 440 engine and
+  ``Pep440VersionParser`` (raises subclasses of ``InvalidVersion``).
 - Guide page "Version-conditioned bindings" for env-stable selection,
   custom domains, and fallback rules.
 

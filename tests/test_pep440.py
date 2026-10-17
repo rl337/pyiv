@@ -1,4 +1,4 @@
-"""Oracle tests for the private PEP 440 helper against packaging."""
+"""Oracle tests for the public PEP 440 helper against packaging."""
 
 from __future__ import annotations
 
@@ -6,7 +6,8 @@ import pytest
 from packaging.specifiers import SpecifierSet as PkgSpecifierSet
 from packaging.version import Version as PkgVersion
 
-from pyiv._pep440 import InvalidSpecifier, InvalidVersion, SpecifierSet, Version
+from pyiv.pep440 import InvalidSpecifier, InvalidVersion, SpecifierSet, Version
+from pyiv.version import InvalidVersion as BaseInvalidVersion
 
 
 @pytest.mark.parametrize(
@@ -52,3 +53,8 @@ def test_invalid_version_and_specifier() -> None:
         Version("not-a-version!!!")
     with pytest.raises(InvalidSpecifier):
         SpecifierSet(">>>>1.0")
+
+
+def test_pep440_errors_subclass_version_interface() -> None:
+    assert issubclass(InvalidVersion, BaseInvalidVersion)
+    assert issubclass(InvalidSpecifier, BaseInvalidVersion)

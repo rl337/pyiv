@@ -5,12 +5,13 @@ from __future__ import annotations
 import pytest
 
 from pyiv import Config, CreationError, get_injector
+from pyiv.pep440 import Pep440VersionParser
 from pyiv.scope import SingletonScope
 from pyiv.version import (
     FixedPythonVersionProvider,
+    InvalidVersion,
     MapVersionSource,
     PackageVersionSource,
-    Pep440VersionComparer,
     PythonVersionProvider,
     PythonVersionSource,
     SysPythonVersionProvider,
@@ -66,7 +67,6 @@ def test_unconditional_fallback_when_no_match() -> None:
             b = self.get_binder()
             _bind_python(b, "3.9.0")
             b.bind(Runner).to(ModernRunner).for_python_version(">=3.11")
-            # Fallback must be registered after conditionals.
             b.bind(Runner).to(FallbackRunner)
 
     assert get_injector(C).inject(Runner).kind == "fallback"
@@ -136,16 +136,17 @@ def test_absent_package_without_fallback_errors() -> None:
         get_injector(C)
 
 
-def test_custom_domain_comparer() -> None:
+def test_custom_named_version_parser() -> None:
     class FsTool:
         name = "base"
 
     class AlpineFs(FsTool):
         name = "alpine"
 
-    class AlpineComparer:
+    class AlpineVersionParser:
         def is_version_compatible(self, version: str, specifier: str) -> bool:
-            assert specifier.startswith(">=")
+            if not specifier.startswith(">="):
+                raise InvalidVersion(f"unsupported specifier: {specifier!r}")
             return self._t(version) >= self._t(specifier[2:])
 
         def is_version_less(self, a: str, b: str) -> bool:
@@ -161,8 +162,9 @@ def test_custom_domain_comparer() -> None:
     class C(Config):
         def configure(self):
             b = self.get_binder()
+            b.version_parser("alpine-release", AlpineVersionParser())
             b.version_source("alpine", MapVersionSource({"alpine": "3.19.0"}))
-            b.version_comparer("alpine", AlpineComparer())
+            b.use_version_parser("alpine", "alpine-release")
             b.bind(FsTool).to(AlpineFs).for_version("alpine", ">=3.18")
 
     assert get_injector(C).inject(FsTool).name == "alpine"
@@ -204,7 +206,7 @@ def test_default_sys_provider_is_injectable() -> None:
     inj = get_injector(C)
     provider = inj.inject(PythonVersionProvider)
     assert isinstance(provider, SysPythonVersionProvider)
-    assert Pep440VersionComparer().is_version_compatible(provider.get_version(), ">=3.8")
+    assert Pep440VersionParser().is_version_compatible(provider.get_version(), ">=3.8")
 
 
 def test_explicit_python_version_source_provider() -> None:
@@ -212,13 +214,13 @@ def test_explicit_python_version_source_provider() -> None:
     assert src.get_version() == "3.9.1"
 
 
-def test_pep440_comparer_helpers() -> None:
-    c = Pep440VersionComparer()
-    assert c.is_version_compatible("1.2.3", ">=1.2,<2")
-    assert c.is_version_less("1.0", "2.0")
-    assert c.is_version_greater("2.0", "1.0")
-    with pytest.raises(ValueError):
-        c.is_version_compatible("nope", ">=1")
+def test_pep440_parser_helpers() -> None:
+    p = Pep440VersionParser()
+    assert p.is_version_compatible("1.2.3", ">=1.2,<2")
+    assert p.is_version_less("1.0", "2.0")
+    assert p.is_version_greater("2.0", "1.0")
+    with pytest.raises(InvalidVersion):
+        p.is_version_compatible("nope", ">=1")
 
 
 def test_python_and_package_sources_smoke() -> None:

@@ -1,4 +1,4 @@
-"""Version sources, comparers, and version-conditioned bindings.
+"""Version sources, parsers, and version-conditioned bindings.
 
 Select among multiple implementations of the same interface based on a
 **named version domain** — installed package versions, the running Python
@@ -10,14 +10,14 @@ Hosts inherit transitive dependency versions they do not pin directly. Adapter
 libraries need to register several implementations and let the injector pick
 the one compatible with the environment. The same mechanism covers interpreter
 specialization (``async`` APIs that differ by Python version) and non-Python
-domains when the host supplies a :class:`VersionSource` and optional custom
-:class:`VersionComparer`.
+domains when the host supplies a :class:`VersionSource` and a named
+:class:`VersionParser`.
 
 **Real-World Use Cases:**
 
 - Pick an HTTP adapter compatible with the installed ``requests`` distribution
 - Use ``TaskGroup``-based runners only on Python 3.11+
-- Bind filesystem helpers based on the host OS release (custom comparer)
+- Bind filesystem helpers based on the host OS release (custom parser)
 - Tests bind a :class:`FixedPythonVersionProvider` (or a fixed
   :class:`MapVersionSource`) instead of monkeypatching ``sys`` /
   ``importlib.metadata``
@@ -25,8 +25,9 @@ domains when the host supplies a :class:`VersionSource` and optional custom
 Architecture:
 
 - :class:`VersionSource` — obtains the current version string for a domain
-- :class:`VersionComparer` — ``compatible`` / ``less`` / ``greater`` predicates
-- :class:`Pep440VersionComparer` — default PEP 440 comparer for Python/package
+- :class:`VersionParser` — ``compatible`` / ``less`` / ``greater`` predicates
+- Named parser registry — ``\"PEP440\"`` defaults to
+  :class:`~pyiv.pep440.Pep440VersionParser`; hosts register others by name
 - :class:`PythonVersionProvider` — injectable interpreter version (sys or fixed)
 - Fluent Binder: ``.for_version`` / ``.for_package_version`` /
   ``.for_python_version`` register **candidates**; the injector selects one
@@ -58,20 +59,19 @@ Usage Examples:
         >>> inj.inject(PythonVersionProvider).get_version()
         '3.10.12'
 
-    Custom domain with a host comparer::
+    Custom domain with a named parser::
 
         >>> from pyiv import Config, get_injector
-        >>> from pyiv.version import MapVersionSource, VersionComparer
+        >>> from pyiv.version import MapVersionSource
         >>> class FsTool:
         ...     name = "base"
         >>> class AlpineFs(FsTool):
         ...     name = "alpine"
         >>> class DebFs(FsTool):
         ...     name = "deb"
-        >>> class AlpineComparer:
+        >>> class AlpineVersionParser:
         ...     '''Treat dotted release numbers as integer tuples.'''
         ...     def is_version_compatible(self, version, specifier):
-        ...         # Simple demo: specifier is '>=X.Y' only
         ...         assert specifier.startswith(">=")
         ...         return self._tuple(version) >= self._tuple(specifier[2:])
         ...     def is_version_less(self, a, b):
@@ -83,8 +83,9 @@ Usage Examples:
         >>> class OsConfig(Config):
         ...     def configure(self):
         ...         binder = self.get_binder()
+        ...         binder.version_parser("alpine-release", AlpineVersionParser())
         ...         binder.version_source("alpine", MapVersionSource({"alpine": "3.19.0"}))
-        ...         binder.version_comparer("alpine", AlpineComparer())
+        ...         binder.use_version_parser("alpine", "alpine-release")
         ...         binder.bind(FsTool).to(AlpineFs).for_version("alpine", ">=3.18")
         ...         binder.bind(FsTool).to(DebFs).for_version("alpine", ">=99")
         >>> get_injector(OsConfig).inject(FsTool).name
@@ -98,15 +99,15 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Protocol, Type, runtime_checkable
 
-from pyiv import _pep440
 from pyiv.provider import Provider
 from pyiv.scope import Scope
 
 if TYPE_CHECKING:
     from pyiv.config import Config
 
-# Built-in domain names for convenience adapters.
+# Built-in domain / parser names.
 PYTHON_VERSION_DOMAIN = "python"
+PEP440 = "PEP440"
 
 
 def package_version_domain(distribution: str) -> str:
@@ -114,10 +115,49 @@ def package_version_domain(distribution: str) -> str:
     return f"package:{distribution}"
 
 
+class InvalidVersion(ValueError):
+    """Base error for :class:`VersionParser` parse and match failures.
+
+    **Why this exists:** Call sites and the injector need one exception type
+    for "this version string / specifier is unusable," regardless of whether
+    the active parser is PEP 440, an OS-release grammar, or a host-defined
+    schema epoch. Custom parsers should raise this class or a subclass.
+
+    Example:
+        >>> from pyiv.version import InvalidVersion
+        >>> raise InvalidVersion("not a version")
+        Traceback (most recent call last):
+        ...
+        pyiv.version.InvalidVersion: not a version
+    """
+
+
+class InvalidSpecifier(InvalidVersion):
+    """Raised when a version constraint / specifier string is invalid.
+
+    **Why this exists:** Distinguishes bad constraints (``>>>>1.0``) from bad
+    version strings while remaining catchable as :class:`InvalidVersion`.
+
+    Example:
+        >>> from pyiv.version import InvalidSpecifier, InvalidVersion
+        >>> issubclass(InvalidSpecifier, InvalidVersion)
+        True
+    """
+
+
+def default_version_parsers() -> Dict[str, "VersionParser"]:
+    """Return the built-in named parser map (``PEP440`` → Pep440VersionParser)."""
+    from pyiv.pep440 import Pep440VersionParser
+
+    return {PEP440: Pep440VersionParser()}
+
+
 __all__ = [
-    "VersionComparer",
+    "InvalidVersion",
+    "InvalidSpecifier",
+    "VersionParser",
     "VersionSource",
-    "Pep440VersionComparer",
+    "Pep440VersionParser",
     "PackageVersionSource",
     "PythonVersionProvider",
     "SysPythonVersionProvider",
@@ -126,41 +166,56 @@ __all__ = [
     "MapVersionSource",
     "VersionBindingCandidate",
     "PYTHON_VERSION_DOMAIN",
+    "PEP440",
     "package_version_domain",
+    "default_version_parsers",
 ]
 
 
 @runtime_checkable
-class VersionComparer(Protocol):
-    """Compares and matches version strings for a domain.
+class VersionParser(Protocol):
+    """Parses and matches version strings for a named grammar.
 
     **Why this exists:** Python package and interpreter versions follow
     :pep:`440`, but hosts often condition bindings on OS releases, wire
-    protocols, or schema epochs that do not. Depend on this protocol when you
-    need a custom ordering or specifier grammar; register it with
-    :meth:`pyiv.binder.Binder.version_comparer`.
+    protocols, or schema epochs that do not. Implement this protocol, register
+    it with :meth:`pyiv.binder.Binder.version_parser` under a name, and point
+    domains at that name with :meth:`pyiv.binder.Binder.use_version_parser`.
+    Raise :class:`InvalidVersion` (or a subclass) on unusable input.
 
     Example:
-        >>> from pyiv.version import Pep440VersionComparer
-        >>> c = Pep440VersionComparer()
-        >>> c.is_version_compatible("2.31.0", ">=2.30,<3")
+        >>> from pyiv.pep440 import Pep440VersionParser
+        >>> p = Pep440VersionParser()
+        >>> p.is_version_compatible("2.31.0", ">=2.30,<3")
         True
-        >>> c.is_version_less("1.0", "2.0")
+        >>> p.is_version_less("1.0", "2.0")
         True
-        >>> c.is_version_greater("2.0", "1.0")
+        >>> p.is_version_greater("2.0", "1.0")
         True
     """
 
     def is_version_compatible(self, version: str, specifier: str) -> bool:
-        """Return True if ``version`` satisfies ``specifier`` for this domain."""
+        """Return True if ``version`` satisfies ``specifier`` for this grammar.
+
+        Raises:
+            InvalidVersion: If ``version`` or ``specifier`` cannot be parsed.
+        """
         ...
 
     def is_version_less(self, a: str, b: str) -> bool:
-        """Return True if ``a`` is strictly less than ``b``."""
+        """Return True if ``a`` is strictly less than ``b``.
+
+        Raises:
+            InvalidVersion: If either string cannot be parsed.
+        """
         ...
 
     def is_version_greater(self, a: str, b: str) -> bool:
-        """Return True if ``a`` is strictly greater than ``b``."""
+        """Return True if ``a`` is strictly greater than ``b``.
+
+        Raises:
+            InvalidVersion: If either string cannot be parsed.
+        """
         ...
 
 
@@ -183,47 +238,6 @@ class VersionSource(Protocol):
     def get_version(self) -> Optional[str]:
         """Return the current version, or ``None`` if absent / unknown."""
         ...
-
-
-class Pep440VersionComparer:
-    """Default :class:`VersionComparer` using :pep:`440` rules.
-
-    **Why this exists:** Package and interpreter convenience APIs
-    (``for_package_version``, ``for_python_version``) need a standards-based
-    matcher without adding a third-party runtime dependency. Custom domains
-    may reuse this when their versions are already PEP 440 strings.
-
-    Example:
-        >>> from pyiv.version import Pep440VersionComparer
-        >>> c = Pep440VersionComparer()
-        >>> c.is_version_compatible("3.11.5", ">=3.11,<3.12")
-        True
-        >>> c.is_version_compatible("3.10.9", ">=3.11")
-        False
-        >>> c.is_version_less("3.10", "3.11")
-        True
-    """
-
-    def is_version_compatible(self, version: str, specifier: str) -> bool:
-        """Return whether ``version`` satisfies the PEP 440 ``specifier``."""
-        try:
-            return _pep440.SpecifierSet(specifier).contains(version)
-        except (_pep440.InvalidVersion, _pep440.InvalidSpecifier) as exc:
-            raise ValueError(str(exc)) from exc
-
-    def is_version_less(self, a: str, b: str) -> bool:
-        """Return whether PEP 440 version ``a`` is strictly less than ``b``."""
-        try:
-            return _pep440.Version(a) < _pep440.Version(b)
-        except _pep440.InvalidVersion as exc:
-            raise ValueError(str(exc)) from exc
-
-    def is_version_greater(self, a: str, b: str) -> bool:
-        """Return whether PEP 440 version ``a`` is strictly greater than ``b``."""
-        try:
-            return _pep440.Version(a) > _pep440.Version(b)
-        except _pep440.InvalidVersion as exc:
-            raise ValueError(str(exc)) from exc
 
 
 class PackageVersionSource:
@@ -295,9 +309,10 @@ class SysPythonVersionProvider(PythonVersionProvider):
     calling this class directly.
 
     Example:
-        >>> from pyiv.version import SysPythonVersionProvider, Pep440VersionComparer
+        >>> from pyiv.version import SysPythonVersionProvider
+        >>> from pyiv.pep440 import Pep440VersionParser
         >>> ver = SysPythonVersionProvider().get_version()
-        >>> Pep440VersionComparer().is_version_compatible(ver, ">=3.8")
+        >>> Pep440VersionParser().is_version_compatible(ver, ">=3.8")
         True
     """
 
@@ -358,6 +373,15 @@ class PythonVersionSource:
             config: Config used to look up a bound ``PythonVersionProvider``.
         """
         self._provider = provider
+        self._config = config
+
+    def attach_config(self, config: "Config") -> None:
+        """Point this source at the (possibly merged) config used for selection.
+
+        ``install`` / ``override`` may replace a submodule's
+        ``PythonVersionSource`` whose ``config=`` still references that
+        submodule. Selection rebinds sources to the final merged config.
+        """
         self._config = config
 
     def get_version(self) -> Optional[str]:
@@ -449,4 +473,17 @@ class VersionBindingCandidate:
     instance: Any = None
     provider: Optional[Provider[Any]] = None
     scope: Optional[Scope] = None
-    comparer: Optional[VersionComparer] = None
+    parser_name: Optional[str] = None
+
+
+def __getattr__(name: str) -> Any:
+    """Lazy re-export of :class:`~pyiv.pep440.Pep440VersionParser`.
+
+    Keeps :mod:`pyiv.pep440` free to subclass :class:`InvalidVersion` without
+    a circular import at module load.
+    """
+    if name == "Pep440VersionParser":
+        from pyiv.pep440 import Pep440VersionParser
+
+        return Pep440VersionParser
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

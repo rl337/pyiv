@@ -8,9 +8,11 @@ pyiv.version
 
    .. autosummary::
    
-      VersionComparer
+      InvalidVersion
+      InvalidSpecifier
+      VersionParser
       VersionSource
-      Pep440VersionComparer
+      Pep440VersionParser
       PackageVersionSource
       PythonVersionProvider
       SysPythonVersionProvider

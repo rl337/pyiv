@@ -180,7 +180,7 @@ class BindingBuilder(Protocol, Generic[T]):
         domain: str,
         specifier: str,
         *,
-        comparer: Any = None,
+        parser: Any = None,
     ) -> "BindingBuilder[T]":
         """Restrict this binding to a named version domain + specifier.
 
@@ -190,7 +190,8 @@ class BindingBuilder(Protocol, Generic[T]):
         Args:
             domain: Named version domain (must have a :class:`~pyiv.version.VersionSource`)
             specifier: Domain-specific version constraint string
-            comparer: Optional per-candidate :class:`~pyiv.version.VersionComparer`
+            parser: Optional named :class:`~pyiv.version.VersionParser`
+                (defaults to the domain's parser, then ``\"PEP440\"``)
 
         Returns:
             Self for method chaining
@@ -205,8 +206,8 @@ class BindingBuilder(Protocol, Generic[T]):
         """Restrict this binding to an installed distribution's PEP 440 version.
 
         Convenience for ``for_version`` with
-        :class:`~pyiv.version.PackageVersionSource` and
-        :class:`~pyiv.version.Pep440VersionComparer`.
+        :class:`~pyiv.version.PackageVersionSource` and the built-in
+        ``\"PEP440\"`` :class:`~pyiv.pep440.Pep440VersionParser`.
 
         Args:
             distribution: Distribution name (``importlib.metadata``), not
@@ -332,6 +333,10 @@ class Binder(Protocol):
         """Register a :class:`~pyiv.version.VersionSource` for ``domain``."""
         ...
 
-    def version_comparer(self, domain: str, comparer: Any) -> None:
-        """Register a :class:`~pyiv.version.VersionComparer` for ``domain``."""
+    def version_parser(self, name: str, parser: Any) -> None:
+        """Register a named :class:`~pyiv.version.VersionParser`."""
+        ...
+
+    def use_version_parser(self, domain: str, parser_name: str) -> None:
+        """Point ``domain`` at a named :class:`~pyiv.version.VersionParser`."""
         ...

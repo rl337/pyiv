@@ -142,11 +142,12 @@ class Config:
         self._pending_private: List["PrivateConfig"] = []
         self._exposed: Set[Union[Type, Key[Any]]] = set()
         # Version-conditioned binding candidates and domain collaborators.
-        from pyiv.version import VersionBindingCandidate, VersionComparer, VersionSource
+        from pyiv.version import VersionBindingCandidate, VersionSource, default_version_parsers
 
         self._version_candidates: List[VersionBindingCandidate] = []
         self._version_sources: Dict[str, VersionSource] = {}
-        self._version_comparers: Dict[str, VersionComparer] = {}
+        self._version_parsers: Dict[str, Any] = default_version_parsers()
+        self._version_domain_parsers: Dict[str, str] = {}
         self._version_selection_applied: bool = False
 
     def configure(self):
@@ -920,10 +921,11 @@ class Config:
         else:
             self._exposed.update(other._exposed)
 
-        # Version candidates accumulate (like multibinds); sources/comparers merge.
+        # Version candidates accumulate (like multibinds); sources/parsers merge.
         self._version_candidates.extend(other._version_candidates)
         self._merge_dict(self._version_sources, other._version_sources, replace)
-        self._merge_dict(self._version_comparers, other._version_comparers, replace)
+        self._merge_dict(self._version_parsers, other._version_parsers, replace)
+        self._merge_dict(self._version_domain_parsers, other._version_domain_parsers, replace)
 
     @staticmethod
     def _merge_dict(target: Dict[Any, Any], source: Dict[Any, Any], replace: bool) -> None:
@@ -994,12 +996,34 @@ class Config:
         """
         self._version_sources[domain] = source
 
-    def register_version_comparer(self, domain: str, comparer: Any) -> None:
-        """Register a :class:`~pyiv.version.VersionComparer` for ``domain``.
+    def register_version_parser(self, name: str, parser: Any) -> None:
+        """Register a named :class:`~pyiv.version.VersionParser`.
 
-        When omitted, version selection uses :class:`~pyiv.version.Pep440VersionComparer`.
+        ``\"PEP440\"`` is pre-registered. Custom grammars (OS releases, wire
+        protocols) register under their own names and are selected with
+        :meth:`use_version_parser` or ``for_version(..., parser=...)``.
         """
-        self._version_comparers[domain] = comparer
+        self._version_parsers[name] = parser
+
+    def use_version_parser(self, domain: str, parser_name: str) -> None:
+        """Point ``domain`` at a named :class:`~pyiv.version.VersionParser`."""
+        if parser_name not in self._version_parsers:
+            raise KeyError(f"No VersionParser registered under name {parser_name!r}")
+        self._version_domain_parsers[domain] = parser_name
+
+    def get_version_parser(self, name: str) -> Any:
+        """Return the :class:`~pyiv.version.VersionParser` registered as ``name``."""
+        try:
+            return self._version_parsers[name]
+        except KeyError as exc:
+            raise KeyError(f"No VersionParser registered under name {name!r}") from exc
+
+    def resolve_version_parser(self, domain: str, parser_name: Optional[str] = None) -> Any:
+        """Resolve the parser for a domain (candidate override → domain → PEP440)."""
+        from pyiv.version import PEP440
+
+        name = parser_name or self._version_domain_parsers.get(domain) or PEP440
+        return self.get_version_parser(name)
 
     def add_version_candidate(self, candidate: Any) -> None:
         """Append a version-conditioned binding candidate.
@@ -1015,7 +1039,8 @@ class Config:
         Called once at injector construction. For each abstract type with
         candidates:
 
-        - filter by domain :class:`~pyiv.version.VersionSource` + comparer
+        - filter by domain :class:`~pyiv.version.VersionSource` + named
+          :class:`~pyiv.version.VersionParser`
         - exactly one match → register that binding (scope/provider preserved)
         - zero matches → keep any unconditional binding as fallback; otherwise
           raise :class:`~pyiv.errors.CreationError`
@@ -1023,14 +1048,16 @@ class Config:
 
         Idempotent: a second call is a no-op.
         """
-        if self._version_selection_applied or not self._version_candidates:
+        if self._version_selection_applied:
+            return
+        self._attach_python_version_sources()
+        if not self._version_candidates:
+            self._ensure_injectable_python_version_provider()
             self._version_selection_applied = True
             return
 
         from pyiv.errors import CreationError, type_name
-        from pyiv.version import Pep440VersionComparer
 
-        default_comparer = Pep440VersionComparer()
         by_abstract: Dict[Type, List[Any]] = {}
         for candidate in self._version_candidates:
             by_abstract.setdefault(candidate.abstract, []).append(candidate)
@@ -1053,14 +1080,17 @@ class Config:
                         f"(version absent/unknown)"
                     )
                     continue
-                comparer = (
-                    candidate.comparer
-                    or self._version_comparers.get(candidate.domain)
-                    or default_comparer
-                )
                 try:
-                    ok = comparer.is_version_compatible(current, candidate.specifier)
-                except ValueError as exc:
+                    parser = self.resolve_version_parser(candidate.domain, candidate.parser_name)
+                except KeyError as exc:
+                    raise CreationError(
+                        f"Invalid version parser for {type_name(abstract)}: {exc}",
+                    ) from exc
+                from pyiv.version import InvalidVersion
+
+                try:
+                    ok = parser.is_version_compatible(current, candidate.specifier)
+                except InvalidVersion as exc:
                     raise CreationError(
                         f"Invalid version condition for {type_name(abstract)}: {exc}",
                     ) from exc
@@ -1101,7 +1131,47 @@ class Config:
                 f"No version-compatible binding for {type_name(abstract)}: {reasons}"
             )
 
+        self._ensure_injectable_python_version_provider()
         self._version_selection_applied = True
+
+    def _attach_python_version_sources(self) -> None:
+        """Rebind :class:`~pyiv.version.PythonVersionSource` to this config.
+
+        After ``install`` / ``override``, a source may still hold a reference
+        to a submodule config. Selection must read providers from the merged
+        graph.
+        """
+        from pyiv.version import PythonVersionSource
+
+        for source in self._version_sources.values():
+            if isinstance(source, PythonVersionSource):
+                source.attach_config(self)
+
+    def _ensure_injectable_python_version_provider(self) -> None:
+        """Bind SysPythonVersionProvider when the python domain is in use.
+
+        Deferred until after config merge so an override module's
+        ``for_python_version`` does not wipe a base
+        :class:`~pyiv.version.FixedPythonVersionProvider`.
+        """
+        from pyiv.version import (
+            PYTHON_VERSION_DOMAIN,
+            PythonVersionProvider,
+            SysPythonVersionProvider,
+        )
+
+        uses_python = PYTHON_VERSION_DOMAIN in self._version_sources or any(
+            c.domain == PYTHON_VERSION_DOMAIN for c in self._version_candidates
+        )
+        if not uses_python:
+            return
+        if self.get_instance(PythonVersionProvider) is not None:
+            return
+        if self.get_provider(PythonVersionProvider) is not None:
+            return
+        if self.has_registration(PythonVersionProvider):
+            return
+        self.register(PythonVersionProvider, SysPythonVersionProvider)
 
     def _materialize_version_candidate(self, candidate: Any) -> None:
         """Write a winning version candidate into ordinary binding stores."""

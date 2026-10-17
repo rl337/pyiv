@@ -11,11 +11,11 @@ interpreter-version conditions are convenience adapters over that core.
 ## Implemented (env-stable)
 
 - Fluent Binder: ``for_version``, ``for_package_version``, ``for_python_version``
-- ``VersionSource`` / ``VersionComparer`` with ``Pep440VersionComparer``
-  (PEP 440, stdlib-only private helper)
+- ``VersionSource`` / ``VersionParser`` with named registry (``PEP440`` default)
+- Public :mod:`pyiv.pep440` engine; parsers raise ``InvalidVersion`` subclasses
 - Injectable ``PythonVersionProvider`` (``SysPythonVersionProvider`` /
   ``FixedPythonVersionProvider``) so tests simulate many interpreters
-- Custom domains via host sources + comparers
+- Custom domains via host sources + named parsers
 - Selection at injector construction; ambiguity / absent / fallback diagnostics
 - ``MapVersionSource`` for non-Python domain tests
 

@@ -12,14 +12,11 @@ from pyiv.key import Key
 from pyiv.provider import InstanceProvider, Provider
 from pyiv.scope import NoScope, Scope
 from pyiv.version import (
+    PEP440,
     PYTHON_VERSION_DOMAIN,
     PackageVersionSource,
-    Pep440VersionComparer,
-    PythonVersionProvider,
     PythonVersionSource,
-    SysPythonVersionProvider,
     VersionBindingCandidate,
-    VersionComparer,
     package_version_domain,
 )
 
@@ -90,7 +87,7 @@ class ConfigBindingBuilder(BindingBuilder[T]):
         domain: str,
         specifier: str,
         *,
-        comparer: Optional[VersionComparer] = None,
+        parser: Optional[str] = None,
     ) -> "ConfigBindingBuilder[T]":
         """Restrict this binding to a named version domain + specifier."""
         self._ensure_target()
@@ -103,7 +100,7 @@ class ConfigBindingBuilder(BindingBuilder[T]):
             instance=self._instance,
             provider=self._provider,
             scope=self._scope,
-            comparer=comparer,
+            parser_name=parser,
         )
         self._config.add_version_candidate(candidate)
         self._version_conditioned = True
@@ -119,30 +116,22 @@ class ConfigBindingBuilder(BindingBuilder[T]):
         domain = package_version_domain(distribution)
         if domain not in self._config._version_sources:
             self._config.register_version_source(domain, PackageVersionSource(distribution))
-        if domain not in self._config._version_comparers:
-            self._config.register_version_comparer(domain, Pep440VersionComparer())
-        return self.for_version(domain, specifier)
+        if domain not in self._config._version_domain_parsers:
+            self._config.use_version_parser(domain, PEP440)
+        return self.for_version(domain, specifier, parser=PEP440)
 
     def for_python_version(self, specifier: str) -> "ConfigBindingBuilder[T]":
         """Restrict this binding to the running interpreter version."""
         domain = PYTHON_VERSION_DOMAIN
-        self._ensure_python_version_provider()
+        # Do not eagerly bind SysPythonVersionProvider here: an override
+        # module's for_python_version would otherwise last-wins wipe a base
+        # FixedPythonVersionProvider on merge. PythonVersionSource falls back
+        # to Sys; apply_version_selection ensures an injectable binding later.
         if domain not in self._config._version_sources:
             self._config.register_version_source(domain, PythonVersionSource(config=self._config))
-        if domain not in self._config._version_comparers:
-            self._config.register_version_comparer(domain, Pep440VersionComparer())
-        return self.for_version(domain, specifier)
-
-    def _ensure_python_version_provider(self) -> None:
-        """Bind SysPythonVersionProvider when no PythonVersionProvider exists yet."""
-        cfg = self._config
-        if cfg.get_instance(PythonVersionProvider) is not None:
-            return
-        if cfg.get_provider(PythonVersionProvider) is not None:
-            return
-        if cfg.has_registration(PythonVersionProvider):
-            return
-        cfg.register(PythonVersionProvider, SysPythonVersionProvider)
+        if domain not in self._config._version_domain_parsers:
+            self._config.use_version_parser(domain, PEP440)
+        return self.for_version(domain, specifier, parser=PEP440)
 
     def _ensure_target(self) -> None:
         if self._implementation is None and self._instance is None and self._provider is None:
@@ -193,7 +182,7 @@ class ConfigBindingBuilder(BindingBuilder[T]):
                     instance=c.instance,
                     provider=c.provider,
                     scope=scope,
-                    comparer=c.comparer,
+                    parser_name=c.parser_name,
                 )
                 return
 
@@ -274,7 +263,7 @@ class ConfigKeyBindingBuilder(BindingBuilder[T]):
         domain: str,
         specifier: str,
         *,
-        comparer: Optional[VersionComparer] = None,
+        parser: Optional[str] = None,
     ) -> "ConfigKeyBindingBuilder[T]":
         raise NotImplementedError(
             "Version-conditioned bindings are not yet supported on bind_key; "
@@ -359,9 +348,13 @@ class ConfigBinder(Binder):
         """Register a VersionSource for a named domain."""
         self._config.register_version_source(domain, source)
 
-    def version_comparer(self, domain: str, comparer: Any) -> None:
-        """Register a VersionComparer for a named domain."""
-        self._config.register_version_comparer(domain, comparer)
+    def version_parser(self, name: str, parser: Any) -> None:
+        """Register a named VersionParser (e.g. custom OS-release grammar)."""
+        self._config.register_version_parser(name, parser)
+
+    def use_version_parser(self, domain: str, parser_name: str) -> None:
+        """Point a version domain at a named VersionParser."""
+        self._config.use_version_parser(domain, parser_name)
 
     def finalize(self) -> None:
         """Finalize all pending bindings."""

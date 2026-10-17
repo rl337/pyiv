@@ -105,6 +105,7 @@ from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMu
 from pyiv.network import HTTPClient, HTTPSClient, NetworkClient
 from pyiv.optional import get_optional_type, is_optional_type
 from pyiv.override import override
+from pyiv.pep440 import Pep440VersionParser  # after version (InvalidVersion base)
 from pyiv.provider import (
     BaseProvider,
     FactoryProvider,
@@ -118,16 +119,18 @@ from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XM
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 from pyiv.stage import Stage
 from pyiv.version import (
+    PEP440,
     PYTHON_VERSION_DOMAIN,
     FixedPythonVersionProvider,
+    InvalidSpecifier,
+    InvalidVersion,
     MapVersionSource,
     PackageVersionSource,
-    Pep440VersionComparer,
     PythonVersionProvider,
     PythonVersionSource,
     SysPythonVersionProvider,
     VersionBindingCandidate,
-    VersionComparer,
+    VersionParser,
     VersionSource,
     package_version_domain,
 )
@@ -206,9 +209,11 @@ __all__ = [
     "MapMultibinder",
     "is_optional_type",
     "get_optional_type",
-    "VersionComparer",
+    "InvalidVersion",
+    "InvalidSpecifier",
+    "VersionParser",
     "VersionSource",
-    "Pep440VersionComparer",
+    "Pep440VersionParser",
     "PackageVersionSource",
     "PythonVersionProvider",
     "SysPythonVersionProvider",
@@ -217,6 +222,7 @@ __all__ = [
     "MapVersionSource",
     "VersionBindingCandidate",
     "PYTHON_VERSION_DOMAIN",
+    "PEP440",
     "package_version_domain",
 ]
 

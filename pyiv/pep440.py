@@ -1,15 +1,32 @@
-"""Private PEP 440 version parsing and specifier matching.
+"""Public :pep:`440` version parsing and specifier matching.
 
-Used by :class:`pyiv.version.Pep440VersionComparer`. Not part of the public
-API. Semantics follow :pep:`440` (release ordering, prereleases, ``~=``,
-comma-combined specifiers). Prereleases are excluded from matching unless the
-specifier itself names a prerelease (same default as ``packaging``).
+This module is the stdlib-only PEP 440 engine used by
+:class:`Pep440VersionParser` (registered under the name ``\"PEP440\"`` on
+:class:`~pyiv.config.Config`). Semantics follow :pep:`440` (release ordering,
+prereleases, ``~=``, comma-combined specifiers). Prereleases are excluded from
+matching unless the specifier itself names a prerelease (same default as
+``packaging``).
+
+**Why this exists:** Package and interpreter version domains need a real
+PEP 440 matcher without a third-party runtime dependency. Hosts and tests can
+import :class:`Version` / :class:`SpecifierSet` directly, or use the
+:class:`~pyiv.version.VersionParser` façade :class:`Pep440VersionParser`.
+
+Example:
+    >>> from pyiv.pep440 import SpecifierSet, Version
+    >>> Version("1.0") < Version("1.1")
+    True
+    >>> SpecifierSet(">=2.30,<3").contains("2.31.0")
+    True
 """
 
 from __future__ import annotations
 
 import re
 from typing import Iterable, List, Optional, Tuple, Union
+
+from pyiv.version import InvalidSpecifier as _InvalidSpecifierBase
+from pyiv.version import InvalidVersion as _InvalidVersionBase
 
 # PEP 440 public version pattern (simplified but covers released + pre/post/dev).
 _VERSION_RE = re.compile(
@@ -53,12 +70,32 @@ _PRE_NORMALIZE = {
 }
 
 
-class InvalidVersion(ValueError):
-    """Raised when a string is not a valid PEP 440 version."""
+class InvalidVersion(_InvalidVersionBase):
+    """Raised when a string is not a valid PEP 440 version.
+
+    **Why this exists:** Subclasses :class:`pyiv.version.InvalidVersion` so
+    callers can catch all parser failures, or only PEP 440 ones.
+
+    Example:
+        >>> from pyiv.pep440 import InvalidVersion
+        >>> from pyiv.version import InvalidVersion as BaseInvalidVersion
+        >>> issubclass(InvalidVersion, BaseInvalidVersion)
+        True
+    """
 
 
-class InvalidSpecifier(ValueError):
-    """Raised when a string is not a valid PEP 440 version specifier."""
+class InvalidSpecifier(_InvalidSpecifierBase):
+    """Raised when a string is not a valid PEP 440 version specifier.
+
+    **Why this exists:** Subclasses :class:`pyiv.version.InvalidSpecifier` (and
+    therefore :class:`pyiv.version.InvalidVersion`) for PEP 440 constraints.
+
+    Example:
+        >>> from pyiv.pep440 import InvalidSpecifier
+        >>> from pyiv.version import InvalidVersion
+        >>> issubclass(InvalidSpecifier, InvalidVersion)
+        True
+    """
 
 
 def _parse_letter_version(
@@ -320,3 +357,47 @@ class SpecifierSet:
             for v in iterable
             if self.contains(v, prereleases=prereleases)
         ]
+
+
+class Pep440VersionParser:
+    """:class:`~pyiv.version.VersionParser` implementation for :pep:`440`.
+
+    **Why this exists:** Python package and interpreter domains need a named,
+    standards-based parser. Config registers this under
+    :data:`pyiv.version.PEP440` by default so
+    ``for_package_version`` / ``for_python_version`` work without extra setup.
+
+    Example:
+        >>> from pyiv.pep440 import Pep440VersionParser
+        >>> p = Pep440VersionParser()
+        >>> p.is_version_compatible("3.11.5", ">=3.11,<3.12")
+        True
+        >>> p.is_version_less("3.10", "3.11")
+        True
+        >>> p.is_version_greater("2.0", "1.0")
+        True
+    """
+
+    def is_version_compatible(self, version: str, specifier: str) -> bool:
+        """Return whether ``version`` satisfies the PEP 440 ``specifier``.
+
+        Raises:
+            InvalidVersion: If ``version`` or ``specifier`` is not PEP 440.
+        """
+        return SpecifierSet(specifier).contains(version)
+
+    def is_version_less(self, a: str, b: str) -> bool:
+        """Return whether PEP 440 version ``a`` is strictly less than ``b``.
+
+        Raises:
+            InvalidVersion: If either string is not a PEP 440 version.
+        """
+        return Version(a) < Version(b)
+
+    def is_version_greater(self, a: str, b: str) -> bool:
+        """Return whether PEP 440 version ``a`` is strictly greater than ``b``.
+
+        Raises:
+            InvalidVersion: If either string is not a PEP 440 version.
+        """
+        return Version(a) > Version(b)
