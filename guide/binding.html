@@ -21,7 +21,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Scopes" href="scopes.html" />
+    <link rel="next" title="Version-conditioned bindings" href="version-bindings.html" />
     <link rel="prev" title="PyIV Documentation" href="../index.html" /> 
 </head>
 
@@ -48,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="catalogs.html">Catalogs without registries</a></li>
@@ -72,6 +73,8 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -116,6 +119,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -203,6 +207,13 @@ expression:</p>
 <p><code class="docutils literal notranslate"><span class="pre">register</span></code> and Binder write the same config. Pick one style per project;
 mixing them in one <code class="docutils literal notranslate"><span class="pre">configure()</span></code> is fine.</p>
 </section>
+<section id="version-conditioned-bindings">
+<h2>Version-conditioned bindings<a class="headerlink" href="#version-conditioned-bindings" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">binder.bind(T).to(Impl).for_python_version(...)</span></code> (and
+<code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_version</span></code>) register <strong>candidates</strong> selected
+at injector construction. See <a class="reference internal" href="version-bindings.html"><span class="doc">Version-conditioned bindings</span></a> and
+<a class="reference internal" href="../pyiv/pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a>.</p>
+</section>
 <section id="installing-modules">
 <h2>Installing modules<a class="headerlink" href="#installing-modules" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">install</span></code> merges another <code class="docutils literal notranslate"><span class="pre">Config</span></code> into this one. Later installs overwrite
@@ -268,7 +279,7 @@ are also just-in-time constructed when explicit mode is off.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="PyIV Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="scopes.html" class="btn btn-neutral float-right" title="Scopes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="version-bindings.html" class="btn btn-neutral float-right" title="Version-conditioned bindings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

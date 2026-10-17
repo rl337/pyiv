@@ -45,6 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/catalogs.html">Catalogs without registries</a></li>
@@ -69,6 +70,8 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -113,6 +116,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -170,6 +174,7 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#X"><strong>X</strong></a>
  | <a href="#Y"><strong>Y</strong></a>
@@ -263,6 +268,8 @@
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.__init__">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.FixedPythonVersionProvider.__init__">(pyiv.FixedPythonVersionProvider method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Injector.__init__">(pyiv.Injector method)</a>
 </li>
         <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.__init__">(pyiv.injector.Injector method)</a>
@@ -286,6 +293,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.__init__">(pyiv.ListMultibinder method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.__init__">(pyiv.MapMultibinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MapVersionSource.__init__">(pyiv.MapVersionSource method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Matched.__init__">(pyiv.Matched method)</a>
 </li>
@@ -321,6 +330,14 @@
 </li>
         <li><a href="pyiv/pyiv.override.html#pyiv.override.OverrideBuilder.__init__">(pyiv.override.OverrideBuilder method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.PackageVersionSource.__init__">(pyiv.PackageVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Specifier.__init__">(pyiv.pep440.Specifier method)</a>
+</li>
+        <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.SpecifierSet.__init__">(pyiv.pep440.SpecifierSet method)</a>
+</li>
+        <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Version.__init__">(pyiv.pep440.Version method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Provider.__init__">(pyiv.Provider method)</a>
 </li>
         <li><a href="pyiv/pyiv.provider.html#pyiv.provider.FactoryProvider.__init__">(pyiv.provider.FactoryProvider method)</a>
@@ -332,6 +349,8 @@
         <li><a href="pyiv/pyiv.provider.html#pyiv.provider.Provider.__init__">(pyiv.provider.Provider method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.PTYConsole.__init__">(pyiv.PTYConsole method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.PythonVersionSource.__init__">(pyiv.PythonVersionSource method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Qualifier.__init__">(pyiv.Qualifier method)</a>
 </li>
@@ -355,6 +374,26 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.__init__">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.FixedPythonVersionProvider.__init__">(pyiv.version.FixedPythonVersionProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.MapVersionSource.__init__">(pyiv.version.MapVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PackageVersionSource.__init__">(pyiv.version.PackageVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PythonVersionSource.__init__">(pyiv.version.PythonVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.__init__">(pyiv.version.VersionBindingCandidate method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionParser.__init__">(pyiv.version.VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionSource.__init__">(pyiv.version.VersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.__init__">(pyiv.VersionBindingCandidate method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionParser.__init__">(pyiv.VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionSource.__init__">(pyiv.VersionSource method)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -362,6 +401,12 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.abstract">abstract (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.abstract">(pyiv.VersionBindingCandidate attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.add">add() (pyiv.ListMultibinder method)</a>
 
       <ul>
@@ -386,8 +431,6 @@
         <li><a href="pyiv/pyiv.command.html#pyiv.command.Command.add_args">(pyiv.command.Command class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.add_instance">add_instance() (pyiv.ListMultibinder method)</a>
 
       <ul>
@@ -406,10 +449,30 @@
         <li><a href="pyiv/pyiv.html#pyiv.SetMultibinder.add_instance">(pyiv.SetMultibinder method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.add_version_candidate">add_version_candidate() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.add_version_candidate">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.clock.html#pyiv.clock.SyntheticClock.advance">advance() (pyiv.clock.SyntheticClock method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.advance">(pyiv.SyntheticClock method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.apply_version_selection">apply_version_selection() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.apply_version_selection">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.PythonVersionSource.attach_config">attach_config() (pyiv.PythonVersionSource method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PythonVersionSource.attach_config">(pyiv.version.PythonVersionSource method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -642,8 +705,6 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.clear_state">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.clear_to_end_of_line">clear_to_end_of_line() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -666,6 +727,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.clear_to_end_of_line">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.CLICommand">CLICommand (class in pyiv)</a>
 
       <ul>
@@ -730,6 +793,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.console.html#pyiv.console.Console">(class in pyiv.console)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Specifier.contains">contains() (pyiv.pep440.Specifier method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.SpecifierSet.contains">(pyiv.pep440.SpecifierSet method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.contribute_map">contribute_map() (pyiv.Config method)</a>
@@ -800,6 +869,8 @@
         <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.DateTimeService">(class in pyiv.datetime_service)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.default_version_parsers">default_version_parsers() (in module pyiv.version)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.Base64SerDe.deserialize">deserialize() (pyiv.Base64SerDe method)</a>
 
       <ul>
@@ -862,6 +933,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.ReflectionConfig.discover_implementations">(pyiv.ReflectionConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.domain">domain (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.domain">(pyiv.VersionBindingCandidate attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -970,8 +1047,16 @@
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem">(class in pyiv.filesystem)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.SpecifierSet.filter">filter() (pyiv.pep440.SpecifierSet method)</a>
+</li>
       <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.finalize">finalize() (pyiv.binder_impl.ConfigBinder method)</a>
 </li>
+      <li><a href="pyiv/pyiv.html#pyiv.FixedPythonVersionProvider">FixedPythonVersionProvider (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.FixedPythonVersionProvider">(class in pyiv.version)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.flush">flush() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -1000,6 +1085,38 @@
         <li><a href="pyiv/pyiv.html#pyiv.PTYConsole.flush">(pyiv.PTYConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.flush">(pyiv.RealConsole method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder.for_package_version">for_package_version() (pyiv.binder.BindingBuilder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.for_package_version">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.for_package_version">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.for_package_version">(pyiv.BindingBuilder method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder.for_python_version">for_python_version() (pyiv.binder.BindingBuilder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.for_python_version">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.for_python_version">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.for_python_version">(pyiv.BindingBuilder method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder.for_version">for_version() (pyiv.binder.BindingBuilder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.for_version">(pyiv.binder_impl.ConfigBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.for_version">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.for_version">(pyiv.BindingBuilder method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1246,8 +1363,6 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.get_map_multibinding">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.get_multibinding">get_multibinding() (pyiv.Config method)</a>
 
       <ul>
@@ -1272,6 +1387,8 @@
         <li><a href="pyiv/pyiv.optional.html#pyiv.optional.get_optional_type">(in module pyiv.optional)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.get_provider">get_provider() (pyiv.Config method)</a>
 
       <ul>
@@ -1444,6 +1561,42 @@
 
       <ul>
         <li><a href="pyiv/pyiv.command.html#pyiv.command.Command.get_subcommands">(pyiv.command.Command class method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.FixedPythonVersionProvider.get_version">get_version() (pyiv.FixedPythonVersionProvider method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MapVersionSource.get_version">(pyiv.MapVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.PackageVersionSource.get_version">(pyiv.PackageVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.PythonVersionProvider.get_version">(pyiv.PythonVersionProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.PythonVersionSource.get_version">(pyiv.PythonVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SysPythonVersionProvider.get_version">(pyiv.SysPythonVersionProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.FixedPythonVersionProvider.get_version">(pyiv.version.FixedPythonVersionProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.MapVersionSource.get_version">(pyiv.version.MapVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PackageVersionSource.get_version">(pyiv.version.PackageVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PythonVersionProvider.get_version">(pyiv.version.PythonVersionProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PythonVersionSource.get_version">(pyiv.version.PythonVersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.SysPythonVersionProvider.get_version">(pyiv.version.SysPythonVersionProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionSource.get_version">(pyiv.version.VersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionSource.get_version">(pyiv.VersionSource method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.get_version_parser">get_version_parser() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.get_version_parser">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.MemoryConsole.getvalue">getvalue() (pyiv.console.MemoryConsole method)</a>
@@ -1658,6 +1811,12 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.implementation">implementation (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.implementation">(pyiv.VersionBindingCandidate attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder.in_scope">in_scope() (pyiv.binder.BindingBuilder method)</a>
 
       <ul>
@@ -1748,14 +1907,24 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.install">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.instance">instance (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.instance">(pyiv.VersionBindingCandidate attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.InstanceProvider">InstanceProvider (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.provider.html#pyiv.provider.InstanceProvider">(class in pyiv.provider)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.InvalidSpecifier">InvalidSpecifier</a>, <a href="pyiv/pyiv.pep440.html#pyiv.pep440.InvalidSpecifier">[1]</a>, <a href="pyiv/pyiv.version.html#pyiv.version.InvalidSpecifier">[2]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.InvalidVersion">InvalidVersion</a>, <a href="pyiv/pyiv.pep440.html#pyiv.pep440.InvalidVersion">[1]</a>, <a href="pyiv/pyiv.version.html#pyiv.version.InvalidVersion">[2]</a>
+</li>
       <li><a href="pyiv/pyiv.clock.html#pyiv.clock.RealTimer.is_active">is_active() (pyiv.clock.RealTimer method)</a>
 
       <ul>
@@ -1800,6 +1969,8 @@
         <li><a href="pyiv/pyiv.optional.html#pyiv.optional.is_optional_type">(in module pyiv.optional)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Version.is_prerelease">is_prerelease (pyiv.pep440.Version property)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.is_tty">is_tty() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -1820,6 +1991,36 @@
         <li><a href="pyiv/pyiv.html#pyiv.PTYConsole.is_tty">(pyiv.PTYConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.is_tty">(pyiv.RealConsole method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Pep440VersionParser.is_version_compatible">is_version_compatible() (pyiv.pep440.Pep440VersionParser method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Pep440VersionParser.is_version_compatible">(pyiv.Pep440VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionParser.is_version_compatible">(pyiv.version.VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionParser.is_version_compatible">(pyiv.VersionParser method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Pep440VersionParser.is_version_greater">is_version_greater() (pyiv.pep440.Pep440VersionParser method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Pep440VersionParser.is_version_greater">(pyiv.Pep440VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionParser.is_version_greater">(pyiv.version.VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionParser.is_version_greater">(pyiv.VersionParser method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Pep440VersionParser.is_version_less">is_version_less() (pyiv.pep440.Pep440VersionParser method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Pep440VersionParser.is_version_less">(pyiv.Pep440VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionParser.is_version_less">(pyiv.version.VersionParser method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionParser.is_version_less">(pyiv.VersionParser method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1894,6 +2095,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder">(class in pyiv.multibinder)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MapVersionSource">MapVersionSource (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.MapVersionSource">(class in pyiv.version)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Matched">Matched (class in pyiv)</a>
@@ -1998,6 +2205,8 @@
 </li>
         <li><a href="pyiv/pyiv.override.html#module-pyiv.override">pyiv.override</a>
 </li>
+        <li><a href="pyiv/pyiv.pep440.html#module-pyiv.pep440">pyiv.pep440</a>
+</li>
         <li><a href="pyiv/pyiv.provider.html#module-pyiv.provider">pyiv.provider</a>
 </li>
         <li><a href="pyiv/pyiv.reflection.html#module-pyiv.reflection">pyiv.reflection</a>
@@ -2015,6 +2224,8 @@
         <li><a href="pyiv/pyiv.singleton.html#module-pyiv.singleton">pyiv.singleton</a>
 </li>
         <li><a href="pyiv/pyiv.stage.html#module-pyiv.stage">pyiv.stage</a>
+</li>
+        <li><a href="pyiv/pyiv.version.html#module-pyiv.version">pyiv.version</a>
 </li>
         <li><a href="pyiv_common/pyiv_common.html#module-pyiv_common">pyiv_common</a>
 </li>
@@ -2321,10 +2532,34 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.package_version_domain">package_version_domain() (in module pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.package_version_domain">(in module pyiv.version)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.PackageVersionSource">PackageVersionSource (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PackageVersionSource">(class in pyiv.version)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Injector.parent">parent (pyiv.Injector property)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.parent">(pyiv.injector.Injector property)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.parser_name">parser_name (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.parser_name">(pyiv.VersionBindingCandidate attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Pep440VersionParser">Pep440VersionParser (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Pep440VersionParser">(class in pyiv.pep440)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.PickleSerDe">PickleSerDe (class in pyiv)</a>
@@ -2357,6 +2592,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.provider.html#pyiv.provider.Provider">(class in pyiv.provider)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.provider">provider (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.provider">(pyiv.VersionBindingCandidate attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.PTYConsole">PTYConsole (class in pyiv)</a>
@@ -2515,6 +2756,13 @@
 </li>
       </ul></li>
       <li>
+    pyiv.pep440
+
+      <ul>
+        <li><a href="pyiv/pyiv.pep440.html#module-pyiv.pep440">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv.provider
 
       <ul>
@@ -2578,6 +2826,13 @@
 </li>
       </ul></li>
       <li>
+    pyiv.version
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#module-pyiv.version">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv_common
 
       <ul>
@@ -2598,10 +2853,29 @@
         <li><a href="pyiv_common/pyiv_common.serde.html#module-pyiv_common.serde">module</a>
 </li>
       </ul></li>
+      <li>
+    Python Enhancement Proposals
+
+      <ul>
+        <li><a href="guide/version-bindings.html#index-0">PEP 440</a>, <a href="pyiv/pyiv.html#index-0">[1]</a>, <a href="pyiv/pyiv.html#index-1">[2]</a>, <a href="pyiv/pyiv.pep440.html#index-0">[3]</a>, <a href="pyiv/pyiv.pep440.html#index-1">[4]</a>, <a href="pyiv/pyiv.pep440.html#index-3">[5]</a>, <a href="pyiv/pyiv.pep440.html#index-4">[6]</a>, <a href="pyiv/pyiv.version.html#index-1">[7]</a>, <a href="pyiv/pyiv.version.html#index-2">[8]</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.PythonDateTimeService">PythonDateTimeService (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.PythonDateTimeService">(class in pyiv.datetime_service)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.PythonVersionProvider">PythonVersionProvider (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PythonVersionProvider">(class in pyiv.version)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.PythonVersionSource">PythonVersionSource (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.PythonVersionSource">(class in pyiv.version)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2780,8 +3054,6 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_key">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.register_map_multibinding">register_map_multibinding() (pyiv.Config method)</a>
 
       <ul>
@@ -2794,6 +3066,8 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_map_multibinding_instance">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.reflection.html#pyiv.reflection.ReflectionConfig.register_module">register_module() (pyiv.reflection.ReflectionConfig method)</a>
 
       <ul>
@@ -2816,6 +3090,18 @@
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_provider">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.register_version_parser">register_version_parser() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_version_parser">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.register_version_source">register_version_source() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_version_source">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.HTTPClient.request">request() (pyiv.HTTPClient method)</a>
@@ -2886,6 +3172,12 @@
         <li><a href="pyiv/pyiv.html#pyiv.PTYConsole.reset_color">(pyiv.PTYConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.reset_color">(pyiv.RealConsole method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Config.resolve_version_parser">resolve_version_parser() (pyiv.Config method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.resolve_version_parser">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.restore_cursor">restore_cursor() (pyiv.BaseConsole method)</a>
@@ -2970,6 +3262,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.scope.html#pyiv.scope.Scope">(class in pyiv.scope)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.scope">scope (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.scope">(pyiv.VersionBindingCandidate attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.GlobalSingletonScope.scope">scope() (pyiv.GlobalSingletonScope method)</a>
@@ -3230,6 +3528,16 @@
         <li><a href="pyiv/pyiv.html#pyiv.ChainType.SORTING">(pyiv.ChainType attribute)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Specifier">Specifier (class in pyiv.pep440)</a>
+</li>
+      <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate.specifier">specifier (pyiv.version.VersionBindingCandidate attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.specifier">(pyiv.VersionBindingCandidate attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.SpecifierSet">SpecifierSet (class in pyiv.pep440)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.Stage">Stage (class in pyiv)</a>
 
       <ul>
@@ -3264,6 +3572,12 @@
       </ul></li>
       <li><a href="pyiv/pyiv.clock.html#pyiv.clock.SyntheticTimer">SyntheticTimer (class in pyiv.clock)</a>
 </li>
+      <li><a href="pyiv/pyiv.html#pyiv.SysPythonVersionProvider">SysPythonVersionProvider (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.SysPythonVersionProvider">(class in pyiv.version)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -3396,6 +3710,62 @@
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.unlink">(pyiv.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.unlink">(pyiv.RealFilesystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Binder.use_version_parser">use_version_parser() (pyiv.Binder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder.html#pyiv.binder.Binder.use_version_parser">(pyiv.binder.Binder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.use_version_parser">(pyiv.binder_impl.ConfigBinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Config.use_version_parser">(pyiv.Config method)</a>
+</li>
+        <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.use_version_parser">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Version">Version (class in pyiv.pep440)</a>
+</li>
+      <li><a href="pyiv/pyiv.html#pyiv.Binder.version_parser">version_parser() (pyiv.Binder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder.html#pyiv.binder.Binder.version_parser">(pyiv.binder.Binder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.version_parser">(pyiv.binder_impl.ConfigBinder method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Binder.version_source">version_source() (pyiv.Binder method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.binder.html#pyiv.binder.Binder.version_source">(pyiv.binder.Binder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.version_source">(pyiv.binder_impl.ConfigBinder method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate">VersionBindingCandidate (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionBindingCandidate">(class in pyiv.version)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.VersionParser">VersionParser (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionParser">(class in pyiv.version)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.VersionSource">VersionSource (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.version.html#pyiv.version.VersionSource">(class in pyiv.version)</a>
 </li>
       </ul></li>
   </ul></td>

@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Module listing" href="modules.html" />
-    <link rel="prev" title="Plugin catalog discovery (inspiration)" href="inspiration/plugin-catalog-discovery-inspiration.html" /> 
+    <link rel="prev" title="Inspiration: generalized version-aware conditional bindings" href="inspiration/package-version-conditional-bindings.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,6 +48,7 @@
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/version-bindings.html">Version-conditioned bindings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/scopes.html">Scopes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys and collections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/catalogs.html">Catalogs without registries</a></li>
@@ -72,6 +73,8 @@
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.members.html">pyiv.members</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.factory.html">pyiv.factory</a></li>
@@ -116,6 +119,7 @@
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -157,6 +161,25 @@ order. Install with <code class="docutils literal notranslate"><span class="pre"
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
 <ul class="simple">
+<li><p>Version-conditioned bindings on the fluent Binder:
+<code class="docutils literal notranslate"><span class="pre">for_version</span></code>, <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, and <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code>.</p></li>
+<li><p>:mod:<code class="docutils literal notranslate"><span class="pre">pyiv.version</span></code> — <code class="docutils literal notranslate"><span class="pre">VersionSource</span></code> / <code class="docutils literal notranslate"><span class="pre">VersionParser</span></code> protocols,
+named parser registry (<code class="docutils literal notranslate"><span class="pre">PEP440</span></code> default), <code class="docutils literal notranslate"><span class="pre">InvalidVersion</span></code> /
+<code class="docutils literal notranslate"><span class="pre">InvalidSpecifier</span></code>, injectable <code class="docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code>
+(<code class="docutils literal notranslate"><span class="pre">SysPythonVersionProvider</span></code> / <code class="docutils literal notranslate"><span class="pre">FixedPythonVersionProvider</span></code>),
+<code class="docutils literal notranslate"><span class="pre">PackageVersionSource</span></code>, <code class="docutils literal notranslate"><span class="pre">MapVersionSource</span></code>, and candidate records.</p></li>
+<li><p>:mod:<code class="docutils literal notranslate"><span class="pre">pyiv.pep440</span></code> — public PEP 440 engine and
+<code class="docutils literal notranslate"><span class="pre">Pep440VersionParser</span></code> (raises subclasses of <code class="docutils literal notranslate"><span class="pre">InvalidVersion</span></code>).</p></li>
+<li><p>Guide page “Version-conditioned bindings” for env-stable selection,
+custom domains, and fallback rules.</p></li>
+</ul>
+</section>
+</section>
+<section id="id1">
+<h2>0.4.3 - 2026-10-13<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>Added<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Injector.catalog_keys(value_type)</span></code> lists map-multibind catalog ids
 without constructing plugins (CLI / docs over DI-owned catalogs).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Injector.named_keys(binding_type)</span></code> lists <code class="docutils literal notranslate"><span class="pre">Named</span></code> qualifiers bound for
@@ -173,10 +196,10 @@ reflection into catalogs).</p></li>
 </ul>
 </section>
 </section>
-<section id="id1">
-<h2>0.4.2 - 2026-09-27<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<section id="id2">
-<h3>Added<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="id3">
+<h2>0.4.2 - 2026-09-27<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>Added<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Constructor injection via <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Named(...)]</span></code> /
 <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Matched(...)]</span></code>, including <code class="docutils literal notranslate"><span class="pre">Optional[T]</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code> only
@@ -195,10 +218,10 @@ types; use <code class="docutils literal notranslate"><span class="pre">inject(K
 </ul>
 </section>
 </section>
-<section id="id3">
-<h2>0.4.1 - 2026-09-27<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<section id="id4">
-<h3>Added<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id5">
+<h2>0.4.1 - 2026-09-27<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>Added<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Named</span></code> accepts a string or list/tuple of tags (normalized to a set);
 <code class="docutils literal notranslate"><span class="pre">Named(&quot;json&quot;)</span> <span class="pre">==</span> <span class="pre">Named([&quot;json&quot;])</span></code>.</p></li>
@@ -221,10 +244,10 @@ overwrites the same tag set.</p></li>
 </ul>
 </section>
 </section>
-<section id="id5">
-<h2>0.4.0 - 2026-09-25<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<section id="id6">
-<h3>Added<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id7">
+<h2>0.4.0 - 2026-09-25<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>Added<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code> extra package (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv-common</span></code> or
 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv[common]</span></code>): <code class="docutils literal notranslate"><span class="pre">YAMLSerDe</span></code> (PyYAML) and <code class="docutils literal notranslate"><span class="pre">RequestsClient</span></code>
@@ -241,8 +264,8 @@ hierarchical injectors.</p></li>
 qualified keys; inject <code class="docutils literal notranslate"><span class="pre">Injector</span></code> by type annotation.</p></li>
 </ul>
 </section>
-<section id="id7">
-<h3>Changed<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>Changed<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">YAMLSerDe</span></code> moved from core to <code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code>. <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyiv.serde</span> <span class="pre">import</span> <span class="pre">YAMLSerDe</span></code> still works if the extra is installed.</p></li>
 <li><p>Missing bindings and injection failures raise <code class="docutils literal notranslate"><span class="pre">CreationError</span></code> (with path)
@@ -254,28 +277,28 @@ runnable usage examples (doctest-backed) across core DI and test doubles.</p></l
 </ul>
 </section>
 </section>
-<section id="id8">
-<h2>0.3.0 - 2026-09-07<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<section id="id10">
+<h2>0.3.0 - 2026-09-07<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
 <p>First public PyPI release.</p>
-<section id="id9">
-<h3>Added<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<section id="id11">
+<h3>Added<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv</span></code> (Python 3.8–3.13).</p></li>
 <li><p>Changelog on the docs site and in package metadata.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py.typed</span></code> so type checkers treat pyiv as typed.</p></li>
 </ul>
 </section>
-<section id="id10">
-<h3>Changed<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<section id="id12">
+<h3>Changed<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>README, docs, and GitHub Releases use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyiv</span></code> instead of a git URL.</p></li>
 </ul>
 </section>
 </section>
-<section id="id11">
-<h2>0.2.24 - 2026-08-29<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
-<section id="id12">
-<h3>Added<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<section id="id13">
+<h2>0.2.24 - 2026-08-29<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<section id="id14">
+<h3>Added<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>User guide: binding, scopes, keys and collections, testing with doubles.</p></li>
 <li><p>Homepage version badge from the package version.</p></li>
@@ -290,10 +313,10 @@ doubles), not factory-first copy.</p></li>
 </ul>
 </section>
 </section>
-<section id="id13">
-<h2>0.2.22 - 2026-08-28<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
-<section id="id14">
-<h3>Changed<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<section id="id15">
+<h2>0.2.22 - 2026-08-28<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<section id="id16">
+<h3>Changed<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Package metadata: author Richard Lee, documentation
 <a class="reference external" href="https://rl337.org/pyiv/">https://rl337.org/pyiv/</a>.</p></li>
@@ -301,28 +324,28 @@ doubles), not factory-first copy.</p></li>
 </ul>
 </section>
 </section>
-<section id="id15">
-<h2>0.2.21 - 2026-08-28<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
-<section id="id16">
-<h3>Added<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<section id="id17">
+<h2>0.2.21 - 2026-08-28<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<section id="id18">
+<h3>Added<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Product docs at <a class="reference external" href="https://rl337.org/pyiv/">https://rl337.org/pyiv/</a> (git
 install, grouped API nav).</p></li>
 <li><p>Doctests in CI for examples in <code class="docutils literal notranslate"><span class="pre">pyiv</span></code> module docstrings.</p></li>
 </ul>
 </section>
-<section id="id17">
-<h3>Fixed<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<section id="id19">
+<h3>Fixed<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">register_key</span></code> keeps the implementation class.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Multibinder.add</span></code> registers the binding.</p></li>
 </ul>
 </section>
 </section>
-<section id="id18">
-<h2>0.2.20 - 2026-08-28<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
-<section id="id19">
-<h3>Fixed<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<section id="id20">
+<h2>0.2.20 - 2026-08-28<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
+<section id="id21">
+<h3>Fixed<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Singleton resolution no longer recurses into itself.</p></li>
 <li><p>CI fails when pytest exits 2 (collection errors), not only on test failures.</p></li>
@@ -332,8 +355,8 @@ install, grouped API nav).</p></li>
 <section id="earlier-0-2-x">
 <h2>Earlier 0.2.x<a class="headerlink" href="#earlier-0-2-x" title="Link to this heading"></a></h2>
 <p>Pre-PyPI history. Not every auto-bump is listed.</p>
-<section id="id20">
-<h3>Added<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<section id="id22">
+<h3>Added<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Guice-style Provider, Scope, Key, Binder, MembersInjector, Optional, and
 Multibinder.</p></li>
@@ -350,7 +373,7 @@ doubles.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="inspiration/plugin-catalog-discovery-inspiration.html" class="btn btn-neutral float-left" title="Plugin catalog discovery (inspiration)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inspiration/package-version-conditional-bindings.html" class="btn btn-neutral float-left" title="Inspiration: generalized version-aware conditional bindings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="modules.html" class="btn btn-neutral float-right" title="Module listing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
