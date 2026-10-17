@@ -15,22 +15,21 @@ T = TypeVar("T")
 class ChainType(Enum):
     """Category key for a family of chain-of-responsibility handlers.
 
-    **Why this exists:** SerDe, network clients, and other pluggable handlers
-    share the same registration/injection machinery but must not collide.
-    ``ChainType`` namespaces those registries (encoding vs network, …).
+    **Why this exists:** SerDe and other pluggable handlers share the same
+    registration/injection machinery but must not collide. ``ChainType``
+    namespaces those registries (encoding vs hashing, …).
 
     Example:
         >>> from pyiv.chain import ChainType
         >>> ChainType.ENCODING.value
         'encoding'
-        >>> ChainType.NETWORK_CLIENT.value
-        'network_client'
+        >>> ChainType.HASHING.value
+        'hashing'
     """
 
     ENCODING = "encoding"
     HASHING = "hashing"
     SORTING = "sorting"
-    NETWORK_CLIENT = "network_client"
 
 
 class ChainHandler(ABC):

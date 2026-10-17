@@ -8,6 +8,13 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ### Added
 
+- :mod:`pyiv.http` — injectable ``HttpClient`` / ``AsyncHttpClient`` with
+  typed ``HttpResponse``, streaming, and ``HttpError`` / ``HttpTimeoutError``
+  / ``HttpStatusError``. Stdlib ``UrllibHttpClient`` /
+  ``AsyncUrllibHttpClient`` plus ``MemoryHttpClient`` test doubles.
+- Guide page "Migrating from 0.x to 1.x".
+- ``pyiv-common`` ``RequestsHttpClient`` implementing ``HttpClient``
+  (``RequestsClient`` remains an alias).
 - Version-conditioned bindings on the fluent Binder:
   ``for_version``, ``for_package_version``, and ``for_python_version``.
 - :mod:`pyiv.version` — ``VersionSource`` / ``VersionParser`` protocols,
@@ -19,6 +26,12 @@ order. Install with `pip install pyiv`. Unreleased `main` is
   ``Pep440VersionParser`` (raises subclasses of ``InvalidVersion``).
 - Guide page "Version-conditioned bindings" for env-stable selection,
   custom domains, and fallback rules.
+
+### Removed
+
+- ``pyiv.network`` (``NetworkClient``, ``HTTPClient``, ``HTTPSClient``) and
+  ``ChainType.NETWORK_CLIENT``. Use :mod:`pyiv.http` instead (see the
+  0.x→1.x migration guide).
 
 ## 0.4.3 - 2026-10-13
 

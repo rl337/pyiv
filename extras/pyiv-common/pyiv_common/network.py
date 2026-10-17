@@ -1,109 +1,180 @@
-"""requests-backed NetworkClient for pyiv.
+"""requests-backed HttpClient for pyiv.
 
-This module provides ``RequestsClient``, a ``pyiv.network.NetworkClient``
-that uses the requests library. urllib HTTP/HTTPS clients stay in core.
+This module provides ``RequestsHttpClient``, a ``pyiv.http.HttpClient`` that
+uses the requests library and an optional ``Session``. Stdlib urllib clients
+stay in core.
 
 **What Problem Does This Solve?**
 
-Many apps already depend on requests (sessions, adapters, timeouts).
-Core pyiv cannot import it. This extra implements the same
-``request(method, url, headers, data, timeout)`` shape as core clients.
+Many apps already depend on requests (sessions, adapters, timeouts). Core
+pyiv cannot import it. This extra implements the same ``HttpClient`` shape
+as ``UrllibHttpClient`` so you can swap transports in Config.
 
 **Real-World Use Cases:**
-- Inject an HTTP client that uses the requests stack
-- Swap urllib ``HTTPClient`` for ``RequestsClient`` in Config
+- Inject an HTTP client that reuses a ``requests.Session``
+- Prefer requests connection pooling while keeping call sites on ``HttpClient``
 
 Example:
 
-    >>> from pyiv_common.network import RequestsClient
-    >>> client = RequestsClient()
-    >>> client.handler_type
-    'http'
-    >>> client.request("GET", "ftp://example.com")
+    >>> from pyiv_common.network import RequestsHttpClient
+    >>> client = RequestsHttpClient()
+    >>> client.request("GET", "ftp://example.com/")
     Traceback (most recent call last):
         ...
-    ValueError: RequestsClient only supports http:// and https:// URLs, got: ftp://example.com
+    ValueError: Only http:// and https:// URLs are allowed, got: ftp://example.com/
 """
 
-from typing import Any, Dict, Optional, Union
-from urllib.parse import urlparse
+from __future__ import annotations
+
+from contextlib import contextmanager
+from typing import Any, Iterator, Mapping, Optional, Union
 
 import requests  # type: ignore[import-untyped]
 
-from pyiv.network.base import NetworkClient
+from pyiv.http._util import apply_params, encode_body, join_url, merge_headers, require_http_scheme
+from pyiv.http.base import HttpClient
+from pyiv.http.errors import HttpError, HttpTimeoutError
+from pyiv.http.response import HttpResponse, StreamResponse
 
 
-class RequestsClient(NetworkClient):
+class RequestsHttpClient(HttpClient):
     """HTTP(S) client using the requests library.
 
-    ``handler_type`` is ``"http"`` so it can replace urllib ``HTTPClient``
-    on the NETWORK_CLIENT chain. Both ``http://`` and ``https://`` URLs
-    are accepted.
+    **Why this exists:** Teams that already standardize on requests can bind
+    this implementation to ``HttpClient`` without changing call sites that
+    expect ``json=``, ``raise_for_status``, or streaming lines.
 
     Example:
-        >>> from pyiv import ChainType, Config, get_injector
-        >>> from pyiv_common.network import RequestsClient
+        >>> from pyiv import Config, get_injector
+        >>> from pyiv.http import HttpClient
+        >>> from pyiv_common.network import RequestsHttpClient
         >>> class MyConfig(Config):
         ...     def configure(self):
-        ...         self.register_chain_handler(
-        ...             ChainType.NETWORK_CLIENT, "http", RequestsClient
-        ...         )
+        ...         self.register(HttpClient, RequestsHttpClient)
         >>> injector = get_injector(MyConfig)
-        >>> client = injector.inject_chain_handler(ChainType.NETWORK_CLIENT, "http")
-        >>> isinstance(client, RequestsClient)
+        >>> isinstance(injector.inject(HttpClient), RequestsHttpClient)
         True
     """
 
-    @property
-    def handler_type(self) -> str:
-        """Return the handler type identifier ("http")."""
-        return "http"
+    def __init__(
+        self, base_url=None, headers=None, timeout=None, https_only=False, session=None
+    ) -> None:
+        # Untyped optionals so Config can ``register(HttpClient, RequestsHttpClient)``.
+        self._base_url = base_url.rstrip("/") if base_url else None
+        self._headers = dict(headers) if headers else {}
+        self._timeout = timeout
+        self._https_only = bool(https_only)
+        self._session = session or requests.Session()
+        self._owns_session = session is None
+
+    def _prepare(
+        self,
+        method: str,
+        url: str,
+        *,
+        headers: Optional[Mapping[str, str]],
+        params: Optional[Mapping[str, Any]],
+        data: Optional[Union[str, bytes]],
+        json: Any,
+        timeout: Optional[float],
+    ):
+        full = apply_params(join_url(self._base_url, url), params)
+        require_http_scheme(full, https_only=self._https_only)
+        hdrs = merge_headers(self._headers, headers)
+        body, hdrs = encode_body(data, json, hdrs)
+        to = self._timeout if timeout is None else timeout
+        return method.upper(), full, hdrs, body, to
 
     def request(
         self,
         method: str,
         url: str,
-        headers: Optional[Dict[str, str]] = None,
+        *,
+        headers: Optional[Mapping[str, str]] = None,
+        params: Optional[Mapping[str, Any]] = None,
         data: Optional[Union[str, bytes]] = None,
+        json: Any = None,
         timeout: Optional[float] = None,
-    ) -> Dict[str, Any]:
-        """Make an HTTP request with requests.
-
-        Args:
-            method: HTTP method (GET, POST, PUT, DELETE, etc.)
-            url: The URL to request (must be http:// or https://)
-            headers: Optional dictionary of HTTP headers
-            data: Optional request body (string or bytes)
-            timeout: Optional timeout in seconds
-
-        Returns:
-            Dictionary containing:
-                - status: HTTP status code
-                - headers: Response headers dictionary
-                - body: Response body (bytes)
-                - url: Final URL after redirects
-
-        Raises:
-            ValueError: If URL is not http:// or https://
-            requests.RequestException: If the request fails
-        """
-        parsed = urlparse(url)
-        if parsed.scheme not in ("http", "https"):
-            raise ValueError(f"RequestsClient only supports http:// and https:// URLs, got: {url}")
-
-        if data is not None and isinstance(data, str):
-            data = data.encode("utf-8")
-
-        response = requests.request(
-            method=method.upper(),
-            url=url,
-            headers=headers,
-            data=data,
-            timeout=timeout,
+    ) -> HttpResponse:
+        method_u, full, hdrs, body, to = self._prepare(
+            method, url, headers=headers, params=params, data=data, json=json, timeout=timeout
         )
-        return {
-            "status": response.status_code,
-            "headers": dict(response.headers),
-            "body": response.content,
-            "url": response.url,
-        }
+        try:
+            response = self._session.request(
+                method=method_u,
+                url=full,
+                headers=hdrs,
+                data=body,
+                timeout=to,
+            )
+        except requests.Timeout as exc:
+            raise HttpTimeoutError(f"Timed out requesting {full}") from exc
+        except requests.RequestException as exc:
+            raise HttpError(f"Request to {full} failed: {exc}") from exc
+        return HttpResponse(
+            response.status_code,
+            dict(response.headers),
+            response.content,
+            response.url,
+        )
+
+    @contextmanager
+    def stream(
+        self,
+        method: str,
+        url: str,
+        *,
+        headers: Optional[Mapping[str, str]] = None,
+        params: Optional[Mapping[str, Any]] = None,
+        data: Optional[Union[str, bytes]] = None,
+        json: Any = None,
+        timeout: Optional[float] = None,
+    ) -> Iterator[StreamResponse]:
+        method_u, full, hdrs, body, to = self._prepare(
+            method, url, headers=headers, params=params, data=data, json=json, timeout=timeout
+        )
+        try:
+            response = self._session.request(
+                method=method_u,
+                url=full,
+                headers=hdrs,
+                data=body,
+                timeout=to,
+                stream=True,
+            )
+        except requests.Timeout as exc:
+            raise HttpTimeoutError(f"Timed out requesting {full}") from exc
+        except requests.RequestException as exc:
+            raise HttpError(f"Request to {full} failed: {exc}") from exc
+
+        def _lines() -> Iterator[str]:
+            for line in response.iter_lines(decode_unicode=True):
+                if line is None:
+                    continue
+                yield line if isinstance(line, str) else line.decode("utf-8", errors="replace")
+
+        def _chunks(chunk_size: int = 65536) -> Iterator[bytes]:
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    yield chunk
+
+        stream = StreamResponse(
+            response.status_code,
+            dict(response.headers),
+            response.url,
+            lines=_lines(),
+            chunks=_chunks(),
+            close_fn=response.close,
+        )
+        try:
+            yield stream
+        finally:
+            stream.close()
+
+    def close(self) -> None:
+        if self._owns_session:
+            self._session.close()
+
+
+# Backward-facing alias used in older pyiv-common docs snippets.
+RequestsClient = RequestsHttpClient
