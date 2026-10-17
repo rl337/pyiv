@@ -1,84 +1,55 @@
-"""Tests for pyiv-common RequestsClient. Mocks requests; no live network."""
+"""Tests for pyiv-common RequestsHttpClient. Mocks requests; no live network."""
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pyiv import ChainType, Config, get_injector
-from pyiv_common.network import RequestsClient
+from pyiv import Config, get_injector
+from pyiv.http import HttpClient
+from pyiv_common.network import RequestsHttpClient
 
 
-class TestRequestsClient:
-    def test_handler_type(self):
-        client = RequestsClient()
-        assert client.handler_type == "http"
-        assert client.chain_type == ChainType.NETWORK_CLIENT
+class TestRequestsHttpClient:
+    def test_rejects_non_http(self):
+        client = RequestsHttpClient()
+        with pytest.raises(ValueError, match="Only http:// and https://"):
+            client.get("ftp://example.com/")
 
-    def test_rejects_non_http_url(self):
-        client = RequestsClient()
-        with pytest.raises(ValueError, match="RequestsClient only supports http:// and https://"):
-            client.request("GET", "ftp://example.com")
-
-    @patch("pyiv_common.network.requests.request")
+    @patch("pyiv_common.network.requests.Session.request")
     def test_get_success(self, mock_request):
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.headers = {"Content-Type": "text/html"}
-        mock_response.content = b"<html>Hello</html>"
-        mock_response.url = "http://example.com"
+        mock_response.headers = {"Content-Type": "text/plain"}
+        mock_response.content = b"ok"
+        mock_response.url = "http://example.com/"
         mock_request.return_value = mock_response
 
-        client = RequestsClient()
-        response = client.request("GET", "http://example.com")
-
-        assert response["status"] == 200
-        assert response["headers"]["Content-Type"] == "text/html"
-        assert response["body"] == b"<html>Hello</html>"
-        assert response["url"] == "http://example.com"
-        mock_request.assert_called_once()
+        client = RequestsHttpClient(headers={"X-App": "pyiv"})
+        resp = client.get("http://example.com/")
+        assert resp.status_code == 200
+        assert resp.content == b"ok"
         kwargs = mock_request.call_args.kwargs
-        assert kwargs["method"] == "GET"
-        assert kwargs["url"] == "http://example.com"
+        assert kwargs["headers"]["X-App"] == "pyiv"
 
-    @patch("pyiv_common.network.requests.request")
-    def test_https_and_headers_and_timeout(self, mock_request):
+    @patch("pyiv_common.network.requests.Session.request")
+    def test_json_post(self, mock_request):
         mock_response = MagicMock()
         mock_response.status_code = 201
         mock_response.headers = {}
-        mock_response.content = b""
-        mock_response.url = "https://example.com/api"
+        mock_response.content = b'{"id":1}'
+        mock_response.url = "http://example.com/items"
         mock_request.return_value = mock_response
 
-        client = RequestsClient()
-        client.request(
-            "POST",
-            "https://example.com/api",
-            headers={"X-Test": "1"},
-            data="payload",
-            timeout=5.0,
-        )
-
+        resp = RequestsHttpClient().post("http://example.com/items", json={"name": "a"})
+        assert resp.json() == {"id": 1}
         kwargs = mock_request.call_args.kwargs
-        assert kwargs["method"] == "POST"
-        assert kwargs["headers"] == {"X-Test": "1"}
-        assert kwargs["data"] == b"payload"
-        assert kwargs["timeout"] == 5.0
+        assert kwargs["data"] == b'{"name": "a"}'
+        assert kwargs["headers"]["Content-Type"] == "application/json"
 
-    @patch("pyiv_common.network.requests.request")
-    def test_inject_chain_handler(self, mock_request):
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.headers = {}
-        mock_response.content = b"ok"
-        mock_response.url = "http://example.com"
-        mock_request.return_value = mock_response
-
-        class MyConfig(Config):
+    def test_di_binding(self):
+        class C(Config):
             def configure(self):
-                self.register_chain_handler(ChainType.NETWORK_CLIENT, "http", RequestsClient)
+                self.register(HttpClient, RequestsHttpClient)
 
-        injector = get_injector(MyConfig)
-        client = injector.inject_chain_handler(ChainType.NETWORK_CLIENT, "http")
-        assert isinstance(client, RequestsClient)
-        result = client.request("GET", "http://example.com")
-        assert result["status"] == 200
+        client = get_injector(C).inject(HttpClient)
+        assert isinstance(client, RequestsHttpClient)

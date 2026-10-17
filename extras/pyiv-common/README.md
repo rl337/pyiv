@@ -1,40 +1,38 @@
 # pyiv-common
 
-Ubiquitous-library integrations for [pyiv](https://pypi.org/project/pyiv/):
-PyYAML (`YAMLSerDe`) and requests (`RequestsClient`). Core `pyiv` stays
-stdlib-only.
-
-**Docs:** [https://rl337.org/pyiv/](https://rl337.org/pyiv/guide/packages.html)
+Ubiquitous-library integrations for [pyiv](https://github.com/rl337/pyiv):
+PyYAML (`YAMLSerDe`) and requests (`RequestsHttpClient`). Core `pyiv` stays
+stdlib-only (including urllib HTTP clients).
 
 ## Install
 
 ```bash
 pip install pyiv-common
+# or
+pip install pyiv[common]
 ```
 
-Or `pip install pyiv[common]`. Requires Python 3.8+. Unreleased `main`:
+Unreleased from git:
 
 ```bash
 pip install "pyiv-common @ git+https://github.com/rl337/pyiv.git#subdirectory=extras/pyiv-common"
 ```
 
+Requires `pyiv>=1.0`.
+
 ## Quick start
 
 ```python
 from pyiv import Config, get_injector
-from pyiv_common.serde import YAMLSerDe
-from pyiv_common.network import RequestsClient
+from pyiv.http import HttpClient
+from pyiv_common.network import RequestsHttpClient
 
 class MyConfig(Config):
     def configure(self):
-        self.register(YAMLSerDe, YAMLSerDe)
-        self.register(RequestsClient, RequestsClient)
+        self.register(HttpClient, RequestsHttpClient)
 
 injector = get_injector(MyConfig)
-serde = injector.inject(YAMLSerDe)
-client = injector.inject(RequestsClient)
+client = injector.inject(HttpClient)
 ```
 
-## License
-
-MIT — same as pyiv.
+Docs: https://rl337.org/pyiv/

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyiv-common"
-version = "0.1.0"
+version = "0.2.0"
 description = "Ubiquitous-library integrations for pyiv (PyYAML, requests)"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -27,7 +27,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyiv>=0.3.0",
+    "pyiv>=1.0.0",
     "pyyaml",
     "requests",
 ]

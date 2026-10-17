@@ -126,6 +126,7 @@ tests:
    Hierarchy and private modules <guide/hierarchy>
    Testing with doubles <guide/testing>
    Packages and extras <guide/packages>
+   Migrating from 0.x to 1.x <guide/migrate-0-to-1>
 
 API Reference
 -------------
@@ -182,7 +183,7 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    :caption: Integrations
 
    pyiv/pyiv.serde
-   pyiv/pyiv.network
+   pyiv/pyiv.http
 
 .. toctree::
    :maxdepth: 1

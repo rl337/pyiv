@@ -62,7 +62,7 @@ Install: `pip install pyiv` (core). `pip install pyiv-common` or
 ## Adding a module to `pyiv-common`
 
 1. Implement under `extras/pyiv-common/pyiv_common/` (subclass core `SerDe` /
-   `NetworkClient` / `Config` — do not fork infrastructure).
+   `HttpClient` / `Config` — do not fork infrastructure).
 2. Tests in `extras/pyiv-common/tests/` (no live network; mock `requests`).
 3. Runnable module doctest **and** class docs for every public type (what +
    **why it exists** + Example doctest). Same bar as core; see

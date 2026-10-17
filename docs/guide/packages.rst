@@ -8,13 +8,13 @@ package per library.
 Three tiers
 -----------
 
-**``pyiv`` (core).** Runtime depends on the standard library. Encoder and
-network *infrastructure* (``SerDe``, ``NetworkClient``) and stdlib
-implementations (JSON, Base64, XML, Pickle, urllib HTTP/HTTPS) stay here.
+**``pyiv`` (core).** Runtime depends on the standard library. Encoder
+infrastructure (``SerDe``) and HTTP clients (``HttpClient`` /
+``AsyncHttpClient`` with urllib implementations) stay here.
 
 **``pyiv-common``.** Ubiquitous libraries that are the ``#include <stdlib.h>``
 of Python. Today that is PyYAML and requests. Install it when you need YAML
-or the requests HTTP stack.
+or a requests-backed ``HttpClient``.
 
 **Dedicated extras.** Domain-specific stacks (PostgreSQL, AWS, Redis) would
 be ``pyiv-<domain>`` packages — for example a future ``pyiv-pgsql``. Do not
@@ -56,22 +56,31 @@ YAML
 ``from pyiv.serde import YAMLSerDe`` still works if ``pyiv-common`` is
 installed (compatibility shim). Prefer ``pyiv_common.serde``.
 
-requests HTTP
--------------
+HTTP
+----
 
-.. code-block:: python
+Core ships stdlib clients — no extra required::
 
-   from pyiv import ChainType, Config, get_injector
-   from pyiv_common.network import RequestsClient
+   from pyiv import Config, get_injector
+   from pyiv.http import HttpClient, UrllibHttpClient
 
    class MyConfig(Config):
        def configure(self):
-           self.register_chain_handler(
-               ChainType.NETWORK_CLIENT, "http", RequestsClient
-           )
+           self.register(HttpClient, UrllibHttpClient)
 
-   injector = get_injector(MyConfig)
-   client = injector.inject_chain_handler(ChainType.NETWORK_CLIENT, "http")
+   client = get_injector(MyConfig).inject(HttpClient)
 
-Core still ships urllib ``HTTPClient`` / ``HTTPSClient`` with no extra
-dependencies. See :doc:`/pyiv_common/pyiv_common`.
+Optional requests implementation from ``pyiv-common``::
+
+   from pyiv import Config, get_injector
+   from pyiv.http import HttpClient
+   from pyiv_common.network import RequestsHttpClient
+
+   class MyConfig(Config):
+       def configure(self):
+           self.register(HttpClient, RequestsHttpClient)
+
+   client = get_injector(MyConfig).inject(HttpClient)
+
+See :doc:`/pyiv/pyiv.http`, :doc:`migrate-0-to-1`, and
+:doc:`/pyiv_common/pyiv_common`.

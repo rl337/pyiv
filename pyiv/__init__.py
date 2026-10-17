@@ -102,7 +102,18 @@ from pyiv.injector import Injector, get_injector
 from pyiv.key import Key, Matched, Named, Qualifier
 from pyiv.members import InjectorMembersInjector, MembersInjector
 from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
-from pyiv.network import HTTPClient, HTTPSClient, NetworkClient
+from pyiv.http import (
+    AsyncHttpClient,
+    AsyncUrllibHttpClient,
+    HttpClient,
+    HttpError,
+    HttpResponse,
+    HttpStatusError,
+    HttpTimeoutError,
+    MemoryAsyncHttpClient,
+    MemoryHttpClient,
+    UrllibHttpClient,
+)
 from pyiv.optional import get_optional_type, is_optional_type
 from pyiv.override import override
 from pyiv.pep440 import Pep440VersionParser  # after version (InvalidVersion base)
@@ -143,7 +154,7 @@ try:
 except ImportError:
     _has_commands = False
 
-__version__ = "0.4.3"
+__version__ = "1.0.0"
 __all__ = [
     "Config",
     "PrivateConfig",
@@ -181,9 +192,16 @@ __all__ = [
     "XMLSerDe",
     "PickleSerDe",
     "NoOpSerDe",
-    "NetworkClient",
-    "HTTPClient",
-    "HTTPSClient",
+    "HttpClient",
+    "AsyncHttpClient",
+    "HttpResponse",
+    "HttpError",
+    "HttpTimeoutError",
+    "HttpStatusError",
+    "UrllibHttpClient",
+    "AsyncUrllibHttpClient",
+    "MemoryHttpClient",
+    "MemoryAsyncHttpClient",
     "SingletonType",
     "GlobalSingletonRegistry",
     "Provider",
