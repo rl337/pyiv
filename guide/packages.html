@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Packages &mdash; pyiv 0.4.3 documentation</title>
+  <title>Packages &mdash; pyiv 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=981266f8" />
@@ -15,13 +15,13 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5bfaad31"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pyiv" href="../pyiv/pyiv.html" />
+    <link rel="next" title="Migrating from pyiv 0.x to 1.x" href="migrate-0-to-1.html" />
     <link rel="prev" title="Testing with doubles" href="testing.html" /> 
 </head>
 
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="testing.html">Testing with doubles</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -100,9 +101,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.network.html">pyiv.network</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
@@ -158,12 +162,12 @@ live in extra packages. Prefer <strong>one</strong> extra (<code class="docutils
 package per library.</p>
 <section id="three-tiers">
 <h2>Three tiers<a class="headerlink" href="#three-tiers" title="Link to this heading"></a></h2>
-<p><strong>``pyiv`` (core).</strong> Runtime depends on the standard library. Encoder and
-network <em>infrastructure</em> (<code class="docutils literal notranslate"><span class="pre">SerDe</span></code>, <code class="docutils literal notranslate"><span class="pre">NetworkClient</span></code>) and stdlib
-implementations (JSON, Base64, XML, Pickle, urllib HTTP/HTTPS) stay here.</p>
+<p><strong>``pyiv`` (core).</strong> Runtime depends on the standard library. Encoder
+infrastructure (<code class="docutils literal notranslate"><span class="pre">SerDe</span></code>) and HTTP clients (<code class="docutils literal notranslate"><span class="pre">HttpClient</span></code> /
+<code class="docutils literal notranslate"><span class="pre">AsyncHttpClient</span></code> with urllib implementations) stay here.</p>
 <p><strong>``pyiv-common``.</strong> Ubiquitous libraries that are the <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;stdlib.h&gt;</span></code>
 of Python. Today that is PyYAML and requests. Install it when you need YAML
-or the requests HTTP stack.</p>
+or a requests-backed <code class="docutils literal notranslate"><span class="pre">HttpClient</span></code>.</p>
 <p><strong>Dedicated extras.</strong> Domain-specific stacks (PostgreSQL, AWS, Redis) would
 be <code class="docutils literal notranslate"><span class="pre">pyiv-&lt;domain&gt;</span></code> packages — for example a future <code class="docutils literal notranslate"><span class="pre">pyiv-pgsql</span></code>. Do not
 create those unless the dependency would pollute <code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code>. The
@@ -199,23 +203,33 @@ Unreleased extra from this repo:</p>
 <p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyiv.serde</span> <span class="pre">import</span> <span class="pre">YAMLSerDe</span></code> still works if <code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code> is
 installed (compatibility shim). Prefer <code class="docutils literal notranslate"><span class="pre">pyiv_common.serde</span></code>.</p>
 </section>
-<section id="requests-http">
-<h2>requests HTTP<a class="headerlink" href="#requests-http" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainType</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv_common.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestsClient</span>
+<section id="http">
+<h2>HTTP<a class="headerlink" href="#http" title="Link to this heading"></a></h2>
+<p>Core ships stdlib clients — no extra required:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpClient</span><span class="p">,</span> <span class="n">UrllibHttpClient</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_chain_handler</span><span class="p">(</span>
-            <span class="n">ChainType</span><span class="o">.</span><span class="n">NETWORK_CLIENT</span><span class="p">,</span> <span class="s2">"http"</span><span class="p">,</span> <span class="n">RequestsClient</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">,</span> <span class="n">UrllibHttpClient</span><span class="p">)</span>
 
-<span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject_chain_handler</span><span class="p">(</span><span class="n">ChainType</span><span class="o">.</span><span class="n">NETWORK_CLIENT</span><span class="p">,</span> <span class="s2">"http"</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Core still ships urllib <code class="docutils literal notranslate"><span class="pre">HTTPClient</span></code> / <code class="docutils literal notranslate"><span class="pre">HTTPSClient</span></code> with no extra
-dependencies. See <a class="reference internal" href="../pyiv_common/pyiv_common.html"><span class="doc">pyiv_common</span></a>.</p>
+<p>Optional requests implementation from <code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv_common.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestsHttpClient</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">,</span> <span class="n">RequestsHttpClient</span><span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../pyiv/pyiv.http.html"><span class="doc">pyiv.http</span></a>, <a class="reference internal" href="migrate-0-to-1.html"><span class="doc">Migrating from pyiv 0.x to 1.x</span></a>, and
+<a class="reference internal" href="../pyiv_common/pyiv_common.html"><span class="doc">pyiv_common</span></a>.</p>
 </section>
 </section>
 
@@ -224,7 +238,7 @@ dependencies. See <a class="reference internal" href="../pyiv_common/pyiv_common
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="testing.html" class="btn btn-neutral float-left" title="Testing with doubles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../pyiv/pyiv.html" class="btn btn-neutral float-right" title="pyiv" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="migrate-0-to-1.html" class="btn btn-neutral float-right" title="Migrating from pyiv 0.x to 1.x" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

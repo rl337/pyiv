@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv_common &mdash; pyiv 0.4.3 documentation</title>
+  <title>pyiv_common &mdash; pyiv 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=981266f8" />
@@ -15,14 +15,14 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5bfaad31"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pyiv_common.serde" href="pyiv_common.serde.html" />
-    <link rel="prev" title="pyiv.network.clients" href="../pyiv/pyiv.network.clients.html" /> 
+    <link rel="prev" title="pyiv.http.response" href="../pyiv/pyiv.http.response.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -100,9 +101,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.network.html">pyiv.network</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
@@ -155,7 +159,7 @@
 <span id="pyiv-common"></span><h1>pyiv_common<a class="headerlink" href="#module-pyiv_common" title="Link to this heading"></a></h1>
 <p>Ubiquitous-library integrations for pyiv.</p>
 <p>pyiv-common is the <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;stdlib.h&gt;</span></code> extra for pyiv: PyYAML and
-requests only. Core <code class="docutils literal notranslate"><span class="pre">pyiv</span></code> stays stdlib-only.</p>
+requests. Core <code class="docutils literal notranslate"><span class="pre">pyiv</span></code> stays stdlib-only (including urllib HTTP clients).</p>
 <p><strong>What Problem Does This Solve?</strong></p>
 <p>Libraries such as PyYAML and requests are everywhere in Python, but they
 are not the standard library. Putting them in core would break pyiv’s
@@ -163,78 +167,67 @@ zero-runtime-dependency guarantee. A dedicated package per library would
 proliferate wheels. <code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code> is that middle tier.</p>
 <p><strong>Real-World Use Cases:</strong>
 - YAML config files via <code class="docutils literal notranslate"><span class="pre">YAMLSerDe</span></code>
-- HTTP with the requests stack via <code class="docutils literal notranslate"><span class="pre">RequestsClient</span></code>
+- HTTP with the requests stack via <code class="docutils literal notranslate"><span class="pre">RequestsHttpClient</span></code>
 - Injecting those types through a pyiv <code class="docutils literal notranslate"><span class="pre">Config</span></code></p>
 <p>Usage:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv_common.serde</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLSerDe</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">YAMLSerDe</span><span class="p">()</span><span class="o">.</span><span class="n">handler_type</span>
 <span class="go">'yaml'</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv_common.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestsClient</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">RequestsClient</span><span class="p">()</span><span class="o">.</span><span class="n">handler_type</span>
-<span class="go">'http'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv_common.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestsHttpClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">RequestsHttpClient</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"ftp://example.com/"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">ValueError</span>: <span class="n">Only http:// and https:// URLs are allowed, got: ftp://example.com/</span>
 </pre></div>
 </div>
-<dl class="py class">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv_common.RequestsClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv_common.</span></span><span class="sig-name descname"><span class="pre">RequestsClient</span></span><a class="reference internal" href="../_modules/pyiv_common/network.html#RequestsClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv_common.RequestsClient" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../pyiv/pyiv.network.base.html#pyiv.network.base.NetworkClient" title="pyiv.network.base.NetworkClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkClient</span></code></a></p>
+<span class="sig-prename descclassname"><span class="pre">pyiv_common.</span></span><span class="sig-name descname"><span class="pre">RequestsClient</span></span><a class="headerlink" href="#pyiv_common.RequestsClient" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="pyiv_common.network.html#pyiv_common.network.RequestsHttpClient" title="pyiv_common.network.RequestsHttpClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestsHttpClient</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv_common.RequestsHttpClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv_common.</span></span><span class="sig-name descname"><span class="pre">RequestsHttpClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">https_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv_common/network.html#RequestsHttpClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv_common.RequestsHttpClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient" title="pyiv.http.base.HttpClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">HttpClient</span></code></a></p>
 <p>HTTP(S) client using the requests library.</p>
-<p><code class="docutils literal notranslate"><span class="pre">handler_type</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;http&quot;</span></code> so it can replace urllib <code class="docutils literal notranslate"><span class="pre">HTTPClient</span></code>
-on the NETWORK_CLIENT chain. Both <code class="docutils literal notranslate"><span class="pre">http://</span></code> and <code class="docutils literal notranslate"><span class="pre">https://</span></code> URLs
-are accepted.</p>
+<p><strong>Why this exists:</strong> Teams that already standardize on requests can bind
+this implementation to <code class="docutils literal notranslate"><span class="pre">HttpClient</span></code> without changing call sites that
+expect <code class="docutils literal notranslate"><span class="pre">json=</span></code>, <code class="docutils literal notranslate"><span class="pre">raise_for_status</span></code>, or streaming lines.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainType</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv_common.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestsClient</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv_common.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestsHttpClient</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register_chain_handler</span><span class="p">(</span>
-<span class="gp">... </span>            <span class="n">ChainType</span><span class="o">.</span><span class="n">NETWORK_CLIENT</span><span class="p">,</span> <span class="s2">"http"</span><span class="p">,</span> <span class="n">RequestsClient</span>
-<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">,</span> <span class="n">RequestsHttpClient</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject_chain_handler</span><span class="p">(</span><span class="n">ChainType</span><span class="o">.</span><span class="n">NETWORK_CLIENT</span><span class="p">,</span> <span class="s2">"http"</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">RequestsClient</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">),</span> <span class="n">RequestsHttpClient</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<dl class="py property">
-<dt class="sig sig-object py" id="pyiv_common.RequestsClient.handler_type">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></em><a class="headerlink" href="#pyiv_common.RequestsClient.handler_type" title="Link to this definition"></a></dt>
-<dd><p>Return the handler type identifier (“http”).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv_common.RequestsHttpClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">https_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv_common/network.html#RequestsHttpClient.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv_common.RequestsHttpClient.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv_common.RequestsHttpClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv_common/network.html#RequestsHttpClient.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv_common.RequestsHttpClient.close" title="Link to this definition"></a></dt>
+<dd><p>Release transport resources (no-op by default).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyiv_common.RequestsClient.request">
-<span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.15)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.15)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv_common/network.html#RequestsClient.request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv_common.RequestsClient.request" title="Link to this definition"></a></dt>
-<dd><p>Make an HTTP request with requests.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> – HTTP method (GET, POST, PUT, DELETE, etc.)</p></li>
-<li><p><strong>url</strong> – The URL to request (must be <a class="reference external" href="http://">http://</a> or <a class="reference external" href="https://">https://</a>)</p></li>
-<li><p><strong>headers</strong> – Optional dictionary of HTTP headers</p></li>
-<li><p><strong>data</strong> – Optional request body (string or bytes)</p></li>
-<li><p><strong>timeout</strong> – Optional timeout in seconds</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>status: HTTP status code</p></li>
-<li><p>headers: Response headers dictionary</p></li>
-<li><p>body: Response body (bytes)</p></li>
-<li><p>url: Final URL after redirects</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dictionary containing</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If URL is not <a class="reference external" href="http://">http://</a> or <a class="reference external" href="https://">https://</a></p></li>
-<li><p><strong>requests.RequestException</strong> – If the request fails</p></li>
-</ul>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="pyiv_common.RequestsHttpClient.request">
+<span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse" title="pyiv.http.response.HttpResponse"><span class="pre">HttpResponse</span></a></span></span><a class="reference internal" href="../_modules/pyiv_common/network.html#RequestsHttpClient.request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv_common.RequestsHttpClient.request" title="Link to this definition"></a></dt>
+<dd><p>Send an HTTP request and return a buffered response.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv_common.RequestsHttpClient.stream">
+<span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.15)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse" title="pyiv.http.response.StreamResponse"><span class="pre">StreamResponse</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyiv_common/network.html#RequestsHttpClient.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv_common.RequestsHttpClient.stream" title="Link to this definition"></a></dt>
+<dd><p>Open a streaming response (context manager).</p>
 </dd></dl>
 
 </dd></dl>
@@ -304,7 +297,7 @@ chain like any other <code class="docutils literal notranslate"><span class="pre
 <td><p>YAML SerDe for pyiv, backed by PyYAML.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="pyiv_common.network.html#module-pyiv_common.network" title="pyiv_common.network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network</span></code></a></p></td>
-<td><p>requests-backed NetworkClient for pyiv.</p></td>
+<td><p>requests-backed HttpClient for pyiv.</p></td>
 </tr>
 </tbody>
 </table>
@@ -314,7 +307,7 @@ chain like any other <code class="docutils literal notranslate"><span class="pre
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../pyiv/pyiv.network.clients.html" class="btn btn-neutral float-left" title="pyiv.network.clients" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../pyiv/pyiv.http.response.html" class="btn btn-neutral float-left" title="pyiv.http.response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="pyiv_common.serde.html" class="btn btn-neutral float-right" title="pyiv_common.serde" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

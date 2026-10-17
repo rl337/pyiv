@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; pyiv 0.4.3 documentation</title>
+  <title>Index &mdash; pyiv 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5bfaad31"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -97,9 +98,12 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.network.html">pyiv.network</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
@@ -183,9 +187,11 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyiv/pyiv.html#pyiv.Binder.__init__">__init__() (pyiv.Binder method)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncUrllibHttpClient.__init__">__init__() (pyiv.AsyncUrllibHttpClient method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Binder.__init__">(pyiv.Binder method)</a>
+</li>
         <li><a href="pyiv/pyiv.binder.html#pyiv.binder.Binder.__init__">(pyiv.binder.Binder method)</a>
 </li>
         <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder.__init__">(pyiv.binder.BindingBuilder method)</a>
@@ -270,6 +276,50 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.FixedPythonVersionProvider.__init__">(pyiv.FixedPythonVersionProvider method)</a>
 </li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.__init__">(pyiv.http.AsyncStreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncUrllibHttpClient.__init__">(pyiv.http.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.AsyncUrllibHttpClient.__init__">(pyiv.http.clients.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.UrllibHttpClient.__init__">(pyiv.http.clients.UrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpStatusError.__init__">(pyiv.http.errors.HttpStatusError method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.__init__">(pyiv.http.HttpResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpStatusError.__init__">(pyiv.http.HttpStatusError method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryAsyncHttpClient.__init__">(pyiv.http.memory.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryHttpClient.__init__">(pyiv.http.memory.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest.__init__">(pyiv.http.memory.RecordedRequest method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.__init__">(pyiv.http.memory.StreamReply method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryAsyncHttpClient.__init__">(pyiv.http.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryHttpClient.__init__">(pyiv.http.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest.__init__">(pyiv.http.RecordedRequest method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.__init__">(pyiv.http.response.AsyncStreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.__init__">(pyiv.http.response.HttpResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.__init__">(pyiv.http.response.StreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply.__init__">(pyiv.http.StreamReply method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.__init__">(pyiv.http.StreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.UrllibHttpClient.__init__">(pyiv.http.UrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.__init__">(pyiv.HttpResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpStatusError.__init__">(pyiv.HttpStatusError method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Injector.__init__">(pyiv.Injector method)</a>
 </li>
         <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.__init__">(pyiv.injector.Injector method)</a>
@@ -304,9 +354,13 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MembersInjector.__init__">(pyiv.MembersInjector method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient.__init__">(pyiv.MemoryAsyncHttpClient method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryConsole.__init__">(pyiv.MemoryConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.__init__">(pyiv.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryHttpClient.__init__">(pyiv.MemoryHttpClient method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MockConsole.__init__">(pyiv.MockConsole method)</a>
 </li>
@@ -374,6 +428,8 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.__init__">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.UrllibHttpClient.__init__">(pyiv.UrllibHttpClient method)</a>
+</li>
         <li><a href="pyiv/pyiv.version.html#pyiv.version.FixedPythonVersionProvider.__init__">(pyiv.version.FixedPythonVersionProvider method)</a>
 </li>
         <li><a href="pyiv/pyiv.version.html#pyiv.version.MapVersionSource.__init__">(pyiv.version.MapVersionSource method)</a>
@@ -394,6 +450,10 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.VersionSource.__init__">(pyiv.VersionSource method)</a>
 </li>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsHttpClient.__init__">(pyiv_common.network.RequestsHttpClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsHttpClient.__init__">(pyiv_common.RequestsHttpClient method)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -407,10 +467,40 @@
         <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.abstract">(pyiv.VersionBindingCandidate attribute)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.add">add() (pyiv.ListMultibinder method)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.aclose">aclose() (pyiv.AsyncHttpClient method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.AsyncUrllibHttpClient.aclose">(pyiv.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.aclose">(pyiv.http.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.aclose">(pyiv.http.AsyncStreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncUrllibHttpClient.aclose">(pyiv.http.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.aclose">(pyiv.http.base.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.AsyncUrllibHttpClient.aclose">(pyiv.http.clients.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.aclose">(pyiv.http.response.AsyncStreamResponse method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryAsyncHttpClient.add">add() (pyiv.http.memory.MemoryAsyncHttpClient method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryHttpClient.add">(pyiv.http.memory.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryAsyncHttpClient.add">(pyiv.http.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryHttpClient.add">(pyiv.http.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.add">(pyiv.ListMultibinder method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.add">(pyiv.MapMultibinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient.add">(pyiv.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryHttpClient.add">(pyiv.MemoryHttpClient method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Multibinder.add">(pyiv.Multibinder method)</a>
 </li>
@@ -463,10 +553,44 @@
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.advance">(pyiv.SyntheticClock method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.aiter_bytes">aiter_bytes() (pyiv.http.AsyncStreamResponse method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.aiter_bytes">(pyiv.http.response.AsyncStreamResponse method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.aiter_lines">aiter_lines() (pyiv.http.AsyncStreamResponse method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.aiter_lines">(pyiv.http.response.AsyncStreamResponse method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.apply_version_selection">apply_version_selection() (pyiv.Config method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.apply_version_selection">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient">AsyncHttpClient (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient">(class in pyiv.http)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient">(class in pyiv.http.base)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse">AsyncStreamResponse (class in pyiv.http)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse">(class in pyiv.http.response)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncUrllibHttpClient">AsyncUrllibHttpClient (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncUrllibHttpClient">(class in pyiv.http)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.AsyncUrllibHttpClient">(class in pyiv.http.clients)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.PythonVersionSource.attach_config">attach_config() (pyiv.PythonVersionSource method)</a>
@@ -525,8 +649,6 @@
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.bind_instance">(pyiv.binder_impl.ConfigBinder method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Binder.bind_key">bind_key() (pyiv.Binder method)</a>
 
       <ul>
@@ -535,6 +657,8 @@
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBinder.bind_key">(pyiv.binder_impl.ConfigBinder method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Binder">Binder (class in pyiv)</a>
 
       <ul>
@@ -545,6 +669,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder">(class in pyiv.binder)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest.body">body (pyiv.http.memory.RecordedRequest attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest.body">(pyiv.http.RecordedRequest attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.bold">bold() (pyiv.BaseConsole method)</a>
@@ -596,12 +726,6 @@
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.ChainHandler.chain_type">(pyiv.ChainHandler property)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.base.html#pyiv.network.base.NetworkClient.chain_type">(pyiv.network.base.NetworkClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.NetworkClient.chain_type">(pyiv.network.NetworkClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.html#pyiv.NetworkClient.chain_type">(pyiv.NetworkClient property)</a>
-</li>
         <li><a href="pyiv/pyiv.html#pyiv.SerDe.chain_type">(pyiv.SerDe property)</a>
 </li>
         <li><a href="pyiv/pyiv.serde.base.html#pyiv.serde.base.SerDe.chain_type">(pyiv.serde.base.SerDe property)</a>
@@ -619,6 +743,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.chain.html#pyiv.chain.ChainType">(class in pyiv.chain)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.chunks">chunks (pyiv.http.memory.StreamReply attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply.chunks">(pyiv.http.StreamReply attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.CLICommand.cleanup">cleanup() (pyiv.CLICommand method)</a>
@@ -750,9 +880,23 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.FileConsole.close">(pyiv.FileConsole method)</a>
 </li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.close">(pyiv.http.base.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.close">(pyiv.http.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.close">(pyiv.http.response.StreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.close">(pyiv.http.StreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.close">(pyiv.HttpClient method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryConsole.close">(pyiv.MemoryConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.PTYConsole.close">(pyiv.PTYConsole method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsHttpClient.close">(pyiv_common.network.RequestsHttpClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsHttpClient.close">(pyiv_common.RequestsHttpClient method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.ColorChangeEvent">ColorChangeEvent (class in pyiv.console)</a>
@@ -799,6 +943,14 @@
 
       <ul>
         <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.SpecifierSet.contains">(pyiv.pep440.SpecifierSet method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.content">content (pyiv.http.HttpResponse property)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.content">(pyiv.http.response.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.content">(pyiv.HttpResponse property)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.contribute_map">contribute_map() (pyiv.Config method)</a>
@@ -871,6 +1023,20 @@
       </ul></li>
       <li><a href="pyiv/pyiv.version.html#pyiv.version.default_version_parsers">default_version_parsers() (in module pyiv.version)</a>
 </li>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.delete">delete() (pyiv.AsyncHttpClient method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.delete">(pyiv.http.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.delete">(pyiv.http.base.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.delete">(pyiv.http.base.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.delete">(pyiv.http.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.delete">(pyiv.HttpClient method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Base64SerDe.deserialize">deserialize() (pyiv.Base64SerDe method)</a>
 
       <ul>
@@ -1125,12 +1291,24 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyiv/pyiv.html#pyiv.BaseProvider.get">get() (pyiv.BaseProvider method)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.get">get() (pyiv.AsyncHttpClient method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.BaseProvider.get">(pyiv.BaseProvider method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.FactoryProvider.get">(pyiv.FactoryProvider method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.GlobalSingletonRegistry.get">(pyiv.GlobalSingletonRegistry class method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.get">(pyiv.http.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.get">(pyiv.http.base.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.get">(pyiv.http.base.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.get">(pyiv.http.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.get">(pyiv.HttpClient method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.InjectorProvider.get">(pyiv.InjectorProvider method)</a>
 </li>
@@ -1375,6 +1553,8 @@
         <li><a href="pyiv/pyiv.command.html#pyiv.command.Command.get_name">(pyiv.command.Command class method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.get_named_bindings">get_named_bindings() (pyiv.Config method)</a>
 
       <ul>
@@ -1387,8 +1567,6 @@
         <li><a href="pyiv/pyiv.optional.html#pyiv.optional.get_optional_type">(in module pyiv.optional)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.get_provider">get_provider() (pyiv.Config method)</a>
 
       <ul>
@@ -1648,12 +1826,6 @@
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.ChainHandler.handle">(pyiv.ChainHandler method)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.base.html#pyiv.network.base.NetworkClient.handle">(pyiv.network.base.NetworkClient method)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.NetworkClient.handle">(pyiv.network.NetworkClient method)</a>
-</li>
-        <li><a href="pyiv/pyiv.html#pyiv.NetworkClient.handle">(pyiv.NetworkClient method)</a>
-</li>
         <li><a href="pyiv/pyiv.html#pyiv.SerDe.handle">(pyiv.SerDe method)</a>
 </li>
         <li><a href="pyiv/pyiv.serde.base.html#pyiv.serde.base.SerDe.handle">(pyiv.serde.base.SerDe method)</a>
@@ -1668,25 +1840,7 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.ChainHandler.handler_type">(pyiv.ChainHandler property)</a>
 </li>
-        <li><a href="pyiv/pyiv.html#pyiv.HTTPClient.handler_type">(pyiv.HTTPClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.html#pyiv.HTTPSClient.handler_type">(pyiv.HTTPSClient property)</a>
-</li>
         <li><a href="pyiv/pyiv.html#pyiv.JSONSerDe.handler_type">(pyiv.JSONSerDe property)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.base.html#pyiv.network.base.NetworkClient.handler_type">(pyiv.network.base.NetworkClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.clients.html#pyiv.network.clients.HTTPClient.handler_type">(pyiv.network.clients.HTTPClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.clients.html#pyiv.network.clients.HTTPSClient.handler_type">(pyiv.network.clients.HTTPSClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.HTTPClient.handler_type">(pyiv.network.HTTPClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.HTTPSClient.handler_type">(pyiv.network.HTTPSClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.NetworkClient.handler_type">(pyiv.network.NetworkClient property)</a>
-</li>
-        <li><a href="pyiv/pyiv.html#pyiv.NetworkClient.handler_type">(pyiv.NetworkClient property)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.NoOpSerDe.handler_type">(pyiv.NoOpSerDe property)</a>
 </li>
@@ -1722,17 +1876,11 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.XMLSerDe.handler_type">(pyiv.XMLSerDe property)</a>
 </li>
-        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsClient.handler_type">(pyiv_common.network.RequestsClient property)</a>
-</li>
-        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsClient.handler_type">(pyiv_common.RequestsClient property)</a>
-</li>
         <li><a href="pyiv_common/pyiv_common.serde.html#pyiv_common.serde.YAMLSerDe.handler_type">(pyiv_common.serde.YAMLSerDe property)</a>
 </li>
         <li><a href="pyiv_common/pyiv_common.html#pyiv_common.YAMLSerDe.handler_type">(pyiv_common.YAMLSerDe property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.GlobalSingletonRegistry.has">has() (pyiv.GlobalSingletonRegistry class method)</a>
 
       <ul>
@@ -1755,6 +1903,8 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.has_chain_handler_registration_by_name">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.has_registration">has_registration() (pyiv.Config method)</a>
 
       <ul>
@@ -1765,6 +1915,30 @@
 
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.ChainType.HASHING">(pyiv.ChainType attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.headers">headers (pyiv.http.AsyncStreamResponse property)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.headers">(pyiv.http.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest.headers">(pyiv.http.memory.RecordedRequest attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.headers">(pyiv.http.memory.StreamReply attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest.headers">(pyiv.http.RecordedRequest attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.headers">(pyiv.http.response.AsyncStreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.headers">(pyiv.http.response.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.headers">(pyiv.http.response.StreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply.headers">(pyiv.http.StreamReply attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.headers">(pyiv.http.StreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.headers">(pyiv.HttpResponse property)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.hide_cursor">hide_cursor() (pyiv.BaseConsole method)</a>
@@ -1789,22 +1963,28 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.hide_cursor">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.HTTPClient">HTTPClient (class in pyiv)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.HttpClient">HttpClient (class in pyiv)</a>
 
       <ul>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.HTTPClient">(class in pyiv.network)</a>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient">(class in pyiv.http)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.clients.html#pyiv.network.clients.HTTPClient">(class in pyiv.network.clients)</a>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient">(class in pyiv.http.base)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.HTTPSClient">HTTPSClient (class in pyiv)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.HttpError">HttpError</a>, <a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpError">[1]</a>, <a href="pyiv/pyiv.http.html#pyiv.http.HttpError">[2]</a>
+</li>
+      <li><a href="pyiv/pyiv.html#pyiv.HttpResponse">HttpResponse (class in pyiv)</a>
 
       <ul>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.HTTPSClient">(class in pyiv.network)</a>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse">(class in pyiv.http)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.clients.html#pyiv.network.clients.HTTPSClient">(class in pyiv.network.clients)</a>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse">(class in pyiv.http.response)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.HttpStatusError">HttpStatusError</a>, <a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpStatusError">[1]</a>, <a href="pyiv/pyiv.http.html#pyiv.http.HttpStatusError">[2]</a>
+</li>
+      <li><a href="pyiv/pyiv.html#pyiv.HttpTimeoutError">HttpTimeoutError</a>, <a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpTimeoutError">[1]</a>, <a href="pyiv/pyiv.http.html#pyiv.http.HttpTimeoutError">[2]</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1921,8 +2101,6 @@
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.InvalidSpecifier">InvalidSpecifier</a>, <a href="pyiv/pyiv.pep440.html#pyiv.pep440.InvalidSpecifier">[1]</a>, <a href="pyiv/pyiv.version.html#pyiv.version.InvalidSpecifier">[2]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.InvalidVersion">InvalidVersion</a>, <a href="pyiv/pyiv.pep440.html#pyiv.pep440.InvalidVersion">[1]</a>, <a href="pyiv/pyiv.version.html#pyiv.version.InvalidVersion">[2]</a>
 </li>
       <li><a href="pyiv/pyiv.clock.html#pyiv.clock.RealTimer.is_active">is_active() (pyiv.clock.RealTimer method)</a>
@@ -1935,6 +2113,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.Timer.is_active">(pyiv.Timer method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.is_dir">is_dir() (pyiv.Filesystem method)</a>
 
       <ul>
@@ -2023,11 +2203,33 @@
         <li><a href="pyiv/pyiv.html#pyiv.VersionParser.is_version_less">(pyiv.VersionParser method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.iter_bytes">iter_bytes() (pyiv.http.response.StreamResponse method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.iter_bytes">(pyiv.http.StreamResponse method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.iter_lines">iter_lines() (pyiv.http.response.StreamResponse method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.iter_lines">(pyiv.http.StreamResponse method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.json">json() (pyiv.http.HttpResponse method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.json">(pyiv.http.response.HttpResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.json">(pyiv.HttpResponse method)</a>
+</li>
+      </ul></li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.JSONSerDe">JSONSerDe (class in pyiv)</a>
 
@@ -2057,6 +2259,12 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.lines">lines (pyiv.http.memory.StreamReply attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply.lines">(pyiv.http.StreamReply attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.listdir">listdir() (pyiv.Filesystem method)</a>
 
       <ul>
@@ -2115,6 +2323,14 @@
         <li><a href="pyiv/pyiv.members.html#pyiv.members.MembersInjector">(class in pyiv.members)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient">MemoryAsyncHttpClient (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryAsyncHttpClient">(class in pyiv.http)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryAsyncHttpClient">(class in pyiv.http.memory)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.MemoryConsole">MemoryConsole (class in pyiv)</a>
 
       <ul>
@@ -2127,10 +2343,24 @@
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem">(class in pyiv.filesystem)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryHttpClient">MemoryHttpClient (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryHttpClient">(class in pyiv.http)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryHttpClient">(class in pyiv.http.memory)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.merge_from">merge_from() (pyiv.Config method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.merge_from">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest.method">method (pyiv.http.memory.RecordedRequest attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest.method">(pyiv.http.RecordedRequest attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.mkdir">mkdir() (pyiv.Filesystem method)</a>
@@ -2187,6 +2417,18 @@
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#module-pyiv.filesystem">pyiv.filesystem</a>
 </li>
+        <li><a href="pyiv/pyiv.http.html#module-pyiv.http">pyiv.http</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#module-pyiv.http.base">pyiv.http.base</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#module-pyiv.http.clients">pyiv.http.clients</a>
+</li>
+        <li><a href="pyiv/pyiv.http.errors.html#module-pyiv.http.errors">pyiv.http.errors</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#module-pyiv.http.memory">pyiv.http.memory</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#module-pyiv.http.response">pyiv.http.response</a>
+</li>
         <li><a href="pyiv/pyiv.injector.html#module-pyiv.injector">pyiv.injector</a>
 </li>
         <li><a href="pyiv/pyiv.key.html#module-pyiv.key">pyiv.key</a>
@@ -2194,12 +2436,6 @@
         <li><a href="pyiv/pyiv.members.html#module-pyiv.members">pyiv.members</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#module-pyiv.multibinder">pyiv.multibinder</a>
-</li>
-        <li><a href="pyiv/pyiv.network.html#module-pyiv.network">pyiv.network</a>
-</li>
-        <li><a href="pyiv/pyiv.network.base.html#module-pyiv.network.base">pyiv.network.base</a>
-</li>
-        <li><a href="pyiv/pyiv.network.clients.html#module-pyiv.network.clients">pyiv.network.clients</a>
 </li>
         <li><a href="pyiv/pyiv.optional.html#module-pyiv.optional">pyiv.optional</a>
 </li>
@@ -2248,6 +2484,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.monotonic">(pyiv.SyntheticClock method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.move">move() (pyiv.Filesystem method)</a>
 
       <ul>
@@ -2262,8 +2500,6 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.move">(pyiv.RealFilesystem method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.move_cursor">move_cursor() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -2426,20 +2662,6 @@
         <li><a href="pyiv/pyiv.injector.html#pyiv.injector.Injector.named_keys">(pyiv.injector.Injector method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.chain.html#pyiv.chain.ChainType.NETWORK_CLIENT">NETWORK_CLIENT (pyiv.chain.ChainType attribute)</a>
-
-      <ul>
-        <li><a href="pyiv/pyiv.html#pyiv.ChainType.NETWORK_CLIENT">(pyiv.ChainType attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.NetworkClient">NetworkClient (class in pyiv)</a>
-
-      <ul>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.NetworkClient">(class in pyiv.network)</a>
-</li>
-        <li><a href="pyiv/pyiv.network.base.html#pyiv.network.base.NetworkClient">(class in pyiv.network.base)</a>
-</li>
-      </ul></li>
       <li><a href="pyiv/pyiv.singleton.html#id1">NONE (pyiv.singleton.SingletonType attribute)</a>, <a href="pyiv/pyiv.singleton.html#pyiv.singleton.SingletonType.NONE">[1]</a>
 
       <ul>
@@ -2454,8 +2676,6 @@
         <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.NoOpSerDe">(class in pyiv.serde.encodings)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.key.html#pyiv.key.normalize_tags">normalize_tags() (in module pyiv.key)</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.NoScope">NoScope (class in pyiv)</a>
@@ -2464,6 +2684,8 @@
         <li><a href="pyiv/pyiv.scope.html#pyiv.scope.NoScope">(class in pyiv.scope)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.DateTimeService.now_utc">now_utc() (pyiv.datetime_service.DateTimeService method)</a>
 
       <ul>
@@ -2556,6 +2778,20 @@
         <li><a href="pyiv/pyiv.html#pyiv.VersionBindingCandidate.parser_name">(pyiv.VersionBindingCandidate attribute)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.patch">patch() (pyiv.AsyncHttpClient method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.patch">(pyiv.http.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.patch">(pyiv.http.base.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.patch">(pyiv.http.base.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.patch">(pyiv.http.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.patch">(pyiv.HttpClient method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Pep440VersionParser">Pep440VersionParser (class in pyiv)</a>
 
       <ul>
@@ -2568,6 +2804,20 @@
         <li><a href="pyiv/pyiv.serde.html#pyiv.serde.PickleSerDe">(class in pyiv.serde)</a>
 </li>
         <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.PickleSerDe">(class in pyiv.serde.encodings)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.post">post() (pyiv.AsyncHttpClient method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.post">(pyiv.http.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.post">(pyiv.http.base.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.post">(pyiv.http.base.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.post">(pyiv.http.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.post">(pyiv.HttpClient method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.EchoChangeEvent.previous_state">previous_state (pyiv.console.EchoChangeEvent attribute)</a>
@@ -2604,6 +2854,20 @@
 
       <ul>
         <li><a href="pyiv/pyiv.console.html#pyiv.console.PTYConsole">(class in pyiv.console)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.put">put() (pyiv.AsyncHttpClient method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.put">(pyiv.http.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.put">(pyiv.http.base.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.put">(pyiv.http.base.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.put">(pyiv.http.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.put">(pyiv.HttpClient method)</a>
 </li>
       </ul></li>
       <li>
@@ -2676,6 +2940,8 @@
         <li><a href="pyiv/pyiv.errors.html#module-pyiv.errors">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pyiv.factory
 
@@ -2691,14 +2957,54 @@
 </li>
       </ul></li>
       <li>
+    pyiv.http
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#module-pyiv.http">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.http.base
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.base.html#module-pyiv.http.base">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.http.clients
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.clients.html#module-pyiv.http.clients">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.http.errors
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.errors.html#module-pyiv.http.errors">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.http.memory
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.memory.html#module-pyiv.http.memory">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.http.response
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.response.html#module-pyiv.http.response">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv.injector
 
       <ul>
         <li><a href="pyiv/pyiv.injector.html#module-pyiv.injector">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pyiv.key
 
@@ -2718,27 +3024,6 @@
 
       <ul>
         <li><a href="pyiv/pyiv.multibinder.html#module-pyiv.multibinder">module</a>
-</li>
-      </ul></li>
-      <li>
-    pyiv.network
-
-      <ul>
-        <li><a href="pyiv/pyiv.network.html#module-pyiv.network">module</a>
-</li>
-      </ul></li>
-      <li>
-    pyiv.network.base
-
-      <ul>
-        <li><a href="pyiv/pyiv.network.base.html#module-pyiv.network.base">module</a>
-</li>
-      </ul></li>
-      <li>
-    pyiv.network.clients
-
-      <ul>
-        <li><a href="pyiv/pyiv.network.clients.html#module-pyiv.network.clients">module</a>
 </li>
       </ul></li>
       <li>
@@ -2896,6 +3181,22 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.raise_for_status">raise_for_status() (pyiv.http.AsyncStreamResponse method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.raise_for_status">(pyiv.http.HttpResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.raise_for_status">(pyiv.http.response.AsyncStreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.raise_for_status">(pyiv.http.response.HttpResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.raise_for_status">(pyiv.http.response.StreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.raise_for_status">(pyiv.http.StreamResponse method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.raise_for_status">(pyiv.HttpResponse method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.RawModeChangeEvent">RawModeChangeEvent (class in pyiv.console)</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.read_bytes">read_bytes() (pyiv.Filesystem method)</a>
@@ -3012,6 +3313,12 @@
       </ul></li>
       <li><a href="pyiv/pyiv.clock.html#pyiv.clock.RealTimer">RealTimer (class in pyiv.clock)</a>
 </li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest">RecordedRequest (class in pyiv.http)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest">(class in pyiv.http.memory)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.ReflectionConfig">ReflectionConfig (class in pyiv)</a>
 
       <ul>
@@ -3066,8 +3373,6 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_map_multibinding_instance">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.reflection.html#pyiv.reflection.ReflectionConfig.register_module">register_module() (pyiv.reflection.ReflectionConfig method)</a>
 
       <ul>
@@ -3080,6 +3385,8 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_multibinding">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.register_multibinding_instance">register_multibinding_instance() (pyiv.Config method)</a>
 
       <ul>
@@ -3104,34 +3411,72 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_version_source">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.HTTPClient.request">request() (pyiv.HTTPClient method)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.request">request() (pyiv.AsyncHttpClient method)</a>
 
       <ul>
-        <li><a href="pyiv/pyiv.html#pyiv.HTTPSClient.request">(pyiv.HTTPSClient method)</a>
+        <li><a href="pyiv/pyiv.html#pyiv.AsyncUrllibHttpClient.request">(pyiv.AsyncUrllibHttpClient method)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.base.html#pyiv.network.base.NetworkClient.request">(pyiv.network.base.NetworkClient method)</a>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.request">(pyiv.http.AsyncHttpClient method)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.clients.html#pyiv.network.clients.HTTPClient.request">(pyiv.network.clients.HTTPClient method)</a>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncUrllibHttpClient.request">(pyiv.http.AsyncUrllibHttpClient method)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.clients.html#pyiv.network.clients.HTTPSClient.request">(pyiv.network.clients.HTTPSClient method)</a>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.request">(pyiv.http.base.AsyncHttpClient method)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.HTTPClient.request">(pyiv.network.HTTPClient method)</a>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.request">(pyiv.http.base.HttpClient method)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.HTTPSClient.request">(pyiv.network.HTTPSClient method)</a>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.AsyncUrllibHttpClient.request">(pyiv.http.clients.AsyncUrllibHttpClient method)</a>
 </li>
-        <li><a href="pyiv/pyiv.network.html#pyiv.network.NetworkClient.request">(pyiv.network.NetworkClient method)</a>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.UrllibHttpClient.request">(pyiv.http.clients.UrllibHttpClient method)</a>
 </li>
-        <li><a href="pyiv/pyiv.html#pyiv.NetworkClient.request">(pyiv.NetworkClient method)</a>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.request">(pyiv.http.HttpClient method)</a>
 </li>
-        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsClient.request">(pyiv_common.network.RequestsClient method)</a>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryAsyncHttpClient.request">(pyiv.http.memory.MemoryAsyncHttpClient method)</a>
 </li>
-        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsClient.request">(pyiv_common.RequestsClient method)</a>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryHttpClient.request">(pyiv.http.memory.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryAsyncHttpClient.request">(pyiv.http.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryHttpClient.request">(pyiv.http.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.UrllibHttpClient.request">(pyiv.http.UrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.request">(pyiv.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient.request">(pyiv.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryHttpClient.request">(pyiv.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.UrllibHttpClient.request">(pyiv.UrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsHttpClient.request">(pyiv_common.network.RequestsHttpClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsHttpClient.request">(pyiv_common.RequestsHttpClient method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsClient">RequestsClient (class in pyiv_common)</a>
+      <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryAsyncHttpClient.requests">requests (pyiv.http.memory.MemoryAsyncHttpClient property)</a>
 
       <ul>
-        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsClient">(class in pyiv_common.network)</a>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryHttpClient.requests">(pyiv.http.memory.MemoryHttpClient property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryAsyncHttpClient.requests">(pyiv.http.MemoryAsyncHttpClient property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryHttpClient.requests">(pyiv.http.MemoryHttpClient property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient.requests">(pyiv.MemoryAsyncHttpClient property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryHttpClient.requests">(pyiv.MemoryHttpClient property)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsClient">RequestsClient (in module pyiv_common)</a>
+
+      <ul>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsClient">(in module pyiv_common.network)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsHttpClient">RequestsHttpClient (class in pyiv_common)</a>
+
+      <ul>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsHttpClient">(class in pyiv_common.network)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Binder.require_explicit_bindings">require_explicit_bindings() (pyiv.Binder method)</a>
@@ -3404,8 +3749,6 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.set_echo">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.set_raw_mode">set_raw_mode() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -3438,6 +3781,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.set_time">(pyiv.SyntheticClock method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.SetMultibinder">SetMultibinder (class in pyiv)</a>
 
       <ul>
@@ -3564,6 +3909,80 @@
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.start_timer">(pyiv.SyntheticClock method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.status_code">status_code (pyiv.http.AsyncStreamResponse property)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.status_code">(pyiv.http.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.status_code">(pyiv.http.memory.StreamReply attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.status_code">(pyiv.http.response.AsyncStreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.status_code">(pyiv.http.response.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.status_code">(pyiv.http.response.StreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply.status_code">(pyiv.http.StreamReply attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.status_code">(pyiv.http.StreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.status_code">(pyiv.HttpResponse property)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.stream">stream() (pyiv.AsyncHttpClient method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.AsyncUrllibHttpClient.stream">(pyiv.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncHttpClient.stream">(pyiv.http.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncUrllibHttpClient.stream">(pyiv.http.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.AsyncHttpClient.stream">(pyiv.http.base.AsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient.stream">(pyiv.http.base.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.AsyncUrllibHttpClient.stream">(pyiv.http.clients.AsyncUrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.UrllibHttpClient.stream">(pyiv.http.clients.UrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.stream">(pyiv.http.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryAsyncHttpClient.stream">(pyiv.http.memory.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryHttpClient.stream">(pyiv.http.memory.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryAsyncHttpClient.stream">(pyiv.http.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.MemoryHttpClient.stream">(pyiv.http.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.UrllibHttpClient.stream">(pyiv.http.UrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpClient.stream">(pyiv.HttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient.stream">(pyiv.MemoryAsyncHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryHttpClient.stream">(pyiv.MemoryHttpClient method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.UrllibHttpClient.stream">(pyiv.UrllibHttpClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsHttpClient.stream">(pyiv_common.network.RequestsHttpClient method)</a>
+</li>
+        <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsHttpClient.stream">(pyiv_common.RequestsHttpClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply">StreamReply (class in pyiv.http)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply">(class in pyiv.http.memory)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse">StreamResponse (class in pyiv.http)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse">(class in pyiv.http.response)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock">SyntheticClock (class in pyiv)</a>
 
       <ul>
@@ -3590,6 +4009,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.console.html#pyiv.console.WriteEvent.text">(pyiv.console.WriteEvent attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.text">(pyiv.http.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.text">(pyiv.http.response.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.text">(pyiv.HttpResponse property)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Clock.thread_sleep">thread_sleep() (pyiv.Clock method)</a>
@@ -3620,14 +4045,14 @@
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.time">(pyiv.SyntheticClock method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Timer">Timer (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.Timer">(class in pyiv.clock)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.TerminalEvent.timestamp">timestamp (pyiv.console.TerminalEvent attribute)</a>
 </li>
       <li><a href="pyiv/pyiv.binder.html#pyiv.binder.BindingBuilder.to">to() (pyiv.binder.BindingBuilder method)</a>
@@ -3696,8 +4121,6 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.underline">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem.unlink">unlink() (pyiv.Filesystem method)</a>
 
       <ul>
@@ -3710,6 +4133,40 @@
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.unlink">(pyiv.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.unlink">(pyiv.RealFilesystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.url">url (pyiv.http.AsyncStreamResponse property)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.url">(pyiv.http.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest.url">(pyiv.http.memory.RecordedRequest attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.url">(pyiv.http.memory.StreamReply attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest.url">(pyiv.http.RecordedRequest attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.url">(pyiv.http.response.AsyncStreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.url">(pyiv.http.response.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.StreamResponse.url">(pyiv.http.response.StreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply.url">(pyiv.http.StreamReply attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.url">(pyiv.http.StreamResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.url">(pyiv.HttpResponse property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.UrllibHttpClient">UrllibHttpClient (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.UrllibHttpClient">(class in pyiv.http)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.UrllibHttpClient">(class in pyiv.http.clients)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Binder.use_version_parser">use_version_parser() (pyiv.Binder method)</a>

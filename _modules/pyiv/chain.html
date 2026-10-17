@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.chain &mdash; pyiv 0.4.3 documentation</title>
+  <title>pyiv.chain &mdash; pyiv 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5bfaad31"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -97,9 +98,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.network.html">pyiv.network</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
@@ -168,22 +172,21 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ChainType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Category key for a family of chain-of-responsibility handlers.</span>
 
-<span class="sd">    **Why this exists:** SerDe, network clients, and other pluggable handlers</span>
-<span class="sd">    share the same registration/injection machinery but must not collide.</span>
-<span class="sd">    ``ChainType`` namespaces those registries (encoding vs network, …).</span>
+<span class="sd">    **Why this exists:** SerDe and other pluggable handlers share the same</span>
+<span class="sd">    registration/injection machinery but must not collide. ``ChainType``</span>
+<span class="sd">    namespaces those registries (encoding vs hashing, …).</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from pyiv.chain import ChainType</span>
 <span class="sd">        &gt;&gt;&gt; ChainType.ENCODING.value</span>
 <span class="sd">        'encoding'</span>
-<span class="sd">        &gt;&gt;&gt; ChainType.NETWORK_CLIENT.value</span>
-<span class="sd">        'network_client'</span>
+<span class="sd">        &gt;&gt;&gt; ChainType.HASHING.value</span>
+<span class="sd">        'hashing'</span>
 <span class="sd">    """</span>
 
     <span class="n">ENCODING</span> <span class="o">=</span> <span class="s2">"encoding"</span>
     <span class="n">HASHING</span> <span class="o">=</span> <span class="s2">"hashing"</span>
-    <span class="n">SORTING</span> <span class="o">=</span> <span class="s2">"sorting"</span>
-    <span class="n">NETWORK_CLIENT</span> <span class="o">=</span> <span class="s2">"network_client"</span></div>
+    <span class="n">SORTING</span> <span class="o">=</span> <span class="s2">"sorting"</span></div>
 
 
 

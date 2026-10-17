@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.chain &mdash; pyiv 0.4.3 documentation</title>
+  <title>pyiv.chain &mdash; pyiv 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=981266f8" />
@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5bfaad31"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -100,9 +101,12 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pyiv.network.html">pyiv.network</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyiv.network.base.html">pyiv.network.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyiv.network.clients.html">pyiv.network.clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
@@ -232,15 +236,15 @@ on <code class="docutils literal notranslate"><span class="pre">Config</span></c
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.chain.</span></span><span class="sig-name descname"><span class="pre">ChainType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/chain.html#ChainType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.chain.ChainType" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p>Category key for a family of chain-of-responsibility handlers.</p>
-<p><strong>Why this exists:</strong> SerDe, network clients, and other pluggable handlers
-share the same registration/injection machinery but must not collide.
-<code class="docutils literal notranslate"><span class="pre">ChainType</span></code> namespaces those registries (encoding vs network, …).</p>
+<p><strong>Why this exists:</strong> SerDe and other pluggable handlers share the same
+registration/injection machinery but must not collide. <code class="docutils literal notranslate"><span class="pre">ChainType</span></code>
+namespaces those registries (encoding vs hashing, …).</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.chain</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChainType</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ChainType</span><span class="o">.</span><span class="n">ENCODING</span><span class="o">.</span><span class="n">value</span>
 <span class="go">'encoding'</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ChainType</span><span class="o">.</span><span class="n">NETWORK_CLIENT</span><span class="o">.</span><span class="n">value</span>
-<span class="go">'network_client'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ChainType</span><span class="o">.</span><span class="n">HASHING</span><span class="o">.</span><span class="n">value</span>
+<span class="go">'hashing'</span>
 </pre></div>
 </div>
 <dl class="py attribute">
@@ -251,11 +255,6 @@ share the same registration/injection machinery but must not collide.
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyiv.chain.ChainType.HASHING">
 <span class="sig-name descname"><span class="pre">HASHING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hashing'</span></em><a class="headerlink" href="#pyiv.chain.ChainType.HASHING" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyiv.chain.ChainType.NETWORK_CLIENT">
-<span class="sig-name descname"><span class="pre">NETWORK_CLIENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'network_client'</span></em><a class="headerlink" href="#pyiv.chain.ChainType.NETWORK_CLIENT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

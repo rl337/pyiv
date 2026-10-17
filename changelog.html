@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; pyiv 0.4.3 documentation</title>
+  <title>Changelog &mdash; pyiv 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=981266f8" />
@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5bfaad31"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
@@ -100,9 +101,12 @@
 <li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.network.html">pyiv.network</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.network.base.html">pyiv.network.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.network.clients.html">pyiv.network.clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
@@ -161,6 +165,13 @@ order. Install with <code class="docutils literal notranslate"><span class="pre"
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
 <ul class="simple">
+<li><p>:mod:<code class="docutils literal notranslate"><span class="pre">pyiv.http</span></code> — injectable <code class="docutils literal notranslate"><span class="pre">HttpClient</span></code> / <code class="docutils literal notranslate"><span class="pre">AsyncHttpClient</span></code> with
+typed <code class="docutils literal notranslate"><span class="pre">HttpResponse</span></code>, streaming, and <code class="docutils literal notranslate"><span class="pre">HttpError</span></code> / <code class="docutils literal notranslate"><span class="pre">HttpTimeoutError</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">HttpStatusError</span></code>. Stdlib <code class="docutils literal notranslate"><span class="pre">UrllibHttpClient</span></code> /
+<code class="docutils literal notranslate"><span class="pre">AsyncUrllibHttpClient</span></code> plus <code class="docutils literal notranslate"><span class="pre">MemoryHttpClient</span></code> test doubles.</p></li>
+<li><p>Guide page “Migrating from 0.x to 1.x”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyiv-common</span></code> <code class="docutils literal notranslate"><span class="pre">RequestsHttpClient</span></code> implementing <code class="docutils literal notranslate"><span class="pre">HttpClient</span></code>
+(<code class="docutils literal notranslate"><span class="pre">RequestsClient</span></code> remains an alias).</p></li>
 <li><p>Version-conditioned bindings on the fluent Binder:
 <code class="docutils literal notranslate"><span class="pre">for_version</span></code>, <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, and <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code>.</p></li>
 <li><p>:mod:<code class="docutils literal notranslate"><span class="pre">pyiv.version</span></code> — <code class="docutils literal notranslate"><span class="pre">VersionSource</span></code> / <code class="docutils literal notranslate"><span class="pre">VersionParser</span></code> protocols,
@@ -172,6 +183,14 @@ named parser registry (<code class="docutils literal notranslate"><span class="p
 <code class="docutils literal notranslate"><span class="pre">Pep440VersionParser</span></code> (raises subclasses of <code class="docutils literal notranslate"><span class="pre">InvalidVersion</span></code>).</p></li>
 <li><p>Guide page “Version-conditioned bindings” for env-stable selection,
 custom domains, and fallback rules.</p></li>
+</ul>
+</section>
+<section id="removed">
+<h3>Removed<a class="headerlink" href="#removed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pyiv.network</span></code> (<code class="docutils literal notranslate"><span class="pre">NetworkClient</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTPClient</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTPSClient</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">ChainType.NETWORK_CLIENT</span></code>. Use :mod:<code class="docutils literal notranslate"><span class="pre">pyiv.http</span></code> instead (see the
+0.x→1.x migration guide).</p></li>
 </ul>
 </section>
 </section>
