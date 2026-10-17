@@ -6,6 +6,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+## 1.0.0 - 2026-10-16
+
 ### Added
 
 - :mod:`pyiv.http` — injectable ``HttpClient`` / ``AsyncHttpClient`` with
