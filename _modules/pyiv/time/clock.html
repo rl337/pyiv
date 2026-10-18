@@ -1,25 +1,25 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.clock &mdash; pyiv 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=981266f8" />
+  <title>pyiv.time.clock &mdash; pyiv 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=981266f8" />
 
   
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8d563738"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -30,12 +30,12 @@
 
           
           
-          <a href="../../index.html" class="icon icon-home">
+          <a href="../../../index.html" class="icon icon-home">
             pyiv
-              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -44,88 +44,96 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/version-bindings.html">Version-conditioned bindings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/catalogs.html">Catalogs without registries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/version-bindings.html">Version-conditioned bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/catalogs.html">Catalogs without registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/hierarchy.html">Hierarchy and private modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/agent-skills.html">Agent skills for your project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.html">pyiv</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.config.html">pyiv.config</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.injector.html">pyiv.injector</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.binder.html">pyiv.binder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.key.html">pyiv.key</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.html">pyiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.config.html">pyiv.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.injector.html">pyiv.injector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.binder.html">pyiv.binder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.key.html">pyiv.key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.version.html">pyiv.version</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.members.html">pyiv.members</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Discovery</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.chain.html">pyiv.chain</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.command.html">pyiv.command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.chain.html">pyiv.chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.command.html">pyiv.command</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.console.html">pyiv.console</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.files.html">pyiv.files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.time.html">pyiv.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.log.html">pyiv.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.process.html">pyiv.process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.entropy.html">pyiv.entropy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.hashing.html">pyiv.hashing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.http.html">pyiv.http</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inspiration/stdlib-injectable-surfaces.html">Stdlib injectable surfaces (use-case catalog)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module listing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Module listing</a></li>
 </ul>
 
         </div>
@@ -134,16 +142,16 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #000000" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">pyiv</a>
+          <a href="../../../index.html">pyiv</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">pyiv.clock</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyiv.time.clock</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -152,7 +160,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for pyiv.clock</h1><div class="highlight"><pre>
+  <h1>Source code for pyiv.time.clock</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Clock abstraction for dependency injection.</span>
 
 <span class="sd">This module provides abstract interfaces and implementations for time-related</span>
@@ -190,7 +198,7 @@
 
 
 <div class="viewcode-block" id="Clock">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Clock">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Clock">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Clock</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Abstract clock interface for time operations.</span>
 
@@ -212,7 +220,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Clock.time">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Clock.time">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Clock.time">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get current time as seconds since epoch.</span>
@@ -224,7 +232,7 @@
 
 
 <div class="viewcode-block" id="Clock.sleep">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Clock.sleep">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Clock.sleep">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Sleep for specified duration.</span>
@@ -236,7 +244,7 @@
 
 
 <div class="viewcode-block" id="Clock.monotonic">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Clock.monotonic">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Clock.monotonic">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">monotonic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get monotonic time (not affected by system clock adjustments).</span>
@@ -248,7 +256,7 @@
 
 
 <div class="viewcode-block" id="Clock.thread_sleep">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Clock.thread_sleep">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Clock.thread_sleep">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thread_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Sleep in current thread.</span>
@@ -260,7 +268,7 @@
 
 
 <div class="viewcode-block" id="Clock.start_timer">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Clock.start_timer">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Clock.start_timer">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_timer</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">],</span> <span class="n">repeat</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -281,7 +289,7 @@
 
 
 <div class="viewcode-block" id="Timer">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Timer">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Timer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Timer</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Abstract handle for a scheduled callback.</span>
 
@@ -303,7 +311,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Timer.cancel">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Timer.cancel">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Timer.cancel">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Cancel the timer.</span>
@@ -315,7 +323,7 @@
 
 
 <div class="viewcode-block" id="Timer.is_active">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.Timer.is_active">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.Timer.is_active">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if timer is still active.</span>
@@ -329,7 +337,7 @@
 
 
 <div class="viewcode-block" id="RealClock">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealClock">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealClock">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RealClock</span><span class="p">(</span><span class="n">Clock</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Real clock implementation using standard library.</span>
 
@@ -348,7 +356,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="RealClock.time">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealClock.time">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealClock.time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get current time as seconds since epoch.</span>
 
@@ -359,7 +367,7 @@
 
 
 <div class="viewcode-block" id="RealClock.sleep">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealClock.sleep">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealClock.sleep">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Sleep for specified duration.</span>
 
@@ -370,7 +378,7 @@
 
 
 <div class="viewcode-block" id="RealClock.monotonic">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealClock.monotonic">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealClock.monotonic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">monotonic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get monotonic time (not affected by system clock adjustments).</span>
 
@@ -381,7 +389,7 @@
 
 
 <div class="viewcode-block" id="RealClock.thread_sleep">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealClock.thread_sleep">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealClock.thread_sleep">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">thread_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Sleep in current thread.</span>
 
@@ -392,7 +400,7 @@
 
 
 <div class="viewcode-block" id="RealClock.start_timer">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealClock.start_timer">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealClock.start_timer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_timer</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">],</span> <span class="n">repeat</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Timer"</span><span class="p">:</span>
@@ -423,7 +431,7 @@
 
 
 <div class="viewcode-block" id="RealTimer">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealTimer">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealTimer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RealTimer</span><span class="p">(</span><span class="n">Timer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Real timer implementation wrapping ``threading.Timer``.</span>
 
@@ -446,7 +454,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="RealTimer.__init__">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealTimer.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealTimer.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timer</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Initialize with threading.Timer.</span>
 
@@ -457,7 +465,7 @@
 
 
 <div class="viewcode-block" id="RealTimer.cancel">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealTimer.cancel">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealTimer.cancel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Cancel the timer.</span>
 
@@ -468,7 +476,7 @@
 
 
 <div class="viewcode-block" id="RealTimer.is_active">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.RealTimer.is_active">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.RealTimer.is_active">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if timer is active."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span></div>
@@ -477,7 +485,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SyntheticClock</span><span class="p">(</span><span class="n">Clock</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Synthetic clock for testing - allows manual time control.</span>
 
@@ -498,7 +506,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="SyntheticClock.__init__">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Initialize synthetic clock.</span>
 
@@ -512,7 +520,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock.time">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.time">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get current synthetic time.</span>
 
@@ -524,7 +532,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock.sleep">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.sleep">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.sleep">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Advance time instead of actually sleeping.</span>
 
@@ -535,7 +543,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock.monotonic">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.monotonic">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.monotonic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">monotonic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get monotonic time.</span>
 
@@ -547,7 +555,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock.thread_sleep">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.thread_sleep">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.thread_sleep">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">thread_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Advance time instead of actually sleeping.</span>
 
@@ -558,7 +566,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock.advance">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.advance">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.advance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Manually advance time.</span>
 
@@ -580,7 +588,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock.set_time">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.set_time">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.set_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Set the current time.</span>
 
@@ -593,7 +601,7 @@
 
 
 <div class="viewcode-block" id="SyntheticClock.start_timer">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticClock.start_timer">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticClock.start_timer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_timer</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">],</span> <span class="n">repeat</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"SyntheticTimer"</span><span class="p">:</span>
@@ -616,7 +624,7 @@
 
 
 <div class="viewcode-block" id="SyntheticTimer">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticTimer">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticTimer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SyntheticTimer</span><span class="p">(</span><span class="n">Timer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Synthetic timer driven by ``SyntheticClock`` time.</span>
 
@@ -640,7 +648,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="SyntheticTimer.__init__">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticTimer.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticTimer.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">clock</span><span class="p">:</span> <span class="n">SyntheticClock</span><span class="p">,</span>
@@ -679,7 +687,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="SyntheticTimer.cancel">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticTimer.cancel">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticTimer.cancel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Cancel the timer.</span>
 
@@ -690,7 +698,7 @@
 
 
 <div class="viewcode-block" id="SyntheticTimer.is_active">
-<a class="viewcode-back" href="../../pyiv/pyiv.clock.html#pyiv.SyntheticTimer.is_active">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.time.html#pyiv.SyntheticTimer.is_active">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if timer is active."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span></div>

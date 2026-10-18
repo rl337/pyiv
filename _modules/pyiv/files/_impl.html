@@ -1,25 +1,25 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.filesystem &mdash; pyiv 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=981266f8" />
+  <title>pyiv.files._impl &mdash; pyiv 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=981266f8" />
 
   
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8d563738"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -30,12 +30,12 @@
 
           
           
-          <a href="../../index.html" class="icon icon-home">
+          <a href="../../../index.html" class="icon icon-home">
             pyiv
-              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -44,88 +44,96 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/binding.html">Binding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/version-bindings.html">Version-conditioned bindings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/scopes.html">Scopes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/keys.html">Keys and collections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/catalogs.html">Catalogs without registries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/version-bindings.html">Version-conditioned bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/catalogs.html">Catalogs without registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/hierarchy.html">Hierarchy and private modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/agent-skills.html">Agent skills for your project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.html">pyiv</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.config.html">pyiv.config</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.injector.html">pyiv.injector</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.binder.html">pyiv.binder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.key.html">pyiv.key</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.override.html">pyiv.override</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.html">pyiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.config.html">pyiv.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.injector.html">pyiv.injector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.binder.html">pyiv.binder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.key.html">pyiv.key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.scope.html">pyiv.scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.provider.html">pyiv.provider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.override.html">pyiv.override</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.version.html">pyiv.version</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.members.html">pyiv.members</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.pep440.html">pyiv.pep440</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.multibinder.html">pyiv.multibinder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.members.html">pyiv.members</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.factory.html">pyiv.factory</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Discovery</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.chain.html">pyiv.chain</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.command.html">pyiv.command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.reflection.html">pyiv.reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.chain.html">pyiv.chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.command.html">pyiv.command</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.console.html">pyiv.console</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.files.html">pyiv.files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.time.html">pyiv.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.log.html">pyiv.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.process.html">pyiv.process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.entropy.html">pyiv.entropy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.hashing.html">pyiv.hashing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.serde.html">pyiv.serde</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.serde.base.html">pyiv.serde.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.serde.json.html">pyiv.serde.json</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.http.html">pyiv.http</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv/pyiv.http.response.html">pyiv.http.response</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inspiration/stdlib-injectable-surfaces.html">Stdlib injectable surfaces (use-case catalog)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module listing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Module listing</a></li>
 </ul>
 
         </div>
@@ -134,16 +142,16 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #000000" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">pyiv</a>
+          <a href="../../../index.html">pyiv</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">pyiv.filesystem</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyiv.files._impl</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -152,29 +160,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for pyiv.filesystem</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Filesystem abstraction for dependency injection.</span>
+  <h1>Source code for pyiv.files._impl</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Filesystem ABC plus Real and Memory implementations.</span>
 
-<span class="sd">This module provides abstract interfaces and implementations for file system</span>
-<span class="sd">operations, enabling dependency injection of file I/O for easier testing</span>
-<span class="sd">and platform abstraction.</span>
-
-<span class="sd">Architecture:</span>
-<span class="sd">    - Filesystem: Abstract base class defining file operations</span>
-<span class="sd">    - RealFilesystem: Production implementation using Python's pathlib/os</span>
-<span class="sd">    - MemoryFilesystem: Test implementation with in-memory file storage</span>
-
-<span class="sd">Usage:</span>
-<span class="sd">    For production code, use RealFilesystem which performs actual file</span>
-<span class="sd">    operations. For testing, use MemoryFilesystem which stores files</span>
-<span class="sd">    in memory without touching the disk.</span>
-
-<span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; from pyiv.filesystem import MemoryFilesystem</span>
-<span class="sd">        &gt;&gt;&gt; fs = MemoryFilesystem()</span>
-<span class="sd">        &gt;&gt;&gt; fs.write_text("test.txt", "test content")</span>
-<span class="sd">        &gt;&gt;&gt; fs.read_text("test.txt")</span>
-<span class="sd">        'test content'</span>
+<span class="sd">Prefer importing from ``pyiv.files``. ``pyiv.filesystem`` re-exports these</span>
+<span class="sd">types for compatibility.</span>
 <span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
@@ -186,7 +176,7 @@
 
 
 <div class="viewcode-block" id="Filesystem">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Filesystem</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Abstract filesystem for injectable file I/O.</span>
 
@@ -204,7 +194,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Filesystem.open">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.open">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.open">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -223,7 +213,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.exists">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.exists">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.exists">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if a path exists.</span>
@@ -238,7 +228,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.is_file">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.is_file">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.is_file">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path is a file.</span>
@@ -253,7 +243,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.is_dir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.is_dir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.is_dir">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path is a directory.</span>
@@ -268,7 +258,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.mkdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.mkdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.mkdir">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">parents</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">exist_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Create a directory.</span>
@@ -282,7 +272,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.rmdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.rmdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.rmdir">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rmdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove a directory.</span>
@@ -294,7 +284,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.unlink">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.unlink">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.unlink">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">missing_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove a file.</span>
@@ -307,7 +297,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.read_text">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.read_text">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.read_text">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read text from a file.</span>
@@ -323,7 +313,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.write_text">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.write_text">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.write_text">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write text to a file.</span>
@@ -337,7 +327,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.read_bytes">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.read_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.read_bytes">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read bytes from a file.</span>
@@ -352,7 +342,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.write_bytes">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.write_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.write_bytes">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write bytes to a file.</span>
@@ -365,7 +355,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.listdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.listdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.listdir">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">listdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List directory contents.</span>
@@ -380,7 +370,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.glob">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.glob">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.glob">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">glob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Glob pattern matching.</span>
@@ -395,7 +385,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.copy">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.copy">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.copy">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Copy a file.</span>
@@ -408,7 +398,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.move">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.move">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.move">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Move/rename a file or directory.</span>
@@ -421,7 +411,7 @@
 
 
 <div class="viewcode-block" id="Filesystem.get_size">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.get_size">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.get_size">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get file size in bytes.</span>
@@ -433,18 +423,49 @@
 <span class="sd">            File size in bytes</span>
 <span class="sd">        """</span>
         <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Filesystem.walk">
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.Filesystem.walk">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Walk directories yielding ``(dirpath, dirnames, filenames)``.</span>
+
+<span class="sd">        Default implementation uses ``listdir`` / ``is_dir`` / ``is_file``.</span>
+<span class="sd">        """</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">dirnames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">/</span> <span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">root</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
+            <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">root</span> <span class="o">!=</span> <span class="s2">"/"</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="n">name</span>
+            <span class="k">elif</span> <span class="n">root</span> <span class="o">==</span> <span class="s2">"/"</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">name</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(</span><span class="n">child</span><span class="p">):</span>
+                <span class="n">dirnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">child</span><span class="p">):</span>
+                <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dirnames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">root</span> <span class="o">==</span> <span class="s2">"/"</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">name</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">child</span><span class="p">)</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="RealFilesystem">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RealFilesystem</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Real filesystem implementation using the standard library.</span>
 
 <span class="sd">    Use this in production when you need actual disk I/O. Prefer</span>
 <span class="sd">    ``MemoryFilesystem`` in unit tests so examples and CI never write into</span>
-<span class="sd">    the working tree.</span>
+<span class="sd">    the working tree. Optional ``root=`` chroots all paths under a sandbox.</span>
 
 <span class="sd">    **Why this exists:** Production Filesystem that performs real disk I/O.</span>
 
@@ -452,7 +473,7 @@
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; import tempfile</span>
 <span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
-<span class="sd">        &gt;&gt;&gt; from pyiv.filesystem import RealFilesystem</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.files import RealFilesystem</span>
 <span class="sd">        &gt;&gt;&gt; fs = RealFilesystem()</span>
 <span class="sd">        &gt;&gt;&gt; with tempfile.TemporaryDirectory() as d:</span>
 <span class="sd">        ...     p = Path(d) / "hello.txt"</span>
@@ -461,8 +482,27 @@
 <span class="sd">        'hi'</span>
 <span class="sd">    """</span>
 
+<div class="viewcode-block" id="RealFilesystem.__init__">
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p</span>
+        <span class="c1"># Absolute paths are interpreted relative to the chroot root.</span>
+        <span class="n">rel</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+        <span class="n">resolved</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">/</span> <span class="n">rel</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resolved</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"path escapes filesystem root: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">return</span> <span class="n">resolved</span>
+
 <div class="viewcode-block" id="RealFilesystem.open">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.open">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.open">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">]:</span>
@@ -476,13 +516,14 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            File handle (TextIO for text modes, BinaryIO for binary modes)</span>
 <span class="sd">        """</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"b"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>  <span class="c1"># type: ignore[return-value]</span>
         <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>  <span class="c1"># type: ignore[return-value]</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.exists">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.exists">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.exists">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path exists.</span>
 
@@ -492,11 +533,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True if path exists, False otherwise</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.is_file">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.is_file">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.is_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path is a file.</span>
 
@@ -506,11 +547,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True if path is a file, False otherwise</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.is_dir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.is_dir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.is_dir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path is a directory.</span>
 
@@ -520,11 +561,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True if path is a directory, False otherwise</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.mkdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.mkdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.mkdir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">parents</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">exist_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Create a directory.</span>
 
@@ -533,22 +574,22 @@
 <span class="sd">            parents: Create parent directories if needed</span>
 <span class="sd">            exist_ok: Don't raise error if directory already exists</span>
 <span class="sd">        """</span>
-        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="n">parents</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="n">exist_ok</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="n">parents</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="n">exist_ok</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.rmdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.rmdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.rmdir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rmdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove a directory.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            path: Directory path to remove (must be empty)</span>
 <span class="sd">        """</span>
-        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">rmdir</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">rmdir</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.unlink">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.unlink">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.unlink">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">missing_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove a file.</span>
 
@@ -556,11 +597,11 @@
 <span class="sd">            path: File path to remove</span>
 <span class="sd">            missing_ok: Don't raise error if file doesn't exist</span>
 <span class="sd">        """</span>
-        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="n">missing_ok</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="n">missing_ok</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.read_text">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.read_text">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.read_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read text from a file.</span>
 
@@ -571,11 +612,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            File contents as string</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.write_text">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.write_text">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.write_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write text to a file.</span>
 
@@ -584,11 +625,11 @@
 <span class="sd">            content: Text content to write</span>
 <span class="sd">            encoding: Text encoding (default: utf-8)</span>
 <span class="sd">        """</span>
-        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.read_bytes">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.read_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.read_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read bytes from a file.</span>
 
@@ -598,11 +639,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            File contents as bytes</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.write_bytes">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.write_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.write_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write bytes to a file.</span>
 
@@ -610,11 +651,11 @@
 <span class="sd">            path: File path to write</span>
 <span class="sd">            content: Bytes content to write</span>
 <span class="sd">        """</span>
-        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.listdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.listdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.listdir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">listdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List directory contents.</span>
 
@@ -624,11 +665,11 @@
 <span class="sd">        Yields:</span>
 <span class="sd">            Directory entry names</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.glob">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.glob">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.glob">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">glob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Glob pattern matching.</span>
 
@@ -638,11 +679,12 @@
 <span class="sd">        Yields:</span>
 <span class="sd">            Matching paths</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span></div>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.copy">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.copy">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Copy a file.</span>
 
@@ -650,11 +692,11 @@
 <span class="sd">            src: Source file path</span>
 <span class="sd">            dst: Destination file path</span>
 <span class="sd">        """</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span></div>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.move">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.move">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.move">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Move/rename a file or directory.</span>
 
@@ -662,11 +704,11 @@
 <span class="sd">            src: Source path</span>
 <span class="sd">            dst: Destination path</span>
 <span class="sd">        """</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span></div>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">src</span><span class="p">)),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">dst</span><span class="p">)))</span></div>
 
 
 <div class="viewcode-block" id="RealFilesystem.get_size">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.get_size">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.RealFilesystem.get_size">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get file size in bytes.</span>
 
@@ -676,13 +718,13 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            File size in bytes</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="MemoryFilesystem">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MemoryFilesystem</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""In-memory filesystem for testing.</span>
 
@@ -691,7 +733,7 @@
 <span class="sd">    isolated.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; from pyiv.filesystem import MemoryFilesystem</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.files import MemoryFilesystem</span>
 <span class="sd">        &gt;&gt;&gt; fs = MemoryFilesystem()</span>
 <span class="sd">        &gt;&gt;&gt; fs.write_text("/notes/a.txt", "alpha")</span>
 <span class="sd">        &gt;&gt;&gt; fs.mkdir("/notes/sub", parents=True, exist_ok=True)</span>
@@ -702,7 +744,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="MemoryFilesystem.__init__">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Initialize in-memory filesystem."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -727,7 +769,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_dirs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MemoryFilesystem.open">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.open">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.open">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">]:</span>
@@ -776,7 +818,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.exists">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.exists">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.exists">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path exists.</span>
 
@@ -791,7 +833,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.is_file">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.is_file">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.is_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path is a file.</span>
 
@@ -806,7 +848,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.is_dir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.is_dir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.is_dir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check if path is a directory.</span>
 
@@ -821,7 +863,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.mkdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.mkdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.mkdir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">parents</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">exist_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Create a directory.</span>
 
@@ -853,7 +895,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.rmdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.rmdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.rmdir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rmdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove a directory.</span>
 
@@ -883,7 +925,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.unlink">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.unlink">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.unlink">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">missing_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove a file.</span>
 
@@ -903,7 +945,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.read_text">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.read_text">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.read_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read text from a file.</span>
 
@@ -924,7 +966,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.write_text">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.write_text">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.write_text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write text to a file.</span>
 
@@ -939,7 +981,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.read_bytes">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.read_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.read_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read bytes from a file.</span>
 
@@ -959,7 +1001,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.write_bytes">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.write_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.write_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write bytes to a file.</span>
 
@@ -973,7 +1015,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.listdir">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.listdir">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.listdir">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">listdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List directory contents.</span>
 
@@ -1010,7 +1052,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.glob">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.glob">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.glob">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">glob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Glob pattern matching (simplified).</span>
 
@@ -1031,7 +1073,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.copy">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.copy">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Copy a file.</span>
 
@@ -1053,7 +1095,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.move">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.move">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.move">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Move/rename a file or directory.</span>
 
@@ -1095,7 +1137,7 @@
 
 
 <div class="viewcode-block" id="MemoryFilesystem.get_size">
-<a class="viewcode-back" href="../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.get_size">[docs]</a>
+<a class="viewcode-back" href="../../../pyiv/pyiv.filesystem.html#pyiv.MemoryFilesystem.get_size">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get file size in bytes.</span>
 

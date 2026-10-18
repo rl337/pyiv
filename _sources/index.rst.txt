@@ -48,8 +48,8 @@ Key Features
    <p style="margin: 0;">Discover interface implementations in a package instead of listing every class by hand.</p>
    </div>
    <div style="padding: 20px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #0066cc;">
-   <h4 style="margin-top: 0; color: #0066cc;">Test doubles</h4>
-   <p style="margin: 0;">Clock, Filesystem, Console, and DateTimeService ship with in-memory implementations for tests.</p>
+   <h4 style="margin-top: 0; color: #0066cc;">Use-case stdlib doubles</h4>
+   <p style="margin: 0;">Injectable files (mount/zip/tar), time, console, logging, process/env, entropy, and HTTP — swap Real for Memory without patching builtins.</p>
    </div>
    <div style="padding: 20px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #0066cc;">
    <h4 style="margin-top: 0; color: #0066cc;">Zero dependencies</h4>
@@ -125,6 +125,7 @@ tests:
    Catalogs without registries <guide/catalogs>
    Hierarchy and private modules <guide/hierarchy>
    Testing with doubles <guide/testing>
+   Agent skills for your project <guide/agent-skills>
    Packages and extras <guide/packages>
    Migrating from 0.x to 1.x <guide/migrate-0-to-1>
 
@@ -173,10 +174,16 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
    :maxdepth: 1
    :caption: Test doubles
 
-   pyiv/pyiv.clock
+   pyiv/pyiv.files
    pyiv/pyiv.filesystem
-   pyiv/pyiv.console
+   pyiv/pyiv.time
+   pyiv/pyiv.clock
    pyiv/pyiv.datetime_service
+   pyiv/pyiv.console
+   pyiv/pyiv.log
+   pyiv/pyiv.process
+   pyiv/pyiv.entropy
+   pyiv/pyiv.hashing
 
 .. toctree::
    :maxdepth: 1
@@ -199,6 +206,7 @@ docstrings in the ``pyiv`` package; doctests in those docstrings are run in CI.
 
    inspiration/plugin-catalog-discovery-inspiration
    inspiration/package-version-conditional-bindings
+   inspiration/stdlib-injectable-surfaces
 
 .. toctree::
    :maxdepth: 1

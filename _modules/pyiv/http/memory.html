@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.http.memory &mdash; pyiv 1.0.0 documentation</title>
+  <title>pyiv.http.memory &mdash; pyiv 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/agent-skills.html">Agent skills for your project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/packages.html">Packages and extras</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
@@ -85,10 +86,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.files.html">pyiv.files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.time.html">pyiv.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.log.html">pyiv.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.process.html">pyiv.process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.entropy.html">pyiv.entropy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyiv/pyiv.hashing.html">pyiv.hashing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
 <ul>
@@ -121,6 +128,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inspiration/stdlib-injectable-surfaces.html">Stdlib injectable surfaces (use-case catalog)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -181,28 +189,45 @@
 
 <div class="viewcode-block" id="RecordedRequest">
 <a class="viewcode-back" href="../../../pyiv/pyiv.http.memory.html#pyiv.RecordedRequest">[docs]</a>
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RecordedRequest</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""A request captured by ``MemoryHttpClient`` / ``MemoryAsyncHttpClient``."""</span>
+<span class="w">    </span><span class="sd">"""A request captured by ``MemoryHttpClient`` / ``MemoryAsyncHttpClient``.</span>
+
+<span class="sd">    **Why this exists:** Frozen DTO for assertions and host Settings nesting</span>
+<span class="sd">    without a pydantic dependency.</span>
+<span class="sd">    """</span>
 
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
-    <span class="n">body</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">body</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"headers"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="StreamReply">
 <a class="viewcode-back" href="../../../pyiv/pyiv.http.memory.html#pyiv.StreamReply">[docs]</a>
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">StreamReply</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Canned streaming body for memory clients."""</span>
+<span class="w">    </span><span class="sd">"""Canned streaming body for memory clients.</span>
+
+<span class="sd">    **Why this exists:** Frozen canned-response bag for memory HTTP doubles.</span>
+<span class="sd">    """</span>
 
     <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
     <span class="n">lines</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">chunks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span></div>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"headers"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"lines"</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"chunks"</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">))</span></div>
 
 
 
@@ -308,8 +333,11 @@
 
 <div class="viewcode-block" id="MemoryHttpClient.__init__">
 <a class="viewcode-back" href="../../../pyiv/pyiv.http.memory.html#pyiv.MemoryHttpClient.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Untyped optionals: Mapping/Dict annotations are not DI-injectable.</span>
+        <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base_url</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">base_url</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">headers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="o">=</span> <span class="n">_MemoryStore</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span></div>
 
 
@@ -416,8 +444,10 @@
 
 <div class="viewcode-block" id="MemoryAsyncHttpClient.__init__">
 <a class="viewcode-back" href="../../../pyiv/pyiv.http.memory.html#pyiv.MemoryAsyncHttpClient.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_client</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sync</span> <span class="o">=</span> <span class="n">sync_client</span> <span class="ow">or</span> <span class="n">MemoryHttpClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync</span> <span class="o">=</span> <span class="n">sync_client</span> <span class="ow">or</span> <span class="n">MemoryHttpClient</span><span class="p">(</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span>
+        <span class="p">)</span></div>
 
 
     <span class="nd">@property</span>

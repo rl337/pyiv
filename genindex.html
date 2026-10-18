@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; pyiv 1.0.0 documentation</title>
+  <title>Index &mdash; pyiv 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="_static/favicon.ico"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/documentation_options.js?v=292eb321"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/agent-skills.html">Agent skills for your project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
@@ -85,10 +86,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.files.html">pyiv.files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.time.html">pyiv.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.clock.html">pyiv.clock</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.log.html">pyiv.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.process.html">pyiv.process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.entropy.html">pyiv.entropy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv/pyiv.hashing.html">pyiv.hashing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
 <ul>
@@ -121,6 +128,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspiration/stdlib-injectable-surfaces.html">Stdlib injectable surfaces (use-case catalog)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -182,6 +190,7 @@
  | <a href="#W"><strong>W</strong></a>
  | <a href="#X"><strong>X</strong></a>
  | <a href="#Y"><strong>Y</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="_">_</h2>
@@ -222,6 +231,8 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.CommandRunner.__init__">(pyiv.CommandRunner method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.CompletedProcess.__init__">(pyiv.CompletedProcess method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Config.__init__">(pyiv.Config method)</a>
 </li>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.__init__">(pyiv.config.Config method)</a>
@@ -260,7 +271,11 @@
 </li>
         <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.MockDateTimeService.__init__">(pyiv.datetime_service.MockDateTimeService method)</a>
 </li>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.SyntheticEntropy.__init__">(pyiv.entropy.SyntheticEntropy method)</a>
+</li>
         <li><a href="pyiv/pyiv.errors.html#pyiv.errors.CreationError.__init__">(pyiv.errors.CreationError method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ExitStatus.__init__">(pyiv.ExitStatus method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Factory.__init__">(pyiv.Factory method)</a>
 </li>
@@ -272,9 +287,27 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.FileConsole.__init__">(pyiv.FileConsole method)</a>
 </li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.__init__">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.__init__">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.__init__">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountPoint.__init__">(pyiv.files.MountPoint method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.__init__">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.__init__">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.__init__">(pyiv.files.ZipFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.__init__">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.__init__">(pyiv.filesystem.RealFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.FixedPythonVersionProvider.__init__">(pyiv.FixedPythonVersionProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.SyntheticHasher.__init__">(pyiv.hashing.SyntheticHasher method)</a>
 </li>
         <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.__init__">(pyiv.http.AsyncStreamResponse method)</a>
 </li>
@@ -285,6 +318,8 @@
         <li><a href="pyiv/pyiv.http.clients.html#pyiv.http.clients.UrllibHttpClient.__init__">(pyiv.http.clients.UrllibHttpClient method)</a>
 </li>
         <li><a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpStatusError.__init__">(pyiv.http.errors.HttpStatusError method)</a>
+</li>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions.__init__">(pyiv.http.HttpClientOptions method)</a>
 </li>
         <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.__init__">(pyiv.http.HttpResponse method)</a>
 </li>
@@ -342,7 +377,25 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.ListMultibinder.__init__">(pyiv.ListMultibinder method)</a>
 </li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.__init__">(pyiv.log.LogOptions method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogRecord.__init__">(pyiv.log.LogRecord method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogSetup.__init__">(pyiv.log.LogSetup method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogger.__init__">(pyiv.log.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLoggerFactory.__init__">(pyiv.log.MemoryLoggerFactory method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger.__init__">(pyiv.log.StdlibLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.__init__">(pyiv.LogOptions method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.LogSetup.__init__">(pyiv.LogSetup method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MapMultibinder.__init__">(pyiv.MapMultibinder method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.__init__">(pyiv.MappingFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MapVersionSource.__init__">(pyiv.MapVersionSource method)</a>
 </li>
@@ -354,17 +407,31 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MembersInjector.__init__">(pyiv.MembersInjector method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryArgv.__init__">(pyiv.MemoryArgv method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient.__init__">(pyiv.MemoryAsyncHttpClient method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryConsole.__init__">(pyiv.MemoryConsole method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryEnvironment.__init__">(pyiv.MemoryEnvironment method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.__init__">(pyiv.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryHttpClient.__init__">(pyiv.MemoryHttpClient method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLogger.__init__">(pyiv.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLoggerFactory.__init__">(pyiv.MemoryLoggerFactory method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryProcessRunner.__init__">(pyiv.MemoryProcessRunner method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MockConsole.__init__">(pyiv.MockConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MockDateTimeService.__init__">(pyiv.MockDateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.__init__">(pyiv.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountPoint.__init__">(pyiv.MountPoint method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Multibinder.__init__">(pyiv.Multibinder method)</a>
 </li>
@@ -392,6 +459,18 @@
 </li>
         <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Version.__init__">(pyiv.pep440.Version method)</a>
 </li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.CompletedProcess.__init__">(pyiv.process.CompletedProcess method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.ExitStatus.__init__">(pyiv.process.ExitStatus method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryArgv.__init__">(pyiv.process.MemoryArgv method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryEnvironment.__init__">(pyiv.process.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryProcessRunner.__init__">(pyiv.process.MemoryProcessRunner method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions.__init__">(pyiv.process.RunOptions method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Provider.__init__">(pyiv.Provider method)</a>
 </li>
         <li><a href="pyiv/pyiv.provider.html#pyiv.provider.FactoryProvider.__init__">(pyiv.provider.FactoryProvider method)</a>
@@ -410,9 +489,13 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.__init__">(pyiv.RealConsole method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.__init__">(pyiv.RealFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.reflection.html#pyiv.reflection.ReflectionConfig.__init__">(pyiv.reflection.ReflectionConfig method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.ReflectionConfig.__init__">(pyiv.ReflectionConfig method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RunOptions.__init__">(pyiv.RunOptions method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Scope.__init__">(pyiv.Scope method)</a>
 </li>
@@ -426,7 +509,23 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SingletonScope.__init__">(pyiv.SingletonScope method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger.__init__">(pyiv.StdlibLogger method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.__init__">(pyiv.SyntheticClock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SyntheticEntropy.__init__">(pyiv.SyntheticEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SyntheticHasher.__init__">(pyiv.SyntheticHasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.__init__">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.MockDateTimeService.__init__">(pyiv.time.MockDateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealTimer.__init__">(pyiv.time.RealTimer method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.__init__">(pyiv.time.SyntheticClock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticTimer.__init__">(pyiv.time.SyntheticTimer method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.UrllibHttpClient.__init__">(pyiv.UrllibHttpClient method)</a>
 </li>
@@ -449,6 +548,8 @@
         <li><a href="pyiv/pyiv.html#pyiv.VersionParser.__init__">(pyiv.VersionParser method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.VersionSource.__init__">(pyiv.VersionSource method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.__init__">(pyiv.ZipFilesystem method)</a>
 </li>
         <li><a href="pyiv_common/pyiv_common.network.html#pyiv_common.network.RequestsHttpClient.__init__">(pyiv_common.network.RequestsHttpClient method)</a>
 </li>
@@ -539,8 +640,16 @@
         <li><a href="pyiv/pyiv.html#pyiv.SetMultibinder.add_instance">(pyiv.SetMultibinder method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.add_logging_args">add_logging_args() (in module pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.add_logging_args">(in module pyiv.log)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Command.add_logging_args">(pyiv.Command class method)</a>
+</li>
+        <li><a href="pyiv/pyiv.command.html#pyiv.command.Command.add_logging_args">(pyiv.command.Command class method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.add_version_candidate">add_version_candidate() (pyiv.Config method)</a>
 
       <ul>
@@ -552,7 +661,11 @@
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.advance">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.advance">(pyiv.time.SyntheticClock method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.aiter_bytes">aiter_bytes() (pyiv.http.AsyncStreamResponse method)</a>
 
       <ul>
@@ -565,10 +678,74 @@
         <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.AsyncStreamResponse.aiter_lines">(pyiv.http.response.AsyncStreamResponse method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.allow_prefixes">allow_prefixes (pyiv.log.LogOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.allow_prefixes">(pyiv.LogOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogSetup.apply">apply() (pyiv.log.LogSetup method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogSetup.apply">(pyiv.log.MemoryLogSetup method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.LogSetup.apply">(pyiv.LogSetup method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLogSetup.apply">(pyiv.MemoryLogSetup method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.apply_version_selection">apply_version_selection() (pyiv.Config method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.apply_version_selection">(pyiv.config.Config method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Argv.args">args (pyiv.Argv property)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.CompletedProcess.args">(pyiv.CompletedProcess attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryArgv.args">(pyiv.MemoryArgv property)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Argv.args">(pyiv.process.Argv property)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.CompletedProcess.args">(pyiv.process.CompletedProcess attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryArgv.args">(pyiv.process.MemoryArgv property)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.SysArgv.args">(pyiv.process.SysArgv property)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SysArgv.args">(pyiv.SysArgv property)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Argv">Argv (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Argv">(class in pyiv.process)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Environment.as_dict">as_dict() (pyiv.Environment method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions.as_dict">(pyiv.http.HttpClientOptions method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.as_dict">(pyiv.log.LogOptions method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.as_dict">(pyiv.LogOptions method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryEnvironment.as_dict">(pyiv.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.OsEnvironment.as_dict">(pyiv.OsEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Environment.as_dict">(pyiv.process.Environment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryEnvironment.as_dict">(pyiv.process.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.OsEnvironment.as_dict">(pyiv.process.OsEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions.as_dict">(pyiv.process.RunOptions method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RunOptions.as_dict">(pyiv.RunOptions method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient">AsyncHttpClient (class in pyiv)</a>
@@ -613,6 +790,8 @@
         <li><a href="pyiv/pyiv.serde.encodings.html#pyiv.serde.encodings.Base64SerDe">(class in pyiv.serde.encodings)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions.base_url">base_url (pyiv.http.HttpClientOptions attribute)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole">BaseConsole (class in pyiv)</a>
 
       <ul>
@@ -712,6 +891,12 @@
 </li>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.Timer.cancel">(pyiv.clock.Timer method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealTimer.cancel">(pyiv.time.RealTimer method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticTimer.cancel">(pyiv.time.SyntheticTimer method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Timer.cancel">(pyiv.time.Timer method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Timer.cancel">(pyiv.Timer method)</a>
 </li>
       </ul></li>
@@ -743,6 +928,26 @@
 
       <ul>
         <li><a href="pyiv/pyiv.chain.html#pyiv.chain.ChainType">(class in pyiv.chain)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions.check">check (pyiv.process.RunOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.RunOptions.check">(pyiv.RunOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Entropy.choice">choice() (pyiv.Entropy method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.Entropy.choice">(pyiv.entropy.Entropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.RealEntropy.choice">(pyiv.entropy.RealEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.SyntheticEntropy.choice">(pyiv.entropy.SyntheticEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RealEntropy.choice">(pyiv.RealEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SyntheticEntropy.choice">(pyiv.SyntheticEntropy method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.chunks">chunks (pyiv.http.memory.StreamReply attribute)</a>
@@ -857,18 +1062,20 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.clear_to_end_of_line">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.CLICommand">CLICommand (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.command.html#pyiv.command.CLICommand">(class in pyiv.command)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Clock">Clock (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.Clock">(class in pyiv.clock)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Clock">(class in pyiv.time)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.FileConsole.close">close() (pyiv.console.FileConsole method)</a>
@@ -899,6 +1106,12 @@
         <li><a href="pyiv_common/pyiv_common.html#pyiv_common.RequestsHttpClient.close">(pyiv_common.RequestsHttpClient method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.ExitStatus.code">code (pyiv.ExitStatus attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.ExitStatus.code">(pyiv.process.ExitStatus attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.ColorChangeEvent">ColorChangeEvent (class in pyiv.console)</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.Command">Command (class in pyiv)</a>
@@ -911,6 +1124,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.command.html#pyiv.command.CommandRunner">(class in pyiv.command)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.CompletedProcess">CompletedProcess (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.CompletedProcess">(class in pyiv.process)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config">Config (class in pyiv)</a>
@@ -931,6 +1150,12 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.configure">(pyiv.config.Config method)</a>
 </li>
         <li><a href="pyiv/pyiv.override.html#pyiv.override.OverriddenConfig.configure">(pyiv.override.OverriddenConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Command.configure_logging_from_args">configure_logging_from_args() (pyiv.Command method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.command.html#pyiv.command.Command.configure_logging_from_args">(pyiv.command.Command method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Console">Console (class in pyiv)</a>
@@ -965,18 +1190,40 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.contribute_map_entries">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.copy">copy() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.copy">copy() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.copy">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.copy">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.copy">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.copy">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.copy">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.copy">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.copy">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.copy">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.copy">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.copy">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.copy">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.copy">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.copy">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.copy">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.copy">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.copy">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseFactory.create">create() (pyiv.BaseFactory method)</a>
@@ -1009,6 +1256,12 @@
 </li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.CursorMoveEvent">CursorMoveEvent (class in pyiv.console)</a>
 </li>
+      <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions.cwd">cwd (pyiv.process.RunOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.RunOptions.cwd">(pyiv.RunOptions attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1019,6 +1272,28 @@
 
       <ul>
         <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.DateTimeService">(class in pyiv.datetime_service)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.DateTimeService">(class in pyiv.time)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.Logger.debug">debug() (pyiv.log.Logger method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogger.debug">(pyiv.log.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger.debug">(pyiv.log.StdlibLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Logger.debug">(pyiv.Logger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLogger.debug">(pyiv.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger.debug">(pyiv.StdlibLogger method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.key.html#pyiv.key.Named.default">default (pyiv.key.Named attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Named.default">(pyiv.Named attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.version.html#pyiv.version.default_version_parsers">default_version_parsers() (in module pyiv.version)</a>
@@ -1035,6 +1310,12 @@
         <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClient.delete">(pyiv.http.HttpClient method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.HttpClient.delete">(pyiv.HttpClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.deny_prefixes">deny_prefixes (pyiv.log.LogOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.deny_prefixes">(pyiv.LogOptions attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Base64SerDe.deserialize">deserialize() (pyiv.Base64SerDe method)</a>
@@ -1089,6 +1370,20 @@
         <li><a href="pyiv/pyiv.stage.html#id0">(pyiv.stage.Stage attribute)</a>, <a href="pyiv/pyiv.stage.html#pyiv.stage.Stage.DEVELOPMENT">[1]</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Hasher.digest">digest() (pyiv.Hasher method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.Hasher.digest">(pyiv.hashing.Hasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.RealHasher.digest">(pyiv.hashing.RealHasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.SyntheticHasher.digest">(pyiv.hashing.SyntheticHasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RealHasher.digest">(pyiv.RealHasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SyntheticHasher.digest">(pyiv.SyntheticHasher method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.command.html#pyiv.command.CommandRunner.discover_commands">discover_commands() (pyiv.command.CommandRunner method)</a>
 
       <ul>
@@ -1121,6 +1416,12 @@
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.EchoChangeEvent">EchoChangeEvent (class in pyiv.console)</a>
 </li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.effective_level">effective_level() (pyiv.log.LogOptions method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.effective_level">(pyiv.LogOptions method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.EchoChangeEvent.enabled">enabled (pyiv.console.EchoChangeEvent attribute)</a>
 
       <ul>
@@ -1133,8 +1434,54 @@
         <li><a href="pyiv/pyiv.html#pyiv.ChainType.ENCODING">(pyiv.ChainType attribute)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Entropy">Entropy (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.Entropy">(class in pyiv.entropy)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions.env">env (pyiv.process.RunOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.RunOptions.env">(pyiv.RunOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Environment">Environment (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Environment">(class in pyiv.process)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.Logger.error">error() (pyiv.log.Logger method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogger.error">(pyiv.log.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger.error">(pyiv.log.StdlibLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Logger.error">(pyiv.Logger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLogger.error">(pyiv.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger.error">(pyiv.StdlibLogger method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.TerminalEvent.event_type">event_type (pyiv.console.TerminalEvent attribute)</a>
 </li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.Logger.exception">exception() (pyiv.log.Logger method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogger.exception">(pyiv.log.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger.exception">(pyiv.log.StdlibLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Logger.exception">(pyiv.Logger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLogger.exception">(pyiv.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger.exception">(pyiv.StdlibLogger method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.CLICommand.execute">execute() (pyiv.CLICommand method)</a>
 
       <ul>
@@ -1151,18 +1498,60 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.exists">exists() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.exists">exists() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.exists">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.exists">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.exists">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.exists">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.exists">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.exists">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.exists">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.exists">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.exists">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.exists">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.exists">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.exists">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.exists">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.exists">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.exists">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.exists">(pyiv.ZipFilesystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Argv.exit">exit() (pyiv.Argv method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryArgv.exit">(pyiv.MemoryArgv method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Argv.exit">(pyiv.process.Argv method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryArgv.exit">(pyiv.process.MemoryArgv method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.SysArgv.exit">(pyiv.process.SysArgv method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SysArgv.exit">(pyiv.SysArgv method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.ExitStatus">ExitStatus (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.ExitStatus">(class in pyiv.process)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Binder.expose">expose() (pyiv.Binder method)</a>
@@ -1210,7 +1599,15 @@
       <li><a href="pyiv/pyiv.html#pyiv.Filesystem">Filesystem (class in pyiv)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem">(class in pyiv.files)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem">(class in pyiv.filesystem)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.MountPoint.filesystem">filesystem (pyiv.files.MountPoint attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MountPoint.filesystem">(pyiv.MountPoint attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.SpecifierSet.filter">filter() (pyiv.pep440.SpecifierSet method)</a>
@@ -1285,6 +1682,20 @@
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.for_version">(pyiv.BindingBuilder method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.format_style">format_style (pyiv.log.LogOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.format_style">(pyiv.LogOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions.from_dict">from_dict() (pyiv.http.HttpClientOptions class method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.from_dict">(pyiv.log.LogOptions class method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.from_dict">(pyiv.LogOptions class method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1295,6 +1706,8 @@
 
       <ul>
         <li><a href="pyiv/pyiv.html#pyiv.BaseProvider.get">(pyiv.BaseProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Environment.get">(pyiv.Environment method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.FactoryProvider.get">(pyiv.FactoryProvider method)</a>
 </li>
@@ -1314,7 +1727,27 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.InstanceProvider.get">(pyiv.InstanceProvider method)</a>
 </li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LoggerFactory.get">(pyiv.log.LoggerFactory method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLoggerFactory.get">(pyiv.log.MemoryLoggerFactory method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLoggerFactory.get">(pyiv.log.StdlibLoggerFactory method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.LoggerFactory.get">(pyiv.LoggerFactory method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryEnvironment.get">(pyiv.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLoggerFactory.get">(pyiv.MemoryLoggerFactory method)</a>
+</li>
         <li><a href="pyiv/pyiv.optional.html#pyiv.optional.OptionalProvider.get">(pyiv.optional.OptionalProvider method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.OsEnvironment.get">(pyiv.OsEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Environment.get">(pyiv.process.Environment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryEnvironment.get">(pyiv.process.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.OsEnvironment.get">(pyiv.process.OsEnvironment method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.Provider.get">(pyiv.Provider method)</a>
 </li>
@@ -1329,6 +1762,8 @@
         <li><a href="pyiv/pyiv.provider.html#pyiv.provider.Provider.get">(pyiv.provider.Provider method)</a>
 </li>
         <li><a href="pyiv/pyiv.singleton.html#pyiv.singleton.GlobalSingletonRegistry.get">(pyiv.singleton.GlobalSingletonRegistry class method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLoggerFactory.get">(pyiv.StdlibLoggerFactory method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Command.get_aliases">get_aliases() (pyiv.Command class method)</a>
@@ -1553,8 +1988,6 @@
         <li><a href="pyiv/pyiv.command.html#pyiv.command.Command.get_name">(pyiv.command.Command class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.get_named_bindings">get_named_bindings() (pyiv.Config method)</a>
 
       <ul>
@@ -1573,6 +2006,8 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.get_provider">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.get_raw_mode">get_raw_mode() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -1694,6 +2129,20 @@
 </li>
         <li><a href="pyiv/pyiv.console.html#pyiv.console.RealConsole.get_size">(pyiv.console.RealConsole method)</a>
 </li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.get_size">(pyiv.files.Filesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.get_size">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.get_size">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.get_size">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.get_size">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.get_size">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.get_size">(pyiv.files.ZipFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Filesystem.get_size">(pyiv.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.get_size">(pyiv.filesystem.Filesystem method)</a>
@@ -1702,15 +2151,23 @@
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.get_size">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.get_size">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.get_size">(pyiv.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.MockConsole.get_size">(pyiv.MockConsole method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.get_size">(pyiv.MountFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.PTYConsole.get_size">(pyiv.PTYConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.get_size">(pyiv.RealConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.get_size">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.get_size">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.get_size">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.get_style">get_style() (pyiv.BaseConsole method)</a>
@@ -1783,18 +2240,40 @@
         <li><a href="pyiv/pyiv.html#pyiv.MemoryConsole.getvalue">(pyiv.MemoryConsole method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.glob">glob() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.glob">glob() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.glob">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.glob">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.glob">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.glob">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.glob">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.glob">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.glob">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.glob">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.glob">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.glob">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.glob">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.glob">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.glob">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.glob">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.glob">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.glob">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.singleton.html#id0">GLOBAL_SINGLETON (pyiv.singleton.SingletonType attribute)</a>, <a href="pyiv/pyiv.singleton.html#pyiv.singleton.SingletonType.GLOBAL_SINGLETON">[1]</a>
@@ -1903,14 +2382,20 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.has_chain_handler_registration_by_name">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.has_registration">has_registration() (pyiv.Config method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.has_registration">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Hasher">Hasher (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.Hasher">(class in pyiv.hashing)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.chain.html#pyiv.chain.ChainType.HASHING">HASHING (pyiv.chain.ChainType attribute)</a>
 
       <ul>
@@ -1920,6 +2405,8 @@
       <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.headers">headers (pyiv.http.AsyncStreamResponse property)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions.headers">(pyiv.http.HttpClientOptions attribute)</a>
+</li>
         <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpResponse.headers">(pyiv.http.HttpResponse property)</a>
 </li>
         <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest.headers">(pyiv.http.memory.RecordedRequest attribute)</a>
@@ -1963,6 +2450,20 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.hide_cursor">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Hasher.hmac_digest">hmac_digest() (pyiv.Hasher method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.Hasher.hmac_digest">(pyiv.hashing.Hasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.RealHasher.hmac_digest">(pyiv.hashing.RealHasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.SyntheticHasher.hmac_digest">(pyiv.hashing.SyntheticHasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RealHasher.hmac_digest">(pyiv.RealHasher method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SyntheticHasher.hmac_digest">(pyiv.SyntheticHasher method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.HttpClient">HttpClient (class in pyiv)</a>
 
       <ul>
@@ -1971,6 +2472,8 @@
         <li><a href="pyiv/pyiv.http.base.html#pyiv.http.base.HttpClient">(class in pyiv.http.base)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions">HttpClientOptions (class in pyiv.http)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.HttpError">HttpError</a>, <a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpError">[1]</a>, <a href="pyiv/pyiv.http.html#pyiv.http.HttpError">[2]</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.HttpResponse">HttpResponse (class in pyiv)</a>
@@ -1981,6 +2484,8 @@
         <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse">(class in pyiv.http.response)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions.https_only">https_only (pyiv.http.HttpClientOptions attribute)</a>
+</li>
       <li><a href="pyiv/pyiv.html#pyiv.HttpStatusError">HttpStatusError</a>, <a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpStatusError">[1]</a>, <a href="pyiv/pyiv.http.html#pyiv.http.HttpStatusError">[2]</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.HttpTimeoutError">HttpTimeoutError</a>, <a href="pyiv/pyiv.http.errors.html#pyiv.http.errors.HttpTimeoutError">[1]</a>, <a href="pyiv/pyiv.http.html#pyiv.http.HttpTimeoutError">[2]</a>
@@ -2005,6 +2510,20 @@
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.in_scope">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.in_scope">(pyiv.BindingBuilder method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.Logger.info">info() (pyiv.log.Logger method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogger.info">(pyiv.log.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger.info">(pyiv.log.StdlibLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Logger.info">(pyiv.Logger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLogger.info">(pyiv.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger.info">(pyiv.StdlibLogger method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.CLICommand.init">init() (pyiv.CLICommand method)</a>
@@ -2110,37 +2629,87 @@
 </li>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.Timer.is_active">(pyiv.clock.Timer method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealTimer.is_active">(pyiv.time.RealTimer method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticTimer.is_active">(pyiv.time.SyntheticTimer method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Timer.is_active">(pyiv.time.Timer method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.Timer.is_active">(pyiv.Timer method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.is_dir">is_dir() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.is_dir">is_dir() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.is_dir">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.is_dir">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.is_dir">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.is_dir">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.is_dir">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.is_dir">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.is_dir">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.is_dir">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.is_dir">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.is_dir">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.is_dir">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.is_dir">(pyiv.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.is_dir">(pyiv.MountFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.is_dir">(pyiv.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.is_dir">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.is_dir">(pyiv.ZipFilesystem method)</a>
+</li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.is_file">is_file() (pyiv.Filesystem method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.is_file">is_file() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.is_file">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.is_file">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.is_file">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.is_file">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.is_file">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.is_file">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.is_file">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.is_file">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.is_file">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.is_file">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.is_file">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.is_file">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.is_file">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.is_file">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.is_file">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.is_file">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.is_optional_type">is_optional_type() (in module pyiv)</a>
@@ -2259,24 +2828,54 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.level">level (pyiv.log.LogOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogRecord.level">(pyiv.log.LogRecord attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.level">(pyiv.LogOptions attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.StreamReply.lines">lines (pyiv.http.memory.StreamReply attribute)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamReply.lines">(pyiv.http.StreamReply attribute)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.listdir">listdir() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.listdir">listdir() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.listdir">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.listdir">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.listdir">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.listdir">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.listdir">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.listdir">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.listdir">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.listdir">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.listdir">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.listdir">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.listdir">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.listdir">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.listdir">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.listdir">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.listdir">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.listdir">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2285,6 +2884,54 @@
 
       <ul>
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.ListMultibinder">(class in pyiv.multibinder)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.Logger.log">log() (pyiv.log.Logger method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger.log">(pyiv.log.StdlibLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Logger.log">(pyiv.Logger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger.log">(pyiv.StdlibLogger method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.log_options_from_args">log_options_from_args() (in module pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.log_options_from_args">(in module pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Logger">Logger (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.Logger">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.logger_levels">logger_levels (pyiv.log.LogOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.logger_levels">(pyiv.LogOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.LoggerFactory">LoggerFactory (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LoggerFactory">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.LogOptions">LogOptions (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogRecord">LogRecord (class in pyiv.log)</a>
+</li>
+      <li><a href="pyiv/pyiv.html#pyiv.LogSetup">LogSetup (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogSetup">(class in pyiv.log)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2305,6 +2952,12 @@
         <li><a href="pyiv/pyiv.multibinder.html#pyiv.multibinder.MapMultibinder">(class in pyiv.multibinder)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem">MappingFilesystem (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem">(class in pyiv.files)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.MapVersionSource">MapVersionSource (class in pyiv)</a>
 
       <ul>
@@ -2323,6 +2976,12 @@
         <li><a href="pyiv/pyiv.members.html#pyiv.members.MembersInjector">(class in pyiv.members)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryArgv">MemoryArgv (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryArgv">(class in pyiv.process)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.MemoryAsyncHttpClient">MemoryAsyncHttpClient (class in pyiv)</a>
 
       <ul>
@@ -2337,9 +2996,17 @@
         <li><a href="pyiv/pyiv.console.html#pyiv.console.MemoryConsole">(class in pyiv.console)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryEnvironment">MemoryEnvironment (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryEnvironment">(class in pyiv.process)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem">MemoryFilesystem (class in pyiv)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem">(class in pyiv.files)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem">(class in pyiv.filesystem)</a>
 </li>
       </ul></li>
@@ -2351,30 +3018,78 @@
         <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.MemoryHttpClient">(class in pyiv.http.memory)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryLogger">MemoryLogger (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogger">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryLoggerFactory">MemoryLoggerFactory (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLoggerFactory">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryLogSetup">MemoryLogSetup (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogSetup">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryProcessRunner">MemoryProcessRunner (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryProcessRunner">(class in pyiv.process)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.merge_from">merge_from() (pyiv.Config method)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.merge_from">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogRecord.message">message (pyiv.log.LogRecord attribute)</a>
+</li>
       <li><a href="pyiv/pyiv.http.memory.html#pyiv.http.memory.RecordedRequest.method">method (pyiv.http.memory.RecordedRequest attribute)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest.method">(pyiv.http.RecordedRequest attribute)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.mkdir">mkdir() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.mkdir">mkdir() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.mkdir">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.mkdir">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.mkdir">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.mkdir">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.mkdir">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.mkdir">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.mkdir">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.mkdir">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.mkdir">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.mkdir">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.mkdir">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.mkdir">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.mkdir">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.mkdir">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.mkdir">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.mkdir">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.MockConsole">MockConsole (class in pyiv)</a>
@@ -2387,6 +3102,8 @@
 
       <ul>
         <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.MockDateTimeService">(class in pyiv.datetime_service)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.MockDateTimeService">(class in pyiv.time)</a>
 </li>
       </ul></li>
       <li>
@@ -2411,11 +3128,17 @@
 </li>
         <li><a href="pyiv/pyiv.datetime_service.html#module-pyiv.datetime_service">pyiv.datetime_service</a>
 </li>
+        <li><a href="pyiv/pyiv.entropy.html#module-pyiv.entropy">pyiv.entropy</a>
+</li>
         <li><a href="pyiv/pyiv.errors.html#module-pyiv.errors">pyiv.errors</a>
 </li>
         <li><a href="pyiv/pyiv.factory.html#module-pyiv.factory">pyiv.factory</a>
 </li>
+        <li><a href="pyiv/pyiv.files.html#module-pyiv.files">pyiv.files</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#module-pyiv.filesystem">pyiv.filesystem</a>
+</li>
+        <li><a href="pyiv/pyiv.hashing.html#module-pyiv.hashing">pyiv.hashing</a>
 </li>
         <li><a href="pyiv/pyiv.http.html#module-pyiv.http">pyiv.http</a>
 </li>
@@ -2433,6 +3156,8 @@
 </li>
         <li><a href="pyiv/pyiv.key.html#module-pyiv.key">pyiv.key</a>
 </li>
+        <li><a href="pyiv/pyiv.log.html#module-pyiv.log">pyiv.log</a>
+</li>
         <li><a href="pyiv/pyiv.members.html#module-pyiv.members">pyiv.members</a>
 </li>
         <li><a href="pyiv/pyiv.multibinder.html#module-pyiv.multibinder">pyiv.multibinder</a>
@@ -2442,6 +3167,8 @@
         <li><a href="pyiv/pyiv.override.html#module-pyiv.override">pyiv.override</a>
 </li>
         <li><a href="pyiv/pyiv.pep440.html#module-pyiv.pep440">pyiv.pep440</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#module-pyiv.process">pyiv.process</a>
 </li>
         <li><a href="pyiv/pyiv.provider.html#module-pyiv.provider">pyiv.provider</a>
 </li>
@@ -2461,6 +3188,8 @@
 </li>
         <li><a href="pyiv/pyiv.stage.html#module-pyiv.stage">pyiv.stage</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#module-pyiv.time">pyiv.time</a>
+</li>
         <li><a href="pyiv/pyiv.version.html#module-pyiv.version">pyiv.version</a>
 </li>
         <li><a href="pyiv_common/pyiv_common.html#module-pyiv_common">pyiv_common</a>
@@ -2470,6 +3199,8 @@
         <li><a href="pyiv_common/pyiv_common.serde.html#module-pyiv_common.serde">pyiv_common.serde</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Clock.monotonic">monotonic() (pyiv.Clock method)</a>
 
       <ul>
@@ -2483,21 +3214,71 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.monotonic">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Clock.monotonic">(pyiv.time.Clock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealClock.monotonic">(pyiv.time.RealClock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.monotonic">(pyiv.time.SyntheticClock method)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.move">move() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.mount">mount() (pyiv.files.MountFilesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.mount">(pyiv.MountFilesystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.MountPoint.mount_path">mount_path (pyiv.files.MountPoint attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MountPoint.mount_path">(pyiv.MountPoint attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem">MountFilesystem (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem">(class in pyiv.files)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MountPoint">MountPoint (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountPoint">(class in pyiv.files)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.move">move() (pyiv.files.Filesystem method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.move">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.move">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.move">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.move">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.move">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.move">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.move">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.move">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.move">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.move">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.move">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.move">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.move">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.move">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.move">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.move">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.move_cursor">move_cursor() (pyiv.BaseConsole method)</a>
@@ -2650,6 +3431,14 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.key.html#pyiv.key.Named.name">name (pyiv.key.Named attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.LogRecord.name">(pyiv.log.LogRecord attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Named.name">(pyiv.Named attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Named">Named (class in pyiv)</a>
 
       <ul>
@@ -2684,8 +3473,6 @@
         <li><a href="pyiv/pyiv.scope.html#pyiv.scope.NoScope">(class in pyiv.scope)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.DateTimeService.now_utc">now_utc() (pyiv.datetime_service.DateTimeService method)</a>
 
       <ul>
@@ -2699,7 +3486,15 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.PythonDateTimeService.now_utc">(pyiv.PythonDateTimeService method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.DateTimeService.now_utc">(pyiv.time.DateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.MockDateTimeService.now_utc">(pyiv.time.MockDateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.PythonDateTimeService.now_utc">(pyiv.time.PythonDateTimeService method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.DateTimeService.now_utc_iso">now_utc_iso() (pyiv.datetime_service.DateTimeService method)</a>
 
       <ul>
@@ -2713,6 +3508,12 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.PythonDateTimeService.now_utc_iso">(pyiv.PythonDateTimeService method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.DateTimeService.now_utc_iso">(pyiv.time.DateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.MockDateTimeService.now_utc_iso">(pyiv.time.MockDateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.PythonDateTimeService.now_utc_iso">(pyiv.time.PythonDateTimeService method)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -2720,24 +3521,52 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.open">open() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.open">open() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.open">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.open">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.open">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.open">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.open">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.open">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.open">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.open">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.open">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.open">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.open">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.open">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.open">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.open">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.open">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.open">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.optional.html#pyiv.optional.OptionalProvider">OptionalProvider (class in pyiv.optional)</a>
 </li>
+      <li><a href="pyiv/pyiv.html#pyiv.OsEnvironment">OsEnvironment (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.OsEnvironment">(class in pyiv.process)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.override.html#pyiv.override.OverriddenConfig">OverriddenConfig (class in pyiv.override)</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.override">override() (in module pyiv)</a>
@@ -2820,6 +3649,12 @@
         <li><a href="pyiv/pyiv.html#pyiv.HttpClient.post">(pyiv.HttpClient method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.key.html#pyiv.key.Matched.prefer">prefer (pyiv.key.Matched attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Matched.prefer">(pyiv.Matched attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.EchoChangeEvent.previous_state">previous_state (pyiv.console.EchoChangeEvent attribute)</a>
 
       <ul>
@@ -2830,6 +3665,12 @@
 
       <ul>
         <li><a href="pyiv/pyiv.config.html#pyiv.config.PrivateConfig">(class in pyiv.config)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.ProcessRunner">ProcessRunner (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.ProcessRunner">(class in pyiv.process)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#id4">PRODUCTION (pyiv.Stage attribute)</a>, <a href="pyiv/pyiv.html#pyiv.Stage.PRODUCTION">[1]</a>
@@ -2934,14 +3775,19 @@
 </li>
       </ul></li>
       <li>
+    pyiv.entropy
+
+      <ul>
+        <li><a href="pyiv/pyiv.entropy.html#module-pyiv.entropy">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv.errors
 
       <ul>
         <li><a href="pyiv/pyiv.errors.html#module-pyiv.errors">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pyiv.factory
 
@@ -2950,10 +3796,26 @@
 </li>
       </ul></li>
       <li>
+    pyiv.files
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#module-pyiv.files">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
     pyiv.filesystem
 
       <ul>
         <li><a href="pyiv/pyiv.filesystem.html#module-pyiv.filesystem">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.hashing
+
+      <ul>
+        <li><a href="pyiv/pyiv.hashing.html#module-pyiv.hashing">module</a>
 </li>
       </ul></li>
       <li>
@@ -3013,6 +3875,13 @@
 </li>
       </ul></li>
       <li>
+    pyiv.log
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#module-pyiv.log">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv.members
 
       <ul>
@@ -3045,6 +3914,13 @@
 
       <ul>
         <li><a href="pyiv/pyiv.pep440.html#module-pyiv.pep440">module</a>
+</li>
+      </ul></li>
+      <li>
+    pyiv.process
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#module-pyiv.process">module</a>
 </li>
       </ul></li>
       <li>
@@ -3111,6 +3987,13 @@
 </li>
       </ul></li>
       <li>
+    pyiv.time
+
+      <ul>
+        <li><a href="pyiv/pyiv.time.html#module-pyiv.time">module</a>
+</li>
+      </ul></li>
+      <li>
     pyiv.version
 
       <ul>
@@ -3150,6 +4033,8 @@
       <ul>
         <li><a href="pyiv/pyiv.datetime_service.html#pyiv.datetime_service.PythonDateTimeService">(class in pyiv.datetime_service)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.PythonDateTimeService">(class in pyiv.time)</a>
+</li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.PythonVersionProvider">PythonVersionProvider (class in pyiv)</a>
 
@@ -3176,6 +4061,14 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.quiet">quiet (pyiv.log.LogOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.quiet">(pyiv.LogOptions attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
 </tr></table>
 
 <h2 id="R">R</h2>
@@ -3197,20 +4090,56 @@
         <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.raise_for_status">(pyiv.HttpResponse method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.console.html#pyiv.console.RawModeChangeEvent">RawModeChangeEvent (class in pyiv.console)</a>
-</li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.read_bytes">read_bytes() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.Entropy.randbytes">randbytes() (pyiv.Entropy method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.Entropy.randbytes">(pyiv.entropy.Entropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.RealEntropy.randbytes">(pyiv.entropy.RealEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.SyntheticEntropy.randbytes">(pyiv.entropy.SyntheticEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RealEntropy.randbytes">(pyiv.RealEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SyntheticEntropy.randbytes">(pyiv.SyntheticEntropy method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.console.html#pyiv.console.RawModeChangeEvent">RawModeChangeEvent (class in pyiv.console)</a>
+</li>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.read_bytes">read_bytes() (pyiv.files.Filesystem method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.read_bytes">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.read_bytes">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.read_bytes">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.read_bytes">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.read_bytes">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.read_bytes">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.read_bytes">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.read_bytes">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.read_bytes">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.read_bytes">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.read_bytes">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.read_bytes">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.read_bytes">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.read_bytes">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.read_bytes">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.read_bytes">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.read_char">read_char() (pyiv.BaseConsole method)</a>
@@ -3279,24 +4208,48 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.read_password">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.read_text">read_text() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.read_text">read_text() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.read_text">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.read_text">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.read_text">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.read_text">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.read_text">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.read_text">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.read_text">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.read_text">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.read_text">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.read_text">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.read_text">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.read_text">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.read_text">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.read_text">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.read_text">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.read_text">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.RealClock">RealClock (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.RealClock">(class in pyiv.clock)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealClock">(class in pyiv.time)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.RealConsole">RealConsole (class in pyiv)</a>
@@ -3305,14 +4258,38 @@
         <li><a href="pyiv/pyiv.console.html#pyiv.console.RealConsole">(class in pyiv.console)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.RealEntropy">RealEntropy (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.RealEntropy">(class in pyiv.entropy)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem">RealFilesystem (class in pyiv)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem">(class in pyiv.files)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem">(class in pyiv.filesystem)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.clock.html#pyiv.clock.RealTimer">RealTimer (class in pyiv.clock)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.RealHasher">RealHasher (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.RealHasher">(class in pyiv.hashing)</a>
 </li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.RealProcessRunner">RealProcessRunner (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.RealProcessRunner">(class in pyiv.process)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.clock.html#pyiv.clock.RealTimer">RealTimer (class in pyiv.clock)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealTimer">(class in pyiv.time)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.http.html#pyiv.http.RecordedRequest">RecordedRequest (class in pyiv.http)</a>
 
       <ul>
@@ -3361,6 +4338,8 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_key">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.register_map_multibinding">register_map_multibinding() (pyiv.Config method)</a>
 
       <ul>
@@ -3385,8 +4364,6 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.register_multibinding">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.Config.register_multibinding_instance">register_multibinding_instance() (pyiv.Config method)</a>
 
       <ul>
@@ -3491,6 +4468,12 @@
         <li><a href="pyiv/pyiv.config.html#pyiv.config.Config.require_explicit_bindings">(pyiv.config.Config method)</a>
 </li>
       </ul></li>
+      <li><a href="pyiv/pyiv.key.html#pyiv.key.Matched.required">required (pyiv.key.Matched attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Matched.required">(pyiv.Matched attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Config.requires_explicit_bindings">requires_explicit_bindings() (pyiv.Config method)</a>
 
       <ul>
@@ -3547,18 +4530,46 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.restore_cursor">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.rmdir">rmdir() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.CompletedProcess.returncode">returncode (pyiv.CompletedProcess attribute)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.CompletedProcess.returncode">(pyiv.process.CompletedProcess attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.rmdir">rmdir() (pyiv.files.Filesystem method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.rmdir">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.rmdir">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.rmdir">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.rmdir">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.rmdir">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.rmdir">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.rmdir">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.rmdir">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.rmdir">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.rmdir">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.rmdir">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.rmdir">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.rmdir">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.rmdir">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.rmdir">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.rmdir">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.CLICommand.run">run() (pyiv.CLICommand method)</a>
@@ -3573,6 +4584,24 @@
         <li><a href="pyiv/pyiv.command.html#pyiv.command.CommandRunner.run">(pyiv.command.CommandRunner method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.CommandRunner.run">(pyiv.CommandRunner method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryProcessRunner.run">(pyiv.MemoryProcessRunner method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryProcessRunner.run">(pyiv.process.MemoryProcessRunner method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.ProcessRunner.run">(pyiv.process.ProcessRunner method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.RealProcessRunner.run">(pyiv.process.RealProcessRunner method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ProcessRunner.run">(pyiv.ProcessRunner method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RealProcessRunner.run">(pyiv.RealProcessRunner method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.RunOptions">RunOptions (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions">(class in pyiv.process)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -3635,6 +4664,12 @@
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.ScreenClearEvent">ScreenClearEvent (class in pyiv.console)</a>
 </li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryProcessRunner.script">script() (pyiv.MemoryProcessRunner method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryProcessRunner.script">(pyiv.process.MemoryProcessRunner method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.MemoryConsole.seek">seek() (pyiv.console.MemoryConsole method)</a>
 
       <ul>
@@ -3699,9 +4734,21 @@
         <li><a href="pyiv/pyiv.command.html#pyiv.command.ServiceCommand">(class in pyiv.command)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.GlobalSingletonRegistry.set">set() (pyiv.GlobalSingletonRegistry class method)</a>
+      <li><a href="pyiv/pyiv.html#pyiv.Environment.set">set() (pyiv.Environment method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.GlobalSingletonRegistry.set">(pyiv.GlobalSingletonRegistry class method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryEnvironment.set">(pyiv.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.OsEnvironment.set">(pyiv.OsEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Environment.set">(pyiv.process.Environment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryEnvironment.set">(pyiv.process.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.OsEnvironment.set">(pyiv.process.OsEnvironment method)</a>
+</li>
         <li><a href="pyiv/pyiv.singleton.html#pyiv.singleton.GlobalSingletonRegistry.set">(pyiv.singleton.GlobalSingletonRegistry class method)</a>
 </li>
       </ul></li>
@@ -3725,6 +4772,12 @@
         <li><a href="pyiv/pyiv.html#pyiv.PTYConsole.set_color">(pyiv.PTYConsole method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.set_color">(pyiv.RealConsole method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.MemoryProcessRunner.set_default">set_default() (pyiv.MemoryProcessRunner method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryProcessRunner.set_default">(pyiv.process.MemoryProcessRunner method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.set_echo">set_echo() (pyiv.BaseConsole method)</a>
@@ -3780,9 +4833,11 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.set_time">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.MockDateTimeService.set_time">(pyiv.time.MockDateTimeService method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.set_time">(pyiv.time.SyntheticClock method)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.SetMultibinder">SetMultibinder (class in pyiv)</a>
 
       <ul>
@@ -3795,6 +4850,8 @@
         <li><a href="pyiv/pyiv.command.html#pyiv.command.Command.setup_signal_handlers">(pyiv.command.Command method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.show_cursor">show_cursor() (pyiv.BaseConsole method)</a>
 
       <ul>
@@ -3866,6 +4923,12 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.sleep">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Clock.sleep">(pyiv.time.Clock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealClock.sleep">(pyiv.time.RealClock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.sleep">(pyiv.time.SyntheticClock method)</a>
+</li>
       </ul></li>
       <li><a href="pyiv/pyiv.chain.html#pyiv.chain.ChainType.SORTING">SORTING (pyiv.chain.ChainType attribute)</a>
 
@@ -3908,6 +4971,12 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.start_timer">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Clock.start_timer">(pyiv.time.Clock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealClock.start_timer">(pyiv.time.RealClock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.start_timer">(pyiv.time.SyntheticClock method)</a>
+</li>
       </ul></li>
       <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.status_code">status_code (pyiv.http.AsyncStreamResponse property)</a>
 
@@ -3927,6 +4996,30 @@
         <li><a href="pyiv/pyiv.http.html#pyiv.http.StreamResponse.status_code">(pyiv.http.StreamResponse property)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.status_code">(pyiv.HttpResponse property)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.CompletedProcess.stderr">stderr (pyiv.CompletedProcess attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.CompletedProcess.stderr">(pyiv.process.CompletedProcess attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger">StdlibLogger (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.StdlibLoggerFactory">StdlibLoggerFactory (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLoggerFactory">(class in pyiv.log)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.CompletedProcess.stdout">stdout (pyiv.CompletedProcess attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.CompletedProcess.stdout">(pyiv.process.CompletedProcess attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.AsyncHttpClient.stream">stream() (pyiv.AsyncHttpClient method)</a>
@@ -3988,9 +5081,33 @@
       <ul>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.SyntheticClock">(class in pyiv.clock)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock">(class in pyiv.time)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.SyntheticEntropy">SyntheticEntropy (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.SyntheticEntropy">(class in pyiv.entropy)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.SyntheticHasher">SyntheticHasher (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.hashing.html#pyiv.hashing.SyntheticHasher">(class in pyiv.hashing)</a>
+</li>
       </ul></li>
       <li><a href="pyiv/pyiv.clock.html#pyiv.clock.SyntheticTimer">SyntheticTimer (class in pyiv.clock)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticTimer">(class in pyiv.time)</a>
 </li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.SysArgv">SysArgv (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.SysArgv">(class in pyiv.process)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.SysPythonVersionProvider">SysPythonVersionProvider (class in pyiv)</a>
 
       <ul>
@@ -4003,6 +5120,18 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.key.html#pyiv.key.Named.tags">tags (pyiv.key.Named attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Named.tags">(pyiv.Named attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem">TarFilesystem (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem">(class in pyiv.files)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.TerminalEvent">TerminalEvent (class in pyiv.console)</a>
 </li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.InputEvent.text">text (pyiv.console.InputEvent attribute)</a>
@@ -4015,6 +5144,10 @@
         <li><a href="pyiv/pyiv.http.response.html#pyiv.http.response.HttpResponse.text">(pyiv.http.response.HttpResponse property)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.text">(pyiv.HttpResponse property)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions.text">(pyiv.process.RunOptions attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RunOptions.text">(pyiv.RunOptions attribute)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Clock.thread_sleep">thread_sleep() (pyiv.Clock method)</a>
@@ -4030,6 +5163,12 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.thread_sleep">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Clock.thread_sleep">(pyiv.time.Clock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealClock.thread_sleep">(pyiv.time.RealClock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.thread_sleep">(pyiv.time.SyntheticClock method)</a>
+</li>
       </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Clock.time">time() (pyiv.Clock method)</a>
 
@@ -4044,13 +5183,29 @@
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.SyntheticClock.time">(pyiv.SyntheticClock method)</a>
 </li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Clock.time">(pyiv.time.Clock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.RealClock.time">(pyiv.time.RealClock method)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.SyntheticClock.time">(pyiv.time.SyntheticClock method)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.http.html#pyiv.http.HttpClientOptions.timeout">timeout (pyiv.http.HttpClientOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.RunOptions.timeout">(pyiv.process.RunOptions attribute)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RunOptions.timeout">(pyiv.RunOptions attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.html#pyiv.Timer">Timer (class in pyiv)</a>
 
       <ul>
         <li><a href="pyiv/pyiv.clock.html#pyiv.clock.Timer">(class in pyiv.clock)</a>
+</li>
+        <li><a href="pyiv/pyiv.time.html#pyiv.time.Timer">(class in pyiv.time)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.TerminalEvent.timestamp">timestamp (pyiv.console.TerminalEvent attribute)</a>
@@ -4083,6 +5238,20 @@
         <li><a href="pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.to_provider">(pyiv.binder_impl.ConfigKeyBindingBuilder method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.BindingBuilder.to_provider">(pyiv.BindingBuilder method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Entropy.token_urlsafe">token_urlsafe() (pyiv.Entropy method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.Entropy.token_urlsafe">(pyiv.entropy.Entropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.RealEntropy.token_urlsafe">(pyiv.entropy.RealEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.entropy.html#pyiv.entropy.SyntheticEntropy.token_urlsafe">(pyiv.entropy.SyntheticEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.RealEntropy.token_urlsafe">(pyiv.RealEntropy method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.SyntheticEntropy.token_urlsafe">(pyiv.SyntheticEntropy method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.MemoryConsole.truncate">truncate() (pyiv.console.MemoryConsole method)</a>
@@ -4121,18 +5290,62 @@
         <li><a href="pyiv/pyiv.html#pyiv.RealConsole.underline">(pyiv.RealConsole method)</a>
 </li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.unlink">unlink() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.unlink">unlink() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.unlink">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.unlink">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.unlink">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.unlink">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.unlink">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.unlink">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.unlink">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.unlink">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.unlink">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.unlink">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.unlink">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.unlink">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.unlink">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.unlink">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.unlink">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.unlink">(pyiv.ZipFilesystem method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.unmount">unmount() (pyiv.files.MountFilesystem method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.unmount">(pyiv.MountFilesystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.html#pyiv.Environment.unset">unset() (pyiv.Environment method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryEnvironment.unset">(pyiv.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.OsEnvironment.unset">(pyiv.OsEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.Environment.unset">(pyiv.process.Environment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.MemoryEnvironment.unset">(pyiv.process.MemoryEnvironment method)</a>
+</li>
+        <li><a href="pyiv/pyiv.process.html#pyiv.process.OsEnvironment.unset">(pyiv.process.OsEnvironment method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.http.html#pyiv.http.AsyncStreamResponse.url">url (pyiv.http.AsyncStreamResponse property)</a>
@@ -4159,8 +5372,6 @@
         <li><a href="pyiv/pyiv.html#pyiv.HttpResponse.url">(pyiv.HttpResponse property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyiv/pyiv.html#pyiv.UrllibHttpClient">UrllibHttpClient (class in pyiv)</a>
 
       <ul>
@@ -4187,6 +5398,12 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.LogOptions.verbose">verbose (pyiv.log.LogOptions attribute)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.LogOptions.verbose">(pyiv.LogOptions attribute)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.pep440.html#pyiv.pep440.Version">Version (class in pyiv.pep440)</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.Binder.version_parser">version_parser() (pyiv.Binder method)</a>
@@ -4231,6 +5448,28 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.walk">walk() (pyiv.files.Filesystem method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.walk">(pyiv.Filesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.walk">(pyiv.filesystem.Filesystem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyiv/pyiv.log.html#pyiv.log.Logger.warning">warning() (pyiv.log.Logger method)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.MemoryLogger.warning">(pyiv.log.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.log.html#pyiv.log.StdlibLogger.warning">(pyiv.log.StdlibLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Logger.warning">(pyiv.Logger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MemoryLogger.warning">(pyiv.MemoryLogger method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.StdlibLogger.warning">(pyiv.StdlibLogger method)</a>
+</li>
+      </ul></li>
       <li><a href="pyiv/pyiv.override.html#pyiv.override.OverrideBuilder.with_">with_() (pyiv.override.OverrideBuilder method)</a>
 </li>
       <li><a href="pyiv/pyiv.html#pyiv.BaseConsole.writable">writable() (pyiv.BaseConsole method)</a>
@@ -4295,32 +5534,76 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.write_bytes">write_bytes() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.write_bytes">write_bytes() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.write_bytes">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.write_bytes">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.write_bytes">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.write_bytes">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.write_bytes">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.write_bytes">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.write_bytes">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.write_bytes">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.write_bytes">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.write_bytes">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.write_bytes">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.write_bytes">(pyiv.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.write_bytes">(pyiv.MountFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.write_bytes">(pyiv.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.write_bytes">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.write_bytes">(pyiv.ZipFilesystem method)</a>
+</li>
       </ul></li>
-      <li><a href="pyiv/pyiv.html#pyiv.Filesystem.write_text">write_text() (pyiv.Filesystem method)</a>
+      <li><a href="pyiv/pyiv.files.html#pyiv.files.Filesystem.write_text">write_text() (pyiv.files.Filesystem method)</a>
 
       <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MappingFilesystem.write_text">(pyiv.files.MappingFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MemoryFilesystem.write_text">(pyiv.files.MemoryFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.MountFilesystem.write_text">(pyiv.files.MountFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.RealFilesystem.write_text">(pyiv.files.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.TarFilesystem.write_text">(pyiv.files.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem.write_text">(pyiv.files.ZipFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.Filesystem.write_text">(pyiv.Filesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.Filesystem.write_text">(pyiv.filesystem.Filesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.MemoryFilesystem.write_text">(pyiv.filesystem.MemoryFilesystem method)</a>
 </li>
         <li><a href="pyiv/pyiv.filesystem.html#pyiv.filesystem.RealFilesystem.write_text">(pyiv.filesystem.RealFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MappingFilesystem.write_text">(pyiv.MappingFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.MemoryFilesystem.write_text">(pyiv.MemoryFilesystem method)</a>
 </li>
+        <li><a href="pyiv/pyiv.html#pyiv.MountFilesystem.write_text">(pyiv.MountFilesystem method)</a>
+</li>
         <li><a href="pyiv/pyiv.html#pyiv.RealFilesystem.write_text">(pyiv.RealFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.TarFilesystem.write_text">(pyiv.TarFilesystem method)</a>
+</li>
+        <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem.write_text">(pyiv.ZipFilesystem method)</a>
 </li>
       </ul></li>
       <li><a href="pyiv/pyiv.console.html#pyiv.console.WriteEvent">WriteEvent (class in pyiv.console)</a>
@@ -4355,6 +5638,18 @@
 
       <ul>
         <li><a href="pyiv_common/pyiv_common.serde.html#pyiv_common.serde.YAMLSerDe">(class in pyiv_common.serde)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyiv/pyiv.html#pyiv.ZipFilesystem">ZipFilesystem (class in pyiv)</a>
+
+      <ul>
+        <li><a href="pyiv/pyiv.files.html#pyiv.files.ZipFilesystem">(class in pyiv.files)</a>
 </li>
       </ul></li>
   </ul></td>

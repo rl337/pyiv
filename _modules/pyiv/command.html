@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyiv.command &mdash; pyiv 1.0.0 documentation</title>
+  <title>pyiv.command &mdash; pyiv 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=981266f8" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/agent-skills.html">Agent skills for your project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/packages.html">Packages and extras</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
@@ -85,10 +86,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.files.html">pyiv.files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.time.html">pyiv.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.clock.html">pyiv.clock</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.log.html">pyiv.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.process.html">pyiv.process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.entropy.html">pyiv.entropy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyiv/pyiv.hashing.html">pyiv.hashing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
 <ul>
@@ -121,6 +128,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inspiration/stdlib-injectable-surfaces.html">Stdlib injectable surfaces (use-case catalog)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -258,6 +266,44 @@
 <span class="sd">            parser: Argument parser to add arguments to</span>
 <span class="sd">        """</span>
         <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Command.add_logging_args">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.add_logging_args">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_logging_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add shared ``-v`` / ``-q`` / ``--log-level`` / ``--log-format`` flags.</span>
+
+<span class="sd">        Call from ``add_args`` when the command should configure ``pyiv.log``.</span>
+<span class="sd">        Apply options in ``init`` via ``configure_logging_from_args``.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_logging_args</span>
+
+        <span class="n">add_logging_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Command.configure_logging_from_args">
+<a class="viewcode-back" href="../../pyiv/pyiv.command.html#pyiv.Command.configure_logging_from_args">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_logging_from_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Apply ``LogOptions`` from ``self.args`` using ``LogSetup``.</span>
+
+<span class="sd">        Prefer injecting ``LogSetup`` from the injector when available; falls</span>
+<span class="sd">        back to a process-local ``LogSetup`` instance.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogSetup</span><span class="p">,</span> <span class="n">log_options_from_args</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="n">log_options_from_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">setup</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">injector</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogSetup</span> <span class="k">as</span> <span class="n">LogSetupType</span>
+
+                <span class="n">setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">LogSetupType</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">setup</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">setup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">setup</span> <span class="o">=</span> <span class="n">LogSetup</span><span class="p">()</span>
+        <span class="n">setup</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">options</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Command.get_subcommands">

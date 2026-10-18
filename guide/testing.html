@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Testing with doubles &mdash; pyiv 1.0.0 documentation</title>
+  <title>Testing with doubles &mdash; pyiv 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=981266f8" />
@@ -15,13 +15,13 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Packages" href="packages.html" />
+    <link rel="next" title="Agent skills for your project" href="agent-skills.html" />
     <link rel="prev" title="Hierarchy and private modules" href="hierarchy.html" /> 
 </head>
 
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent-skills.html">Agent skills for your project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages.html">Packages and extras</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
@@ -88,10 +89,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.files.html">pyiv.files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.filesystem.html">pyiv.filesystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.time.html">pyiv.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.clock.html">pyiv.clock</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.log.html">pyiv.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.process.html">pyiv.process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.entropy.html">pyiv.entropy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv/pyiv.hashing.html">pyiv.hashing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
 <ul>
@@ -124,6 +131,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/stdlib-injectable-surfaces.html">Stdlib injectable surfaces (use-case catalog)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -158,12 +166,16 @@
   <section id="testing-with-doubles">
 <h1>Testing with doubles<a class="headerlink" href="#testing-with-doubles" title="Link to this heading"></a></h1>
 <p>Bind production types in one config and in-memory doubles in another. Tests
-should not mock <code class="docutils literal notranslate"><span class="pre">time</span></code>, the filesystem, or <code class="docutils literal notranslate"><span class="pre">sys.stdout</span></code>.</p>
+should not mock <code class="docutils literal notranslate"><span class="pre">time</span></code>, the filesystem, <code class="docutils literal notranslate"><span class="pre">os.environ</span></code>, <code class="docutils literal notranslate"><span class="pre">subprocess</span></code>,
+<code class="docutils literal notranslate"><span class="pre">logging.getLogger</span></code>, or <code class="docutils literal notranslate"><span class="pre">sys.stdout</span></code>.</p>
+<p>Prefer use-case packages (<code class="docutils literal notranslate"><span class="pre">pyiv.files</span></code>, <code class="docutils literal notranslate"><span class="pre">pyiv.time</span></code>, <code class="docutils literal notranslate"><span class="pre">pyiv.log</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pyiv.process</span></code>). Legacy top-level modules still re-export for compatibility.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span><span class="p">,</span> <span class="n">RealClock</span><span class="p">,</span> <span class="n">SyntheticClock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.console</span><span class="w"> </span><span class="kn">import</span> <span class="n">Console</span><span class="p">,</span> <span class="n">MemoryConsole</span><span class="p">,</span> <span class="n">RealConsole</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.datetime_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">DateTimeService</span><span class="p">,</span> <span class="n">MockDateTimeService</span><span class="p">,</span> <span class="n">PythonDateTimeService</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.filesystem</span><span class="w"> </span><span class="kn">import</span> <span class="n">Filesystem</span><span class="p">,</span> <span class="n">MemoryFilesystem</span><span class="p">,</span> <span class="n">RealFilesystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.files</span><span class="w"> </span><span class="kn">import</span> <span class="n">Filesystem</span><span class="p">,</span> <span class="n">MemoryFilesystem</span><span class="p">,</span> <span class="n">RealFilesystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggerFactory</span><span class="p">,</span> <span class="n">MemoryLoggerFactory</span><span class="p">,</span> <span class="n">StdlibLoggerFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.process</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">MemoryEnvironment</span><span class="p">,</span> <span class="n">OsEnvironment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span><span class="p">,</span> <span class="n">DateTimeService</span><span class="p">,</span> <span class="n">MockDateTimeService</span><span class="p">,</span> <span class="n">PythonDateTimeService</span><span class="p">,</span> <span class="n">RealClock</span><span class="p">,</span> <span class="n">SyntheticClock</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ProdConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -171,6 +183,8 @@ should not mock <code class="docutils literal notranslate"><span class="pre">tim
         <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">,</span> <span class="n">RealFilesystem</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Console</span><span class="p">,</span> <span class="n">RealConsole</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DateTimeService</span><span class="p">,</span> <span class="n">PythonDateTimeService</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Environment</span><span class="p">,</span> <span class="n">OsEnvironment</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">LoggerFactory</span><span class="p">,</span> <span class="n">StdlibLoggerFactory</span><span class="p">)</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TestConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -182,6 +196,8 @@ should not mock <code class="docutils literal notranslate"><span class="pre">tim
         <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">,</span> <span class="n">MemoryFilesystem</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Console</span><span class="p">,</span> <span class="n">MemoryConsole</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DateTimeService</span><span class="p">,</span> <span class="n">MockDateTimeService</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Environment</span><span class="p">,</span> <span class="n">MemoryEnvironment</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">LoggerFactory</span><span class="p">,</span> <span class="n">MemoryLoggerFactory</span><span class="p">)</span>
 
 <span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">TestConfig</span><span class="p">)</span>
 <span class="n">clock</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Clock</span><span class="p">)</span>
@@ -189,7 +205,7 @@ should not mock <code class="docutils literal notranslate"><span class="pre">tim
 <span class="n">clock</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  <span class="c1"># 105.0</span>
 
 <span class="n">fs</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Filesystem</span><span class="p">)</span>
-<span class="n">fs</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"test.txt"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">)</span>  <span class="c1"># in memory, not the repo</span>
+<span class="n">fs</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"/test.txt"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">)</span>  <span class="c1"># in memory, not the repo</span>
 
 <span class="n">console</span> <span class="o">=</span> <span class="n">injector</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Console</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"hello"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">console</span><span class="p">)</span>
@@ -200,9 +216,17 @@ should not mock <code class="docutils literal notranslate"><span class="pre">tim
 <h2>What to swap<a class="headerlink" href="#what-to-swap" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><strong>Clock / SyntheticClock</strong> — freeze and advance time; no real sleeps.</p></li>
-<li><p><strong>Filesystem / MemoryFilesystem</strong> — read and write paths without touching disk.</p></li>
+<li><p><strong>Filesystem / MemoryFilesystem</strong> — read and write paths without touching disk.
+Mount zip/tar or a fake <code class="docutils literal notranslate"><span class="pre">/proc</span></code> with <code class="docutils literal notranslate"><span class="pre">MountFilesystem</span></code> /
+<code class="docutils literal notranslate"><span class="pre">MappingFilesystem</span></code>.</p></li>
 <li><p><strong>Console / MemoryConsole</strong> — capture <code class="docutils literal notranslate"><span class="pre">print(...,</span> <span class="pre">file=console)</span></code>.</p></li>
 <li><p><strong>DateTimeService / MockDateTimeService</strong> — fixed UTC timestamps.</p></li>
+<li><p><strong>Environment / MemoryEnvironment</strong> — no <code class="docutils literal notranslate"><span class="pre">os.environ</span></code> residue.</p></li>
+<li><p><strong>ProcessRunner / MemoryProcessRunner</strong> — scripted argv results.</p></li>
+<li><p><strong>Logger / MemoryLogger</strong> (via <code class="docutils literal notranslate"><span class="pre">LoggerFactory</span></code>) — assert diagnostics;
+use <code class="docutils literal notranslate"><span class="pre">LogSetup</span></code> + <code class="docutils literal notranslate"><span class="pre">add_logging_args</span></code> for CLI verbosity.</p></li>
+<li><p><strong>Entropy / SyntheticEntropy</strong>, <strong>Hasher / SyntheticHasher</strong> — deterministic
+tokens and digests.</p></li>
 </ul>
 <p>Keep the rest of the object graph on real classes. Only replace the edges that
 talk to the world.</p>
@@ -212,7 +236,7 @@ talk to the world.</p>
 <p>When the production graph is large, overlay only the doubles with
 <code class="docutils literal notranslate"><span class="pre">override(ProdConfig).with_(TestConfig)</span></code> instead of rewriting every binding:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injector</span><span class="p">,</span> <span class="n">override</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span><span class="p">,</span> <span class="n">SyntheticClock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span><span class="p">,</span> <span class="n">SyntheticClock</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TestOverrides</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -225,8 +249,9 @@ talk to the world.</p>
 <span class="n">injector</span> <span class="o">=</span> <span class="n">get_injector</span><span class="p">(</span><span class="n">override</span><span class="p">(</span><span class="n">ProdConfig</span><span class="p">)</span><span class="o">.</span><span class="n">with_</span><span class="p">(</span><span class="n">TestOverrides</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>See also <a class="reference internal" href="../pyiv/pyiv.clock.html"><span class="doc">pyiv.clock</span></a>, <a class="reference internal" href="../pyiv/pyiv.filesystem.html"><span class="doc">pyiv.filesystem</span></a>,
-<a class="reference internal" href="../pyiv/pyiv.console.html"><span class="doc">pyiv.console</span></a>, and <a class="reference internal" href="../pyiv/pyiv.datetime_service.html"><span class="doc">pyiv.datetime_service</span></a>.</p>
+<p>See also <a class="reference internal" href="../pyiv/pyiv.files.html"><span class="doc">pyiv.files</span></a>, <a class="reference internal" href="../pyiv/pyiv.time.html"><span class="doc">pyiv.time</span></a>, <a class="reference internal" href="../pyiv/pyiv.log.html"><span class="doc">pyiv.log</span></a>,
+<a class="reference internal" href="../pyiv/pyiv.process.html"><span class="doc">pyiv.process</span></a>, <a class="reference internal" href="../pyiv/pyiv.console.html"><span class="doc">pyiv.console</span></a>, and
+<a class="reference internal" href="../inspiration/stdlib-injectable-surfaces.html"><span class="doc">Stdlib injectable surfaces (use-case catalog)</span></a>.</p>
 </section>
 </section>
 
@@ -235,7 +260,7 @@ talk to the world.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="hierarchy.html" class="btn btn-neutral float-left" title="Hierarchy and private modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="packages.html" class="btn btn-neutral float-right" title="Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="agent-skills.html" class="btn btn-neutral float-right" title="Agent skills for your project" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyiv.entropy &mdash; pyiv 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=981266f8" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyiv.hashing" href="pyiv.hashing.html" />
+    <link rel="prev" title="pyiv.process" href="pyiv.process.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #000000" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyiv
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/binding.html">Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/version-bindings.html">Version-conditioned bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys and collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/catalogs.html">Catalogs without registries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/hierarchy.html">Hierarchy and private modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/agent-skills.html">Agent skills for your project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/packages.html">Packages and extras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core DI</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.html">pyiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.config.html">pyiv.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.injector.html">pyiv.injector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.binder.html">pyiv.binder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.key.html">pyiv.key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.scope.html">pyiv.scope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.provider.html">pyiv.provider</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.singleton.html">pyiv.singleton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.stage.html">pyiv.stage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.errors.html">pyiv.errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.override.html">pyiv.override</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bindings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.optional.html">pyiv.optional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.version.html">pyiv.version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.pep440.html">pyiv.pep440</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.multibinder.html">pyiv.multibinder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.members.html">pyiv.members</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.factory.html">pyiv.factory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Discovery</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.reflection.html">pyiv.reflection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.chain.html">pyiv.chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.command.html">pyiv.command</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test doubles</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pyiv.files.html">pyiv.files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.filesystem.html">pyiv.filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.time.html">pyiv.time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.clock.html">pyiv.clock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.datetime_service.html">pyiv.datetime_service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.console.html">pyiv.console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.log.html">pyiv.log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.process.html">pyiv.process</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyiv.entropy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.hashing.html">pyiv.hashing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integrations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.serde.html">pyiv.serde</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.serde.base.html">pyiv.serde.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.serde.encodings.html">pyiv.serde.encodings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.serde.json.html">pyiv.serde.json</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pyiv.http.html">pyiv.http</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.base.html">pyiv.http.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.clients.html">pyiv.http.clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.errors.html">pyiv.http.errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.memory.html">pyiv.http.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyiv.http.response.html">pyiv.http.response</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Related packages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.html">pyiv_common</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.serde.html">pyiv_common.serde</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyiv_common/pyiv_common.network.html">pyiv_common.network</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Inspiration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/plugin-catalog-discovery-inspiration.html">Plugin catalog discovery (inspiration)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/package-version-conditional-bindings.html">Inspiration: generalized version-aware conditional bindings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspiration/stdlib-injectable-surfaces.html">Stdlib injectable surfaces (use-case catalog)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Module listing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #000000" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyiv</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pyiv.entropy</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rl337/pyiv/blob/main/docs/pyiv/pyiv.entropy.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyiv.entropy">
+<span id="pyiv-entropy"></span><h1>pyiv.entropy<a class="headerlink" href="#module-pyiv.entropy" title="Link to this heading"></a></h1>
+<p>Injectable entropy / randomness for testable nonces.</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.entropy.Entropy" title="pyiv.entropy.Entropy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Entropy</span></code></a>()</p></td>
+<td><p>Injectable source of randomness.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyiv.entropy.RealEntropy" title="pyiv.entropy.RealEntropy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RealEntropy</span></code></a>()</p></td>
+<td><p>Entropy backed by <code class="docutils literal notranslate"><span class="pre">secrets</span></code> / <code class="docutils literal notranslate"><span class="pre">random</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.entropy.SyntheticEntropy" title="pyiv.entropy.SyntheticEntropy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyntheticEntropy</span></code></a>([seed])</p></td>
+<td><p>Seeded entropy for deterministic tests.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.entropy.Entropy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.entropy.</span></span><span class="sig-name descname"><span class="pre">Entropy</span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#Entropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.Entropy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Injectable source of randomness.</p>
+<p><strong>Why this exists:</strong> <code class="docutils literal notranslate"><span class="pre">secrets</span></code> / <code class="docutils literal notranslate"><span class="pre">random</span></code> at call sites make tests
+flaky. Inject <code class="docutils literal notranslate"><span class="pre">Entropy</span></code> and bind <code class="docutils literal notranslate"><span class="pre">SyntheticEntropy</span></code> with a seed.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.entropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyntheticEntropy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span><span class="p">:</span> <span class="n">Entropy</span> <span class="o">=</span> <span class="n">SyntheticEntropy</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">randbytes</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.Entropy.choice">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.15)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#Entropy.choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.Entropy.choice" title="Link to this definition"></a></dt>
+<dd><p>Choose one element from <code class="docutils literal notranslate"><span class="pre">seq</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.Entropy.randbytes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">randbytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#Entropy.randbytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.Entropy.randbytes" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">n</span></code> random bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.Entropy.token_urlsafe">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">token_urlsafe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#Entropy.token_urlsafe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.Entropy.token_urlsafe" title="Link to this definition"></a></dt>
+<dd><p>Return a URL-safe token.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.entropy.RealEntropy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.entropy.</span></span><span class="sig-name descname"><span class="pre">RealEntropy</span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#RealEntropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.RealEntropy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyiv.entropy.Entropy" title="pyiv.entropy.Entropy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entropy</span></code></a></p>
+<p>Entropy backed by <code class="docutils literal notranslate"><span class="pre">secrets</span></code> / <code class="docutils literal notranslate"><span class="pre">random</span></code>.</p>
+<p><strong>Why this exists:</strong> Production cryptographic-ish tokens via stdlib.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.RealEntropy.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.15)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#RealEntropy.choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.RealEntropy.choice" title="Link to this definition"></a></dt>
+<dd><p>Choose one element from <code class="docutils literal notranslate"><span class="pre">seq</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.RealEntropy.randbytes">
+<span class="sig-name descname"><span class="pre">randbytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#RealEntropy.randbytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.RealEntropy.randbytes" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">n</span></code> random bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.RealEntropy.token_urlsafe">
+<span class="sig-name descname"><span class="pre">token_urlsafe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#RealEntropy.token_urlsafe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.RealEntropy.token_urlsafe" title="Link to this definition"></a></dt>
+<dd><p>Return a URL-safe token.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyiv.entropy.SyntheticEntropy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.entropy.</span></span><span class="sig-name descname"><span class="pre">SyntheticEntropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/entropy.html#SyntheticEntropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.SyntheticEntropy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyiv.entropy.Entropy" title="pyiv.entropy.Entropy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entropy</span></code></a></p>
+<p>Seeded entropy for deterministic tests.</p>
+<p><strong>Why this exists:</strong> Replayable nonces without patching <code class="docutils literal notranslate"><span class="pre">secrets</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">SyntheticEntropy</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">SyntheticEntropy</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">token_urlsafe</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">token_urlsafe</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.SyntheticEntropy.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#SyntheticEntropy.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.SyntheticEntropy.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.SyntheticEntropy.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.15)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#SyntheticEntropy.choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.SyntheticEntropy.choice" title="Link to this definition"></a></dt>
+<dd><p>Choose one element from <code class="docutils literal notranslate"><span class="pre">seq</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.SyntheticEntropy.randbytes">
+<span class="sig-name descname"><span class="pre">randbytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#SyntheticEntropy.randbytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.SyntheticEntropy.randbytes" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">n</span></code> random bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyiv.entropy.SyntheticEntropy.token_urlsafe">
+<span class="sig-name descname"><span class="pre">token_urlsafe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/entropy.html#SyntheticEntropy.token_urlsafe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.entropy.SyntheticEntropy.token_urlsafe" title="Link to this definition"></a></dt>
+<dd><p>Return a URL-safe token.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyiv.process.html" class="btn btn-neutral float-left" title="pyiv.process" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyiv.hashing.html" class="btn btn-neutral float-right" title="pyiv.hashing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
