@@ -97,4 +97,3 @@ source_suffix = {
 
 # Master document
 master_doc = "index"
-

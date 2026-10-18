@@ -14,7 +14,7 @@ Key Features:
 - Module install, private modules, child injectors, and config override
 - Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
-- Test doubles for Clock, Filesystem, Console, and DateTimeService
+- Use-case stdlib doubles (files, time, console, log, process, http, …)
 - Zero runtime dependencies
 
 Quick Start:
@@ -95,9 +95,20 @@ from pyiv.console import (
     RealConsole,
 )
 from pyiv.datetime_service import DateTimeService, MockDateTimeService, PythonDateTimeService
+from pyiv.entropy import Entropy, RealEntropy, SyntheticEntropy
 from pyiv.errors import CreationError
 from pyiv.factory import BaseFactory, Factory, SimpleFactory
-from pyiv.filesystem import Filesystem, MemoryFilesystem, RealFilesystem
+from pyiv.files import (
+    Filesystem,
+    MappingFilesystem,
+    MemoryFilesystem,
+    MountFilesystem,
+    MountPoint,
+    RealFilesystem,
+    TarFilesystem,
+    ZipFilesystem,
+)
+from pyiv.hashing import Hasher, RealHasher, SyntheticHasher
 from pyiv.http import (
     AsyncHttpClient,
     AsyncUrllibHttpClient,
@@ -112,11 +123,38 @@ from pyiv.http import (
 )
 from pyiv.injector import Injector, get_injector
 from pyiv.key import Key, Matched, Named, Qualifier
+from pyiv.log import (
+    Logger,
+    LoggerFactory,
+    LogOptions,
+    LogSetup,
+    MemoryLogger,
+    MemoryLoggerFactory,
+    MemoryLogSetup,
+    StdlibLogger,
+    StdlibLoggerFactory,
+    add_logging_args,
+    log_options_from_args,
+)
 from pyiv.members import InjectorMembersInjector, MembersInjector
 from pyiv.multibinder import ListMultibinder, MapMultibinder, Multibinder, SetMultibinder
 from pyiv.optional import get_optional_type, is_optional_type
 from pyiv.override import override
 from pyiv.pep440 import Pep440VersionParser  # after version (InvalidVersion base)
+from pyiv.process import (
+    Argv,
+    CompletedProcess,
+    Environment,
+    ExitStatus,
+    MemoryArgv,
+    MemoryEnvironment,
+    MemoryProcessRunner,
+    OsEnvironment,
+    ProcessRunner,
+    RealProcessRunner,
+    RunOptions,
+    SysArgv,
+)
 from pyiv.provider import (
     BaseProvider,
     FactoryProvider,
@@ -169,6 +207,11 @@ __all__ = [
     "Filesystem",
     "RealFilesystem",
     "MemoryFilesystem",
+    "MountFilesystem",
+    "MountPoint",
+    "ZipFilesystem",
+    "TarFilesystem",
+    "MappingFilesystem",
     "Console",
     "BaseConsole",
     "RealConsole",
@@ -183,6 +226,35 @@ __all__ = [
     "DateTimeService",
     "PythonDateTimeService",
     "MockDateTimeService",
+    "Logger",
+    "StdlibLogger",
+    "MemoryLogger",
+    "LoggerFactory",
+    "StdlibLoggerFactory",
+    "MemoryLoggerFactory",
+    "LogOptions",
+    "LogSetup",
+    "MemoryLogSetup",
+    "add_logging_args",
+    "log_options_from_args",
+    "Environment",
+    "OsEnvironment",
+    "MemoryEnvironment",
+    "ProcessRunner",
+    "RealProcessRunner",
+    "MemoryProcessRunner",
+    "CompletedProcess",
+    "RunOptions",
+    "Argv",
+    "MemoryArgv",
+    "SysArgv",
+    "ExitStatus",
+    "Entropy",
+    "RealEntropy",
+    "SyntheticEntropy",
+    "Hasher",
+    "RealHasher",
+    "SyntheticHasher",
     "Factory",
     "BaseFactory",
     "SimpleFactory",
