@@ -92,6 +92,38 @@ class Command(ABC):
         pass
 
     @classmethod
+    def add_logging_args(cls, parser: argparse.ArgumentParser) -> None:
+        """Add shared ``-v`` / ``-q`` / ``--log-level`` / ``--log-format`` flags.
+
+        Call from ``add_args`` when the command should configure ``pyiv.log``.
+        Apply options in ``init`` via ``configure_logging_from_args``.
+        """
+        from pyiv.log import add_logging_args
+
+        add_logging_args(parser)
+
+    def configure_logging_from_args(self) -> None:
+        """Apply ``LogOptions`` from ``self.args`` using ``LogSetup``.
+
+        Prefer injecting ``LogSetup`` from the injector when available; falls
+        back to a process-local ``LogSetup`` instance.
+        """
+        from pyiv.log import LogSetup, log_options_from_args
+
+        options = log_options_from_args(self.args)
+        setup = None
+        if self.injector is not None:
+            try:
+                from pyiv.log import LogSetup as LogSetupType
+
+                setup = self.injector.inject(LogSetupType)
+            except Exception:
+                setup = None
+        if setup is None:
+            setup = LogSetup()
+        setup.apply(options)
+
+    @classmethod
     def get_subcommands(cls) -> List[Type["Command"]]:
         """Get subcommands of this command.
 
