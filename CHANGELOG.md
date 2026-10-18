@@ -22,6 +22,10 @@ order. Install with `pip install pyiv`. Unreleased `main` is
   without a pydantic dependency).
 - Agent skill / rule for public types (``public-types``): knobs as frozen
   dataclasses; services as Protocol/ABC; no soft pydantic imports.
+- Customer-facing agent skills under ``agent-skills/`` (``use-pyiv``,
+  ``pyiv-testing``, ``pyiv.mdc``) plus guide
+  :doc:`guide/agent-skills` with GitHub raw links on ``main``. Maintainer
+  requirement: keep them in sync when public APIs/doubles change.
 
 ### Changed
 

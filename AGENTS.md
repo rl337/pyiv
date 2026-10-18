@@ -257,6 +257,12 @@ When implementing new features, follow these principles:
    host apps can nest them in `BaseModel` / `BaseSettings`. Services stay
    Protocol/ABC. Do not import or soft-import pydantic. See
    `.cursor/skills/public-types/SKILL.md`.
+7. **Customer-facing agent skills stay in sync:** Downstream coding agents copy
+   guidance from `agent-skills/` (`use-pyiv`, `pyiv-testing`, `pyiv.mdc`). When
+   you add or change public injectables, doubles, Config patterns, or top-level
+   exports, update those files in the same change (and the guide page
+   `docs/guide/agent-skills.rst`). Do not leave consumer skills describing an
+   older product. See `.cursor/skills/maintain-docs/SKILL.md`.
 
 ## Interface Design Guidelines
 
@@ -302,6 +308,8 @@ Group injectables by job (`pyiv.files`, `pyiv.time`, `pyiv.process`,
 - `extras/pyiv-common/`: `pyiv-common` extra (PyYAML, requests)
 - `pyiv/__init__.py`: Package exports and version
 - `docs/index.rst`: Documentation homepage and API sidebar toctrees
+- `docs/guide/agent-skills.rst`: How end users install customer agent skills
+- `agent-skills/`: Customer-facing skills/rules for apps using pyiv (keep in sync)
 - `README.md`: GitHub landing page (not the API manual)
 - `.github/workflows/version-bump.yml`: Automatic version bumping workflow
 - `.github/workflows/ci.yml`: CI/CD pipeline
