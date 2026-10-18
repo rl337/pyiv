@@ -24,25 +24,42 @@ from pyiv.http.response import AsyncStreamResponse, HttpResponse, StreamResponse
 RouteHandler = Callable[["RecordedRequest"], Union[HttpResponse, "StreamReply"]]
 
 
-@dataclass
+@dataclass(frozen=True)
 class RecordedRequest:
-    """A request captured by ``MemoryHttpClient`` / ``MemoryAsyncHttpClient``."""
+    """A request captured by ``MemoryHttpClient`` / ``MemoryAsyncHttpClient``.
+
+    **Why this exists:** Frozen DTO for assertions and host Settings nesting
+    without a pydantic dependency.
+    """
 
     method: str
     url: str
     headers: Dict[str, str] = field(default_factory=dict)
     body: Optional[bytes] = None
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "headers", dict(self.headers))
 
-@dataclass
+
+@dataclass(frozen=True)
 class StreamReply:
-    """Canned streaming body for memory clients."""
+    """Canned streaming body for memory clients.
+
+    **Why this exists:** Frozen canned-response bag for memory HTTP doubles.
+    """
 
     status_code: int = 200
     headers: Mapping[str, str] = field(default_factory=dict)
     lines: Optional[List[str]] = None
     chunks: Optional[List[bytes]] = None
     url: str = ""
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "headers", dict(self.headers))
+        if self.lines is not None:
+            object.__setattr__(self, "lines", list(self.lines))
+        if self.chunks is not None:
+            object.__setattr__(self, "chunks", list(self.chunks))
 
 
 class _MemoryStore:
@@ -143,8 +160,11 @@ class MemoryHttpClient(HttpClient):
         'POST'
     """
 
-    def __init__(self, base_url=None, headers=None) -> None:
+    def __init__(self, base_url=None, headers=None, options=None) -> None:
         # Untyped optionals: Mapping/Dict annotations are not DI-injectable.
+        if options is not None:
+            base_url = options.base_url
+            headers = options.headers
         self._store = _MemoryStore(base_url=base_url, headers=headers)
 
     @property
@@ -236,8 +256,10 @@ class MemoryAsyncHttpClient(AsyncHttpClient):
         b'x'
     """
 
-    def __init__(self, base_url=None, headers=None, sync_client=None) -> None:
-        self._sync = sync_client or MemoryHttpClient(base_url=base_url, headers=headers)
+    def __init__(self, base_url=None, headers=None, sync_client=None, options=None) -> None:
+        self._sync = sync_client or MemoryHttpClient(
+            base_url=base_url, headers=headers, options=options
+        )
 
     @property
     def requests(self) -> List[RecordedRequest]:
