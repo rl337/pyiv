@@ -38,11 +38,13 @@ from pyiv.http.base import AsyncHttpClient, HttpClient
 from pyiv.http.clients import AsyncUrllibHttpClient, UrllibHttpClient
 from pyiv.http.errors import HttpError, HttpStatusError, HttpTimeoutError
 from pyiv.http.memory import MemoryAsyncHttpClient, MemoryHttpClient, RecordedRequest, StreamReply
+from pyiv.http.options import HttpClientOptions
 from pyiv.http.response import AsyncStreamResponse, HttpResponse, StreamResponse
 
 __all__ = [
     "HttpClient",
     "AsyncHttpClient",
+    "HttpClientOptions",
     "HttpResponse",
     "StreamResponse",
     "AsyncStreamResponse",
