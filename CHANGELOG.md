@@ -6,6 +6,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+## 1.1.0 - 2026-10-18
+
 ### Added
 
 - Use-case stdlib injectable surfaces catalog
