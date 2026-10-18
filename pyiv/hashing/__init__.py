@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 from abc import ABC, abstractmethod
-from typing import Optional, Union
+from typing import Any, List, Optional, Union
 
 
 class Hasher(ABC):
@@ -56,7 +56,7 @@ class SyntheticHasher(Hasher):
 
     def __init__(self, fixed: Optional[bytes] = None) -> None:
         self._fixed = fixed
-        self.calls = []
+        self.calls: List[Any] = []
 
     def digest(self, algorithm: str, data: bytes) -> bytes:
         self.calls.append(("digest", algorithm, data))

@@ -6,7 +6,7 @@ import io
 import tarfile
 import zipfile
 from pathlib import Path
-from typing import BinaryIO, Iterator, Optional, TextIO, Union
+from typing import BinaryIO, Iterator, Literal, Optional, Set, TextIO, Union
 
 from pyiv.files._impl import Filesystem
 
@@ -41,7 +41,9 @@ class ZipFilesystem(Filesystem):
         'hi'
     """
 
-    def __init__(self, source: Union[str, Path, bytes], *, mode: str = "r") -> None:
+    def __init__(
+        self, source: Union[str, Path, bytes], *, mode: Literal["r", "w", "x", "a"] = "r"
+    ) -> None:
         """Open a zip from a path or in-memory bytes.
 
         Args:
@@ -49,16 +51,18 @@ class ZipFilesystem(Filesystem):
             mode: ``r`` (read-only) or ``a`` / ``w`` when ``source`` is a path
         """
         self._path: Optional[Path] = None
-        self._bytes_mode = isinstance(source, (bytes, bytearray))
-        if self._bytes_mode:
+        if isinstance(source, (bytes, bytearray)):
+            self._bytes_mode = True
             self._buf = io.BytesIO(bytes(source))
-            self._zf = zipfile.ZipFile(self._buf, "a" if mode != "r" else "r")
+            zmode: Literal["r", "a"] = "a" if mode != "r" else "r"
+            self._zf = zipfile.ZipFile(self._buf, zmode)
         else:
+            self._bytes_mode = False
             self._path = Path(source)
             self._zf = zipfile.ZipFile(self._path, mode)
         self._writable = mode != "r"
 
-    def _names(self) -> set:
+    def _names(self) -> Set[str]:
         return set(self._zf.namelist())
 
     def open(
@@ -183,11 +187,12 @@ class TarFilesystem(Filesystem):
     """
 
     def __init__(self, source: Union[str, Path, bytes]) -> None:
-        self._bytes_mode = isinstance(source, (bytes, bytearray))
-        if self._bytes_mode:
+        if isinstance(source, (bytes, bytearray)):
+            self._bytes_mode = True
             self._buf = io.BytesIO(bytes(source))
             self._tf = tarfile.open(fileobj=self._buf, mode="r:*")
         else:
+            self._bytes_mode = False
             self._tf = tarfile.open(name=str(source), mode="r:*")
         self._members = {m.name: m for m in self._tf.getmembers()}
 

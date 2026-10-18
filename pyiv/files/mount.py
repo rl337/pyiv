@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import BinaryIO, Iterator, List, Optional, TextIO, Tuple, Union
+from typing import BinaryIO, Iterator, List, Optional, Set, TextIO, Tuple, Union
 
 from pyiv.files._impl import Filesystem
 
@@ -140,7 +140,7 @@ class MountFilesystem(Filesystem):
         norm = str(path).replace("\\", "/")
         if not norm.startswith("/"):
             norm = "/" + norm
-        names = set()
+        names: Set[str] = set()
         fs, rel = self._resolve(path)
         if fs.is_dir(rel) or fs.exists(rel):
             names.update(fs.listdir(rel))
