@@ -6,9 +6,10 @@ This document provides guidelines for AI agents working on the pyiv project.
 
 pyiv is a Guice-style dependency injection library for Python. It supports
 type-based injection, scopes, qualified keys, Binder, reflection, and built-in
-test doubles (Clock, Filesystem, Console, DateTimeService). Core runtime has
-zero third-party dependencies. Ubiquitous extras (PyYAML, requests) live in
-`pyiv-common`; see `.cursor/skills/package-boundaries/SKILL.md`.
+use-case stdlib doubles (`pyiv.files`, `pyiv.time`, `pyiv.console`, `pyiv.log`,
+`pyiv.process`, …). Core runtime has zero third-party dependencies. Ubiquitous
+extras (PyYAML, requests) live in `pyiv-common`; see
+`.cursor/skills/package-boundaries/SKILL.md`.
 
 ## Documentation
 
@@ -251,8 +252,29 @@ When implementing new features, follow these principles:
 3. **Protocol-Based:** Use `typing.Protocol` for interfaces (Pythonic)
 4. **Type-Safe:** Leverage Python's type system fully
 5. **Extensible:** Allow custom implementations
+6. **Pydantic-friendly shapes without a Pydantic dependency:** Knobs and public
+   value DTOs are frozen dataclasses (or TypedDicts) with boring field types so
+   host apps can nest them in `BaseModel` / `BaseSettings`. Services stay
+   Protocol/ABC. Do not import or soft-import pydantic. See
+   `.cursor/skills/public-types/SKILL.md`.
 
 ## Interface Design Guidelines
+
+### Services vs knobs (public types)
+
+- **Service:** injectable behavior (`Filesystem`, `Clock`, `HttpClient`,
+  `Logger`) — Protocol or ABC plus Real/Memory implementations.
+- **Knob:** options, qualifiers, recorded DTOs (`LogOptions`,
+  `HttpClientOptions`, `Named`, `RecordedRequest`) —
+  `@dataclass(frozen=True)` (or TypedDict) with `str` / `int` / `bool` /
+  `Path` / `Mapping` / enums. Optional `as_dict` / `from_dict` for Settings
+  round-trip. No pydantic hooks in core.
+
+### Use-case packages (stdlib surfaces)
+
+Group injectables by job (`pyiv.files`, `pyiv.time`, `pyiv.process`,
+`pyiv.log`, …), not by stdlib module names. Catalog:
+`docs/inspiration/stdlib-injectable-surfaces.md`.
 
 ### Factory vs Provider
 - **Factory**: For general object creation, not DI-specific

@@ -36,9 +36,14 @@ Installing `pyiv-common` is one stack.
 
 ## Forbidden in core
 
-- Third-party imports (`yaml`, `requests`, …).
-- `try/except ImportError` that *uses* a third-party library if present.
+- Third-party imports (`yaml`, `requests`, `pydantic`, …).
+- `try/except ImportError` that *uses* a third-party library if present
+  (including soft pydantic validators / `__get_pydantic_core_schema__`).
 - Optional extras that pull third-party code into the `pyiv` wheel.
+
+**Pydantic:** do not depend on it in core or `pyiv-common`. Be compatible by
+**shape** (frozen dataclasses / TypedDicts / boring fields for knobs;
+Protocol/ABC for services). See [public-types](../public-types/SKILL.md).
 
 Allowed: a documented lazy `__getattr__` re-export of an extra’s public type
 (see `pyiv.serde` → `YAMLSerDe`). Do not put the name in `__all__` or autodoc.

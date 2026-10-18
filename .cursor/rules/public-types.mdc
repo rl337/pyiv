@@ -1,0 +1,16 @@
+---
+description: Public knobs are frozen dataclasses; services stay Protocols; no pydantic imports.
+globs: pyiv/**/*.py, extras/**/*.py
+alwaysApply: false
+---
+
+# Public types
+
+When editing public pyiv / extras types:
+
+- **Services** (Filesystem, Clock, HttpClient, Logger, …): Protocol or ABC + Real/Memory.
+- **Knobs** (options, qualifiers, recorded DTOs): `@dataclass(frozen=True)` with boring fields (`str`, `int`, `bool`, `Path`, `Mapping`, enums).
+- **Never** import pydantic or soft-import it for validators / core schema.
+- Prefer use-case packages (`pyiv.files`, `pyiv.log`) over god objects (`Os`, `Sys`, `Io`).
+
+Full checklist: `.cursor/skills/public-types/SKILL.md`.
