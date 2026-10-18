@@ -6,6 +6,36 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+### Added
+
+- Use-case stdlib injectable surfaces catalog
+  (``docs/inspiration/stdlib-injectable-surfaces.md``).
+- ``pyiv.files`` — ``MountFilesystem``, ``ZipFilesystem``, ``TarFilesystem``,
+  ``MappingFilesystem``; ``RealFilesystem(root=…)`` chroot; compatibility
+  re-export via ``pyiv.filesystem``.
+- ``pyiv.time`` — consolidates Clock / DateTimeService (legacy modules re-export).
+- ``pyiv.process`` — ``Environment``, ``ProcessRunner``, ``Argv`` (+ memory doubles).
+- ``pyiv.log`` — ``Logger`` / ``LoggerFactory`` / ``LogSetup`` / ``LogOptions``,
+  CLI helpers, Command ``add_logging_args`` / ``configure_logging_from_args``.
+- ``pyiv.entropy`` and ``pyiv.hashing`` injectable Real/Synthetic surfaces.
+- ``HttpClientOptions`` frozen options bag for HTTP clients (Settings-friendly
+  without a pydantic dependency).
+- Agent skill / rule for public types (``public-types``): knobs as frozen
+  dataclasses; services as Protocol/ABC; no soft pydantic imports.
+- Customer-facing agent skills under ``agent-skills/`` (``use-pyiv``,
+  ``pyiv-testing``, ``pyiv.mdc``) plus guide
+  :doc:`guide/agent-skills` with GitHub raw links on ``main``. Maintainer
+  requirement: keep them in sync when public APIs/doubles change.
+
+### Changed
+
+- ``Named`` / ``Matched`` are frozen dataclasses (eq/hash still ignore
+  ``Named.default``).
+- ``RecordedRequest``, ``StreamReply``, and console ``TerminalEvent`` hierarchy
+  are frozen dataclasses.
+- Homepage / testing guide describe use-case stdlib doubles (files, time, log,
+  process, …).
+
 ## 1.0.0 - 2026-10-16
 
 ### Added

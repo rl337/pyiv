@@ -38,10 +38,21 @@ class UrllibHttpClient(HttpClient):
         Traceback (most recent call last):
             ...
         ValueError: Only http:// and https:// URLs are allowed, got: ftp://example.com/
+        >>> from pyiv.http.options import HttpClientOptions
+        >>> UrllibHttpClient(options=HttpClientOptions(https_only=True))._https_only
+        True
     """
 
-    def __init__(self, base_url=None, headers=None, timeout=None, https_only=False) -> None:
+    def __init__(
+        self, base_url=None, headers=None, timeout=None, https_only=False, options=None
+    ) -> None:
         # Untyped optionals so Config can ``register(HttpClient, UrllibHttpClient)``.
+        # Prefer ``options=HttpClientOptions(...)`` for Settings / frozen knobs.
+        if options is not None:
+            base_url = options.base_url
+            headers = options.headers
+            timeout = options.timeout
+            https_only = options.https_only
         self._base_url = base_url.rstrip("/") if base_url else None
         self._headers = dict(headers) if headers else {}
         self._timeout = timeout
@@ -188,13 +199,20 @@ class AsyncUrllibHttpClient(AsyncHttpClient):
     """
 
     def __init__(
-        self, base_url=None, headers=None, timeout=None, https_only=False, sync_client=None
+        self,
+        base_url=None,
+        headers=None,
+        timeout=None,
+        https_only=False,
+        sync_client=None,
+        options=None,
     ) -> None:
         self._sync = sync_client or UrllibHttpClient(
             base_url=base_url,
             headers=headers,
             timeout=timeout,
             https_only=https_only,
+            options=options,
         )
 
     async def request(

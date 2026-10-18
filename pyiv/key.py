@@ -117,6 +117,7 @@ Usage Examples:
         <class '...FileLogger'>
 """
 
+from dataclasses import dataclass
 from typing import Any, FrozenSet, Generic, Optional, Protocol, Sequence, Type, TypeVar, Union
 
 T = TypeVar("T")
@@ -177,13 +178,15 @@ class Qualifier(Protocol):
     pass
 
 
+@dataclass(frozen=True, eq=False)
 class Named:
     """Tag-set qualifier for named bindings (registration and strict inject).
 
     **Why this exists:** Distinguish multiple implementations of one type with
     string tags. A scalar name is the common case; list/tuple tags form a set
     for compound keys. ``default=True`` marks the binding used for bare
-    ``inject(Type)`` and for ``Matched`` tie-breaks.
+    ``inject(Type)`` and for ``Matched`` tie-breaks. Frozen dataclass shape
+    stays pydantic-friendly without a pydantic dependency.
 
     Accepts ``str``, ``list``, or ``tuple``; all normalize to a frozenset.
     ``Named("json") == Named(["json"])``. Equality and hashing use the tag set
@@ -206,6 +209,10 @@ class Named:
         True
     """
 
+    tags: FrozenSet[str]
+    default: bool = False
+    name: str = ""
+
     def __init__(self, name: TagInput, *, default: bool = False):
         """Initialize named qualifier.
 
@@ -218,13 +225,14 @@ class Named:
             TypeError: If tags are not strings or name is not str/list/tuple
             ValueError: If tags are empty
         """
-        self.tags: FrozenSet[str] = normalize_tags(name, allow_empty=False)
-        self.default: bool = bool(default)
-        # Backward-compatible single-name attribute (scalar or sole tag).
-        if len(self.tags) == 1:
-            self.name: str = next(iter(self.tags))
+        tags = normalize_tags(name, allow_empty=False)
+        if len(tags) == 1:
+            display = next(iter(tags))
         else:
-            self.name = ",".join(sorted(self.tags))
+            display = ",".join(sorted(tags))
+        object.__setattr__(self, "tags", tags)
+        object.__setattr__(self, "default", bool(default))
+        object.__setattr__(self, "name", display)
 
     def __eq__(self, other: Any) -> bool:
         """Check equality with another Named qualifier (tags only).
@@ -251,6 +259,7 @@ class Named:
         return f"Named({tags_repr!r})"
 
 
+@dataclass(frozen=True, eq=False)
 class Matched:
     """Inject-only qualifier for required/prefer tag matching.
 
@@ -258,6 +267,7 @@ class Matched:
     share tags. ``Matched`` selects among ``Named`` registrations: every
     ``required`` tag must be present, then the binding with the most
     ``prefer`` overlap wins; ``Named(..., default=True)`` breaks remaining ties.
+    Frozen dataclass shape stays pydantic-friendly without a pydantic dependency.
 
     Do **not** pass ``Matched`` to ``register_key`` / ``bind_key`` — registration
     uses ``Named`` only.
@@ -303,6 +313,9 @@ class Matched:
         'pretty'
     """
 
+    required: FrozenSet[str]
+    prefer: FrozenSet[str]
+
     def __init__(
         self,
         required: Optional[TagInput] = None,
@@ -318,8 +331,8 @@ class Matched:
             TypeError: If a tag is not a string
             ValueError: If a tag string is empty
         """
-        self.required: FrozenSet[str] = normalize_tags(required, allow_empty=True)
-        self.prefer: FrozenSet[str] = normalize_tags(prefer, allow_empty=True)
+        object.__setattr__(self, "required", normalize_tags(required, allow_empty=True))
+        object.__setattr__(self, "prefer", normalize_tags(prefer, allow_empty=True))
 
     def __eq__(self, other: Any) -> bool:
         return (

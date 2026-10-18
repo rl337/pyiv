@@ -120,7 +120,7 @@ UNDERLINE = 4
 STRIKETHROUGH = 9
 
 
-@dataclass
+@dataclass(frozen=True)
 class TerminalEvent:
     """Base class for terminal events."""
 
@@ -128,7 +128,7 @@ class TerminalEvent:
     event_type: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class CursorMoveEvent(TerminalEvent):
     """Event for cursor movement."""
 
@@ -136,7 +136,7 @@ class CursorMoveEvent(TerminalEvent):
     y: int
 
 
-@dataclass
+@dataclass(frozen=True)
 class ColorChangeEvent(TerminalEvent):
     """Event for color changes."""
 
@@ -144,21 +144,21 @@ class ColorChangeEvent(TerminalEvent):
     bg: Optional[int]
 
 
-@dataclass
+@dataclass(frozen=True)
 class ScreenClearEvent(TerminalEvent):
     """Event for screen clearing."""
 
     pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class WriteEvent(TerminalEvent):
     """Event for text writes."""
 
     text: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class EchoChangeEvent(TerminalEvent):
     """Event for echo state changes."""
 
@@ -166,7 +166,7 @@ class EchoChangeEvent(TerminalEvent):
     previous_state: bool
 
 
-@dataclass
+@dataclass(frozen=True)
 class RawModeChangeEvent(TerminalEvent):
     """Event for raw mode changes."""
 
@@ -174,7 +174,7 @@ class RawModeChangeEvent(TerminalEvent):
     previous_state: bool
 
 
-@dataclass
+@dataclass(frozen=True)
 class InputEvent(TerminalEvent):
     """Event for input operations."""
 

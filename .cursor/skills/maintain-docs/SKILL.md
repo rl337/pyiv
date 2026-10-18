@@ -1,17 +1,24 @@
 ---
 name: maintain-docs
-description: Keep pyiv's PyPI listing, Sphinx site, and release notes in sync. Use when editing README.md, docs/, pyproject.toml metadata or URLs, CHANGELOG, GitHub releases, install instructions, Key Features, public APIs, or doctests; when adding modules to the API nav; or when the user mentions the website, PyPI, documentation, or changelog.
+description: >-
+  Keep pyiv's PyPI listing, Sphinx site, release notes, and customer-facing
+  agent-skills in sync. Use when editing README.md, docs/, agent-skills/,
+  pyproject.toml metadata or URLs, CHANGELOG, GitHub releases, install
+  instructions, Key Features, public APIs, injectables/test doubles, or
+  doctests; when adding modules to the API nav; or when the user mentions the
+  website, PyPI, documentation, changelog, or agent skills for end users.
 ---
 
 # Maintain pyiv docs
 
-Three public surfaces must agree. Docstrings feed the site; they are not a fourth landing page.
+Four public surfaces must agree. Docstrings feed the site; they are not a fifth landing page.
 
 | Pillar | Files | Job |
 | --- | --- | --- |
 | PyPI listing | `README.md`, `[project]` in `pyproject.toml` | README is GitHub **and** Warehouse long_description. Metadata (author, URLs, description) is the sidebar. Not a second API manual. |
 | Website | `docs/`, `pyiv/**/*.py` docstrings | Product manual at https://rl337.org/pyiv/. Features, install, guide, autodoc. Production is `main` only; PRs go to `/branch/<name>/`. |
 | Release notes | `CHANGELOG.md`, GitHub Releases, `RELEASE.md`, `.github/workflows/release.yml` | Why this version shipped. Same install command as README. Not a squash-commit dump. |
+| Customer agent skills | `agent-skills/` (`use-pyiv`, `pyiv-testing`, `pyiv.mdc`), `docs/guide/agent-skills.rst` | Copy-paste guidance for *apps using* pyiv. Must match current public APIs and doubles. Not maintainer skills under `.cursor/skills/`. |
 
 ## Install story (must match all three)
 
@@ -41,7 +48,13 @@ Canonical URLs (also `[project.urls]`): Homepage/Repository `https://github.com/
    is a second package.
 5. If the change is user-visible, add a bullet under `## Unreleased` in
    `CHANGELOG.md` (do not invent a version). GitHub Releases reuse those bullets.
-6. `pytest --doctest-modules pyiv extras/pyiv-common/pyiv_common` and
+6. **Update customer-facing agent skills** in `agent-skills/` when the change
+   affects how apps should inject, bind, or test (new double, new top-level
+   export, Config pattern, deprecated approach). Keep `use-pyiv`, `pyiv-testing`,
+   and `pyiv.mdc` accurate; refresh `docs/guide/agent-skills.rst` links/summary
+   if the set of skills changes. Raw GitHub URLs on `main` are the source of
+   truth end users curl — stale skills are a product bug.
+7. `pytest --doctest-modules pyiv extras/pyiv-common/pyiv_common` and
    `sphinx-build -b html docs docs/_build/html`.
 
 ## Sidebar UX

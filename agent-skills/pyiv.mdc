@@ -1,0 +1,24 @@
+---
+description: Requirements for apps using pyiv dependency injection and stdlib doubles.
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# pyiv requirements (for application code)
+
+Copy into your project's `.cursor/rules/` (or equivalent) when the app depends on pyiv.
+
+- Prefer `from pyiv import …` for featured types (`Config`, `get_injector`,
+  `Filesystem`, `Clock`, `Logger`, `Environment`, `HttpClient`, …).
+- Wire graphs with `Config.configure` / Binder; inject via constructors.
+- Depend on injectables instead of calling `open`, `time.sleep`, `os.environ`,
+  `subprocess`, or `logging.getLogger` at owned call sites.
+- In tests, bind Memory/Synthetic doubles — do not monkeypatch those stdlib edges.
+- Option bags: `@dataclass(frozen=True)` with boring field types; services:
+  Protocol/ABC + Real/Fake bindings.
+- Core `pyiv` is stdlib-only; use `pyiv-common` only for YAML/requests.
+
+Skills (copy or fetch latest from GitHub):
+
+- `agent-skills/use-pyiv/SKILL.md`
+- `agent-skills/pyiv-testing/SKILL.md`

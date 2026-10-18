@@ -1,7 +1,8 @@
 # pyiv
 
 Guice-style dependency injection for Python: type-based constructor injection,
-scopes, qualified keys (tag sets, matched inject, Annotated constructors), and built-in test doubles. Zero runtime dependencies.
+scopes, qualified keys (tag sets, matched inject, Annotated constructors), and
+use-case stdlib doubles (files, time, console, log, process, …). Zero runtime dependencies.
 Python 3.8+.
 
 **Docs:** [https://rl337.org/pyiv/](https://rl337.org/pyiv/) ·
@@ -28,7 +29,8 @@ pip install pyiv-common
 ```
 
 The [user guide](https://rl337.org/pyiv/) covers Binder, Keys, scopes,
-the Clock / Filesystem / Console / DateTimeService test doubles, and
+use-case doubles under ``pyiv.files`` / ``pyiv.time`` / ``pyiv.log`` /
+``pyiv.process`` (and legacy Clock / Filesystem re-exports), and
 [related packages](https://rl337.org/pyiv/guide/packages.html).
 
 ## Quick start
