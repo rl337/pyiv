@@ -125,6 +125,7 @@ tests:
    Catalogs without registries <guide/catalogs>
    Hierarchy and private modules <guide/hierarchy>
    Testing with doubles <guide/testing>
+   Agent skills for your project <guide/agent-skills>
    Packages and extras <guide/packages>
    Migrating from 0.x to 1.x <guide/migrate-0-to-1>
 

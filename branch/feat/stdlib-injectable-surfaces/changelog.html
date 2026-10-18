@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/catalogs.html">Catalogs without registries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/hierarchy.html">Hierarchy and private modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/testing.html">Testing with doubles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/agent-skills.html">Agent skills for your project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/packages.html">Packages and extras</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/migrate-0-to-1.html">Migrating from 0.x to 1.x</a></li>
 </ul>
@@ -186,6 +187,10 @@ CLI helpers, Command <code class="docutils literal notranslate"><span class="pre
 without a pydantic dependency).</p></li>
 <li><p>Agent skill / rule for public types (<code class="docutils literal notranslate"><span class="pre">public-types</span></code>): knobs as frozen
 dataclasses; services as Protocol/ABC; no soft pydantic imports.</p></li>
+<li><p>Customer-facing agent skills under <code class="docutils literal notranslate"><span class="pre">agent-skills/</span></code> (<code class="docutils literal notranslate"><span class="pre">use-pyiv</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pyiv-testing</span></code>, <code class="docutils literal notranslate"><span class="pre">pyiv.mdc</span></code>) plus guide
+:doc:<code class="docutils literal notranslate"><span class="pre">guide/agent-skills</span></code> with GitHub raw links on <code class="docutils literal notranslate"><span class="pre">main</span></code>. Maintainer
+requirement: keep them in sync when public APIs/doubles change.</p></li>
 </ul>
 </section>
 <section id="changed">
