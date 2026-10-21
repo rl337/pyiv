@@ -366,6 +366,9 @@ class Pep440VersionParser:
     standards-based parser. Config registers this under
     :data:`pyiv.version.PEP440` by default so
     ``for_package_version`` / ``for_python_version`` work without extra setup.
+    Presence / absence (``for_package_present`` / ``for_package_absent``) do
+    not use this parser — they short-circuit on
+    :data:`~pyiv.version.PACKAGE_PRESENT` / :data:`~pyiv.version.PACKAGE_ABSENT`.
 
     Example:
         >>> from pyiv.pep440 import Pep440VersionParser

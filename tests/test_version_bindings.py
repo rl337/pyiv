@@ -136,6 +136,166 @@ def test_absent_package_without_fallback_errors() -> None:
         get_injector(C)
 
 
+def test_for_package_present_selects_when_installed() -> None:
+    class Encoder:
+        kind = "base"
+
+    class Fast(Encoder):
+        kind = "fast"
+
+    class Std(Encoder):
+        kind = "std"
+
+    domain = package_version_domain("cjson")
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.version_source(domain, MapVersionSource({domain: "2.1.0"}))
+            b.bind(Encoder).to(Fast).for_package_present("cjson")
+            b.bind(Encoder).to(Std)
+
+    assert get_injector(C).inject(Encoder).kind == "fast"
+
+
+def test_for_package_present_fallback_when_absent() -> None:
+    class Encoder:
+        kind = "base"
+
+    class Fast(Encoder):
+        kind = "fast"
+
+    class Std(Encoder):
+        kind = "std"
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.bind(Encoder).to(Fast).for_package_present("pyiv-definitely-not-installed-xyz")
+            b.bind(Encoder).to(Std)
+
+    assert get_injector(C).inject(Encoder).kind == "std"
+
+
+def test_for_package_present_without_fallback_errors() -> None:
+    class Encoder:
+        pass
+
+    class Fast(Encoder):
+        pass
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.bind(Encoder).to(Fast).for_package_present("pyiv-definitely-not-installed-xyz")
+
+    with pytest.raises(CreationError, match="absent|unknown|No version-compatible"):
+        get_injector(C)
+
+
+def test_for_package_version_star_is_presence() -> None:
+    """``for_package_version(dist, \"*\")`` matches the same as for_package_present."""
+    from pyiv.version import PACKAGE_PRESENT
+
+    class Encoder:
+        kind = "base"
+
+    class Fast(Encoder):
+        kind = "fast"
+
+    domain = package_version_domain("accel")
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.version_source(domain, MapVersionSource({domain: "0.1"}))
+            b.bind(Encoder).to(Fast).for_package_version("accel", PACKAGE_PRESENT)
+
+    assert get_injector(C).inject(Encoder).kind == "fast"
+
+
+def test_for_package_absent_selects_when_missing() -> None:
+    class Encoder:
+        kind = "base"
+
+    class Fast(Encoder):
+        kind = "fast"
+
+    class Std(Encoder):
+        kind = "std"
+
+    missing = "pyiv-definitely-not-installed-xyz"
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.bind(Encoder).to(Fast).for_package_present(missing)
+            b.bind(Encoder).to(Std).for_package_absent(missing)
+
+    assert get_injector(C).inject(Encoder).kind == "std"
+
+
+def test_for_package_absent_skips_when_installed() -> None:
+    class Encoder:
+        kind = "base"
+
+    class Fast(Encoder):
+        kind = "fast"
+
+    class Std(Encoder):
+        kind = "std"
+
+    domain = package_version_domain("cjson")
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.version_source(domain, MapVersionSource({domain: "1.0.0"}))
+            b.bind(Encoder).to(Fast).for_package_present("cjson")
+            b.bind(Encoder).to(Std).for_package_absent("cjson")
+
+    assert get_injector(C).inject(Encoder).kind == "fast"
+
+
+def test_for_package_absent_without_present_pair_when_installed_errors() -> None:
+    """Only an absent candidate + installed package → zero matches → error."""
+    class Encoder:
+        pass
+
+    class Std(Encoder):
+        pass
+
+    domain = package_version_domain("cjson")
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.version_source(domain, MapVersionSource({domain: "1.0.0"}))
+            b.bind(Encoder).to(Std).for_package_absent("cjson")
+
+    with pytest.raises(CreationError, match="No version-compatible|installed"):
+        get_injector(C)
+
+
+def test_for_package_version_bang_is_absence() -> None:
+    from pyiv.version import PACKAGE_ABSENT
+
+    class Encoder:
+        kind = "base"
+
+    class Std(Encoder):
+        kind = "std"
+
+    missing = "pyiv-definitely-not-installed-xyz"
+
+    class C(Config):
+        def configure(self):
+            b = self.get_binder()
+            b.bind(Encoder).to(Std).for_package_version(missing, PACKAGE_ABSENT)
+
+    assert get_injector(C).inject(Encoder).kind == "std"
+
+
 def test_custom_named_version_parser() -> None:
     class FsTool:
         name = "base"

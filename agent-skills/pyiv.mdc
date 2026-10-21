@@ -11,6 +11,9 @@ Copy into your project's `.cursor/rules/` (or equivalent) when the app depends o
 - Prefer `from pyiv import …` for featured types (`Config`, `get_injector`,
   `Filesystem`, `Clock`, `Logger`, `Environment`, `HttpClient`, …).
 - Wire graphs with `Config.configure` / Binder; inject via constructors.
+- Optional accelerators: `for_package_present` / `for_package_absent`
+  (distribution name), or present + unconditional fallback — see
+  https://rl337.org/pyiv/guide/version-bindings.html.
 - Depend on injectables instead of calling `open`, `time.sleep`, `os.environ`,
   `subprocess`, or `logging.getLogger` at owned call sites.
 - In tests, bind Memory/Synthetic doubles — do not monkeypatch those stdlib edges.

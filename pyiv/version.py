@@ -16,6 +16,8 @@ domains when the host supplies a :class:`VersionSource` and a named
 **Real-World Use Cases:**
 
 - Pick an HTTP adapter compatible with the installed ``requests`` distribution
+- Prefer an optional accelerator (``cjson``, ``orjson``, …) when installed
+  via ``for_package_present`` / ``for_package_absent`` (or present + fallback)
 - Use ``TaskGroup``-based runners only on Python 3.11+
 - Bind filesystem helpers based on the host OS release (custom parser)
 - Tests bind a :class:`FixedPythonVersionProvider` (or a fixed
@@ -29,7 +31,10 @@ Architecture:
 - Named parser registry — ``\"PEP440\"`` defaults to
   :class:`~pyiv.pep440.Pep440VersionParser`; hosts register others by name
 - :class:`PythonVersionProvider` — injectable interpreter version (sys or fixed)
+- Reserved presence/absence specifiers — :data:`PACKAGE_PRESENT` (``\"*\"``)
+  and :data:`PACKAGE_ABSENT` (``\"!\"``)
 - Fluent Binder: ``.for_version`` / ``.for_package_version`` /
+  ``.for_package_present`` / ``.for_package_absent`` /
   ``.for_python_version`` register **candidates**; the injector selects one
   when the environment is stable (at injector construction)
 
@@ -58,6 +63,35 @@ Usage Examples:
         'legacy'
         >>> inj.inject(PythonVersionProvider).get_version()
         '3.10.12'
+
+    Optional package present / absent (accelerator vs stdlib)::
+
+        >>> from pyiv import Config, get_injector
+        >>> from pyiv.version import MapVersionSource, package_version_domain
+        >>> class Encoder:
+        ...     kind = "base"
+        >>> class FastEncoder(Encoder):
+        ...     kind = "fast"
+        >>> class StdEncoder(Encoder):
+        ...     kind = "std"
+        >>> domain = package_version_domain("cjson")
+        >>> class PresentConfig(Config):
+        ...     def configure(self):
+        ...         b = self.get_binder()
+        ...         # Tests: simulate an installed distribution without installing it.
+        ...         b.version_source(domain, MapVersionSource({domain: "1.0.0"}))
+        ...         b.bind(Encoder).to(FastEncoder).for_package_present("cjson")
+        ...         b.bind(Encoder).to(StdEncoder).for_package_absent("cjson")
+        >>> get_injector(PresentConfig).inject(Encoder).kind
+        'fast'
+        >>> class AbsentConfig(Config):
+        ...     def configure(self):
+        ...         b = self.get_binder()
+        ...         missing = "pyiv-definitely-not-installed-xyz"
+        ...         b.bind(Encoder).to(FastEncoder).for_package_present(missing)
+        ...         b.bind(Encoder).to(StdEncoder).for_package_absent(missing)
+        >>> get_injector(AbsentConfig).inject(Encoder).kind
+        'std'
 
     Custom domain with a named parser::
 
@@ -108,11 +142,70 @@ if TYPE_CHECKING:
 # Built-in domain / parser names.
 PYTHON_VERSION_DOMAIN = "python"
 PEP440 = "PEP440"
+PACKAGE_PRESENT = "*"
+"""Reserved specifier: match when a :class:`VersionSource` returns any version.
+
+Not a PEP 440 string — injector selection short-circuits before the parser.
+Used by ``binder.bind(...).for_package_present(...)`` and
+``for_package_version(distribution, PACKAGE_PRESENT)``. See
+:func:`is_package_present_specifier` and the module Usage Examples.
+"""
+
+PACKAGE_ABSENT = "!"
+"""Reserved specifier: match when a :class:`VersionSource` returns ``None``.
+
+Used by ``binder.bind(...).for_package_absent(...)`` and
+``for_package_version(distribution, PACKAGE_ABSENT)`` when the distribution
+is not installed (or the test :class:`MapVersionSource` has no entry). See
+:func:`is_package_absent_specifier` and the module Usage Examples.
+"""
 
 
 def package_version_domain(distribution: str) -> str:
-    """Return the version-domain key for an installed distribution name."""
+    """Return the version-domain key for an installed distribution name.
+
+    ``for_package_version`` / ``for_package_present`` / ``for_package_absent``
+    register sources under ``package:<distribution>``. Tests override that
+    domain with a :class:`MapVersionSource`.
+
+    Example:
+        >>> from pyiv.version import package_version_domain
+        >>> package_version_domain("requests")
+        'package:requests'
+    """
     return f"package:{distribution}"
+
+
+def is_package_present_specifier(specifier: str) -> bool:
+    """Return True if ``specifier`` means “any installed version” (presence).
+
+    **Why this exists:** Selection and hosts need a stable check for the
+    reserved :data:`PACKAGE_PRESENT` token without hard-coding ``\"*\"``.
+
+    Example:
+        >>> from pyiv.version import PACKAGE_PRESENT, is_package_present_specifier
+        >>> is_package_present_specifier(PACKAGE_PRESENT)
+        True
+        >>> is_package_present_specifier(">=1.0")
+        False
+    """
+    return specifier == PACKAGE_PRESENT
+
+
+def is_package_absent_specifier(specifier: str) -> bool:
+    """Return True if ``specifier`` means “distribution not installed”.
+
+    **Why this exists:** Parallel to :func:`is_package_present_specifier` for
+    the reserved :data:`PACKAGE_ABSENT` token.
+
+    Example:
+        >>> from pyiv.version import PACKAGE_ABSENT, is_package_absent_specifier
+        >>> is_package_absent_specifier(PACKAGE_ABSENT)
+        True
+        >>> is_package_absent_specifier("*")
+        False
+    """
+    return specifier == PACKAGE_ABSENT
 
 
 class InvalidVersion(ValueError):
@@ -167,7 +260,11 @@ __all__ = [
     "VersionBindingCandidate",
     "PYTHON_VERSION_DOMAIN",
     "PEP440",
+    "PACKAGE_PRESENT",
+    "PACKAGE_ABSENT",
     "package_version_domain",
+    "is_package_present_specifier",
+    "is_package_absent_specifier",
     "default_version_parsers",
 ]
 
@@ -243,15 +340,19 @@ class VersionSource(Protocol):
 class PackageVersionSource:
     """Read an installed distribution version via ``importlib.metadata``.
 
-    **Why this exists:** ``for_package_version`` needs the **distribution**
-    name (as on PyPI), which is not always the import package name. This
-    source never imports the library — it only consults packaging metadata.
+    **Why this exists:** ``for_package_version``, ``for_package_present``, and
+    ``for_package_absent`` need the **distribution** name (as on PyPI), which
+    is not always the import package name. This source never imports the
+    library — it only consults packaging metadata. ``None`` means absent and
+    is what ``for_package_absent`` matches on.
 
     Example:
         >>> from pyiv.version import PackageVersionSource
         >>> # ``pyiv`` itself is installed in the test / docs environment
         >>> ver = PackageVersionSource("pyiv").get_version()
         >>> ver is None or len(ver.split(".")) >= 2
+        True
+        >>> PackageVersionSource("pyiv-definitely-not-installed-xyz").get_version() is None
         True
     """
 
@@ -405,15 +506,21 @@ class MapVersionSource:
     """Fixed version map for tests and host-supplied environment snapshots.
 
     **Why this exists:** Selection must be deterministic in unit tests without
-    monkeypatching ``sys`` or ``importlib.metadata``. Bind one domain key, or
-    pass a multi-key map and select with ``domain``.
+    monkeypatching ``sys`` or ``importlib.metadata``. Use it for
+    ``for_package_version`` ranges and to simulate an installed distribution
+    for ``for_package_present`` (register under
+    :func:`package_version_domain`). Bind one domain key, or pass a multi-key
+    map and select with ``domain``.
 
     Example:
-        >>> from pyiv.version import MapVersionSource
+        >>> from pyiv.version import MapVersionSource, package_version_domain
         >>> MapVersionSource({"requests": "2.31.0"}, domain="requests").get_version()
         '2.31.0'
         >>> MapVersionSource({"alpine": "3.19"}).get_version()
         '3.19'
+        >>> domain = package_version_domain("cjson")
+        >>> MapVersionSource({domain: "1.0.0"}).get_version()
+        '1.0.0'
     """
 
     def __init__(
@@ -446,12 +553,14 @@ class VersionBindingCandidate:
     """One version-conditioned alternative for an abstract type.
 
     **Why this exists:** Unconditional ``Config`` registrations are last-wins
-    dictionaries. Version alternatives must accumulate as candidates and be
-    selected after config composition. Hosts rarely construct this type
-    directly — prefer ``binder.bind(...).to(...).for_version(...)``.
+    dictionaries. Version alternatives (including package presence /
+    absence) must accumulate as candidates and be selected after config
+    composition. Hosts rarely construct this type directly — prefer
+    ``binder.bind(...).to(...).for_version(...)`` /
+    ``for_package_present`` / ``for_package_absent``.
 
     Example:
-        >>> from pyiv.version import VersionBindingCandidate
+        >>> from pyiv.version import PACKAGE_PRESENT, VersionBindingCandidate
         >>> class HttpClient:
         ...     pass
         >>> class LegacyClient(HttpClient):
@@ -464,6 +573,13 @@ class VersionBindingCandidate:
         ... )
         >>> c.specifier
         '<2.30'
+        >>> VersionBindingCandidate(
+        ...     abstract=HttpClient,
+        ...     domain="package:cjson",
+        ...     specifier=PACKAGE_PRESENT,
+        ...     implementation=LegacyClient,
+        ... ).specifier
+        '*'
     """
 
     abstract: Type[Any]

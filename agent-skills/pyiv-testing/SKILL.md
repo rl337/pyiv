@@ -54,6 +54,8 @@ class TestConfig(Config):
 | Deterministic tokens | `Entropy` → `SyntheticEntropy` |
 | Fixed digests | `Hasher` → `SyntheticHasher` |
 | HTTP without network | `HttpClient` → `MemoryHttpClient` |
+| Simulate installed dist for `for_package_present` | `version_source(package_version_domain("name"), MapVersionSource({...}))` |
+| Simulate interpreter for `for_python_version` | `PythonVersionProvider` → `FixedPythonVersionProvider("3.10.12")` |
 
 ## Do
 

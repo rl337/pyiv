@@ -66,9 +66,21 @@ Version-conditioned bindings
 ----------------------------
 
 ``binder.bind(T).to(Impl).for_python_version(...)`` (and
-``for_package_version`` / ``for_version``) register **candidates** selected
-at injector construction. See :doc:`version-bindings` and
-:mod:`pyiv.version`.
+``for_package_version`` / ``for_package_present`` / ``for_package_absent`` /
+``for_version``) register **candidates** selected at injector construction.
+See :doc:`version-bindings` and :mod:`pyiv.version`.
+
+Optional accelerator when a distribution is installed (pair present / absent
+so exactly one matches):
+
+.. code-block:: python
+
+   binder.bind(Encoder).to(CJsonEncoder).for_package_present("cjson")
+   binder.bind(Encoder).to(JsonEncoder).for_package_absent("cjson")
+
+Or ``for_package_present`` plus an unconditional fallback registered
+**after** the conditioned binds. Pass the **distribution** name (PyPI /
+``importlib.metadata``), which may differ from the import package name.
 
 Installing modules
 ------------------
