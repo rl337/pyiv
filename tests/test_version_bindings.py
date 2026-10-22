@@ -259,6 +259,7 @@ def test_for_package_absent_skips_when_installed() -> None:
 
 def test_for_package_absent_without_present_pair_when_installed_errors() -> None:
     """Only an absent candidate + installed package → zero matches → error."""
+
     class Encoder:
         pass
 
