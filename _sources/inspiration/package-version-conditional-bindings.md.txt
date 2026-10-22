@@ -10,7 +10,8 @@ interpreter-version conditions are convenience adapters over that core.
 
 ## Implemented (env-stable)
 
-- Fluent Binder: ``for_version``, ``for_package_version``, ``for_python_version``
+- Fluent Binder: ``for_version``, ``for_package_version``,
+  ``for_package_present``, ``for_package_absent``, ``for_python_version``
 - ``VersionSource`` / ``VersionParser`` with named registry (``PEP440`` default)
 - Public :mod:`pyiv.pep440` engine; parsers raise ``InvalidVersion`` subclasses
 - Injectable ``PythonVersionProvider`` (``SysPythonVersionProvider`` /
@@ -52,6 +53,18 @@ binder.bind(AsyncRunner).to(LegacyAsyncRunner).for_python_version("<3.11")
 binder.bind(AsyncRunner).to(TaskGroupAsyncRunner).for_python_version(">=3.11")
 ```
 
+Optional package **presence / absence** (accelerator vs stdlib) uses the same
+candidate store — no version range required:
+
+```python
+binder.bind(Encoder).to(CJsonEncoder).for_package_present("cjson")
+binder.bind(Encoder).to(JsonEncoder).for_package_absent("cjson")
+```
+
+Sugar for `for_package_version(dist, "*")` / `for_package_version(dist, "!")`
+(`PACKAGE_PRESENT` / `PACKAGE_ABSENT`). Checks distribution metadata, not
+`sys.modules`.
+
 ## Still open
 
 ### Request/message-scoped versions
@@ -72,6 +85,8 @@ exists, use exact-match identities or a separate compatibility predicate.
 - Multi-package predicates on one binding
 - Richer inspection APIs for candidate predicates and rejection reasons
 - Optional ``from_version`` / ``to_version`` range sugar vs specifier strings only
+- Import-name / ``find_spec`` presence (today presence is distribution metadata
+  via ``for_package_present``)
 
 ## Source
 

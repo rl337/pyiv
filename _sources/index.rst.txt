@@ -41,7 +41,7 @@ Key Features
    </div>
    <div style="padding: 20px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #0066cc;">
    <h4 style="margin-top: 0; color: #0066cc;">Keys and Binder</h4>
-   <p style="margin: 0;">Qualified bindings with tag sets (<code>Named</code>), nearest-match inject (<code>Matched</code>), <code>Annotated</code> constructor params, version-conditioned bindings, and a fluent Binder API.</p>
+   <p style="margin: 0;">Qualified bindings with tag sets (<code>Named</code>), nearest-match inject (<code>Matched</code>), <code>Annotated</code> constructor params, version-conditioned bindings (including optional package present/absent), and a fluent Binder API.</p>
    </div>
    <div style="padding: 20px; background: #f9f9f9; border-radius: 6px; border-left: 4px solid #0066cc;">
    <h4 style="margin-top: 0; color: #0066cc;">Reflection</h4>
@@ -111,8 +111,8 @@ User Guide
 ----------
 
 Binder vs ``register``, scopes, qualified keys, version-conditioned
-bindings, and swapping Clock / Filesystem / Console / DateTimeService in
-tests:
+bindings (Python / package version / package present or absent), and
+swapping Clock / Filesystem / Console / DateTimeService in tests:
 
 .. toctree::
    :maxdepth: 1

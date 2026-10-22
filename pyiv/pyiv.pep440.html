@@ -247,7 +247,10 @@ callers can catch all parser failures, or only PEP 440 ones.</p>
 <p><strong>Why this exists:</strong> Python package and interpreter domains need a named,
 standards-based parser. Config registers this under
 <code class="xref py py-data docutils literal notranslate"><span class="pre">pyiv.version.PEP440</span></code> by default so
-<code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> work without extra setup.</p>
+<code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> work without extra setup.
+Presence / absence (<code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code>) do
+not use this parser — they short-circuit on
+<a class="reference internal" href="pyiv.version.html#pyiv.version.PACKAGE_PRESENT" title="pyiv.version.PACKAGE_PRESENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_PRESENT</span></code></a> / <a class="reference internal" href="pyiv.version.html#pyiv.version.PACKAGE_ABSENT" title="pyiv.version.PACKAGE_ABSENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_ABSENT</span></code></a>.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.pep440</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pep440VersionParser</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">Pep440VersionParser</span><span class="p">()</span>

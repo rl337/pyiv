@@ -11,9 +11,14 @@ See :mod:`pyiv.version` for the full API (sources, parsers, candidates) and
 Fluent API
 ----------
 
-``for_python_version`` and ``for_package_version`` are convenience adapters
-over ``for_version``. They use the named parser ``\"PEP440\"``
-(:class:`~pyiv.pep440.Pep440VersionParser`).
+``for_python_version``, ``for_package_version``, ``for_package_present``,
+and ``for_package_absent`` are convenience adapters over ``for_version``.
+The version helpers use the named parser ``\"PEP440\"``
+(:class:`~pyiv.pep440.Pep440VersionParser`). Presence / absence helpers match
+without a PEP 440 parse.
+
+Interpreter version
+~~~~~~~~~~~~~~~~~~~
 
 Interpreter version is read through an injectable
 :class:`~pyiv.version.PythonVersionProvider`. Production defaults to
@@ -48,6 +53,34 @@ checked under many Python versions:
    inj = get_injector(RunnerConfig)
    assert inj.inject(Runner).kind == "legacy"
    assert inj.inject(PythonVersionProvider).get_version() == "3.10.12"
+
+Optional package present / absent
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Prefer an optional accelerator when its **distribution** is installed, and a
+stdlib (or other) implementation when it is missing. Pair
+``for_package_present`` with ``for_package_absent`` so exactly one candidate
+matches (no unconditional fallback required). See
+:ref:`package-presence-absence` for fallback ordering and testing tips.
+
+.. code-block:: python
+
+   from pyiv import Config, get_injector
+
+   class Encoder:
+       kind = "base"
+
+   class CJsonEncoder(Encoder):
+       kind = "cjson"
+
+   class JsonEncoder(Encoder):
+       kind = "json"
+
+   class EncoderConfig(Config):
+       def configure(self):
+           binder = self.get_binder()
+           binder.bind(Encoder).to(CJsonEncoder).for_package_present("cjson")
+           binder.bind(Encoder).to(JsonEncoder).for_package_absent("cjson")
 
 Custom domains and named parsers
 --------------------------------
@@ -155,8 +188,9 @@ as a trailing ``bind(...).to(...)``.
 **Providers, instances, and scopes**
 
 - ``.to_provider(...)`` / ``.to_instance(...)`` may appear before
-  ``for_version`` / ``for_python_version`` / ``for_package_version``; the
-  winning candidate keeps that target shape.
+  ``for_version`` / ``for_python_version`` / ``for_package_version`` /
+  ``for_package_present`` / ``for_package_absent``; the winning candidate
+  keeps that target shape.
 - ``.in_scope(...)`` on a version-conditioned chain applies to that
   candidate. A scoped unconditional fallback is only used when no
   candidate matches.
@@ -190,3 +224,94 @@ name (as on PyPI), which may differ from the import package name. Tests
 should register a :class:`~pyiv.version.MapVersionSource` for
 ``package:<distribution>`` (see :func:`~pyiv.version.package_version_domain`)
 instead of installing multiple package versions.
+
+.. code-block:: python
+
+   from pyiv import Config, get_injector
+   from pyiv.version import MapVersionSource, package_version_domain
+
+   class HttpClient:
+       name = "base"
+
+   class Legacy(HttpClient):
+       name = "legacy"
+
+   class Modern(HttpClient):
+       name = "modern"
+
+   domain = package_version_domain("requests")
+
+   class HttpConfig(Config):
+       def configure(self):
+           b = self.get_binder()
+           b.version_source(domain, MapVersionSource({domain: "2.31.0"}))
+           b.bind(HttpClient).to(Legacy).for_package_version("requests", "<2.30")
+           b.bind(HttpClient).to(Modern).for_package_version(
+               "requests", ">=2.30,<3"
+           )
+
+   assert get_injector(HttpConfig).inject(HttpClient).name == "modern"
+
+When you only care about install vs missing (not a version range), use
+``for_package_present`` / ``for_package_absent`` below instead of inventing
+a catch-all PEP 440 specifier.
+
+.. _package-presence-absence:
+
+Package presence / absence (optional accelerators)
+--------------------------------------------------
+
+When you only care whether a distribution is **installed** (not which
+version), use ``for_package_present`` and/or ``for_package_absent``.
+
+**Explicit both sides** (no unconditional fallback needed — exactly one
+matches):
+
+.. code-block:: python
+
+   from pyiv import Config, get_injector
+
+   class Encoder:
+       kind = "base"
+
+   class CJsonEncoder(Encoder):
+       kind = "cjson"
+
+   class JsonEncoder(Encoder):
+       kind = "json"
+
+   class EncoderConfig(Config):
+       def configure(self):
+           binder = self.get_binder()
+           binder.bind(Encoder).to(CJsonEncoder).for_package_present("cjson")
+           binder.bind(Encoder).to(JsonEncoder).for_package_absent("cjson")
+
+**Presence + unconditional fallback** (same outcome when the package is
+missing; register the fallback **after**):
+
+.. code-block:: python
+
+   binder.bind(Encoder).to(CJsonEncoder).for_package_present("cjson")
+   binder.bind(Encoder).to(JsonEncoder)  # fallback when cjson absent
+
+**Testing presence without installing the package:** register a
+:class:`~pyiv.version.MapVersionSource` for
+``package:<distribution>`` (same as version-range tests). Omit the source
+(or use a name that is not installed) to exercise the absent path.
+
+.. code-block:: python
+
+   from pyiv.version import MapVersionSource, package_version_domain
+
+   domain = package_version_domain("cjson")
+   binder.version_source(domain, MapVersionSource({domain: "1.0.0"}))
+   binder.bind(Encoder).to(CJsonEncoder).for_package_present("cjson")
+   binder.bind(Encoder).to(JsonEncoder).for_package_absent("cjson")
+
+``for_package_present`` / ``for_package_absent`` are sugar for
+``for_package_version(distribution, \"*\")`` /
+``for_package_version(distribution, \"!\")``
+(:data:`~pyiv.version.PACKAGE_PRESENT` /
+:data:`~pyiv.version.PACKAGE_ABSENT`). This checks **distribution
+metadata**, not whether the import package is already loaded in
+``sys.modules``.

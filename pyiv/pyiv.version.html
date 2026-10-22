@@ -179,6 +179,8 @@ domains when the host supplies a <a class="reference internal" href="#pyiv.versi
 <p><strong>Real-World Use Cases:</strong></p>
 <ul class="simple">
 <li><p>Pick an HTTP adapter compatible with the installed <code class="docutils literal notranslate"><span class="pre">requests</span></code> distribution</p></li>
+<li><p>Prefer an optional accelerator (<code class="docutils literal notranslate"><span class="pre">cjson</span></code>, <code class="docutils literal notranslate"><span class="pre">orjson</span></code>, …) when installed
+via <code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code> (or present + fallback)</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">TaskGroup</span></code>-based runners only on Python 3.11+</p></li>
 <li><p>Bind filesystem helpers based on the host OS release (custom parser)</p></li>
 <li><p>Tests bind a <a class="reference internal" href="#pyiv.version.FixedPythonVersionProvider" title="pyiv.version.FixedPythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">FixedPythonVersionProvider</span></code></a> (or a fixed
@@ -192,7 +194,10 @@ domains when the host supplies a <a class="reference internal" href="#pyiv.versi
 <li><p>Named parser registry — <code class="docutils literal notranslate"><span class="pre">&quot;PEP440&quot;</span></code> defaults to
 <a class="reference internal" href="pyiv.pep440.html#pyiv.pep440.Pep440VersionParser" title="pyiv.pep440.Pep440VersionParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pep440VersionParser</span></code></a>; hosts register others by name</p></li>
 <li><p><a class="reference internal" href="#pyiv.version.PythonVersionProvider" title="pyiv.version.PythonVersionProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonVersionProvider</span></code></a> — injectable interpreter version (sys or fixed)</p></li>
+<li><p>Reserved presence/absence specifiers — <a class="reference internal" href="#pyiv.version.PACKAGE_PRESENT" title="pyiv.version.PACKAGE_PRESENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_PRESENT</span></code></a> (<code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>)
+and <a class="reference internal" href="#pyiv.version.PACKAGE_ABSENT" title="pyiv.version.PACKAGE_ABSENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_ABSENT</span></code></a> (<code class="docutils literal notranslate"><span class="pre">&quot;!&quot;</span></code>)</p></li>
 <li><p>Fluent Binder: <code class="docutils literal notranslate"><span class="pre">.for_version</span></code> / <code class="docutils literal notranslate"><span class="pre">.for_package_version</span></code> /
+<code class="docutils literal notranslate"><span class="pre">.for_package_present</span></code> / <code class="docutils literal notranslate"><span class="pre">.for_package_absent</span></code> /
 <code class="docutils literal notranslate"><span class="pre">.for_python_version</span></code> register <strong>candidates</strong>; the injector selects one
 when the environment is stable (at injector construction)</p></li>
 </ul>
@@ -220,6 +225,35 @@ when the environment is stable (at injector construction)</p></li>
 <span class="go">'legacy'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">inj</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">PythonVersionProvider</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
 <span class="go">'3.10.12'</span>
+</pre></div>
+</div>
+<p>Optional package present / absent (accelerator vs stdlib):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">get_injector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">MapVersionSource</span><span class="p">,</span> <span class="n">package_version_domain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Encoder</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"base"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">FastEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"fast"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">StdEncoder</span><span class="p">(</span><span class="n">Encoder</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"std"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">domain</span> <span class="o">=</span> <span class="n">package_version_domain</span><span class="p">(</span><span class="s2">"cjson"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">PresentConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="c1"># Tests: simulate an installed distribution without installing it.</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">version_source</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">MapVersionSource</span><span class="p">({</span><span class="n">domain</span><span class="p">:</span> <span class="s2">"1.0.0"</span><span class="p">}))</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">FastEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_present</span><span class="p">(</span><span class="s2">"cjson"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">StdEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_absent</span><span class="p">(</span><span class="s2">"cjson"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_injector</span><span class="p">(</span><span class="n">PresentConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'fast'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">AbsentConfig</span><span class="p">(</span><span class="n">Config</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_binder</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="n">missing</span> <span class="o">=</span> <span class="s2">"pyiv-definitely-not-installed-xyz"</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">FastEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_present</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">StdEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_absent</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_injector</span><span class="p">(</span><span class="n">AbsentConfig</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'std'</span>
 </pre></div>
 </div>
 <p>Custom domain with a named parser:</p>
@@ -255,6 +289,35 @@ when the environment is stable (at injector construction)</p></li>
 </pre></div>
 </div>
 </div></blockquote>
+<p class="rubric">Constants / helpers</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.version.PACKAGE_PRESENT" title="pyiv.version.PACKAGE_PRESENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PACKAGE_PRESENT</span></code></a></p></td>
+<td><p>match when a <a class="reference internal" href="#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> returns any version.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyiv.version.PACKAGE_ABSENT" title="pyiv.version.PACKAGE_ABSENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PACKAGE_ABSENT</span></code></a></p></td>
+<td><p>match when a <a class="reference internal" href="#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PYTHON_VERSION_DOMAIN</span></code></p></td>
+<td><p>str(object='') -&gt; str str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PEP440</span></code></p></td>
+<td><p>str(object='') -&gt; str str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.version.package_version_domain" title="pyiv.version.package_version_domain"><code class="xref py py-obj docutils literal notranslate"><span class="pre">package_version_domain</span></code></a>(distribution)</p></td>
+<td><p>Return the version-domain key for an installed distribution name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyiv.version.is_package_present_specifier" title="pyiv.version.is_package_present_specifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_package_present_specifier</span></code></a>(specifier)</p></td>
+<td><p>Return True if <code class="docutils literal notranslate"><span class="pre">specifier</span></code> means “any installed version” (presence).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyiv.version.is_package_absent_specifier" title="pyiv.version.is_package_absent_specifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_package_absent_specifier</span></code></a>(specifier)</p></td>
+<td><p>Return True if <code class="docutils literal notranslate"><span class="pre">specifier</span></code> means “distribution not installed”.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyiv.version.default_version_parsers" title="pyiv.version.default_version_parsers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_version_parsers</span></code></a>()</p></td>
+<td><p>Return the built-in named parser map (<code class="docutils literal notranslate"><span class="pre">PEP440</span></code> → Pep440VersionParser).</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -368,14 +431,20 @@ schema epoch. Custom parsers should raise this class or a subclass.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Fixed version map for tests and host-supplied environment snapshots.</p>
 <p><strong>Why this exists:</strong> Selection must be deterministic in unit tests without
-monkeypatching <code class="docutils literal notranslate"><span class="pre">sys</span></code> or <code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code>. Bind one domain key, or
-pass a multi-key map and select with <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
+monkeypatching <code class="docutils literal notranslate"><span class="pre">sys</span></code> or <code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code>. Use it for
+<code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> ranges and to simulate an installed distribution
+for <code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> (register under
+<a class="reference internal" href="#pyiv.version.package_version_domain" title="pyiv.version.package_version_domain"><code class="xref py py-func docutils literal notranslate"><span class="pre">package_version_domain()</span></code></a>). Bind one domain key, or pass a multi-key
+map and select with <code class="docutils literal notranslate"><span class="pre">domain</span></code>.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">MapVersionSource</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">MapVersionSource</span><span class="p">,</span> <span class="n">package_version_domain</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MapVersionSource</span><span class="p">({</span><span class="s2">"requests"</span><span class="p">:</span> <span class="s2">"2.31.0"</span><span class="p">},</span> <span class="n">domain</span><span class="o">=</span><span class="s2">"requests"</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
 <span class="go">'2.31.0'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MapVersionSource</span><span class="p">({</span><span class="s2">"alpine"</span><span class="p">:</span> <span class="s2">"3.19"</span><span class="p">})</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
 <span class="go">'3.19'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">domain</span> <span class="o">=</span> <span class="n">package_version_domain</span><span class="p">(</span><span class="s2">"cjson"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MapVersionSource</span><span class="p">({</span><span class="n">domain</span><span class="p">:</span> <span class="s2">"1.0.0"</span><span class="p">})</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
+<span class="go">'1.0.0'</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -400,19 +469,53 @@ one entry, that entry is used.</p></li>
 
 </dd></dl>
 
+<dl class="py data">
+<dt class="sig sig-object py" id="pyiv.version.PACKAGE_ABSENT">
+<span class="sig-prename descclassname"><span class="pre">pyiv.version.</span></span><span class="sig-name descname"><span class="pre">PACKAGE_ABSENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'!'</span></em><a class="headerlink" href="#pyiv.version.PACKAGE_ABSENT" title="Link to this definition"></a></dt>
+<dd><p>match when a <a class="reference internal" href="#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>Used by <code class="docutils literal notranslate"><span class="pre">binder.bind(...).for_package_absent(...)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">for_package_version(distribution,</span> <span class="pre">PACKAGE_ABSENT)</span></code> when the distribution
+is not installed (or the test <a class="reference internal" href="#pyiv.version.MapVersionSource" title="pyiv.version.MapVersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapVersionSource</span></code></a> has no entry). See
+<a class="reference internal" href="#pyiv.version.is_package_absent_specifier" title="pyiv.version.is_package_absent_specifier"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_package_absent_specifier()</span></code></a> and the module Usage Examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Reserved specifier</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pyiv.version.PACKAGE_PRESENT">
+<span class="sig-prename descclassname"><span class="pre">pyiv.version.</span></span><span class="sig-name descname"><span class="pre">PACKAGE_PRESENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'*'</span></em><a class="headerlink" href="#pyiv.version.PACKAGE_PRESENT" title="Link to this definition"></a></dt>
+<dd><p>match when a <a class="reference internal" href="#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> returns any version.</p>
+<p>Not a PEP 440 string — injector selection short-circuits before the parser.
+Used by <code class="docutils literal notranslate"><span class="pre">binder.bind(...).for_package_present(...)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">for_package_version(distribution,</span> <span class="pre">PACKAGE_PRESENT)</span></code>. See
+<a class="reference internal" href="#pyiv.version.is_package_present_specifier" title="pyiv.version.is_package_present_specifier"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_package_present_specifier()</span></code></a> and the module Usage Examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Reserved specifier</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="pyiv.version.PackageVersionSource">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyiv.version.</span></span><span class="sig-name descname"><span class="pre">PackageVersionSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyiv/version.html#PackageVersionSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.version.PackageVersionSource" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Read an installed distribution version via <code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code>.</p>
-<p><strong>Why this exists:</strong> <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> needs the <strong>distribution</strong>
-name (as on PyPI), which is not always the import package name. This
-source never imports the library — it only consults packaging metadata.</p>
+<p><strong>Why this exists:</strong> <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code>, <code class="docutils literal notranslate"><span class="pre">for_package_present</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code> need the <strong>distribution</strong> name (as on PyPI), which
+is not always the import package name. This source never imports the
+library — it only consults packaging metadata. <code class="docutils literal notranslate"><span class="pre">None</span></code> means absent and
+is what <code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code> matches on.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageVersionSource</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ``pyiv`` itself is installed in the test / docs environment</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ver</span> <span class="o">=</span> <span class="n">PackageVersionSource</span><span class="p">(</span><span class="s2">"pyiv"</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ver</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ver</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PackageVersionSource</span><span class="p">(</span><span class="s2">"pyiv-definitely-not-installed-xyz"</span><span class="p">)</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -539,11 +642,13 @@ calling this class directly.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>One version-conditioned alternative for an abstract type.</p>
 <p><strong>Why this exists:</strong> Unconditional <code class="docutils literal notranslate"><span class="pre">Config</span></code> registrations are last-wins
-dictionaries. Version alternatives must accumulate as candidates and be
-selected after config composition. Hosts rarely construct this type
-directly — prefer <code class="docutils literal notranslate"><span class="pre">binder.bind(...).to(...).for_version(...)</span></code>.</p>
+dictionaries. Version alternatives (including package presence /
+absence) must accumulate as candidates and be selected after config
+composition. Hosts rarely construct this type directly — prefer
+<code class="docutils literal notranslate"><span class="pre">binder.bind(...).to(...).for_version(...)</span></code> /
+<code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code>.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">VersionBindingCandidate</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">PACKAGE_PRESENT</span><span class="p">,</span> <span class="n">VersionBindingCandidate</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">HttpClient</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">pass</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">LegacyClient</span><span class="p">(</span><span class="n">HttpClient</span><span class="p">):</span>
@@ -556,6 +661,13 @@ directly — prefer <code class="docutils literal notranslate"><span class="pre"
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">specifier</span>
 <span class="go">'&lt;2.30'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">VersionBindingCandidate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">abstract</span><span class="o">=</span><span class="n">HttpClient</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">domain</span><span class="o">=</span><span class="s2">"package:cjson"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">specifier</span><span class="o">=</span><span class="n">PACKAGE_PRESENT</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">implementation</span><span class="o">=</span><span class="n">LegacyClient</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span><span class="o">.</span><span class="n">specifier</span>
+<span class="go">'*'</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -703,9 +815,50 @@ binder. Implement this for custom domains, or use
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="pyiv.version.is_package_absent_specifier">
+<span class="sig-prename descclassname"><span class="pre">pyiv.version.</span></span><span class="sig-name descname"><span class="pre">is_package_absent_specifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#is_package_absent_specifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.version.is_package_absent_specifier" title="Link to this definition"></a></dt>
+<dd><p>Return True if <code class="docutils literal notranslate"><span class="pre">specifier</span></code> means “distribution not installed”.</p>
+<p><strong>Why this exists:</strong> Parallel to <a class="reference internal" href="#pyiv.version.is_package_present_specifier" title="pyiv.version.is_package_present_specifier"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_package_present_specifier()</span></code></a> for
+the reserved <a class="reference internal" href="#pyiv.version.PACKAGE_ABSENT" title="pyiv.version.PACKAGE_ABSENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_ABSENT</span></code></a> token.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">PACKAGE_ABSENT</span><span class="p">,</span> <span class="n">is_package_absent_specifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_absent_specifier</span><span class="p">(</span><span class="n">PACKAGE_ABSENT</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_absent_specifier</span><span class="p">(</span><span class="s2">"*"</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyiv.version.is_package_present_specifier">
+<span class="sig-prename descclassname"><span class="pre">pyiv.version.</span></span><span class="sig-name descname"><span class="pre">is_package_present_specifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">specifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#is_package_present_specifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.version.is_package_present_specifier" title="Link to this definition"></a></dt>
+<dd><p>Return True if <code class="docutils literal notranslate"><span class="pre">specifier</span></code> means “any installed version” (presence).</p>
+<p><strong>Why this exists:</strong> Selection and hosts need a stable check for the
+reserved <a class="reference internal" href="#pyiv.version.PACKAGE_PRESENT" title="pyiv.version.PACKAGE_PRESENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_PRESENT</span></code></a> token without hard-coding <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">PACKAGE_PRESENT</span><span class="p">,</span> <span class="n">is_package_present_specifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_present_specifier</span><span class="p">(</span><span class="n">PACKAGE_PRESENT</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_present_specifier</span><span class="p">(</span><span class="s2">"&gt;=1.0"</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pyiv.version.package_version_domain">
 <span class="sig-prename descclassname"><span class="pre">pyiv.version.</span></span><span class="sig-name descname"><span class="pre">package_version_domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pyiv/version.html#package_version_domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.version.package_version_domain" title="Link to this definition"></a></dt>
 <dd><p>Return the version-domain key for an installed distribution name.</p>
+<p><code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code>
+register sources under <code class="docutils literal notranslate"><span class="pre">package:&lt;distribution&gt;</span></code>. Tests override that
+domain with a <a class="reference internal" href="#pyiv.version.MapVersionSource" title="pyiv.version.MapVersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapVersionSource</span></code></a>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">package_version_domain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">package_version_domain</span><span class="p">(</span><span class="s2">"requests"</span><span class="p">)</span>
+<span class="go">'package:requests'</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

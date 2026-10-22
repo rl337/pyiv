@@ -178,8 +178,8 @@
 <span class="sd">- **Programmatic Configuration**: Build configurations dynamically</span>
 <span class="sd">- **Better Readability**: ``binder.bind(X).to(Y).in_scope(Z)`` is clearer than nested calls</span>
 <span class="sd">- **Version conditions**: ``.for_version`` / ``.for_package_version`` /</span>
-<span class="sd">  ``.for_python_version`` select among implementations from named version domains</span>
-<span class="sd">  (see :mod:`pyiv.version`)</span>
+<span class="sd">  ``.for_package_present`` / ``.for_package_absent`` / ``.for_python_version``</span>
+<span class="sd">  select among implementations from named version domains (see :mod:`pyiv.version`)</span>
 
 <span class="sd">**Real-World Use Cases:**</span>
 
@@ -187,7 +187,9 @@
 <span class="sd">- **Configuration Testing**: Mock binders to test configuration logic</span>
 <span class="sd">- **Modular Configuration**: Compose configurations from multiple sources</span>
 <span class="sd">- **Framework Integration**: Provide fluent APIs for framework-specific configuration</span>
-<span class="sd">- **Environment adapters**: Bind different implementations for Python or package versions</span>
+<span class="sd">- **Environment adapters**: Bind different implementations for Python or</span>
+<span class="sd">  package versions, or optional accelerators via ``for_package_present`` /</span>
+<span class="sd">  ``for_package_absent``</span>
 
 <span class="sd">Architecture:</span>
 <span class="sd">    - Binder: Protocol defining the binder interface</span>
@@ -240,6 +242,25 @@
 <span class="sd">        &gt;&gt;&gt; injector = get_injector(InstanceConfig)</span>
 <span class="sd">        &gt;&gt;&gt; injector.inject(Cache) is cache</span>
 <span class="sd">        True</span>
+
+<span class="sd">    Optional package present / absent (see :mod:`pyiv.version`):</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import MapVersionSource, package_version_domain</span>
+<span class="sd">        &gt;&gt;&gt; class Encoder:</span>
+<span class="sd">        ...     kind = "base"</span>
+<span class="sd">        &gt;&gt;&gt; class Fast(Encoder):</span>
+<span class="sd">        ...     kind = "fast"</span>
+<span class="sd">        &gt;&gt;&gt; class Std(Encoder):</span>
+<span class="sd">        ...     kind = "std"</span>
+<span class="sd">        &gt;&gt;&gt; domain = package_version_domain("orjson")</span>
+<span class="sd">        &gt;&gt;&gt; class AccelConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         b = self.get_binder()</span>
+<span class="sd">        ...         b.version_source(domain, MapVersionSource({domain: "3.0.0"}))</span>
+<span class="sd">        ...         b.bind(Encoder).to(Fast).for_package_present("orjson")</span>
+<span class="sd">        ...         b.bind(Encoder).to(Std).for_package_absent("orjson")</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(AccelConfig).inject(Encoder).kind</span>
+<span class="sd">        'fast'</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -294,6 +315,24 @@
 <span class="sd">        ...         b.bind(Api).to(V2).for_python_version("&gt;=3.11")</span>
 <span class="sd">        &gt;&gt;&gt; get_injector(ApiConfig).inject(Api).tag</span>
 <span class="sd">        'v2'</span>
+
+<span class="sd">    Package present / absent (optional accelerator)::</span>
+
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; class Encoder:</span>
+<span class="sd">        ...     kind = "base"</span>
+<span class="sd">        &gt;&gt;&gt; class Fast(Encoder):</span>
+<span class="sd">        ...     kind = "fast"</span>
+<span class="sd">        &gt;&gt;&gt; class Std(Encoder):</span>
+<span class="sd">        ...     kind = "std"</span>
+<span class="sd">        &gt;&gt;&gt; class MissingAccelConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         b = self.get_binder()</span>
+<span class="sd">        ...         missing = "pyiv-definitely-not-installed-xyz"</span>
+<span class="sd">        ...         b.bind(Encoder).to(Fast).for_package_present(missing)</span>
+<span class="sd">        ...         b.bind(Encoder).to(Std).for_package_absent(missing)</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(MissingAccelConfig).inject(Encoder).kind</span>
+<span class="sd">        'std'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="BindingBuilder.to">
@@ -364,11 +403,16 @@
 <span class="w">        </span><span class="sd">"""Restrict this binding to a named version domain + specifier.</span>
 
 <span class="sd">        Registers a version **candidate** instead of an unconditional binding.</span>
-<span class="sd">        See :mod:`pyiv.version` and the version-bindings guide.</span>
+<span class="sd">        Prefer :meth:`for_python_version`, :meth:`for_package_version`,</span>
+<span class="sd">        :meth:`for_package_present`, or :meth:`for_package_absent` when those</span>
+<span class="sd">        cover the domain. See :mod:`pyiv.version` and the version-bindings</span>
+<span class="sd">        guide.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            domain: Named version domain (must have a :class:`~pyiv.version.VersionSource`)</span>
-<span class="sd">            specifier: Domain-specific version constraint string</span>
+<span class="sd">            specifier: Domain-specific version constraint string (or</span>
+<span class="sd">                :data:`~pyiv.version.PACKAGE_PRESENT` /</span>
+<span class="sd">                :data:`~pyiv.version.PACKAGE_ABSENT` for package domains)</span>
 <span class="sd">            parser: Optional named :class:`~pyiv.version.VersionParser`</span>
 <span class="sd">                (defaults to the domain's parser, then ``\"PEP440\"``)</span>
 
@@ -391,10 +435,119 @@
 <span class="sd">        :class:`~pyiv.version.PackageVersionSource` and the built-in</span>
 <span class="sd">        ``\"PEP440\"`` :class:`~pyiv.pep440.Pep440VersionParser`.</span>
 
+<span class="sd">        Pass :data:`~pyiv.version.PACKAGE_PRESENT` (``\"*\"``) /</span>
+<span class="sd">        :data:`~pyiv.version.PACKAGE_ABSENT` (``\"!\"``) — or use</span>
+<span class="sd">        :meth:`for_package_present` / :meth:`for_package_absent`.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv.version import MapVersionSource, package_version_domain</span>
+<span class="sd">            &gt;&gt;&gt; class HttpClient:</span>
+<span class="sd">            ...     name = "base"</span>
+<span class="sd">            &gt;&gt;&gt; class Legacy(HttpClient):</span>
+<span class="sd">            ...     name = "legacy"</span>
+<span class="sd">            &gt;&gt;&gt; class Modern(HttpClient):</span>
+<span class="sd">            ...     name = "modern"</span>
+<span class="sd">            &gt;&gt;&gt; domain = package_version_domain("requests")</span>
+<span class="sd">            &gt;&gt;&gt; class HttpConfig(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         b = self.get_binder()</span>
+<span class="sd">            ...         b.version_source(domain, MapVersionSource({domain: "2.31.0"}))</span>
+<span class="sd">            ...         b.bind(HttpClient).to(Legacy).for_package_version(</span>
+<span class="sd">            ...             "requests", "&lt;2.30"</span>
+<span class="sd">            ...         )</span>
+<span class="sd">            ...         b.bind(HttpClient).to(Modern).for_package_version(</span>
+<span class="sd">            ...             "requests", "&gt;=2.30,&lt;3"</span>
+<span class="sd">            ...         )</span>
+<span class="sd">            &gt;&gt;&gt; get_injector(HttpConfig).inject(HttpClient).name</span>
+<span class="sd">            'modern'</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            distribution: Distribution name (``importlib.metadata``), not</span>
 <span class="sd">                necessarily the import package name</span>
-<span class="sd">            specifier: PEP 440 version specifier</span>
+<span class="sd">            specifier: PEP 440 version specifier, or ``\"*\"`` / ``\"!\"`` for</span>
+<span class="sd">                presence / absence</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="BindingBuilder.for_package_present">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder.for_package_present">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_package_present</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"BindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrict this binding to when the distribution is installed.</span>
+
+<span class="sd">        Sugar for ``for_package_version(distribution, \"*\")``. Matches any</span>
+<span class="sd">        installed version; when the distribution is absent the candidate does</span>
+<span class="sd">        not match — pair with :meth:`for_package_absent` or an unconditional</span>
+<span class="sd">        fallback registered after.</span>
+
+<span class="sd">        Pass the **distribution** name (as on PyPI / ``importlib.metadata``),</span>
+<span class="sd">        which may differ from the import package name.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv.version import MapVersionSource, package_version_domain</span>
+<span class="sd">            &gt;&gt;&gt; class Encoder:</span>
+<span class="sd">            ...     kind = "base"</span>
+<span class="sd">            &gt;&gt;&gt; class FastEncoder(Encoder):</span>
+<span class="sd">            ...     kind = "fast"</span>
+<span class="sd">            &gt;&gt;&gt; class StdEncoder(Encoder):</span>
+<span class="sd">            ...     kind = "std"</span>
+<span class="sd">            &gt;&gt;&gt; domain = package_version_domain("cjson")</span>
+<span class="sd">            &gt;&gt;&gt; class EncoderConfig(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         b = self.get_binder()</span>
+<span class="sd">            ...         # Simulate an installed optional accelerator in tests.</span>
+<span class="sd">            ...         b.version_source(domain, MapVersionSource({domain: "1.0.0"}))</span>
+<span class="sd">            ...         b.bind(Encoder).to(FastEncoder).for_package_present("cjson")</span>
+<span class="sd">            ...         b.bind(Encoder).to(StdEncoder).for_package_absent("cjson")</span>
+<span class="sd">            &gt;&gt;&gt; get_injector(EncoderConfig).inject(Encoder).kind</span>
+<span class="sd">            'fast'</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            distribution: Distribution name (``importlib.metadata``)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Self for method chaining</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="BindingBuilder.for_package_absent">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder.for_package_absent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_package_absent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"BindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrict this binding to when the distribution is not installed.</span>
+
+<span class="sd">        Sugar for ``for_package_version(distribution, \"!\")``. Matches when</span>
+<span class="sd">        ``importlib.metadata`` reports the distribution as missing. Pair with</span>
+<span class="sd">        :meth:`for_package_present` for an explicit both-sides choice, or use</span>
+<span class="sd">        an unconditional fallback after ``for_package_present`` instead.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">            &gt;&gt;&gt; class Encoder:</span>
+<span class="sd">            ...     kind = "base"</span>
+<span class="sd">            &gt;&gt;&gt; class FastEncoder(Encoder):</span>
+<span class="sd">            ...     kind = "fast"</span>
+<span class="sd">            &gt;&gt;&gt; class StdEncoder(Encoder):</span>
+<span class="sd">            ...     kind = "std"</span>
+<span class="sd">            &gt;&gt;&gt; class EncoderConfig(Config):</span>
+<span class="sd">            ...     def configure(self):</span>
+<span class="sd">            ...         b = self.get_binder()</span>
+<span class="sd">            ...         b.bind(Encoder).to(FastEncoder).for_package_present(</span>
+<span class="sd">            ...             "pyiv-definitely-not-installed-xyz"</span>
+<span class="sd">            ...         )</span>
+<span class="sd">            ...         b.bind(Encoder).to(StdEncoder).for_package_absent(</span>
+<span class="sd">            ...             "pyiv-definitely-not-installed-xyz"</span>
+<span class="sd">            ...         )</span>
+<span class="sd">            &gt;&gt;&gt; get_injector(EncoderConfig).inject(Encoder).kind</span>
+<span class="sd">            'std'</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            distribution: Distribution name (``importlib.metadata``)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Self for method chaining</span>
@@ -406,6 +559,10 @@
 <a class="viewcode-back" href="../../pyiv/pyiv.binder.html#pyiv.BindingBuilder.for_python_version">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">for_python_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"BindingBuilder[T]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Restrict this binding to the running interpreter's PEP 440 version.</span>
+
+<span class="sd">        See the :class:`BindingBuilder` class docstring for a runnable</span>
+<span class="sd">        ``for_python_version`` example (with</span>
+<span class="sd">        :class:`~pyiv.version.FixedPythonVersionProvider`).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            specifier: PEP 440 version specifier against ``sys.version_info``</span>
@@ -425,7 +582,8 @@
 
 <span class="sd">    **Why this exists:** Direct ``Config.register*`` calls work, but complex</span>
 <span class="sd">    graphs read better as ``bind(X).to(Y).in_scope(Z)``. The binder also</span>
-<span class="sd">    supports ``install``, ``expose``, version-conditioned bindings, and</span>
+<span class="sd">    supports ``install``, ``expose``, version-conditioned bindings (including</span>
+<span class="sd">    ``for_package_present`` / ``for_package_absent``), and</span>
 <span class="sd">    ``require_explicit_bindings``.</span>
 
 <span class="sd">    Example:</span>
@@ -460,6 +618,26 @@
 <span class="sd">        ...         b.bind(Runner).to(Modern).for_python_version("&gt;=3.11")</span>
 <span class="sd">        &gt;&gt;&gt; get_injector(RunnerConfig).inject(Runner).kind</span>
 <span class="sd">        'modern'</span>
+
+<span class="sd">    Package present / absent (optional accelerator)::</span>
+
+<span class="sd">        &gt;&gt;&gt; from pyiv import Config, get_injector</span>
+<span class="sd">        &gt;&gt;&gt; from pyiv.version import MapVersionSource, package_version_domain</span>
+<span class="sd">        &gt;&gt;&gt; class Encoder:</span>
+<span class="sd">        ...     kind = "base"</span>
+<span class="sd">        &gt;&gt;&gt; class Fast(Encoder):</span>
+<span class="sd">        ...     kind = "fast"</span>
+<span class="sd">        &gt;&gt;&gt; class Std(Encoder):</span>
+<span class="sd">        ...     kind = "std"</span>
+<span class="sd">        &gt;&gt;&gt; domain = package_version_domain("cjson")</span>
+<span class="sd">        &gt;&gt;&gt; class EncoderConfig(Config):</span>
+<span class="sd">        ...     def configure(self):</span>
+<span class="sd">        ...         b = self.get_binder()</span>
+<span class="sd">        ...         b.version_source(domain, MapVersionSource({domain: "1.0"}))</span>
+<span class="sd">        ...         b.bind(Encoder).to(Fast).for_package_present("cjson")</span>
+<span class="sd">        ...         b.bind(Encoder).to(Std).for_package_absent("cjson")</span>
+<span class="sd">        &gt;&gt;&gt; get_injector(EncoderConfig).inject(Encoder).kind</span>
+<span class="sd">        'fast'</span>
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="Binder.bind">

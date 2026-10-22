@@ -180,7 +180,8 @@ are registered and configured for the dependency injection system.</p>
 <li><p>Singleton lifecycle configuration</p></li>
 <li><p>Factory function registrations</p></li>
 <li><p>Map multibind catalogs with explicit contribute / conflict policy</p></li>
-<li><p>Version-conditioned binding candidates (see <a class="reference internal" href="pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a>)</p></li>
+<li><p>Version-conditioned binding candidates, including package present /
+absent (see <a class="reference internal" href="pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a>)</p></li>
 </ul>
 </dd>
 <dt>Usage:</dt><dd><p>Create a Config subclass and override configure() to register dependencies:</p>
@@ -277,6 +278,7 @@ so hosts can extend membership with an explicit conflict policy.</p>
 <span class="sig-name descname"><span class="pre">add_version_candidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/pyiv/config.html#Config.add_version_candidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyiv.config.Config.add_version_candidate" title="Link to this definition"></a></dt>
 <dd><p>Append a version-conditioned binding candidate.</p>
 <p>Prefer the Binder <code class="docutils literal notranslate"><span class="pre">for_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> /
+<code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code> /
 <code class="docutils literal notranslate"><span class="pre">for_python_version</span></code> helpers over calling this directly.</p>
 </dd></dl>
 
@@ -287,8 +289,11 @@ so hosts can extend membership with an explicit conflict policy.</p>
 <p>Called once at injector construction. For each abstract type with
 candidates:</p>
 <ul class="simple">
-<li><p>filter by domain <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> + named
-<a class="reference internal" href="pyiv.version.html#pyiv.version.VersionParser" title="pyiv.version.VersionParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="pyiv.version.html#pyiv.version.PACKAGE_ABSENT" title="pyiv.version.PACKAGE_ABSENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_ABSENT</span></code></a> matches when the source returns
+<code class="docutils literal notranslate"><span class="pre">None</span></code>; <a class="reference internal" href="pyiv.version.html#pyiv.version.PACKAGE_PRESENT" title="pyiv.version.PACKAGE_PRESENT"><code class="xref py py-data docutils literal notranslate"><span class="pre">PACKAGE_PRESENT</span></code></a> matches any non-None
+version (no parser)</p></li>
+<li><p>otherwise filter by domain <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionSource" title="pyiv.version.VersionSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionSource</span></code></a> +
+named <a class="reference internal" href="pyiv.version.html#pyiv.version.VersionParser" title="pyiv.version.VersionParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionParser</span></code></a></p></li>
 <li><p>exactly one match → register that binding (scope/provider preserved)</p></li>
 <li><p>zero matches → keep any unconditional binding as fallback; otherwise
 raise <a class="reference internal" href="pyiv.errors.html#pyiv.errors.CreationError" title="pyiv.errors.CreationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreationError</span></code></a></p></li>

@@ -222,9 +222,18 @@ mixing them in one <code class="docutils literal notranslate"><span class="pre">
 <section id="version-conditioned-bindings">
 <h2>Version-conditioned bindings<a class="headerlink" href="#version-conditioned-bindings" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">binder.bind(T).to(Impl).for_python_version(...)</span></code> (and
-<code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_version</span></code>) register <strong>candidates</strong> selected
-at injector construction. See <a class="reference internal" href="version-bindings.html"><span class="doc">Version-conditioned bindings</span></a> and
-<a class="reference internal" href="../pyiv/pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">for_package_version</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> / <code class="docutils literal notranslate"><span class="pre">for_package_absent</span></code> /
+<code class="docutils literal notranslate"><span class="pre">for_version</span></code>) register <strong>candidates</strong> selected at injector construction.
+See <a class="reference internal" href="version-bindings.html"><span class="doc">Version-conditioned bindings</span></a> and <a class="reference internal" href="../pyiv/pyiv.version.html#module-pyiv.version" title="pyiv.version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyiv.version</span></code></a>.</p>
+<p>Optional accelerator when a distribution is installed (pair present / absent
+so exactly one matches):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">CJsonEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_present</span><span class="p">(</span><span class="s2">"cjson"</span><span class="p">)</span>
+<span class="n">binder</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">Encoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">JsonEncoder</span><span class="p">)</span><span class="o">.</span><span class="n">for_package_absent</span><span class="p">(</span><span class="s2">"cjson"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or <code class="docutils literal notranslate"><span class="pre">for_package_present</span></code> plus an unconditional fallback registered
+<strong>after</strong> the conditioned binds. Pass the <strong>distribution</strong> name (PyPI /
+<code class="docutils literal notranslate"><span class="pre">importlib.metadata</span></code>), which may differ from the import package name.</p>
 </section>
 <section id="installing-modules">
 <h2>Installing modules<a class="headerlink" href="#installing-modules" title="Link to this heading"></a></h2>

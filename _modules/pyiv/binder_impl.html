@@ -175,6 +175,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstanceProvider</span><span class="p">,</span> <span class="n">Provider</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoScope</span><span class="p">,</span> <span class="n">Scope</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyiv.version</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PACKAGE_ABSENT</span><span class="p">,</span>
+    <span class="n">PACKAGE_PRESENT</span><span class="p">,</span>
     <span class="n">PEP440</span><span class="p">,</span>
     <span class="n">PYTHON_VERSION_DOMAIN</span><span class="p">,</span>
     <span class="n">PackageVersionSource</span><span class="p">,</span>
@@ -304,6 +306,20 @@
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">_version_domain_parsers</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">use_version_parser</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">PEP440</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_version</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">specifier</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">PEP440</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigBindingBuilder.for_package_present">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.for_package_present">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_package_present</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrict this binding to when the distribution is installed (any version)."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_package_version</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="n">PACKAGE_PRESENT</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigBindingBuilder.for_package_absent">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigBindingBuilder.for_package_absent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_package_absent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigBindingBuilder[T]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Restrict this binding to when the distribution is not installed."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_package_version</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="n">PACKAGE_ABSENT</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ConfigBindingBuilder.for_python_version">
@@ -488,6 +504,24 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">"Version-conditioned bindings are not yet supported on bind_key; "</span>
             <span class="s2">"use bind(Type).for_package_version(...) for unqualified types"</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigKeyBindingBuilder.for_package_present">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.for_package_present">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_package_present</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigKeyBindingBuilder[T]"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"Version-conditioned bindings are not yet supported on bind_key; "</span>
+            <span class="s2">"use bind(Type).for_package_present(...) for unqualified types"</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigKeyBindingBuilder.for_package_absent">
+<a class="viewcode-back" href="../../pyiv/pyiv.binder_impl.html#pyiv.binder_impl.ConfigKeyBindingBuilder.for_package_absent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_package_absent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigKeyBindingBuilder[T]"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"Version-conditioned bindings are not yet supported on bind_key; "</span>
+            <span class="s2">"use bind(Type).for_package_absent(...) for unqualified types"</span>
         <span class="p">)</span></div>
 
 
