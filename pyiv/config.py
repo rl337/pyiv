@@ -1068,7 +1068,7 @@ class Config:
             by_abstract.setdefault(candidate.abstract, []).append(candidate)
 
         for abstract, candidates in by_abstract.items():
-            matches = []
+            matches: List[Tuple[Any, Optional[str]]] = []
             diagnostics = []
             for candidate in candidates:
                 source = self._version_sources.get(candidate.domain)
