@@ -6,6 +6,8 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+## 1.1.1 - 2026-10-21
+
 ### Added
 
 - ``binder.bind(...).to(...).for_package_present(distribution)`` /
