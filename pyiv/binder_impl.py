@@ -12,6 +12,8 @@ from pyiv.key import Key
 from pyiv.provider import InstanceProvider, Provider
 from pyiv.scope import NoScope, Scope
 from pyiv.version import (
+    PACKAGE_ABSENT,
+    PACKAGE_PRESENT,
     PEP440,
     PYTHON_VERSION_DOMAIN,
     PackageVersionSource,
@@ -119,6 +121,14 @@ class ConfigBindingBuilder(BindingBuilder[T]):
         if domain not in self._config._version_domain_parsers:
             self._config.use_version_parser(domain, PEP440)
         return self.for_version(domain, specifier, parser=PEP440)
+
+    def for_package_present(self, distribution: str) -> "ConfigBindingBuilder[T]":
+        """Restrict this binding to when the distribution is installed (any version)."""
+        return self.for_package_version(distribution, PACKAGE_PRESENT)
+
+    def for_package_absent(self, distribution: str) -> "ConfigBindingBuilder[T]":
+        """Restrict this binding to when the distribution is not installed."""
+        return self.for_package_version(distribution, PACKAGE_ABSENT)
 
     def for_python_version(self, specifier: str) -> "ConfigBindingBuilder[T]":
         """Restrict this binding to the running interpreter version."""
@@ -276,6 +286,18 @@ class ConfigKeyBindingBuilder(BindingBuilder[T]):
         raise NotImplementedError(
             "Version-conditioned bindings are not yet supported on bind_key; "
             "use bind(Type).for_package_version(...) for unqualified types"
+        )
+
+    def for_package_present(self, distribution: str) -> "ConfigKeyBindingBuilder[T]":
+        raise NotImplementedError(
+            "Version-conditioned bindings are not yet supported on bind_key; "
+            "use bind(Type).for_package_present(...) for unqualified types"
+        )
+
+    def for_package_absent(self, distribution: str) -> "ConfigKeyBindingBuilder[T]":
+        raise NotImplementedError(
+            "Version-conditioned bindings are not yet supported on bind_key; "
+            "use bind(Type).for_package_absent(...) for unqualified types"
         )
 
     def for_python_version(self, specifier: str) -> "ConfigKeyBindingBuilder[T]":

@@ -10,7 +10,8 @@ Key Features:
 - Qualified keys with tag sets (``Named``), nearest match (``Matched``),
   ``Annotated`` constructor injection, and Binder
 - Version-conditioned bindings (``for_version`` / ``for_package_version`` /
-  ``for_python_version``) over named version domains
+  ``for_package_present`` / ``for_package_absent`` / ``for_python_version``)
+  over named version domains
 - Module install, private modules, child injectors, and config override
 - Map/Set/List multibinders; Stage.PRODUCTION eager singletons
 - Reflection to discover implementations in a package
@@ -79,6 +80,26 @@ Quick Start:
     ...         b.bind(Runner).to(ModernRunner).for_python_version(">=3.11")
     >>> get_injector(RunnerConfig).inject(Runner).kind
     'legacy'
+
+    Package present / absent (optional accelerator):
+
+    >>> from pyiv import Config, get_injector
+    >>> from pyiv.version import MapVersionSource, package_version_domain
+    >>> class Encoder:
+    ...     kind = "base"
+    >>> class FastEncoder(Encoder):
+    ...     kind = "fast"
+    >>> class StdEncoder(Encoder):
+    ...     kind = "std"
+    >>> domain = package_version_domain("cjson")
+    >>> class EncoderConfig(Config):
+    ...     def configure(self):
+    ...         b = self.get_binder()
+    ...         b.version_source(domain, MapVersionSource({domain: "1.0.0"}))
+    ...         b.bind(Encoder).to(FastEncoder).for_package_present("cjson")
+    ...         b.bind(Encoder).to(StdEncoder).for_package_absent("cjson")
+    >>> get_injector(EncoderConfig).inject(Encoder).kind
+    'fast'
 """
 
 from pyiv.binder import Binder, BindingBuilder
@@ -168,6 +189,8 @@ from pyiv.serde import Base64SerDe, JSONSerDe, NoOpSerDe, PickleSerDe, SerDe, XM
 from pyiv.singleton import GlobalSingletonRegistry, SingletonType
 from pyiv.stage import Stage
 from pyiv.version import (
+    PACKAGE_ABSENT,
+    PACKAGE_PRESENT,
     PEP440,
     PYTHON_VERSION_DOMAIN,
     FixedPythonVersionProvider,
@@ -313,6 +336,8 @@ __all__ = [
     "VersionBindingCandidate",
     "PYTHON_VERSION_DOMAIN",
     "PEP440",
+    "PACKAGE_PRESENT",
+    "PACKAGE_ABSENT",
     "package_version_domain",
 ]
 

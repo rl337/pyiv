@@ -46,6 +46,16 @@ fs = injector.inject(Filesystem)
 - Bind interfaces (ABC/Protocol) to implementations.
 - Use `singleton=True` or scopes when one shared instance is required.
 - Prefer `override(ProdConfig).with_(TestConfig)` to swap doubles in tests.
+- Optional accelerators (distribution name, not import name):
+
+```python
+binder.bind(Encoder).to(CJsonEncoder).for_package_present("cjson")
+binder.bind(Encoder).to(JsonEncoder).for_package_absent("cjson")
+# or: for_package_present(...) then unconditional bind(...).to(Std) fallback
+```
+
+  Tests: `MapVersionSource` on `package_version_domain("cjson")` to simulate
+  installed. Docs: https://rl337.org/pyiv/guide/version-bindings.html.
 
 ## Constructor injection
 

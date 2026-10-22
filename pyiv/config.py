@@ -13,7 +13,8 @@ The Config class manages:
     - Singleton lifecycle configuration
     - Factory function registrations
     - Map multibind catalogs with explicit contribute / conflict policy
-    - Version-conditioned binding candidates (see :mod:`pyiv.version`)
+    - Version-conditioned binding candidates, including package present /
+      absent (see :mod:`pyiv.version`)
 
 Usage:
     Create a Config subclass and override configure() to register dependencies:
@@ -1029,6 +1030,7 @@ class Config:
         """Append a version-conditioned binding candidate.
 
         Prefer the Binder ``for_version`` / ``for_package_version`` /
+        ``for_package_present`` / ``for_package_absent`` /
         ``for_python_version`` helpers over calling this directly.
         """
         self._version_candidates.append(candidate)
@@ -1039,8 +1041,11 @@ class Config:
         Called once at injector construction. For each abstract type with
         candidates:
 
-        - filter by domain :class:`~pyiv.version.VersionSource` + named
-          :class:`~pyiv.version.VersionParser`
+        - :data:`~pyiv.version.PACKAGE_ABSENT` matches when the source returns
+          ``None``; :data:`~pyiv.version.PACKAGE_PRESENT` matches any non-None
+          version (no parser)
+        - otherwise filter by domain :class:`~pyiv.version.VersionSource` +
+          named :class:`~pyiv.version.VersionParser`
         - exactly one match → register that binding (scope/provider preserved)
         - zero matches → keep any unconditional binding as fallback; otherwise
           raise :class:`~pyiv.errors.CreationError`
@@ -1063,7 +1068,7 @@ class Config:
             by_abstract.setdefault(candidate.abstract, []).append(candidate)
 
         for abstract, candidates in by_abstract.items():
-            matches = []
+            matches: List[Tuple[Any, Optional[str]]] = []
             diagnostics = []
             for candidate in candidates:
                 source = self._version_sources.get(candidate.domain)
@@ -1074,11 +1079,33 @@ class Config:
                     )
                     continue
                 current = source.get_version()
+                from pyiv.version import (
+                    InvalidVersion,
+                    is_package_absent_specifier,
+                    is_package_present_specifier,
+                )
+
+                # Absence-only: match when the source reports no version.
+                if is_package_absent_specifier(candidate.specifier):
+                    if current is None:
+                        matches.append((candidate, None))
+                    else:
+                        diagnostics.append(
+                            f"{candidate.specifier!r} on domain {candidate.domain!r} "
+                            f"(installed {current!r})"
+                        )
+                    continue
+
                 if current is None:
                     diagnostics.append(
                         f"{candidate.specifier!r} on domain {candidate.domain!r} "
                         f"(version absent/unknown)"
                     )
+                    continue
+
+                # Presence-only: any non-None version matches (no PEP 440 parse).
+                if is_package_present_specifier(candidate.specifier):
+                    matches.append((candidate, current))
                     continue
                 try:
                     parser = self.resolve_version_parser(candidate.domain, candidate.parser_name)
@@ -1086,7 +1113,6 @@ class Config:
                     raise CreationError(
                         f"Invalid version parser for {type_name(abstract)}: {exc}",
                     ) from exc
-                from pyiv.version import InvalidVersion
 
                 try:
                     ok = parser.is_version_compatible(current, candidate.specifier)
@@ -1104,7 +1130,9 @@ class Config:
 
             if len(matches) > 1:
                 detail = "; ".join(
-                    f"{c.specifier!r}@{c.domain!r} (version {ver!r})" for c, ver in matches
+                    f"{c.specifier!r}@{c.domain!r} "
+                    f"(version {'absent' if ver is None else repr(ver)})"
+                    for c, ver in matches
                 )
                 raise CreationError(
                     f"Ambiguous version binding for {type_name(abstract)}: "

@@ -68,6 +68,7 @@ What did not change
 -------------------
 
 SerDe chain handlers (``ChainType.ENCODING``), Binder, scopes, keys,
-version-conditioned bindings, and test doubles for Clock / Filesystem /
+version-conditioned bindings (including later ``for_package_present`` /
+``for_package_absent``), and test doubles for Clock / Filesystem /
 Console / DateTimeService are unchanged in spirit. Only the HTTP
 integration surface was redesigned.

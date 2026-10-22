@@ -19,7 +19,8 @@ resolve dependencies. It supports:
 - Qualified keys: strict ``Named`` tag sets and inject-only ``Matched``
 - Bare ``inject(Type)`` fallback to ``Named(..., default=True)`` / sole Named
 - Factory functions for complex object creation
-- Version-conditioned binding selection at construction (see :mod:`pyiv.version`)
+- Version-conditioned binding selection at construction, including package
+  present / absent (see :mod:`pyiv.version`)
 - Circular dependency detection with path-aware CreationError
 - Child injectors and private modules
 - Catalog introspection: ``catalog_keys`` / ``named_keys`` without constructing

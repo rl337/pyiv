@@ -6,6 +6,17 @@ order. Install with `pip install pyiv`. Unreleased `main` is
 
 ## Unreleased
 
+### Added
+
+- ``binder.bind(...).to(...).for_package_present(distribution)`` /
+  ``for_package_absent(distribution)`` — select a binding when an optional
+  distribution is installed (any version) or missing. Sugar for
+  ``for_package_version(distribution, "*")`` / ``"!"``
+  (``PACKAGE_PRESENT`` / ``PACKAGE_ABSENT``). Pair them for an explicit
+  both-sides choice, or use ``for_package_present`` plus an unconditional
+  fallback. Documented with doctests and guide examples alongside other
+  version-conditioned bindings.
+
 ## 1.1.0 - 2026-10-18
 
 ### Added
